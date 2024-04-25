@@ -198,14 +198,17 @@ namespace {
     }
   }
 
-  int read_exodus_basis(int exoid, ex_entity_type type, int64_t id)
+  int read_exodus_basis(int exoid)
   {
+    auto bas_cnt = ex_get_basis_metadata_count(exoid);
+    assert(bas_cnt == 1);
+
     ex_basis exo_basis{};
-    ex_get_basis_metadata(exoid, type, id, &exo_basis);
+    ex_get_basis_metadata(exoid, &exo_basis);
 
     // allocate memory for all pointer members of `basis`
-    ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
-    ex_get_basis_metadata(exoid, type, id, &exo_basis);
+    ex_initialize_basis_struct(&exo_basis, 1);
+    ex_get_basis_metadata(exoid, &exo_basis);
 
     std::vector<Ioss::Basis> basies{};
     basies.reserve(exo_basis.cardinality);
@@ -217,11 +220,12 @@ namespace {
       basies.push_back(basis);
     }
 
+    Ioss::VariableType::create_basis_field_type(exo_basis.name, basies);
+
     // deallocate any memory allocated in the 'basis' struct.
     ex_initialize_basis_struct(&exo_basis, -exo_basis.cardinality);
 
-    Ioss::VariableType::create_basis_field_type(exo_basis.name, basies);
-    return exo_basis.cardinality;
+    return basies.size();
   }
 } // namespace
 
@@ -1760,10 +1764,10 @@ namespace Ioex {
         else if (exo_field_type == EX_BASIS) {
           // If we don't already have the basis, read and create it...
           if (!basis_read) {
-            read_exodus_basis(get_file_pointer(), type, id);
+            read_exodus_basis(get_file_pointer());
             basis_read = true;
           }
-          ios_field_type = "basis";
+          ios_field_type = "basis:" + Ioss::Utils::lowercase(exo_field.type_name);
         }
         else {
           ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
@@ -1783,10 +1787,10 @@ namespace Ioex {
             // If we don't already have the basis, read and create it...
             if (!basis_read) {
               // Negative copy count is currently kluge to indicate basis is the nested field type.
-              num_copies = -read_exodus_basis(get_file_pointer(), type, id);
+              num_copies = -read_exodus_basis(get_file_pointer());
               basis_read = true;
             }
-            secondary_field_type = "basis";
+            secondary_field_type = "basis:" + Ioss::Utils::lowercase(exo_field.type_name);
           }
           else {
             fmt::print("ERROR: Unrecognized field type for nested field.\n");

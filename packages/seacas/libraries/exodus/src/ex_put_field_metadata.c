@@ -9,6 +9,29 @@
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 
+static int exi_print_basis_error(int status, const char *name, const char *attribute, int exoid,
+                                 const char *func)
+{
+  char errmsg[MAX_ERR_LENGTH];
+  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store '%s' for basis '%s' in file id %d",
+           attribute, name, exoid);
+  ex_err_fn(exoid, func, errmsg, status);
+  return EX_FATAL;
+}
+
+static int exi_print_attribute_error(int status, const char *name, const char *attribute,
+                                     ex_entity_type entity_type, ex_entity_id entity_id, int exoid,
+                                     const char *func)
+{
+  char errmsg[MAX_ERR_LENGTH];
+  snprintf(errmsg, MAX_ERR_LENGTH,
+           "ERROR: failed to store field metadata '%s' for field '%s' on %s with id %" PRId64
+           " in file id %d",
+           attribute, name, ex_name_of_object(entity_type), entity_id, exoid);
+  ex_err_fn(exoid, func, errmsg, status);
+  return EX_FATAL;
+}
+
 int ex_put_field_metadata(int exoid, const ex_field field)
 {
   /*
@@ -23,7 +46,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
    * Else the size must equal nesting and it specifies a potentially different separator for each
    * level.
    */
-  int  status;
+  int  status = 0;
   char errmsg[MAX_ERR_LENGTH];
 
   fprintf(stderr,
@@ -48,23 +71,24 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   sprintf(attribute_name, field_template, field.name, "type");
   if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                          field.nesting, field.type)) != EX_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store field metadata type for field '%s' on %s with id %" PRId64
-             " in file id %d",
-             field.name, ex_name_of_object(field.entity_type), field.entity_id, exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
+    return exi_print_attribute_error(status, field.name, "type", field.entity_type, field.entity_id,
+                                     exoid, __func__);
+  }
+
+  if (field.type_name[0] != '\0') {
+    sprintf(attribute_name, field_template, field.name, "type_name");
+    if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
+                                        field.type_name)) != EX_NOERR) {
+      return exi_print_attribute_error(status, field.name, "type_name", field.entity_type,
+                                       field.entity_id, exoid, __func__);
+    }
   }
 
   sprintf(attribute_name, field_template, field.name, "separator");
   if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                       field.component_separator)) != EX_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store field metadata separator for field '%s' on %s with id %" PRId64
-             " in file id %d",
-             field.name, ex_name_of_object(field.entity_type), field.entity_id, exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
+    return exi_print_attribute_error(status, field.name, "separator", field.entity_type,
+                                     field.entity_id, exoid, __func__);
   }
 
   bool needs_cardinality = false;
@@ -79,50 +103,35 @@ int ex_put_field_metadata(int exoid, const ex_field field)
     if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id,
                                            attribute_name, field.nesting, field.cardinality)) !=
         EX_NOERR) {
-      snprintf(
-          errmsg, MAX_ERR_LENGTH,
-          "ERROR: failed to store field metadata cardinality for field '%s' on %s with id %" PRId64
-          " in file id %d",
-          field.name, ex_name_of_object(field.entity_type), field.entity_id, exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      return EX_FATAL;
+      return exi_print_attribute_error(status, field.name, "cardinality", field.entity_type,
+                                       field.entity_id, exoid, __func__);
     }
   }
 
   return EX_NOERR;
 }
 
-int ex__put_basis_attribute(int exoid, const char *basis_name, const char *type,
-                            ex_entity_type entity_type, ex_entity_id id, ex_type value_type,
+int exi_put_basis_attribute(int exoid, const char *basis_name, const char *type, ex_type value_type,
                             int cardinality, const void *basis_entry)
 {
+  int status = EX_NOERR;
   if (basis_entry != NULL) {
-    static char *basis_template = "Basis@%s";
+    static char *basis_template = "Basis@%s@%s";
     char         attribute_name[NC_MAX_NAME + 1];
-    sprintf(attribute_name, basis_template, type);
-    int status = EX_NOERR;
+    sprintf(attribute_name, basis_template, basis_name, type);
     if (value_type == EX_INTEGER) {
-      status = ex_put_integer_attribute(exoid, entity_type, id, attribute_name, cardinality,
-                                        basis_entry);
+      status =
+          ex_put_integer_attribute(exoid, EX_GLOBAL, 0, attribute_name, cardinality, basis_entry);
     }
     else if (value_type == EX_DOUBLE) {
       status =
-          ex_put_double_attribute(exoid, entity_type, id, attribute_name, cardinality, basis_entry);
-    }
-    if (status != EX_NOERR) {
-      char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to store %s for basis '%s' on %s with id %" PRId64 " in file id %d",
-               type, basis_name, ex_name_of_object(entity_type), id, exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      return EX_FATAL;
+          ex_put_double_attribute(exoid, EX_GLOBAL, 0, attribute_name, cardinality, basis_entry);
     }
   }
-  return EX_NOERR;
+  return status;
 }
 
-int ex_put_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id entity_id,
-                          const ex_basis basis)
+int ex_put_basis_metadata(int exoid, const ex_basis basis)
 {
   /*
    * typedef struct ex_basis {
@@ -139,59 +148,49 @@ int ex_put_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
    */
 
   int status;
-  if ((status = ex_put_text_attribute(exoid, entity_type, entity_id, "Basis@name", basis.name)) !=
-      EX_NOERR) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store name for basis '%s' on %s with id %" PRId64 " in file id %d",
-             basis.name, ex_name_of_object(entity_type), entity_id, exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "cardinality", EX_INTEGER, 1,
+                                        &basis.cardinality)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "cardinality", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "cardinality", entity_type, entity_id, EX_INTEGER,
-                              1, &basis.cardinality) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_dim", EX_INTEGER,
+                                        basis.cardinality, basis.subc_dim)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "subc_dim", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "subc_dim", entity_type, entity_id, EX_INTEGER,
-                              basis.cardinality, basis.subc_dim) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_ordinal", EX_INTEGER,
+                                        basis.cardinality, basis.subc_ordinal)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "subc_ordinal", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "subc_ordinal", entity_type, entity_id, EX_INTEGER,
-                              basis.cardinality, basis.subc_ordinal) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_dof_ordinal", EX_INTEGER,
+                                        basis.cardinality, basis.subc_dof_ordinal)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "subc_dof_ordinal", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "subc_dof_ordinal", entity_type, entity_id,
-                              EX_INTEGER, basis.cardinality, basis.subc_dof_ordinal) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_num_dof", EX_INTEGER,
+                                        basis.cardinality, basis.subc_num_dof)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "subc_num_dof", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "subc_num_dof", entity_type, entity_id, EX_INTEGER,
-                              basis.cardinality, basis.subc_num_dof) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "xi", EX_DOUBLE, basis.cardinality,
+                                        basis.xi)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "xi", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "xi", entity_type, entity_id, EX_DOUBLE,
-                              basis.cardinality, basis.xi) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "eta", EX_DOUBLE, basis.cardinality,
+                                        basis.eta)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "eta", exoid, __func__);
   }
 
-  if (ex__put_basis_attribute(exoid, basis.name, "eta", entity_type, entity_id, EX_DOUBLE,
-                              basis.cardinality, basis.eta) != EX_NOERR) {
-    return EX_FATAL;
-  }
-
-  if (ex__put_basis_attribute(exoid, basis.name, "zeta", entity_type, entity_id, EX_DOUBLE,
-                              basis.cardinality, basis.zeta) != EX_NOERR) {
-    return EX_FATAL;
+  if ((status = exi_put_basis_attribute(exoid, basis.name, "zeta", EX_DOUBLE, basis.cardinality,
+                                        basis.zeta)) != EX_NOERR) {
+    return exi_print_basis_error(status, basis.name, "zeta", exoid, __func__);
   }
   return EX_NOERR;
 }
 
-int ex_put_quadrature_metadata(int exoid, const ex_field field) { return EX_FATAL; }
+int ex_put_quadrature_metadata(int exoid, const ex_quadrature field) { return EX_FATAL; }
 
 int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices)
 {

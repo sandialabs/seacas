@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -25,12 +25,12 @@
     }                                                                                              \
   } while (0)
 
-static void get_field_cardinality(ex_field *field, ex_basis *basis)
+static void get_field_cardinality(ex_field *field, ex_basis *basis, int bas_cnt)
 {
   for (int j = 0; j < field->nesting; j++) {
     if (field->cardinality[j] == 0) {
       if (field->type[j] == EX_BASIS) {
-        field->cardinality[j] = basis->cardinality;
+        field->cardinality[j] = basis[0].cardinality;
       }
       else {
         field->cardinality[j] = ex_field_cardinality(field->type[j]);
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_field_metadata(exoid, fields));
 
     for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], NULL);
+      get_field_cardinality(&fields[i], NULL, 0);
       print_field_metadata(&fields[i]);
       print_full_field_names(&fields[i]);
     }
@@ -144,30 +144,24 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_field_metadata(exoid, fields));
 
     for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], NULL);
+      get_field_cardinality(&fields[i], NULL, 0);
       print_field_metadata(&fields[i]);
       print_full_field_names(&fields[i]);
     }
   }
   // ------------------------------------------------------------------------
-  struct ex_basis basis;
-  EXCHECK(ex_initialize_basis_struct(&basis, 0));
+  int bas_cnt = ex_get_basis_metadata_count(exoid);
+  assert(bas_cnt == 1);
+  struct ex_basis basis[1];
+  EXCHECK(ex_initialize_basis_struct(&basis[0], 0));
+  EXCHECK(ex_get_basis_metadata(exoid, basis));
 
-  /* Query basis on a block where it doesn't exist */
-  fprintf(stderr, "\nEXPECT Warning/Error about no basis on block 10.");
-  int status = ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 10, &basis);
-  if (status != EX_NOTFOUND) {
-    fprintf(stderr,
-            "Error calling ex_get_basis for non-existent basis.  Should return EX_NOTFOUND");
-  }
-
-  EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
   /*
    * Now, allocate memory for all pointer members of basis and call to populate...
    */
-  EXCHECK(ex_initialize_basis_struct(&basis, basis.cardinality));
-  EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
-  print_basis_metadata(&basis);
+  EXCHECK(ex_initialize_basis_struct(&basis[0], 1));
+  EXCHECK(ex_get_basis_metadata(exoid, basis));
+  print_basis_metadata(&basis[0]);
 
   {
     int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 11);
@@ -178,14 +172,14 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_field_metadata(exoid, fields));
 
     for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], &basis);
+      get_field_cardinality(&fields[i], basis, bas_cnt);
       print_field_metadata(&fields[i]);
       print_full_field_names(&fields[i]);
     }
   }
 
   // Now, deallocate any memory allocated on the `basis` struct.
-  EXCHECK(ex_initialize_basis_struct(&basis, -basis.cardinality));
+  EXCHECK(ex_initialize_basis_struct(&basis[0], -1));
 
   int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 12);
   assert(fld_cnt == 0);

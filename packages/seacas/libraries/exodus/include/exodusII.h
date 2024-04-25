@@ -322,12 +322,13 @@ typedef struct ex_field
   ex_entity_type entity_type;
   int64_t        entity_id;
   char           name[EX_MAX_NAME + 1]; /* Name of the field */
-  int            nesting; /* Number of composite fields (vector at each quadrature point = 2) */
-  ex_field_type  type[EX_MAX_FIELD_NESTING];                /* ex_field_type of each nested field */
-  int            cardinality[EX_MAX_FIELD_NESTING];         /* 0 to calculate based on type */
-  char           component_separator[EX_MAX_FIELD_NESTING]; /* empty defaults to '_'; */
-  char           suffices[EX_MAX_NAME + 1]; /* Optional comma-separated list of suffices if type is
-                                               EX_FIELD_TYPE_USER_DEFINED */
+  char type_name[EX_MAX_NAME + 1]; /* For basis, user, quadrature -- what is name of that type */
+  int  nesting; /* Number of composite fields (vector at each quadrature point = 2) */
+  ex_field_type type[EX_MAX_FIELD_NESTING];                /* ex_field_type of each nested field */
+  int           cardinality[EX_MAX_FIELD_NESTING];         /* 0 to calculate based on type */
+  char          component_separator[EX_MAX_FIELD_NESTING]; /* empty defaults to '_'; */
+  char          suffices[EX_MAX_NAME + 1]; /* Optional comma-separated list of suffices if type is
+                                              EX_FIELD_TYPE_USER_DEFINED */
 } ex_field;
 
 typedef struct ex_basis
@@ -1045,12 +1046,13 @@ EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_field *field);
 EXODUS_EXPORT int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id id);
 EXODUS_EXPORT int ex_get_field_suffices(int exoid, const ex_field field, char *suffices);
 
-EXODUS_EXPORT int ex_put_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id id,
-                                        const ex_basis basis);
-EXODUS_EXPORT int ex_get_basis_metadata(int exoid, ex_entity_type entity_type,
-                                        ex_entity_id entity_id, ex_basis *basis);
+EXODUS_EXPORT int ex_put_basis_metadata(int exoid, const ex_basis basis);
+EXODUS_EXPORT int ex_get_basis_metadata_count(int exoid);
+EXODUS_EXPORT int ex_get_basis_metadata(int exoid, ex_basis *basis);
 
-EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, const ex_field field);
+EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, const ex_quadrature quad);
+EXODUS_EXPORT int ex_get_quadrature_metadata_count(int exoid);
+EXODUS_EXPORT int ex_get_quadrature_metadata(int exoid, ex_quadrature *quad);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, const ex_attribute attributes);
@@ -1301,7 +1303,7 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
                                    int             processor /**< This processor ID */
 );
 
-EXODUS_EXPORT int         ex_initialize_basis_struct(ex_basis *basis, int cardinality);
+EXODUS_EXPORT int         ex_initialize_basis_struct(ex_basis *basis, int mode);
 EXODUS_EXPORT const char *ex_component_field_name(ex_field *field,
                                                   int       component[EX_MAX_FIELD_NESTING]);
 EXODUS_EXPORT const char *ex_field_component_suffix(ex_field *field, int nest_level, int component);

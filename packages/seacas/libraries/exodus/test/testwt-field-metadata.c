@@ -94,16 +94,16 @@ int main(int argc, char **argv)
   /* ======================================================================== */
   /* Transient Variables */
   char *var_names[] = {
-      "DispX",        "DispY",        "DispZ",        "Velocity%X",   "Velocity%Y",
-      "Velocity%Z",   "Gradient-X$0", "Gradient-Y$0", "Gradient-Z$0", "Gradient-X$1",
-      "Gradient-Y$1", "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
-      "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
-      "Gradient-Z$4", "Gradient-X$5", "Gradient-Y$5", "Gradient-Z$5", "Gradient-X$6",
-      "Gradient-Y$6", "Gradient-Z$6", "Gradient-X$7", "Gradient-Y$7", "Gradient-Z$7",
-      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "Curl@0",       "Curl@1",
-      "Curl@2",       "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",
-      "Curl@7",       "Curl@8",       "User_h2o",     "User_gas",     "User_ch4",
-      "User_methane"};
+      "DispX",          "DispY",        "DispZ",        "Velocity%X",   "Velocity%Y",
+      "Velocity%Z",     "Gradient-X$0", "Gradient-Y$0", "Gradient-Z$0", "Gradient-X$1",
+      "Gradient-Y$1",   "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
+      "Gradient-X$3",   "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
+      "Gradient-Z$4",   "Gradient-X$5", "Gradient-Y$5", "Gradient-Z$5", "Gradient-X$6",
+      "Gradient-Y$6",   "Gradient-Z$6", "Gradient-X$7", "Gradient-Y$7", "Gradient-Z$7",
+      "Gradient-X$8",   "Gradient-Y$8", "Gradient-Z$8", "Curl@0",       "Curl@1",
+      "Curl@2",         "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",
+      "Curl@7",         "Curl@8",       "Species_h2o",  "Species_gas",  "Species_ch4",
+      "Species_methane"};
   int num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
   int num_node_vars  = 6;
 
@@ -172,11 +172,12 @@ int main(int argc, char **argv)
                                        .xi               = xi,
                                        .eta              = eta,
                                        .zeta             = NULL};
-    EXCHECK(ex_put_basis_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, basis));
+    EXCHECK(ex_put_basis_metadata(exoid, basis));
 
     struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                        .entity_id           = blocks[1].id,
                                        .name                = "Gradient",
+                                       .type_name           = "HGRAD_QUAD_C2_FEM",
                                        .type                = {EX_VECTOR_3D, EX_BASIS},
                                        .nesting             = 2,
                                        .component_separator = {'-', '$'}};
@@ -185,6 +186,7 @@ int main(int argc, char **argv)
     struct ex_field field2 = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                         .entity_id           = blocks[1].id,
                                         .name                = "Curl",
+                                        .type_name           = "HGRAD_QUAD_C2_FEM",
                                         .type                = {EX_BASIS},
                                         .nesting             = 1,
                                         .component_separator = {'@'}};
@@ -194,7 +196,7 @@ int main(int argc, char **argv)
   {
     struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                        .entity_id           = blocks[1].id,
-                                       .name                = "User",
+                                       .name                = "Species",
                                        .type                = {EX_FIELD_TYPE_USER_DEFINED},
                                        .nesting             = 1,
                                        .cardinality         = {4},

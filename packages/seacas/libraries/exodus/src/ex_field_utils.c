@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -14,7 +14,8 @@
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
 
-#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) || defined(__INTEL_LLVM_COMPILER)
+#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) ||                             \
+    defined(__INTEL_LLVM_COMPILER)
 #if !defined(strsep)
 char *strsep(char **stringp, const char *delim)
 {
@@ -88,12 +89,12 @@ const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_
   return field_name;
 }
 
-int ex_initialize_basis_struct(ex_basis *basis, int cardinality)
+int ex_initialize_basis_struct(ex_basis *basis, int mode)
 {
-  // Cardinality - 0 -- initialize struct to empty
-  // Cardinality > 0 -- allocate memory for dynamically sized fields.
-  // Cardinality < 0 -- deallocate memory for dynamically sized fields.
-  if (cardinality > 0) {
+  // Mode - 0 -- initialize struct to empty
+  // Mode > 0 -- allocate memory for dynamically sized fields.
+  // Mode < 0 -- deallocate memory for dynamically sized fields.
+  if (mode > 0) {
     basis->subc_dim         = calloc(basis->cardinality, sizeof(int));
     basis->subc_ordinal     = calloc(basis->cardinality, sizeof(int));
     basis->subc_dof_ordinal = calloc(basis->cardinality, sizeof(int));
@@ -107,7 +108,7 @@ int ex_initialize_basis_struct(ex_basis *basis, int cardinality)
       return EX_FATAL;
     }
   }
-  if (cardinality < 0) {
+  if (mode < 0) {
     free(basis->subc_dim);
     free(basis->subc_ordinal);
     free(basis->subc_dof_ordinal);
@@ -117,7 +118,7 @@ int ex_initialize_basis_struct(ex_basis *basis, int cardinality)
     free(basis->zeta);
   }
   /* Fall through if `cardinality < 0` */
-  if (cardinality <= 0) {
+  if (mode <= 0) {
     basis->name[0]          = '\0';
     basis->cardinality      = 0;
     basis->subc_dim         = NULL;

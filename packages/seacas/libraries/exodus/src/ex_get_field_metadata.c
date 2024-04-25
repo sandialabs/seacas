@@ -18,10 +18,11 @@
    NetCDF library or used by the exodus library internally.
 */
 
-static void ex__field_initialize(ex_field *field)
+static void exi_field_initialize(ex_field *field)
 {
-  field->name[0] = '\0';
-  field->nesting = 0;
+  field->name[0]      = '\0';
+  field->type_name[0] = '\0';
+  field->nesting      = 0;
   for (int i = 0; i < EX_MAX_FIELD_NESTING; i++) {
     field->type[i]                = EX_FIELD_TYPE_INVALID;
     field->cardinality[i]         = 0;
@@ -30,15 +31,29 @@ static void ex__field_initialize(ex_field *field)
   field->suffices[0] = '\0';
 }
 
-static const char *ex__get_field_metadata_attribute(char *name)
+static void exi_basis_initialize(ex_basis *basis)
+{
+  basis->name[0]          = '\0';
+  basis->cardinality      = 0;
+  basis->subc_dim         = NULL;
+  basis->subc_ordinal     = NULL;
+  basis->subc_dof_ordinal = NULL;
+  basis->subc_num_dof     = NULL;
+  basis->xi               = NULL;
+  basis->eta              = NULL;
+  basis->zeta             = NULL;
+}
+
+static const char *exi_get_metadata_attribute(char *name, char *prefix, int pre_len)
 {
   /*
-   * Each field attribute metadata attribute consists of 2 or more attributes.
-   * Return the string corresponding to {type} in an attribute of the form "Field@{name}@{type}".
+   * Each field or basis attribute metadata attribute consists of 2 or more attributes.
+   * Return the string corresponding to {type} in an attribute of the form "Field@{name}@{type}"
+   * or "Basis@{name}@{type}".
    */
 
-  if (strncmp(name, "Field@", 6) == 0) {
-    /* Return true if the passed in string ends with "@type" */
+  if (strncmp(name, prefix, pre_len) == 0) {
+    /* Return the suffix (if any) following the last "@" */
     char *suffix = strrchr(name, '@');
     if (suffix != NULL) {
       suffix++;
@@ -48,11 +63,11 @@ static const char *ex__get_field_metadata_attribute(char *name)
   return NULL;
 }
 
-static const char *ex__get_field_metadata_name(char *attrib)
+static const char *exi_get_attribute_metadata_name(char *attrib)
 {
   /*
-   * PRECONDITION: `attrib` is a field metadata attribute of the form
-   * "Field@{name}@{type}"
+   * PRECONDITION: `attrib` is a basis or field metadata attribute of the form
+   * "Basis@{name}@{type}" or "Field@{name}@{type}" (NOTE: 'basis' and 'field' are same length)
    *
    * Returns the `{name}` portion in `name`
    */
@@ -64,7 +79,7 @@ static const char *ex__get_field_metadata_name(char *attrib)
   return name;
 }
 
-static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id, int *varid)
+static int exi_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id, int *varid)
 {
   int att_count = 0;
   int status;
@@ -103,7 +118,7 @@ int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id
   EX_FUNC_ENTER();
 
   int varid;
-  int att_count = ex__get_attribute_count(exoid, obj_type, id, &varid);
+  int att_count = exi_get_attribute_count(exoid, obj_type, id, &varid);
   if (att_count < 0) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Negative attribute count (%d) on %s with id %" PRId64,
@@ -125,7 +140,7 @@ int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    const char *type = ex__get_field_metadata_attribute(name);
+    const char *type = exi_get_metadata_attribute(name, "Field@", 6);
     if (type != NULL && strcmp("type", type) == 0) {
       count++;
     }
@@ -139,7 +154,7 @@ int ex_get_field_metadata(int exoid, ex_field *field)
   EX_FUNC_ENTER();
 
   int varid;
-  int att_count = ex__get_attribute_count(exoid, field->entity_type, field->entity_id, &varid);
+  int att_count = exi_get_attribute_count(exoid, field->entity_type, field->entity_id, &varid);
   if (att_count < 0) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Negative attribute count (%d) on %s with id %" PRId64,
@@ -162,16 +177,16 @@ int ex_get_field_metadata(int exoid, ex_field *field)
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    const char *fld_type = ex__get_field_metadata_attribute(attr_name);
+    const char *fld_type = exi_get_metadata_attribute(attr_name, "Field@", 6);
     if (fld_type != NULL) {
       /* Get the field name.  We know that the `name` is of the form "Field@{name}@{item}" */
-      const char *fld_name = ex__get_field_metadata_name(attr_name);
+      const char *fld_name = exi_get_attribute_metadata_name(attr_name);
 
       /* If this is the first time we have seen this `fld_name`, then increment count and store the
        * name */
       if (count < 0 || strcmp(field[count].name, fld_name) != 0) {
         count++;
-        ex__field_initialize(&field[count]);
+        exi_field_initialize(&field[count]);
         strcpy(field[count].name, fld_name);
       }
 
@@ -213,6 +228,9 @@ int ex_get_field_metadata(int exoid, ex_field *field)
           field[count].nesting = val_count;
         }
       }
+      else if (strcmp(fld_type, "type_name") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, field[count].type_name);
+      }
       else if (strcmp(fld_type, "suffices") == 0) {
         status = nc_get_att(exoid, varid, attr_name, field[count].suffices);
       }
@@ -239,11 +257,41 @@ int ex_get_field_metadata(int exoid, ex_field *field)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
-int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id entity_id,
-                          ex_basis *basis)
+int ex_get_basis_metadata_count(int exoid)
+{
+  EX_FUNC_ENTER();
+
+  int varid;
+  int att_count = exi_get_attribute_count(exoid, EX_GLOBAL, 0, &varid);
+  if (att_count < 0) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Negative attribute count (%d)", att_count);
+    ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  /* Get names of each attribute and see if it is a 'Basis metadata' name */
+  int count = 0;
+  for (int i = 0; i < att_count; i++) {
+    char name[EX_MAX_NAME + 1];
+    int  status;
+    if ((status = nc_inq_attname(exoid, varid, i, name)) != NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get attribute named %s", name);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+    const char *type = exi_get_metadata_attribute(name, "Basis@", 6);
+    if (type != NULL && strcmp("cardinality", type) == 0) {
+      count++;
+    }
+  }
+  EX_FUNC_LEAVE(count);
+}
+
+int ex_get_basis_metadata(int exoid, ex_basis *basis)
 {
   /*
-   * -- There is at most 1 basis definition on an entity.
    * -- If this function is called an there is no basis metadata on the
    *    entity, it will return EX_NOTFOUND; otherwise it will populate
    *    (portions of) `basis` and return EX_NOERR.
@@ -260,6 +308,114 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
    *      - if < value on database, error unless 0.
    *    - pointer members will be populated if non-NULL.
    */
+
+  EX_FUNC_ENTER();
+
+  int varid;
+  int att_count = exi_get_attribute_count(exoid, EX_GLOBAL, 0, &varid);
+  if (att_count < 0) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Negative attribute count (%d)", att_count);
+    ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  /* Iterate through each Basis metadata attribute and populate `basis` */
+  int count = -1;
+  for (int i = 0; i < att_count; i++) {
+    char attr_name[EX_MAX_NAME + 1];
+    int  status;
+    if ((status = nc_inq_attname(exoid, varid, i, attr_name)) != NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get attribute named %s", attr_name);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
+    if (strncmp("Basis@", attr_name, 6) != 0) {
+      continue;
+    }
+
+    const char *basis_type = exi_get_metadata_attribute(attr_name, "Basis@", 6);
+    if (basis_type != NULL) {
+      /* Get the basis name.  We know that the `name` is of the form "Basis@{name}@{item}" */
+      const char *basis_name = exi_get_attribute_metadata_name(attr_name);
+
+      /* If this is the first time we have seen this `basis_name`, then increment count and store
+       * the name */
+      if (count < 0 || strcmp(basis[count].name, basis_name) != 0) {
+        count++;
+        exi_basis_initialize(&basis[count]);
+        strcpy(basis[count].name, basis_name);
+      }
+
+#if 0
+      nc_type type;      /* integer, double, character, ... */
+      size_t  val_count; /* how many `type` values */
+      if ((status = nc_inq_att(exoid, varid, attr_name, &type, &val_count)) != NC_NOERR) {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to get parameters for attribute named %s on %s with id %" PRId64,
+                 attr_name, ex_name_of_object(entity_type), entity_id);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
+
+      if (strcmp(basis_type, "type") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, basis[count].type);
+        if (basis[count].nesting == 0) {
+          basis[count].nesting = val_count;
+        }
+        if (basis[count].type[0] == EX_FIELD_TYPE_USER_DEFINED && basis[count].nesting != 1) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: Invalid nesting for basis %s on %s with id %" PRId64
+                   ". Must be 1 for user-defined basis type.\n",
+                   basis[count].name, ex_name_of_object(entity_type), entity_id);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
+      }
+      else if (strcmp(fld_type, "separator") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, basis[count].component_separator);
+        if (basis[count].nesting == 0) {
+          basis[count].nesting = val_count;
+        }
+      }
+      else if (strcmp(fld_type, "cardinality") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, basis[count].cardinality);
+        if (basis[count].nesting == 0) {
+          basis[count].nesting = val_count;
+        }
+      }
+      else if (strcmp(fld_type, "type_name") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, basis[count].type_name);
+      }
+      else if (strcmp(fld_type, "suffices") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, basis[count].suffices);
+      }
+      else {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(
+            errmsg, MAX_ERR_LENGTH,
+            "ERROR: Invalid basis metadata attribute type %s on basis %s",
+            fld_type, fld_name, );
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
+      if (status != NC_NOERR) {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to read basis metadata attribute type %s on basis %s",
+                 fld_type, fld_name);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
+#endif
+    }
+  }
+  EX_FUNC_LEAVE(EX_NOERR);
+#if 0
 
   int  status;
   char errmsg[MAX_ERR_LENGTH];
@@ -350,4 +506,5 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
   }
 
   return EX_NOERR;
+#endif
 }
