@@ -162,6 +162,7 @@ int main(int argc, char **argv)
     int    subc_num_dof[]     = {1, 1, 1, 1, 1, 1, 1, 1, 1};
     double xi[]               = {-1.0, 1.0, 1.0, -1.0, 0.0, 1.0, 0.0, -1.0, 0.0};
     double eta[]              = {-1.0, -1.0, 1.0, 1.0, -1.0, 0.0, 1.0, 0.0, 0.0};
+    double zeta[]             = {1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0};
 
     struct ex_basis basis = (ex_basis){.name             = "HGRAD_QUAD_C2_FEM",
                                        .cardinality      = 9,
@@ -173,6 +174,18 @@ int main(int argc, char **argv)
                                        .eta              = eta,
                                        .zeta             = NULL};
     EXCHECK(ex_put_basis_metadata(exoid, basis));
+
+    struct ex_basis basis1 = (ex_basis){.name             = "TESTING_SECOND_BASIS",
+                                        .cardinality      = 3,
+                                        .subc_dim         = subc_dim,
+                                        .subc_ordinal     = subc_ordinal,
+                                        .subc_dof_ordinal = subc_dof_ordinal,
+                                        .subc_num_dof     = subc_num_dof,
+                                        .xi               = xi,
+                                        .eta              = eta,
+                                        .zeta             = zeta};
+
+    EXCHECK(ex_put_basis_metadata(exoid, basis1));
 
     struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                        .entity_id           = blocks[1].id,

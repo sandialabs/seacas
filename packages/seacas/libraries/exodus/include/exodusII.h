@@ -1308,7 +1308,7 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
                                    int             processor /**< This processor ID */
 );
 
-EXODUS_EXPORT int         ex_initialize_basis_struct(ex_basis *basis, int mode);
+EXODUS_EXPORT int         ex_initialize_basis_struct(ex_basis *basis, size_t num_basis, int mode);
 EXODUS_EXPORT const char *ex_component_field_name(ex_field *field,
                                                   int       component[EX_MAX_FIELD_NESTING]);
 EXODUS_EXPORT const char *ex_field_component_suffix(ex_field *field, int nest_level, int component);

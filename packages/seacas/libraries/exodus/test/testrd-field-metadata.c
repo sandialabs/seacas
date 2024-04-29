@@ -39,16 +39,37 @@ static void get_field_cardinality(ex_field *field, ex_basis *basis, int bas_cnt)
   }
 }
 
-static void print_basis_metadata(ex_basis *basis)
+static void print_basis_metadata(ex_basis *basis, size_t num_basis)
 {
-  fprintf(stderr, "\n");
-  fprintf(stderr, "Basis Metadata: Name: %s, Cardinality: %d\n", basis->name, basis->cardinality);
-  fprintf(stderr,
-          "ordinal,\t subc:  _dim\t_ordinal\t_dof_ordinal\t_num_dof\t xi      eta     zeta\n");
-  for (int i = 0; i < basis->cardinality; i++) {
-    fprintf(stderr, "%8d\t%8d\t%8d\t%8d\t%8d\t%6.3f\t%6.3f\t%6.3f\n", i, basis->subc_dim[i],
-            basis->subc_ordinal[i], basis->subc_dof_ordinal[i], basis->subc_num_dof[i],
-            basis->xi[i], basis->eta[i], basis->zeta[i]);
+  for (size_t j = 0; j < num_basis; j++) {
+    fprintf(stderr, "\nBasis Metadata: Name: %s, Cardinality: %d\n", basis[j].name,
+            basis[j].cardinality);
+    fprintf(stderr,
+            "ordinal,\t subc:  _dim\t_ordinal\t_dof_ordinal\t_num_dof\t xi      eta     zeta\n");
+    for (int i = 0; i < basis[j].cardinality; i++) {
+      fprintf(stderr, "%8d\t%8d\t%8d\t%8d\t%8d\t%6.3f\t%6.3f\t%6.3f\n", i, basis[j].subc_dim[i],
+              basis[j].subc_ordinal[i], basis[j].subc_dof_ordinal[i], basis[j].subc_num_dof[i],
+              basis[j].xi[i], basis[j].eta[i], basis[j].zeta[i]);
+    }
+  }
+}
+
+static char *get_basis_type(char *type_name, size_t which)
+{
+  if (type_name[0] != '\0') {
+    char *string = strdup(type_name);
+    char *tofree = string;
+    char *token  = strsep(&string, ",");
+    for (int i = 0; i < which; i++) {
+      token = strsep(&string, ",");
+    }
+    if (token != NULL) {
+      static char basis_type[256 + 1];
+      ex_copy_string(basis_type, token, 256);
+      free(tofree);
+      return basis_type;
+    }
+    free(tofree);
   }
 }
 
@@ -57,9 +78,17 @@ static void print_field_metadata(ex_field *field)
   fprintf(stderr, "\n");
   fprintf(stderr, "Field Metadata: Name: %s, Nesting: %d\n", field->name, field->nesting);
   for (int j = 0; j < field->nesting; j++) {
-    char sep = field->component_separator[j] == 0 ? ' ' : field->component_separator[j];
-    fprintf(stderr, "\tNesting level: %d, Type: %s, Cardinality: %d, Separator: \"%c\"\n", j,
-            ex_field_type_enum_to_string(field->type[j]), field->cardinality[j], sep);
+    char  sep        = field->component_separator[j] == 0 ? ' ' : field->component_separator[j];
+    char *basis_type = NULL;
+    if (field->type[j] == EX_BASIS) {
+      basis_type = get_basis_type(field->type_name, j);
+      fprintf(stderr, "\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
+              ex_field_type_enum_to_string(field->type[j]), basis_type, field->cardinality[j], sep);
+    }
+    else {
+      fprintf(stderr, "\tNesting level: %d, Type: %s, Cardinality: %d, Separator: \"%c\"\n", j,
+              ex_field_type_enum_to_string(field->type[j]), field->cardinality[j], sep);
+    }
     if (field->type[0] == EX_FIELD_TYPE_USER_DEFINED) {
       fprintf(stderr, "\tUser-defined suffices: %s\n", field->suffices);
     }
@@ -151,17 +180,17 @@ int main(int argc, char **argv)
   }
   // ------------------------------------------------------------------------
   int bas_cnt = ex_get_basis_metadata_count(exoid);
-  assert(bas_cnt == 1);
-  struct ex_basis basis[1];
-  EXCHECK(ex_initialize_basis_struct(&basis[0], 0));
+  assert(bas_cnt == 2);
+  struct ex_basis basis[2];
+  EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, 0));
   EXCHECK(ex_get_basis_metadata(exoid, basis));
 
   /*
    * Now, allocate memory for all pointer members of basis and call to populate...
    */
-  EXCHECK(ex_initialize_basis_struct(&basis[0], 1));
+  EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, 1));
   EXCHECK(ex_get_basis_metadata(exoid, basis));
-  print_basis_metadata(&basis[0]);
+  print_basis_metadata(basis, 2);
 
   {
     int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 11);
@@ -179,7 +208,7 @@ int main(int argc, char **argv)
   }
 
   // Now, deallocate any memory allocated on the `basis` struct.
-  EXCHECK(ex_initialize_basis_struct(&basis[0], -1));
+  EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, -1));
 
   int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 12);
   assert(fld_cnt == 0);

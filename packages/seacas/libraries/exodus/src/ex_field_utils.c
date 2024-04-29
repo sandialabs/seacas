@@ -89,45 +89,51 @@ const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_
   return field_name;
 }
 
-int ex_initialize_basis_struct(ex_basis *basis, int mode)
+int ex_initialize_basis_struct(ex_basis *basis, size_t num_basis, int mode)
 {
   // Mode - 0 -- initialize struct to empty
   // Mode > 0 -- allocate memory for dynamically sized fields.
   // Mode < 0 -- deallocate memory for dynamically sized fields.
   if (mode > 0) {
-    basis->subc_dim         = calloc(basis->cardinality, sizeof(int));
-    basis->subc_ordinal     = calloc(basis->cardinality, sizeof(int));
-    basis->subc_dof_ordinal = calloc(basis->cardinality, sizeof(int));
-    basis->subc_num_dof     = calloc(basis->cardinality, sizeof(int));
-    basis->xi               = calloc(basis->cardinality, sizeof(double));
-    basis->eta              = calloc(basis->cardinality, sizeof(double));
-    basis->zeta             = calloc(basis->cardinality, sizeof(double));
-    if (basis->subc_dim == NULL || basis->subc_ordinal == NULL || basis->subc_dof_ordinal == NULL ||
-        basis->subc_num_dof == NULL || basis->xi == NULL || basis->eta == NULL ||
-        basis->zeta == NULL) {
-      return EX_FATAL;
+    for (size_t i = 0; i < num_basis; i++) {
+      basis[i].subc_dim         = calloc(basis[i].cardinality, sizeof(int));
+      basis[i].subc_ordinal     = calloc(basis[i].cardinality, sizeof(int));
+      basis[i].subc_dof_ordinal = calloc(basis[i].cardinality, sizeof(int));
+      basis[i].subc_num_dof     = calloc(basis[i].cardinality, sizeof(int));
+      basis[i].xi               = calloc(basis[i].cardinality, sizeof(double));
+      basis[i].eta              = calloc(basis[i].cardinality, sizeof(double));
+      basis[i].zeta             = calloc(basis[i].cardinality, sizeof(double));
+      if (basis[i].subc_dim == NULL || basis[i].subc_ordinal == NULL ||
+          basis[i].subc_dof_ordinal == NULL || basis[i].subc_num_dof == NULL ||
+          basis[i].xi == NULL || basis[i].eta == NULL || basis[i].zeta == NULL) {
+        return EX_FATAL;
+      }
     }
   }
   if (mode < 0) {
-    free(basis->subc_dim);
-    free(basis->subc_ordinal);
-    free(basis->subc_dof_ordinal);
-    free(basis->subc_num_dof);
-    free(basis->xi);
-    free(basis->eta);
-    free(basis->zeta);
+    for (size_t i = 0; i < num_basis; i++) {
+      free(basis[i].subc_dim);
+      free(basis[i].subc_ordinal);
+      free(basis[i].subc_dof_ordinal);
+      free(basis[i].subc_num_dof);
+      free(basis[i].xi);
+      free(basis[i].eta);
+      free(basis[i].zeta);
+    }
   }
   /* Fall through if `cardinality < 0` */
   if (mode <= 0) {
-    basis->name[0]          = '\0';
-    basis->cardinality      = 0;
-    basis->subc_dim         = NULL;
-    basis->subc_ordinal     = NULL;
-    basis->subc_dof_ordinal = NULL;
-    basis->subc_num_dof     = NULL;
-    basis->xi               = NULL;
-    basis->eta              = NULL;
-    basis->zeta             = NULL;
+    for (size_t i = 0; i < num_basis; i++) {
+      basis[i].name[0]          = '\0';
+      basis[i].cardinality      = 0;
+      basis[i].subc_dim         = NULL;
+      basis[i].subc_ordinal     = NULL;
+      basis[i].subc_dof_ordinal = NULL;
+      basis[i].subc_num_dof     = NULL;
+      basis[i].xi               = NULL;
+      basis[i].eta              = NULL;
+      basis[i].zeta             = NULL;
+    }
   }
   return EX_NOERR;
 }
@@ -272,8 +278,8 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
         token = strsep(&string, ",");
       }
       if (token != NULL) {
-        static char user_suffix[32];
-        ex_copy_string(user_suffix, token, 256);
+        static char user_suffix[32 + 1];
+        ex_copy_string(user_suffix, token, 32);
         free(tofree);
         return user_suffix;
       }
