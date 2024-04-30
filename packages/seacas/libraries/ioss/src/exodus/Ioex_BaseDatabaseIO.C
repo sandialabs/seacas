@@ -23,6 +23,7 @@
 #include "Ioss_BasisVariableType.h"
 #include "Ioss_Blob.h"
 #include "Ioss_CodeTypes.h"
+#include "Ioss_ComposedVariableType.h"
 #include "Ioss_CompositeVariableType.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
@@ -207,29 +208,33 @@ namespace {
     // only the name and cardinality will be populated.
     ex_get_basis_metadata(exoid, Data(exo_basis));
 
-    // allocate memory for all pointer members of `basis`
-    ex_initialize_basis_struct(&exo_basis[0], 1);
+    // allocate memory for all pointer members of `basis` This will
+    // query the cardinality and then allocate the arrays to that
+    // size.
+    ex_initialize_basis_struct(&exo_basis[0], exo_basis.size(), 1);
+
+    // Now populate the array data...
     ex_get_basis_metadata(exoid, Data(exo_basis));
 
-    std::vector<Ioss::Basis> basies{};
-    basies.reserve(exo_basis[0].cardinality);
-    for (int i = 0; i < exo_basis[0].cardinality; i++) {
-      Ioss::Basis basis{exo_basis[0].subc_dim[i],
-                        exo_basis[0].subc_ordinal[i],
-                        exo_basis[0].subc_dof_ordinal[i],
-                        exo_basis[0].subc_num_dof[i],
-                        exo_basis[0].xi[i],
-                        exo_basis[0].eta[i],
-                        exo_basis[0].zeta[i]};
-      basies.push_back(basis);
+    for (size_t j = 0; j < exo_basis.size(); j++) {
+      Ioss::Basis basis;
+      for (int i = 0; i < exo_basis[j].cardinality; i++) {
+        Ioss::BasisComponent bc{exo_basis[j].subc_dim[i],
+                                exo_basis[j].subc_ordinal[i],
+                                exo_basis[j].subc_dof_ordinal[i],
+                                exo_basis[j].subc_num_dof[i],
+                                exo_basis[j].xi[i],
+                                exo_basis[j].eta[i],
+                                exo_basis[j].zeta[i]};
+        basis.basies.push_back(bc);
+      }
+      Ioss::VariableType::create_basis_field_type(exo_basis[j].name, basis);
     }
 
-    Ioss::VariableType::create_basis_field_type(exo_basis[0].name, basies);
-
     // deallocate any memory allocated in the 'basis' struct.
-    ex_initialize_basis_struct(&exo_basis[0], -1);
+    ex_initialize_basis_struct(&exo_basis[0], exo_basis.size(), -1);
 
-    return basies.size();
+    return bas_cnt;
   }
 } // namespace
 
@@ -2036,15 +2041,32 @@ namespace Ioex {
         exo_field.entity_type = type;
         exo_field.entity_id   = entity->get_optional_property("id", 0);
 
-        auto                              *storage = field.transformed_storage();
-        const Ioss::CompositeVariableType *composite =
-            dynamic_cast<const Ioss::CompositeVariableType *>(storage);
-        if (composite != nullptr) {
+        auto       *storage   = field.transformed_storage();
+        const auto *composite = dynamic_cast<const Ioss::CompositeVariableType *>(storage);
+        const auto *composed  = dynamic_cast<const Ioss::ComposedVariableType *>(storage);
+
+        if (composed != nullptr) {
           exo_field.nesting = 2;
 
-          exo_field.type[0]        = Ioex::map_ioss_field_type(composite->get_base_type()->name());
-          exo_field.cardinality[0] = composite->get_base_type()->component_count();
-          char separator0          = field.get_suffix_separator();
+          exo_field.type[0]                = Ioex::map_ioss_field_type(composed->get_base_type());
+          exo_field.cardinality[0]         = composed->get_base_type()->component_count();
+          char separator0                  = field.get_suffix_separator();
+          exo_field.component_separator[0] = separator0 == 1 ? '_' : separator0;
+
+          exo_field.type[1]                = EX_BASIS;
+          exo_field.cardinality[1]         = composed->get_secondary_type()->component_count();
+          char separator1                  = field.get_suffix_separator(1);
+          exo_field.component_separator[1] = separator1 == 1 ? '_' : separator1;
+          exo_field.type_name[0]           = ',';
+          Ioss::Utils::copy_string(&exo_field.type_name[1], composed->get_secondary_type()->name(),
+                                   EX_MAX_NAME);
+        }
+        else if (composite != nullptr) {
+          exo_field.nesting = 2;
+
+          exo_field.type[0]                = Ioex::map_ioss_field_type(composite->get_base_type());
+          exo_field.cardinality[0]         = composite->get_base_type()->component_count();
+          char separator0                  = field.get_suffix_separator();
           exo_field.component_separator[0] = separator0 == 1 ? '_' : separator0;
 
           exo_field.type[1]                = EX_FIELD_TYPE_SEQUENCE;
@@ -2054,25 +2076,28 @@ namespace Ioex {
         }
         else {
           exo_field.nesting = 1;
-          exo_field.type[0] = Ioex::map_ioss_field_type(storage->name());
+          exo_field.type[0] = Ioex::map_ioss_field_type(storage);
           if (exo_field.type[0] == EX_FIELD_TYPE_SEQUENCE) {
             exo_field.cardinality[0] = storage->component_count();
           }
-          if (exo_field.type[0] == EX_FIELD_TYPE_INVALID) {
-            // See if this is actuall a Ioss::NamedSuffixVariableType...
+          if (exo_field.type[0] == EX_BASIS) {
+            const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(storage);
+            assert(basis != nullptr);
+            exo_field.cardinality[0] = storage->component_count();
+            Ioss::Utils::copy_string(exo_field.type_name, basis->name());
+          }
+          if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
             auto nsvt = dynamic_cast<const Ioss::NamedSuffixVariableType *>(storage);
-            if (nsvt != nullptr) {
-              exo_field.type[0]        = EX_FIELD_TYPE_USER_DEFINED;
-              exo_field.cardinality[0] = nsvt->component_count();
-              std::string suffices{};
-              for (int i = 0; i < nsvt->component_count(); i++) {
-                if (i > 0) {
-                  suffices += ",";
-                }
-                suffices += nsvt->label(i + 1, 0);
+            assert(nsvt != nullptr);
+            exo_field.cardinality[0] = nsvt->component_count();
+            std::string suffices{};
+            for (int i = 0; i < nsvt->component_count(); i++) {
+              if (i > 0) {
+                suffices += ",";
               }
-              Ioss::Utils::copy_string(exo_field.suffices, suffices.c_str(), EX_MAX_NAME + 1);
+              suffices += nsvt->label(i + 1, 0);
             }
+            Ioss::Utils::copy_string(exo_field.suffices, suffices.c_str(), EX_MAX_NAME + 1);
           }
           char separator                   = field.get_suffix_separator();
           exo_field.component_separator[0] = separator == 1 ? '_' : separator;

@@ -131,25 +131,19 @@ namespace Ioss {
     return true;
   }
 
-  bool VariableType::create_basis_field_type(const std::string              &type_name,
-                                             const std::vector<Ioss::Basis> &bases)
+  bool VariableType::create_basis_field_type(const std::string &type_name, const Ioss::Basis &basis)
   {
-    size_t count = bases.size();
-    if (count < 1) {
-      return false;
-    }
-
     // See if the variable already exists...
     std::string basis_name = Utils::lowercase(type_name);
     if (registry().find(basis_name) != registry().end()) {
+      fmt::print("Basis {} exists.\n", type_name);
       return false;
     }
 
     // Create the variable.  Note that the 'true' argument means Ioss will delete
     // the pointer.
-    auto *var_type = new BasisVariableType(type_name, count, true);
-    var_type->add_basis(bases);
-
+    fmt::print("Basis {} created.\n", type_name);
+    new BasisVariableType(type_name, basis, true);
     return true;
   }
 

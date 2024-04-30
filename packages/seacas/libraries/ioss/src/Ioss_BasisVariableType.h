@@ -15,7 +15,7 @@
 #include "Ioss_VariableType.h"
 
 namespace Ioss {
-  struct Basis
+  struct BasisComponent
   {
     int    subc_dim;
     int    subc_ordinal;
@@ -24,6 +24,12 @@ namespace Ioss {
     double xi;
     double eta;
     double zeta;
+  };
+
+  struct Basis
+  {
+    size_t                      size() const { return basies.size(); }
+    std::vector<BasisComponent> basies;
   };
 
   class IOSS_EXPORT BasisVariableType : public VariableType
@@ -39,31 +45,24 @@ namespace Ioss {
       return VariableType::numeric_label(which - 1, component_count(), name());
     }
 
-    BasisVariableType(const std::string &my_name, int number_components, bool delete_me)
-        : Ioss::VariableType(my_name, number_components, delete_me), m_basis_type_(my_name)
+    BasisVariableType(const std::string &my_name, const Ioss::Basis &basis, bool delete_me)
+        : Ioss::VariableType(my_name, basis.size(), delete_me), m_basis_type_(my_name),
+          m_basis_(basis)
     {
-      m_basis_.resize(number_components);
     }
 
     BasisVariableType(const BasisVariableType &) = delete;
 
-    IOSS_NODISCARD std::vector<Ioss::Basis> get_basis() { return m_basis_; }
-    IOSS_NODISCARD Ioss::Basis get_basis(int which)
+    IOSS_NODISCARD const Ioss::Basis &get_basis() const { return m_basis_; }
+    IOSS_NODISCARD const Ioss::BasisComponent &get_basis_component(int which) const
     {
       assert(which > 0 && which <= component_count());
-      return m_basis_[which - 1];
+      return m_basis_.basies[which - 1];
     }
-
-    void add_basis(int which, const Ioss::Basis &basis)
-    {
-      assert(which > 0 && which <= component_count());
-      m_basis_[which - 1] = basis;
-    }
-    void add_basis(const std::vector<Ioss::Basis> &basis) { m_basis_ = basis; }
 
   private:
-    std::string              m_basis_type_{};
-    std::vector<Ioss::Basis> m_basis_{};
+    std::string m_basis_type_{};
+    Ioss::Basis m_basis_{};
   };
 } // namespace Ioss
 

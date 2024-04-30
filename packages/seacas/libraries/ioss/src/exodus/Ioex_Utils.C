@@ -18,11 +18,13 @@
 #include <netcdf.h>
 #include <tokenize.h>
 
+#include "Ioss_BasisVariableType.h"
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_Field.h"
 #include "Ioss_GroupingEntity.h"
+#include "Ioss_NamedSuffixVariableType.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "exodusII.h"
@@ -170,57 +172,68 @@ namespace Ioex {
     return "invalid";
   }
 
-  ex_field_type map_ioss_field_type(const std::string &type)
+  ex_field_type map_ioss_field_type(const Ioss::VariableType *type)
   {
-    if (type == "vector_2d")
+    if (type->name() == "vector_2d")
       return EX_VECTOR_2D;
-    if (type == "vector_3d")
+    if (type->name() == "vector_3d")
       return EX_VECTOR_3D;
-    if (type == "scalar")
+    if (type->name() == "scalar")
       return EX_SCALAR;
-    if (type == "vector_1d")
+    if (type->name() == "vector_1d")
       return EX_VECTOR_1D;
-    if (type == "quaternion_2d")
+    if (type->name() == "quaternion_2d")
       return EX_QUATERNION_2D;
-    if (type == "quaternion_3d")
+    if (type->name() == "quaternion_3d")
       return EX_QUATERNION_3D;
-    if (type == "full_tensor_36")
+    if (type->name() == "full_tensor_36")
       return EX_FULL_TENSOR_36;
-    if (type == "full_tensor_32")
+    if (type->name() == "full_tensor_32")
       return EX_FULL_TENSOR_32;
-    if (type == "full_tensor_22")
+    if (type->name() == "full_tensor_22")
       return EX_FULL_TENSOR_22;
-    if (type == "full_tensor_16")
+    if (type->name() == "full_tensor_16")
       return EX_FULL_TENSOR_16;
-    if (type == "full_tensor_12")
+    if (type->name() == "full_tensor_12")
       return EX_FULL_TENSOR_12;
-    if (type == "sym_tensor_33")
+    if (type->name() == "sym_tensor_33")
       return EX_SYM_TENSOR_33;
-    if (type == "sym_tensor_31")
+    if (type->name() == "sym_tensor_31")
       return EX_SYM_TENSOR_31;
-    if (type == "sym_tensor_21")
+    if (type->name() == "sym_tensor_21")
       return EX_SYM_TENSOR_21;
-    if (type == "sym_tensor_13")
+    if (type->name() == "sym_tensor_13")
       return EX_SYM_TENSOR_13;
-    if (type == "sym_tensor_11")
+    if (type->name() == "sym_tensor_11")
       return EX_SYM_TENSOR_11;
-    if (type == "sym_tensor_10")
+    if (type->name() == "sym_tensor_10")
       return EX_SYM_TENSOR_10;
-    if (type == "asym_tensor_03")
+    if (type->name() == "asym_tensor_03")
       return EX_ASYM_TENSOR_03;
-    if (type == "asym_tensor_02")
+    if (type->name() == "asym_tensor_02")
       return EX_ASYM_TENSOR_02;
-    if (type == "asym_tensor_01")
+    if (type->name() == "asym_tensor_01")
       return EX_ASYM_TENSOR_01;
-    if (type == "matrix_22")
+    if (type->name() == "matrix_22")
       return EX_MATRIX_2X2;
-    if (type == "matrix_33")
+    if (type->name() == "matrix_33")
       return EX_MATRIX_3X3;
-    if (type == "basis")
+    if (type->name() == "basis")
       return EX_BASIS;
 
-    if (Ioss::Utils::substr_equal("Real", type))
+    if (Ioss::Utils::substr_equal("Real", type->name()))
       return EX_FIELD_TYPE_SEQUENCE;
+
+    // This may be a basis, quadratur, or user type...
+    auto nsvt = dynamic_cast<const Ioss::NamedSuffixVariableType *>(type);
+    if (nsvt != nullptr) {
+      return EX_FIELD_TYPE_USER_DEFINED;
+    }
+    auto bvt = dynamic_cast<const Ioss::BasisVariableType *>(type);
+    if (bvt != nullptr) {
+      return EX_BASIS;
+    }
+
     return EX_FIELD_TYPE_INVALID;
   }
 
