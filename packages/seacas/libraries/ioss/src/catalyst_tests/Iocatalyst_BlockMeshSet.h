@@ -68,7 +68,13 @@ namespace Iocatalyst {
     void writeUnstructuredBlockDefinitions(IOSSparams &iop);
     void writeUnstructuredBlockBulkData(IOSSparams &iop);
     void writeUnstructuredTransientFieldDefinitions(IOSSparams &iop);
+    void writeUnstructuredAddedTransientFields(BlockMesh bm, IOSSparams &iop);
+    void writeUnstructuredAddedCellTransientFields(BlockMesh bm, IOSSparams &iop);
+    void writeUnstructuredAddedPointTransientFields(BlockMesh bm, IOSSparams &iop);
     void writeUnstructuredTransientBulkData(IOSSparams &iop);
+    void writeUnstructuredAddedTransientFieldsBulkData(BlockMesh bm, IOSSparams &iop);
+    void writeUnstructuredAddedCellTransientFieldsBulkData(BlockMesh bm, IOSSparams &iop);
+    void writeUnstructuredAddedPointTransientFieldsBulkData(BlockMesh bm, IOSSparams &iop);
 
     void saveConduitNode(IOSSparams &iop);
 
