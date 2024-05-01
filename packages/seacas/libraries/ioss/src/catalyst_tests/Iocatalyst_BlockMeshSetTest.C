@@ -47,5 +47,4 @@ TEST_F(Iocatalyst_DatabaseIOTest, AddTransientFieldToBlockMesh)
       "AddTransientFieldToBlockMesh" + CATALYST_TEST_FILE_NP + std::to_string(part.size) + EXODUS_FILE_EXTENSION;
   Iocatalyst::BlockMeshSet::IOSSparams iop(exodusFileName, EXODUS_DATABASE_TYPE);
   bmSet.writeIOSSFile(iop);
-  //Add EXPECT clause here. Check file exists, grep stuff, check size, etc.
 }

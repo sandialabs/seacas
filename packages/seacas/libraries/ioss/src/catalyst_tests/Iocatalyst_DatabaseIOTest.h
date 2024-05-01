@@ -25,10 +25,17 @@ protected:
 
   bool regionsAreEqual(const std::string &fileName, const std::string &catFileName,
                        const std::string &iossDatabaseType);
+  
+  bool regionsAreEqualCatalystAndIoss(const std::string &fileName,
+                                      Ioss::DatabaseIO &cat_d,
+                                      const std::string &iossDatabaseType);
 
   void runStructuredTest(const std::string &testName);
 
   void runUnstructuredTest(const std::string &testName);
+
+  void runCatalystDbReadUnstructuredTest(const std::string &testName,
+                                          Ioss::PropertyManager dbProps = {});
 
   void checkZeroCopyFields(Iocatalyst::BlockMeshSet::IOSSparams &iop);
 

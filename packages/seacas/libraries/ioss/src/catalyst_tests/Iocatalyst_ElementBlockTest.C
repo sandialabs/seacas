@@ -59,3 +59,52 @@ TEST_F(Iocatalyst_DatabaseIOTest, WriteThreeElementBlocksWith835Cells)
 
   runUnstructuredTest("test_eb_3_cells_835");
 }
+
+TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION)
+{
+  Iocatalyst::BlockMesh bm;
+  setBlockMeshSize(2, 2, 2);
+
+  bm.addTransientCellField("foo_x", 2);
+  bm.addTransientCellField("foo_y", 3);
+  bm.addTransientCellField("foo_z", 4);
+
+
+  addBlockMesh(bm);
+  runCatalystDbReadUnstructuredTest("test_eb_1_enable_field_recog");
+}
+
+/*
+TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS)
+{
+  Iocatalyst::BlockMesh bm;
+  setBlockMeshSize(2, 2, 2);
+
+
+
+  addBlockMesh(bm);
+  runUnstructuredTest("test_eb_1_ignore_realn_fields");
+}
+
+TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
+{
+  Iocatalyst::BlockMesh bm;
+  setBlockMeshSize(2, 2, 2);
+
+
+
+  addBlockMesh(bm);
+  runUnstructuredTest("test_eb_1_field_suf_sep");
+}
+
+TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
+{
+  Iocatalyst::BlockMesh bm;
+  setBlockMeshSize(2, 2, 2);
+
+  
+
+  addBlockMesh(bm);
+  runUnstructuredTest("test_eb_1_field_strip_tr_unders");
+}
+*/

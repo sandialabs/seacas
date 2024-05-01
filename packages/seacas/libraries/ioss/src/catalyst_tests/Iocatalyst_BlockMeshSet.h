@@ -27,7 +27,7 @@ namespace Iocatalyst {
     {
     public:
       IOSSparams(const std::string &fileName, const std::string &dbType)
-          : fileName(fileName), dbType(dbType), databaseIO(nullptr), isCatalyst(false)
+          : fileName(fileName), dbType(dbType), databaseIO(nullptr), isCatalyst(false), dbProps({})
       {
       }
       bool              isStructured() { return dbType == CGNS_DATABASE_TYPE; }
@@ -39,6 +39,7 @@ namespace Iocatalyst {
       bool              isCatalyst;
       std::unique_ptr<Ioss::Region> region;
       conduit_cpp::Node             conduitNode;
+      Ioss::PropertyManager         dbProps;
 
     private:
       IOSSparams();
@@ -47,6 +48,7 @@ namespace Iocatalyst {
     void addBlockMesh(const BlockMesh &blockMesh);
     void writeIOSSFile(IOSSparams &iop);
     void writeCatalystIOSSFile(IOSSparams &iop);
+    Ioss::DatabaseIO* getCatalystDatabase(IOSSparams &iop);
     int  getNumLocalPointsInMeshSet();
 
   private:
