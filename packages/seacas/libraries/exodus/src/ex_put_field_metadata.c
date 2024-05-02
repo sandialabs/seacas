@@ -9,12 +9,12 @@
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 
-static int exi_print_basis_error(int status, const char *name, const char *attribute, int exoid,
-                                 const char *func)
+static int exi_print_type_error(int status, const char *name, const char *type,
+                                const char *attribute, int exoid, const char *func)
 {
   char errmsg[MAX_ERR_LENGTH];
-  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store '%s' for basis '%s' in file id %d",
-           attribute, name, exoid);
+  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store '%s' for %s '%s' in file id %d",
+           attribute, type, name, exoid);
   ex_err_fn(exoid, func, errmsg, status);
   return EX_FATAL;
 }
@@ -109,24 +109,36 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   return EX_NOERR;
 }
 
-int exi_put_basis_attribute(int exoid, const char *basis_name, const char *type, ex_type value_type,
-                            int cardinality, const void *basis_entry)
+int exi_put_type_attribute(int exoid, const char *att_root, const char *name, const char *type,
+                           ex_type value_type, int cardinality, const void *entry)
 {
   int status = EX_NOERR;
-  if (basis_entry != NULL) {
-    static char *basis_template = "Basis@%s@%s";
-    char         attribute_name[NC_MAX_NAME + 1];
-    sprintf(attribute_name, basis_template, basis_name, type);
+  if (entry != NULL) {
+    static char *template = "%s@%s@%s";
+    char attribute_name[NC_MAX_NAME + 1];
+    sprintf(attribute_name, template, att_root, name, type);
     if (value_type == EX_INTEGER) {
-      status =
-          ex_put_integer_attribute(exoid, EX_GLOBAL, 0, attribute_name, cardinality, basis_entry);
+      status = ex_put_integer_attribute(exoid, EX_GLOBAL, 0, attribute_name, cardinality, entry);
     }
     else if (value_type == EX_DOUBLE) {
-      status =
-          ex_put_double_attribute(exoid, EX_GLOBAL, 0, attribute_name, cardinality, basis_entry);
+      status = ex_put_double_attribute(exoid, EX_GLOBAL, 0, attribute_name, cardinality, entry);
     }
   }
   return status;
+}
+
+int exi_put_basis_attribute(int exoid, const char *basis_name, const char *type, ex_type value_type,
+                            int cardinality, const void *basis_entry)
+{
+  return exi_put_type_attribute(exoid, "Basis", basis_name, type, value_type, cardinality,
+                                basis_entry);
+}
+
+int exi_put_quad_attribute(int exoid, const char *quad_name, const char *type, ex_type value_type,
+                           int cardinality, const void *quad_entry)
+{
+  return exi_put_type_attribute(exoid, "Quad", quad_name, type, value_type, cardinality,
+                                quad_entry);
 }
 
 int ex_put_basis_metadata(int exoid, const ex_basis basis)
@@ -148,47 +160,89 @@ int ex_put_basis_metadata(int exoid, const ex_basis basis)
   int status;
   if ((status = exi_put_basis_attribute(exoid, basis.name, "cardinality", EX_INTEGER, 1,
                                         &basis.cardinality)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "cardinality", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "cardinality", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_dim", EX_INTEGER,
                                         basis.cardinality, basis.subc_dim)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "subc_dim", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "subc_dim", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_ordinal", EX_INTEGER,
                                         basis.cardinality, basis.subc_ordinal)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "subc_ordinal", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "subc_ordinal", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_dof_ordinal", EX_INTEGER,
                                         basis.cardinality, basis.subc_dof_ordinal)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "subc_dof_ordinal", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "subc_dof_ordinal", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_num_dof", EX_INTEGER,
                                         basis.cardinality, basis.subc_num_dof)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "subc_num_dof", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "subc_num_dof", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "xi", EX_DOUBLE, basis.cardinality,
                                         basis.xi)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "xi", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "xi", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "eta", EX_DOUBLE, basis.cardinality,
                                         basis.eta)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "eta", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "eta", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "zeta", EX_DOUBLE, basis.cardinality,
                                         basis.zeta)) != EX_NOERR) {
-    return exi_print_basis_error(status, basis.name, "zeta", exoid, __func__);
+    return exi_print_type_error(status, basis.name, "basis", "zeta", exoid, __func__);
   }
   return EX_NOERR;
 }
 
-int ex_put_quadrature_metadata(int exoid, const ex_quadrature field) { return EX_FATAL; }
+int ex_put_quadrature_metadata(int exoid, const ex_quadrature quad)
+{
+  /*
+   * typedef struct ex_quad {
+   * char    name[EX_MAX_NAME + 1];
+   * int     cardinality; -- number of `quad` points == dimension of non-null subc_*, xi, eta, zeta
+   * int    *subc_dim;
+   * int    *subc_ordinal;
+   * int    *subc_dof_ordinal;
+   * int    *subc_num_dof;
+   * double *xi;
+   * double *eta;
+   * double *zeta;
+   *  } ex_quad;
+   */
+
+  int status;
+  if ((status = exi_put_quad_attribute(exoid, quad.name, "cardinality", EX_INTEGER, 1,
+                                       &quad.cardinality)) != EX_NOERR) {
+    return exi_print_type_error(status, quad.name, "quad", "cardinality", exoid, __func__);
+  }
+
+  if ((status = exi_put_quad_attribute(exoid, quad.name, "xi", EX_DOUBLE, quad.cardinality,
+                                       quad.xi)) != EX_NOERR) {
+    return exi_print_type_error(status, quad.name, "quad", "xi", exoid, __func__);
+  }
+
+  if ((status = exi_put_quad_attribute(exoid, quad.name, "eta", EX_DOUBLE, quad.cardinality,
+                                       quad.eta)) != EX_NOERR) {
+    return exi_print_type_error(status, quad.name, "quad", "eta", exoid, __func__);
+  }
+
+  if ((status = exi_put_quad_attribute(exoid, quad.name, "zeta", EX_DOUBLE, quad.cardinality,
+                                       quad.zeta)) != EX_NOERR) {
+    return exi_print_type_error(status, quad.name, "quad", "zeta", exoid, __func__);
+  }
+
+  if ((status = exi_put_quad_attribute(exoid, quad.name, "weight", EX_DOUBLE, quad.cardinality,
+                                       quad.weight)) != EX_NOERR) {
+    return exi_print_type_error(status, quad.name, "quad", "weight", exoid, __func__);
+  }
+  return EX_NOERR;
+}
 
 int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices)
 {

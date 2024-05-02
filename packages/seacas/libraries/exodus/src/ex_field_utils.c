@@ -138,6 +138,43 @@ int ex_initialize_basis_struct(ex_basis *basis, size_t num_basis, int mode)
   return EX_NOERR;
 }
 
+int ex_initialize_quadrature_struct(ex_quadrature *quad, size_t num_quad, int mode)
+{
+  // Mode - 0 -- initialize struct to empty
+  // Mode > 0 -- allocate memory for dynamically sized fields.
+  // Mode < 0 -- deallocate memory for dynamically sized fields.
+  if (mode > 0) {
+    for (size_t i = 0; i < num_quad; i++) {
+      quad[i].xi     = calloc(quad[i].cardinality, sizeof(double));
+      quad[i].eta    = calloc(quad[i].cardinality, sizeof(double));
+      quad[i].zeta   = calloc(quad[i].cardinality, sizeof(double));
+      quad[i].weight = calloc(quad[i].cardinality, sizeof(double));
+      if (quad[i].xi == NULL || quad[i].eta == NULL || quad[i].zeta == NULL ||
+          quad[i].weight == NULL) {
+        return EX_FATAL;
+      }
+    }
+  }
+  if (mode < 0) {
+    for (size_t i = 0; i < num_quad; i++) {
+      free(quad[i].xi);
+      free(quad[i].eta);
+      free(quad[i].zeta);
+      free(quad[i].weight);
+    }
+  }
+  /* Fall through if `cardinality < 0` */
+  if (mode <= 0) {
+    for (size_t i = 0; i < num_quad; i++) {
+      quad[i].xi     = NULL;
+      quad[i].eta    = NULL;
+      quad[i].zeta   = NULL;
+      quad[i].weight = NULL;
+    }
+  }
+  return EX_NOERR;
+}
+
 const char *ex_field_component_suffix(ex_field *field, int nest_level, int component)
 {
 #define X "X"
@@ -288,6 +325,17 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     return "invalid";
   }
   case EX_FIELD_TYPE_SEQUENCE: {
+    // Suffices are just 1...#components.
+    static char user_suffix[32];
+    static char format[8];
+    int         width = number_width(field->cardinality[nest_level]);
+    sprintf(format, "%c%d%dd", '%', 0, width);
+    sprintf(user_suffix, format, component);
+    return user_suffix;
+  }
+
+  case EX_BASIS:
+  case EX_QUADRATURE: {
     // Suffices are just 0...#components-1.
     static char user_suffix[32];
     static char format[8];
@@ -297,16 +345,6 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     return user_suffix;
   }
 
-  case EX_BASIS: {
-    // Suffices are just 0...#components-1.
-    static char user_suffix[32];
-    static char format[8];
-    int         width = number_width(field->cardinality[nest_level]);
-    sprintf(format, "%c%d%dd", '%', 0, width);
-    sprintf(user_suffix, format, component - 1);
-    return user_suffix;
-  }
-  case EX_QUADRATURE:
   case EX_SCALAR:
   case EX_FIELD_TYPE_INVALID:
   default: return "invalid";

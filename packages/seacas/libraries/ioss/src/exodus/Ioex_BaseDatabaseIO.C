@@ -48,6 +48,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_QuadratureVariableType.h"
 #include "Ioss_Region.h"
 #include "Ioss_SerializeIO.h"
 #include "Ioss_SideBlock.h"
@@ -204,38 +205,72 @@ namespace {
     auto                  bas_cnt = ex_get_basis_metadata_count(exoid);
     std::vector<ex_basis> exo_basis(bas_cnt);
 
-    // In this call, since the struct is initialized to all zero and NULL,
-    // only the name and cardinality will be populated.
+    // In this call, since the `ex_basis` structs are initialized to
+    // all zero and NULL, only the name and cardinality will be
+    // populated.
     ex_get_basis_metadata(exoid, Data(exo_basis));
 
-    // allocate memory for all pointer members of `basis` This will
-    // query the cardinality and then allocate the arrays to that
-    // size.
+    // allocate memory for all pointer members of `ex_basis`
+    // structs. This will query the cardinality and then allocate the
+    // arrays to that size.
     ex_initialize_basis_struct(&exo_basis[0], exo_basis.size(), 1);
 
     // Now populate the array data...
     ex_get_basis_metadata(exoid, Data(exo_basis));
 
-    for (size_t j = 0; j < exo_basis.size(); j++) {
+    for (const auto &ebasis : exo_basis) {
       Ioss::Basis basis;
-      for (int i = 0; i < exo_basis[j].cardinality; i++) {
-        Ioss::BasisComponent bc{exo_basis[j].subc_dim[i],
-                                exo_basis[j].subc_ordinal[i],
-                                exo_basis[j].subc_dof_ordinal[i],
-                                exo_basis[j].subc_num_dof[i],
-                                exo_basis[j].xi[i],
-                                exo_basis[j].eta[i],
-                                exo_basis[j].zeta[i]};
+      for (int i = 0; i < ebasis.cardinality; i++) {
+        Ioss::BasisComponent bc{
+            ebasis.subc_dim[i],     ebasis.subc_ordinal[i], ebasis.subc_dof_ordinal[i],
+            ebasis.subc_num_dof[i], ebasis.xi[i],           ebasis.eta[i],
+            ebasis.zeta[i]};
         basis.basies.push_back(bc);
       }
-      Ioss::VariableType::create_basis_field_type(exo_basis[j].name, basis);
+      Ioss::VariableType::create_basis_field_type(ebasis.name, basis);
     }
 
-    // deallocate any memory allocated in the 'basis' struct.
+    // deallocate any memory allocated in the 'ex_basis' structs.
     ex_initialize_basis_struct(&exo_basis[0], exo_basis.size(), -1);
 
     return bas_cnt;
   }
+
+  int read_exodus_quadrature(int exoid)
+  {
+    auto                       quad_cnt = ex_get_quadrature_metadata_count(exoid);
+    std::vector<ex_quadrature> exo_quadrature(quad_cnt);
+
+    // In this call, since the `ex_quadrature` structs are initialized to
+    // all zero and NULL, only the name and cardinality will be
+    // populated.
+    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
+
+    // allocate memory for all pointer members of `ex_quadrature`
+    // structs. This will query the cardinality and then allocate the
+    // arrays to that size.
+    ex_initialize_quadrature_struct(&exo_quadrature[0], exo_quadrature.size(), 1);
+
+    // Now populate the array data...
+    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
+
+    for (const auto &equadrature : exo_quadrature) {
+      std::vector<Ioss::QuadraturePoint> quadrature;
+      quadrature.reserve(equadrature.cardinality);
+      for (int i = 0; i < equadrature.cardinality; i++) {
+        Ioss::QuadraturePoint q{equadrature.xi[i], equadrature.eta[i], equadrature.zeta[i],
+                                equadrature.weight[i]};
+        quadrature.push_back(q);
+      }
+      Ioss::VariableType::create_quadrature_field_type(equadrature.name, quadrature);
+    }
+
+    // deallocate any memory allocated in the 'ex_quadrature' structs.
+    ex_initialize_quadrature_struct(&exo_quadrature[0], exo_quadrature.size(), -1);
+
+    return quad_cnt;
+  }
+
 } // namespace
 
 namespace Ioex {
@@ -1758,6 +1793,7 @@ namespace Ioex {
       }
 
       bool basis_read = false;
+      bool quad_read  = false;
       for (const auto &exo_field : exo_fields) {
         std::string ios_field_type{};
 
@@ -1775,6 +1811,14 @@ namespace Ioex {
           if (!basis_read) {
             read_exodus_basis(get_file_pointer());
             basis_read = true;
+          }
+          ios_field_type = Ioss::Utils::lowercase(exo_field.type_name);
+        }
+        else if (exo_field_type == EX_QUADRATURE) {
+          // If we haven't already read the quadrature definitions, read them now.
+          if (!quad_read) {
+            read_exodus_quadrature(get_file_pointer());
+            quad_read = true;
           }
           ios_field_type = Ioss::Utils::lowercase(exo_field.type_name);
         }

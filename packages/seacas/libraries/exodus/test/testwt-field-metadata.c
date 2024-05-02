@@ -7,6 +7,7 @@
  */
 
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -153,6 +154,18 @@ int main(int argc, char **argv)
       const char *name = ex_component_field_name(&field, (int[]){i + 1});
       assert(strcmp(var_names[vname++], name) == 0);
     }
+  }
+
+  {
+    double Q        = 1.0 / sqrt(3.0);
+    double xi[]     = {-Q, Q, -Q, Q, -Q, Q, -Q, Q};
+    double eta[]    = {-Q, -Q, Q, Q, -Q, -Q, Q, Q};
+    double zeta[]   = {-Q, -Q, -Q, -Q, Q, Q, Q, Q};
+    double weight[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+
+    struct ex_quadrature quad = (ex_quadrature){
+        .name = "2x2x2", .cardinality = 8, .xi = xi, .eta = eta, .zeta = zeta, .weight = weight};
+    EXCHECK(ex_put_quadrature_metadata(exoid, quad));
   }
 
   {
