@@ -34,8 +34,12 @@ protected:
 
   void runUnstructuredTest(const std::string &testName);
 
-  void runCatalystDbReadUnstructuredTest(const std::string &testName,
-                                          Ioss::PropertyManager dbProps = {});
+  Ioss::DatabaseIO* writeAndGetExodusDatabaseOnRead(const std::string &testName,
+                                                    Ioss::PropertyManager dbProps = {});
+  //Ioss::DatabaseIO* writeAndGetCatalystDatabaseOnRead(Ioss::PropertyManager dbProps = {});
+  Ioss::DatabaseIO* getDatabaseOnReadFromFileName(const std::string &fileName,
+                                                        const std::string &iossDatabaseType, 
+                                                        Ioss::PropertyManager dbProps = {});
 
   void checkZeroCopyFields(Iocatalyst::BlockMeshSet::IOSSparams &iop);
 

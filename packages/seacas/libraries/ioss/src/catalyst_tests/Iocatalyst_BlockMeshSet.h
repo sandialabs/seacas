@@ -26,8 +26,8 @@ namespace Iocatalyst {
     class IOSSparams
     {
     public:
-      IOSSparams(const std::string &fileName, const std::string &dbType)
-          : fileName(fileName), dbType(dbType), databaseIO(nullptr), isCatalyst(false), dbProps({})
+      IOSSparams(const std::string &fileName, const std::string &dbType, Ioss::PropertyManager dbProps = {})
+          : fileName(fileName), dbType(dbType), databaseIO(nullptr), isCatalyst(false), dbProps(dbProps)
       {
       }
       bool              isStructured() { return dbType == CGNS_DATABASE_TYPE; }

@@ -62,33 +62,6 @@ bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
   return Ioss::Compare::compare_database(ir, rCat, options);
 }
 
-bool Iocatalyst_DatabaseIOTest::regionsAreEqualCatalystAndIoss(const std::string &fileName,
-                                                Ioss::DatabaseIO &cat_d,
-                                                const std::string &iossDatabaseType)
-{
-  Ioss::PropertyManager dbProps;
-  //dbProps.add(Ioss::Property("ENABLE_FIELD_RECOGNITION", "OFF"));
-  auto                  inputFileName         = fileName;
-  Ioss::ParallelUtils   pu;
-  int                   numRanks = pu.parallel_size();
-  int                   rank     = pu.parallel_rank();
-  if (iossDatabaseType == EXODUS_DATABASE_TYPE && numRanks > 1) {
-    inputFileName += "." + std::to_string(numRanks) + "." + std::to_string(rank);
-  }
-  Ioss::DatabaseIO *dbi =
-      Ioss::IOFactory::create(iossDatabaseType, inputFileName, Ioss::READ_RESTART,
-                              Ioss::ParallelUtils::comm_self(), dbProps);
-  if (dbi == nullptr || !dbi->ok(true)) {
-    return false;
-  }
-
-  Ioss::Region          ir(dbi);
-  Ioss::Region          rCat(&cat_d);
-  Ioss::MeshCopyOptions options;
-  options.data_storage_type = 1;
-  return Ioss::Compare::compare_database(ir, rCat, options);
-}
-
 void Iocatalyst_DatabaseIOTest::runStructuredTest(const std::string &testName)
 {
   std::string cgnsFileName =
@@ -117,21 +90,62 @@ void Iocatalyst_DatabaseIOTest::runUnstructuredTest(const std::string &testName)
   EXPECT_TRUE(regionsAreEqual(exodusFileName, catalystFileName, EXODUS_DATABASE_TYPE));
 }
 
-void Iocatalyst_DatabaseIOTest::runCatalystDbReadUnstructuredTest(const std::string &testName,
-                                                                  Ioss::PropertyManager dbProps)
+Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::writeAndGetExodusDatabaseOnRead(const std::string &testName,
+                                                                      Ioss::PropertyManager dbProps)
 {
   std::string exodusFileName =
       testName + CATALYST_TEST_FILE_NP + std::to_string(part.size) + EXODUS_FILE_EXTENSION;
   Iocatalyst::BlockMeshSet::IOSSparams iop(exodusFileName, EXODUS_DATABASE_TYPE);
   bmSet.writeIOSSFile(iop);
+  Ioss::DatabaseIO* exo_db = getDatabaseOnReadFromFileName(exodusFileName, EXODUS_DATABASE_TYPE, dbProps);
+  if(exo_db == nullptr)
+  {
+    EXPECT_TRUE(false) << "Exodus db unable to initialize on read";
+  }
+  return exo_db;
+}
+
+Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::getDatabaseOnReadFromFileName(const std::string &fileName,
+                                                                        const std::string &iossDatabaseType,
+                                                                        Ioss::PropertyManager dbProps)
+{
+  Ioss::PropertyManager dbaseProps = Ioss::PropertyManager(dbProps);
+  //dbProps.add(Ioss::Property("ENABLE_FIELD_RECOGNITION", "OFF"));
+  auto                  inputFileName         = fileName;
+  Ioss::ParallelUtils   pu;
+  int                   numRanks = pu.parallel_size();
+  int                   rank     = pu.parallel_rank();
+  if (iossDatabaseType == EXODUS_DATABASE_TYPE && numRanks > 1) {
+    inputFileName += "." + std::to_string(numRanks) + "." + std::to_string(rank);
+  }
+  Ioss::DatabaseIO *dbi =
+      Ioss::IOFactory::create(iossDatabaseType, inputFileName, Ioss::READ_RESTART,
+                              Ioss::ParallelUtils::comm_self(), dbaseProps);
+  if (dbi == nullptr || !dbi->ok(true)) {
+    return nullptr;
+  }
+  return dbi;
+}
+
+/*Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::writeAndGetCatalystDatabaseOnRead(Ioss::PropertyManager dbProps)
+{
+  std::string exodusFileName =
+      "test_eb_1_enable_field_recog" + CATALYST_TEST_FILE_NP + std::to_string(part.size) + EXODUS_FILE_EXTENSION;
+  Iocatalyst::BlockMeshSet::IOSSparams iop(exodusFileName, EXODUS_DATABASE_TYPE);
+
   Ioss::DatabaseIO *cat_d = bmSet.getCatalystDatabase(iop);
+
+  //Ioss::Region          cir(cat_d);
+  //std::cout<<"Done Region!"<<std::endl;
   if(cat_d == nullptr)
   {
     EXPECT_TRUE(false) << "Catalyst db unable to initialize on read";
   }
   checkZeroCopyFields(iop);
-  EXPECT_TRUE(regionsAreEqualCatalystAndIoss(exodusFileName, *cat_d, EXODUS_DATABASE_TYPE)) << "Regions are different";
-}
+  //Ioss::Region          cir(cat_d);
+  //std::cout<<"Done Region!"<<std::endl;
+  return cat_d;
+}*/
 
 void Iocatalyst_DatabaseIOTest::checkZeroCopyFields(Iocatalyst::BlockMeshSet::IOSSparams &iop)
 {

@@ -43,7 +43,7 @@ namespace Iocatalyst {
 
     //Cat Writes
     writeIOSSFile(iop);
-    Ioss::PropertyManager cdbProps;
+    Ioss::PropertyManager cdbProps = Ioss::PropertyManager(iop.dbProps);
     cdbProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", iop.getCatalystConduitNode()));
 
     //Cat Reads here
@@ -53,8 +53,7 @@ namespace Iocatalyst {
     if (cdbi == nullptr || !cdbi->ok(true)) {
       return;
     }
-
-    Ioss::PropertyManager properties;
+    Ioss::PropertyManager properties = Ioss::PropertyManager(iop.dbProps);
     Ioss::DatabaseIO *cdbo = Ioss::IOFactory::create(iop.dbType, iop.fileName, Ioss::WRITE_RESULTS,
                                                      Ioss::ParallelUtils::comm_world(), properties);
 
@@ -74,10 +73,11 @@ namespace Iocatalyst {
   Ioss::DatabaseIO* BlockMeshSet::getCatalystDatabase(IOSSparams &iop){
     CatalystManager::getInstance().reset();
     iop.isCatalyst = true;
-
+    
     //Write to Cat database
     writeIOSSFile(iop);
-    Ioss::PropertyManager cdbProps;
+
+    Ioss::PropertyManager cdbProps = Ioss::PropertyManager(iop.dbProps);
 
     //Get Conduit
     cdbProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", iop.getCatalystConduitNode()));
@@ -89,6 +89,7 @@ namespace Iocatalyst {
     if (cdbi == nullptr || !cdbi->ok(true)) {
       return nullptr;
     }
+
     return cdbi;
   }
 
@@ -104,7 +105,7 @@ namespace Iocatalyst {
 
   void BlockMeshSet::openIOSSDatabase(IOSSparams &iop)
   {
-    Ioss::PropertyManager properties;
+    Ioss::PropertyManager properties = Ioss::PropertyManager(iop.dbProps);
     std::string           dbType = iop.dbType;
     if (iop.isCatalyst) {
       dbType = CATALYST_DATABASE_TYPE;
