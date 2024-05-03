@@ -90,8 +90,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_ON)
   
   Ioss::Region exo_reg(exo_d);
   
-  auto cat_elemBlock = cat_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
-  auto exo_elemBlock = exo_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
+  auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
+  auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
   bool exo_foo_exists = exo_elemBlock->field_exists("foo");
   bool cat_foo_exists = cat_elemBlock->field_exists("foo");
@@ -129,8 +129,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_OFF)
   
   Ioss::Region exo_reg(exo_d);
   
-  auto cat_elemBlock = cat_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
-  auto exo_elemBlock = exo_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
+  auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
+  auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
   bool exo_foo_x_exists = exo_elemBlock->field_exists("foo_x");
   bool cat_foo_x_exists = cat_elemBlock->field_exists("foo_x");
@@ -168,8 +168,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS)
   
   Ioss::Region exo_reg(exo_d);
   
-  auto cat_elemBlock = cat_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
-  auto exo_elemBlock = exo_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
+  auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
+  auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
   bool exo_foo_1_exists = exo_elemBlock->field_exists("foo_1");
   bool cat_foo_1_exists = cat_elemBlock->field_exists("foo_1");
@@ -209,8 +209,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
   
   Ioss::Region exo_reg(exo_d);
   
-  auto cat_elemBlock = cat_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
-  auto exo_elemBlock = exo_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
+  auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
+  auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
   bool exo_foo_x_exists = exo_elemBlock->field_exists("foo_x");
   bool cat_foo_x_exists = cat_elemBlock->field_exists("foo_x");
@@ -256,8 +256,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
   
   Ioss::Region exo_reg(exo_d);
   
-  auto cat_elemBlock = cat_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
-  auto exo_elemBlock = exo_reg.get_element_block("UnstructuredBlock" + std::to_string(bm.getID()));
+  auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
+  auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
   /*for(auto fname : exo_elemBlock->field_describe(Ioss::Field::TRANSIENT)){
     std::cout<<fname.c_str()<<std::endl;

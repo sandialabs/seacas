@@ -51,6 +51,11 @@ namespace Iocatalyst {
     Ioss::DatabaseIO* getCatalystDatabase(IOSSparams &iop);
     int  getNumLocalPointsInMeshSet();
 
+    std::string getStructuredBlockName(int index);
+    std::string getStructuredNodeBlockName(int index);
+
+    std::string getUnstructuredBlockName(int index);
+
   private:
     std::vector<BlockMesh> bms;
 
@@ -79,11 +84,6 @@ namespace Iocatalyst {
     void writeUnstructuredAddedPointTransientFieldsBulkData(BlockMesh bm, IOSSparams &iop);
 
     void saveConduitNode(IOSSparams &iop);
-
-    std::string getStructuredBlockName(int index);
-    std::string getStructuredNodeBlockName(int index);
-
-    std::string getUnstructuredBlockName(int index);
 
     inline static const std::string CGNS_DATABASE_TYPE   = "cgns";
     inline static const std::string EXODUS_DATABASE_TYPE = "exodus";
