@@ -25,12 +25,66 @@
     }                                                                                              \
   } while (0)
 
-static void get_field_cardinality(ex_field *field, ex_basis *basis, int bas_cnt)
+static char *get_type_name(char *type_name, size_t which)
+{
+  if (type_name[0] != '\0') {
+    char *string = strdup(type_name);
+    char *tofree = string;
+    char *token  = strsep(&string, ",");
+    for (int i = 0; i < which; i++) {
+      token = strsep(&string, ",");
+    }
+    if (token != NULL) {
+      static char type_name[256 + 1];
+      ex_copy_string(type_name, token, 256);
+      free(tofree);
+      return type_name;
+    }
+    free(tofree);
+  }
+  return NULL;
+}
+
+// TODO: Modify so gets the correct basis or quadrature instead of assuming the first one.
+// TODO: Pass in the quadrature rules also.
+static void get_field_cardinality(ex_field *field, ex_basis *basis, int bas_cnt,
+                                  ex_quadrature *quad, int quad_cnt)
 {
   for (int j = 0; j < field->nesting; j++) {
     if (field->cardinality[j] == 0) {
       if (field->type[j] == EX_BASIS) {
-        field->cardinality[j] = basis[0].cardinality;
+        int   found      = 0;
+        char *basis_type = get_type_name(field->type_name, j);
+        if (basis != NULL) {
+          for (int k = 0; k < bas_cnt; k++) {
+            if (strcmp(basis[k].name, basis_type) == 0) {
+              field->cardinality[j] = basis[k].cardinality;
+              found                 = 1;
+              break;
+            }
+          }
+        }
+        if (found == 0) {
+          fprintf(stderr, "ERROR: Could not find basis named `%s` for field `%s`\n", basis_type,
+                  field->name);
+        }
+      }
+      else if (field->type[j] == EX_QUADRATURE) {
+        int   found     = 0;
+        char *quad_type = get_type_name(field->type_name, j);
+        if (quad != NULL) {
+          for (int k = 0; k < quad_cnt; k++) {
+            if (strcmp(quad[k].name, quad_type) == 0) {
+              field->cardinality[j] = quad[k].cardinality;
+              found                 = 1;
+              break;
+            }
+          }
+        }
+        if (found == 0) {
+          fprintf(stderr, "ERROR: Could not find quadrature named `%s` for field `%s`\n", quad_type,
+                  field->name);
+        }
       }
       else {
         field->cardinality[j] = ex_field_cardinality(field->type[j]);
@@ -67,36 +121,21 @@ static void print_quad_metadata(ex_quadrature *quad, size_t num_quad)
   }
 }
 
-static char *get_basis_type(char *type_name, size_t which)
-{
-  if (type_name[0] != '\0') {
-    char *string = strdup(type_name);
-    char *tofree = string;
-    char *token  = strsep(&string, ",");
-    for (int i = 0; i < which; i++) {
-      token = strsep(&string, ",");
-    }
-    if (token != NULL) {
-      static char basis_type[256 + 1];
-      ex_copy_string(basis_type, token, 256);
-      free(tofree);
-      return basis_type;
-    }
-    free(tofree);
-  }
-}
-
 static void print_field_metadata(ex_field *field)
 {
   fprintf(stderr, "\n");
   fprintf(stderr, "Field Metadata: Name: `%s`, Nesting: %d\n", field->name, field->nesting);
   for (int j = 0; j < field->nesting; j++) {
-    char  sep        = field->component_separator[j] == 0 ? ' ' : field->component_separator[j];
-    char *basis_type = NULL;
+    char sep = field->component_separator[j] == 0 ? ' ' : field->component_separator[j];
     if (field->type[j] == EX_BASIS) {
-      basis_type = get_basis_type(field->type_name, j);
+      char *basis_type = get_type_name(field->type_name, j);
       fprintf(stderr, "\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
               ex_field_type_enum_to_string(field->type[j]), basis_type, field->cardinality[j], sep);
+    }
+    else if (field->type[j] == EX_QUADRATURE) {
+      char *quad_type = get_type_name(field->type_name, j);
+      fprintf(stderr, "\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
+              ex_field_type_enum_to_string(field->type[j]), quad_type, field->cardinality[j], sep);
     }
     else {
       fprintf(stderr, "\tNesting level: %d, Type: %s, Cardinality: %d, Separator: \"%c\"\n", j,
@@ -172,7 +211,7 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_field_metadata(exoid, fields));
 
     for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], NULL, 0);
+      get_field_cardinality(&fields[i], NULL, 0, NULL, 0);
       print_field_metadata(&fields[i]);
       print_full_field_names(&fields[i]);
     }
@@ -186,7 +225,7 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_field_metadata(exoid, fields));
 
     for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], NULL, 0);
+      get_field_cardinality(&fields[i], NULL, 0, NULL, 0);
       print_field_metadata(&fields[i]);
       print_full_field_names(&fields[i]);
     }
@@ -228,7 +267,7 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_field_metadata(exoid, fields));
 
     for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], basis, bas_cnt);
+      get_field_cardinality(&fields[i], basis, bas_cnt, quad, quad_cnt);
       print_field_metadata(&fields[i]);
       print_full_field_names(&fields[i]);
     }
