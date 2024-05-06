@@ -27,6 +27,7 @@
 #include "Ioss_NamedSuffixVariableType.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
+#include "Ioss_QuadratureVariableType.h"
 #include "exodusII.h"
 #include "exodusII_int.h"
 
@@ -169,6 +170,8 @@ namespace Ioex {
       return "Real";
     if (type == EX_BASIS)
       return "Basis";
+    if (type == EX_QUADRATURE)
+      return "Quadrature";
     return "invalid";
   }
 
@@ -218,8 +221,6 @@ namespace Ioex {
       return EX_MATRIX_2X2;
     if (type->name() == "matrix_33")
       return EX_MATRIX_3X3;
-    if (type->name() == "basis")
-      return EX_BASIS;
 
     if (Ioss::Utils::substr_equal("Real", type->name()))
       return EX_FIELD_TYPE_SEQUENCE;
@@ -232,6 +233,10 @@ namespace Ioex {
     auto bvt = dynamic_cast<const Ioss::BasisVariableType *>(type);
     if (bvt != nullptr) {
       return EX_BASIS;
+    }
+    auto qvt = dynamic_cast<const Ioss::QuadratureVariableType *>(type);
+    if (qvt != nullptr) {
+      return EX_QUADRATURE;
     }
 
     return EX_FIELD_TYPE_INVALID;
