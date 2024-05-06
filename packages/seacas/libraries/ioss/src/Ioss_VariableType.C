@@ -157,7 +157,7 @@ namespace Ioss {
     }
 
     // See if the variable already exists...
-    std::string quad_name = "quadrature:" + Utils::lowercase(type_name);
+    std::string quad_name = Utils::lowercase(type_name);
     if (registry().find(quad_name) != registry().end()) {
       return false;
     }

@@ -33,12 +33,11 @@ namespace Ioss {
       if (component_count() == 1) {
         return "";
       }
-      return VariableType::numeric_label(which - 1, component_count(), name());
+      return VariableType::numeric_label(which, component_count(), name());
     }
 
     QuadratureVariableType(const std::string &my_name, int number_components, bool delete_me)
-        : Ioss::VariableType("quadrature:" + Ioss::Utils::lowercase(my_name), number_components,
-                             delete_me),
+        : Ioss::VariableType(Ioss::Utils::lowercase(my_name), number_components, delete_me),
           m_quadratureType_(my_name)
     {
       m_quadrature_.resize(number_components);
