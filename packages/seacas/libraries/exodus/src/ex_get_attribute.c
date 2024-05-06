@@ -48,6 +48,9 @@ static bool exi_is_internal_attribute(const char *name, ex_entity_type obj_type)
   else if (strncmp(name, "Basis@", 6) == 0) {
     return true;
   }
+  else if (strncmp(name, "Quad@", 5) == 0) {
+    return true;
+  }
   return false;
 }
 
