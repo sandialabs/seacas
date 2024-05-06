@@ -72,8 +72,14 @@ namespace Ioss {
     static void                    alias(const std::string &base, const std::string &syn);
     static int                     describe(NameList *names);
     IOSS_NODISCARD static NameList describe();
-    static bool                    create_named_suffix_field_type(const std::string    &type_name,
-                                                                  const Ioss::NameList &suffices);
+
+    // Return a list of types that have been defined
+    // externally... Basically a subset of the types in the
+    // `Registry::m_deleteThese` list...
+    IOSS_NODISCARD static std::vector<const Ioss::VariableType *> external_types();
+
+    static bool create_named_suffix_field_type(const std::string    &type_name,
+                                               const Ioss::NameList &suffices);
     static bool create_basis_field_type(const std::string &type_name, const Ioss::Basis &basis);
     static bool create_quadrature_field_type(const std::string                        &type_name,
                                              const std::vector<Ioss::QuadraturePoint> &quad_points);
@@ -105,9 +111,10 @@ namespace Ioss {
     IOSS_NODISCARD static const VariableType *factory(const std::vector<Suffix> &suffices,
                                                       bool ignore_realn_fields = false);
 
+    static Registry &registry();
+
   protected:
     VariableType(const std::string &type, int comp_count, bool delete_me = false);
-    static Registry &registry();
 
   private:
     const std::string name_;

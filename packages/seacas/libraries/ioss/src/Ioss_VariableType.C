@@ -93,6 +93,26 @@ namespace Ioss {
     return names;
   }
 
+  std::vector<const Ioss::VariableType *> VariableType::external_types()
+  {
+    auto vars = registry().m_deleteThese;
+
+    std::vector<const Ioss::VariableType *> user_vars;
+    for (const auto *var : vars) {
+      const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(var);
+      if (basis != nullptr) {
+        user_vars.push_back(var);
+        continue;
+      }
+      const auto *quad = dynamic_cast<const Ioss::QuadratureVariableType *>(var);
+      if (quad != nullptr) {
+        user_vars.push_back(var);
+        continue;
+      }
+    }
+    return user_vars;
+  }
+
   bool VariableType::add_field_type_mapping(const std::string &raw_field,
                                             const std::string &raw_type)
   {
