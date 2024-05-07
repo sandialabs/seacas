@@ -1861,9 +1861,6 @@ namespace Ioex {
         }
 
         auto &field = fields.back();
-        if (exo_field_type != EX_FIELD_TYPE_USER_DEFINED) {
-          field.set_suffices_uppercase(true);
-        }
         if (exo_field.nesting == 1) {
           field.set_suffix_separator(exo_field.component_separator[0]);
         }
@@ -1871,13 +1868,29 @@ namespace Ioex {
           field.set_suffix_separator(exo_field.component_separator[0],
                                      exo_field.component_separator[1]);
         }
+
+        if (lowerCaseVariableNames) {
+          field.set_suffices_uppercase(false);
+        }
+
         // Now remove the used field+component names from `names` to verify that we found all
-        // fields on this entity...
+        // fields on this entity... (Also set suffices_uppercase...)
         for (int i = 0; i < field.get_component_count(Ioss::Field::InOut::INPUT); i++) {
           auto comp_name = field.get_component_name(i + 1, Ioss::Field::InOut::INPUT);
           // Find `comp_name` in `names`...
           for (size_t j = 0; j < names.size(); j++) {
             if (Ioss::Utils::str_equal(comp_name, names[j])) {
+              if (!lowerCaseVariableNames &&
+                  field.get_component_count(Ioss::Field::InOut::INPUT) > 1 && i == 0) {
+                // Find the last-most alphabetic character...
+                auto len = names[j].length();
+                for (size_t k = 0; k < len; k++) {
+                  if (isalpha(names[j][len - k - 1])) {
+                    field.set_suffices_uppercase(isupper(names[j][len - k - 1]));
+                    break;
+                  }
+                }
+              }
               names[j] = "";
               break;
             }
