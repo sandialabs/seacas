@@ -49,6 +49,7 @@ namespace Iocatalyst {
     void writeIOSSFile(IOSSparams &iop);
     void writeCatalystIOSSFile(IOSSparams &iop);
     Ioss::DatabaseIO* getCatalystDatabase(IOSSparams &iop);
+    
     int  getNumLocalPointsInMeshSet();
 
     std::string getStructuredBlockName(int index);

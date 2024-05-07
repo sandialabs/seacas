@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_Compare.h>
+#include <Ioss_CopyDatabase.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_IOFactory.h>
@@ -13,6 +14,7 @@
 #include <Ioss_StructuredBlock.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
+#include <catalyst/Iocatalyst_CatalystManager.h>
 
 Iocatalyst_DatabaseIOTest::Iocatalyst_DatabaseIOTest()
 {
@@ -103,6 +105,69 @@ Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::writeAndGetExodusDatabaseOnRead(con
     EXPECT_TRUE(false) << "Exodus db unable to initialize on read";
   }
   return exo_db;
+}
+
+Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::getExodusDatabaseFromFile(std::string &filename,
+                                                                       Ioss::PropertyManager dbProps) {
+  Ioss::PropertyManager edbProps(dbProps);
+  
+  std::string inputFileName = filename;
+
+  Ioss::DatabaseIO *edbi =
+    Ioss::IOFactory::create(EXODUS_DATABASE_TYPE, inputFileName, Ioss::READ_RESTART,
+                            Ioss::ParallelUtils::comm_self(), edbProps);
+  if (edbi == nullptr || !edbi->ok(true)) {
+    return nullptr;
+  }
+
+  return edbi;
+}
+
+const Ioss::SideSetContainer* Iocatalyst_DatabaseIOTest::getCatalystDatabaseSideSetsFromExodusFile(std::string &filename, 
+                                                                                  Ioss::PropertyManager dbProps)
+{
+  Iocatalyst::CatalystManager::getInstance().reset();
+
+  Ioss::PropertyManager edbProps;
+  edbProps.add(Ioss::Property("SURFACE_SPLIT_TYPE", "TOPOLOGY"));
+  Ioss::DatabaseIO *edbi = getExodusDatabaseFromFile(filename, edbProps);
+  
+  //Create Cat Db on write
+  Ioss::PropertyManager cdbwProps(edbi->get_property_manager());
+  Ioss::DatabaseIO *cdb_on_write =
+      Ioss::IOFactory::create(CATALYST_DATABASE_TYPE, CATALYST_DUMMY_DATABASE, Ioss::WRITE_RESULTS,
+                              Ioss::ParallelUtils::comm_world(), cdbwProps);
+  if (cdb_on_write == nullptr || !cdb_on_write->ok(true)) {
+    return nullptr;
+  }
+  
+  Ioss::Region          cor(edbi);
+  Ioss::Region          cir(cdb_on_write);
+  Ioss::MeshCopyOptions options;
+  options.data_storage_type = 1;
+  Ioss::copy_database(cor, cir, options);
+
+  //Get conduit from Cat Db on write
+  auto c_node = reinterpret_cast<conduit_node *>(
+        ((Iocatalyst::DatabaseIO *)cdb_on_write)->get_catalyst_conduit_node());
+  
+  conduit_cpp::Node conduitNode;
+  conduit_node_set_node(conduit_cpp::c_node(&conduitNode), c_node);
+  
+  Ioss::PropertyManager cdbrProps = Ioss::PropertyManager(dbProps);
+  cdbrProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", conduit_cpp::c_node(&conduitNode)));
+  
+  //Give to Cat Db on read
+  Ioss::DatabaseIO *cdb_on_read =
+      Ioss::IOFactory::create(CATALYST_DATABASE_TYPE, CATALYST_DUMMY_DATABASE, Ioss::READ_RESTART,
+                              Ioss::ParallelUtils::comm_world(), cdbrProps);
+  if (cdb_on_read == nullptr || !cdb_on_read->ok(true)) {
+    return nullptr;
+  }
+
+  Ioss::Region cat_reg(cdb_on_read);
+  auto cat_sideSets = &(cat_reg.get_sidesets());
+  return cat_sideSets;
 }
 
 Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::getDatabaseOnReadFromFileName(const std::string &fileName,
