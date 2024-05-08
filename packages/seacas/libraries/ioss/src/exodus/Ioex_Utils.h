@@ -91,6 +91,9 @@ namespace Ioex {
   IOSS_NODISCARD IOEX_EXPORT ex_field_type map_ioss_field_type(const Ioss::VariableType *type);
   IOSS_NODISCARD IOEX_EXPORT std::string map_ioss_field_type(ex_field_type type);
 
+  IOEX_EXPORT int read_exodus_basis(int exoid);
+  IOEX_EXPORT int read_exodus_quadrature(int exoid);
+
   IOEX_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
   IOEX_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
 

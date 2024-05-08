@@ -480,6 +480,9 @@ namespace Ioex {
 
       read_region();
       read_communication_metadata();
+
+      Ioex::read_exodus_basis(get_file_pointer());
+      Ioex::read_exodus_quadrature(get_file_pointer());
     }
 
     get_step_times_nl();

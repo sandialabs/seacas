@@ -261,6 +261,84 @@ namespace Ioex {
     }
   }
 
+  int read_exodus_basis(int exoid)
+  {
+    auto bas_cnt = ex_get_basis_metadata_count(exoid);
+    if (bas_cnt == 0) {
+      return 0;
+    }
+    std::vector<ex_basis> exo_basis(bas_cnt);
+
+    // In this call, since the `ex_basis` structs are initialized to
+    // all zero and NULL, only the name and cardinality will be
+    // populated.
+    ex_get_basis_metadata(exoid, Data(exo_basis));
+
+    // allocate memory for all pointer members of `ex_basis`
+    // structs. This will query the cardinality and then allocate the
+    // arrays to that size.
+    ex_initialize_basis_struct(Data(exo_basis), exo_basis.size(), 1);
+
+    // Now populate the array data...
+    ex_get_basis_metadata(exoid, Data(exo_basis));
+
+    for (const auto &ebasis : exo_basis) {
+      Ioss::Basis basis;
+      for (int i = 0; i < ebasis.cardinality; i++) {
+        Ioss::BasisComponent bc{
+            ebasis.subc_dim[i],     ebasis.subc_ordinal[i], ebasis.subc_dof_ordinal[i],
+            ebasis.subc_num_dof[i], ebasis.xi[i],           ebasis.eta[i],
+            ebasis.zeta[i]};
+        basis.basies.push_back(bc);
+      }
+      Ioss::VariableType::create_basis_field_type(ebasis.name, basis);
+    }
+
+    // deallocate any memory allocated in the 'ex_basis' structs.
+    ex_initialize_basis_struct(Data(exo_basis), exo_basis.size(), -1);
+
+    return bas_cnt;
+  }
+
+  int read_exodus_quadrature(int exoid)
+  {
+    auto quad_cnt = ex_get_quadrature_metadata_count(exoid);
+    if (quad_cnt == 0) {
+      return quad_cnt;
+    }
+
+    std::vector<ex_quadrature> exo_quadrature(quad_cnt);
+
+    // In this call, since the `ex_quadrature` structs are initialized to
+    // all zero and NULL, only the name and cardinality will be
+    // populated.
+    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
+
+    // allocate memory for all pointer members of `ex_quadrature`
+    // structs. This will query the cardinality and then allocate the
+    // arrays to that size.
+    ex_initialize_quadrature_struct(Data(exo_quadrature), exo_quadrature.size(), 1);
+
+    // Now populate the array data...
+    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
+
+    for (const auto &equadrature : exo_quadrature) {
+      std::vector<Ioss::QuadraturePoint> quadrature;
+      quadrature.reserve(equadrature.cardinality);
+      for (int i = 0; i < equadrature.cardinality; i++) {
+        Ioss::QuadraturePoint q{equadrature.xi[i], equadrature.eta[i], equadrature.zeta[i],
+                                equadrature.weight[i]};
+        quadrature.push_back(q);
+      }
+      Ioss::VariableType::create_quadrature_field_type(equadrature.name, quadrature);
+    }
+
+    // deallocate any memory allocated in the 'ex_quadrature' structs.
+    ex_initialize_quadrature_struct(Data(exo_quadrature), exo_quadrature.size(), -1);
+
+    return quad_cnt;
+  }
+
   ex_entity_type map_exodus_type(Ioss::EntityType type)
   {
     switch (type) {

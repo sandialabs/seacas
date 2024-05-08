@@ -200,77 +200,6 @@ namespace {
     }
   }
 
-  int read_exodus_basis(int exoid)
-  {
-    auto                  bas_cnt = ex_get_basis_metadata_count(exoid);
-    std::vector<ex_basis> exo_basis(bas_cnt);
-
-    // In this call, since the `ex_basis` structs are initialized to
-    // all zero and NULL, only the name and cardinality will be
-    // populated.
-    ex_get_basis_metadata(exoid, Data(exo_basis));
-
-    // allocate memory for all pointer members of `ex_basis`
-    // structs. This will query the cardinality and then allocate the
-    // arrays to that size.
-    ex_initialize_basis_struct(&exo_basis[0], exo_basis.size(), 1);
-
-    // Now populate the array data...
-    ex_get_basis_metadata(exoid, Data(exo_basis));
-
-    for (const auto &ebasis : exo_basis) {
-      Ioss::Basis basis;
-      for (int i = 0; i < ebasis.cardinality; i++) {
-        Ioss::BasisComponent bc{
-            ebasis.subc_dim[i],     ebasis.subc_ordinal[i], ebasis.subc_dof_ordinal[i],
-            ebasis.subc_num_dof[i], ebasis.xi[i],           ebasis.eta[i],
-            ebasis.zeta[i]};
-        basis.basies.push_back(bc);
-      }
-      Ioss::VariableType::create_basis_field_type(ebasis.name, basis);
-    }
-
-    // deallocate any memory allocated in the 'ex_basis' structs.
-    ex_initialize_basis_struct(&exo_basis[0], exo_basis.size(), -1);
-
-    return bas_cnt;
-  }
-
-  int read_exodus_quadrature(int exoid)
-  {
-    auto                       quad_cnt = ex_get_quadrature_metadata_count(exoid);
-    std::vector<ex_quadrature> exo_quadrature(quad_cnt);
-
-    // In this call, since the `ex_quadrature` structs are initialized to
-    // all zero and NULL, only the name and cardinality will be
-    // populated.
-    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
-
-    // allocate memory for all pointer members of `ex_quadrature`
-    // structs. This will query the cardinality and then allocate the
-    // arrays to that size.
-    ex_initialize_quadrature_struct(&exo_quadrature[0], exo_quadrature.size(), 1);
-
-    // Now populate the array data...
-    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
-
-    for (const auto &equadrature : exo_quadrature) {
-      std::vector<Ioss::QuadraturePoint> quadrature;
-      quadrature.reserve(equadrature.cardinality);
-      for (int i = 0; i < equadrature.cardinality; i++) {
-        Ioss::QuadraturePoint q{equadrature.xi[i], equadrature.eta[i], equadrature.zeta[i],
-                                equadrature.weight[i]};
-        quadrature.push_back(q);
-      }
-      Ioss::VariableType::create_quadrature_field_type(equadrature.name, quadrature);
-    }
-
-    // deallocate any memory allocated in the 'ex_quadrature' structs.
-    ex_initialize_quadrature_struct(&exo_quadrature[0], exo_quadrature.size(), -1);
-
-    return quad_cnt;
-  }
-
 } // namespace
 
 namespace Ioex {
@@ -1792,12 +1721,11 @@ namespace Ioex {
         }
       }
 
-      bool basis_read = false;
-      bool quad_read  = false;
       for (const auto &exo_field : exo_fields) {
         std::string ios_field_type{};
 
         auto exo_field_type = exo_field.type[0];
+        auto type_names     = Ioss::tokenize(exo_field.type_name, ",", true);
         if (exo_field_type == EX_FIELD_TYPE_SEQUENCE) {
           ios_field_type = fmt::format("Real[{}]", exo_field.cardinality[0]);
         }
@@ -1807,20 +1735,10 @@ namespace Ioex {
           ios_field_type = exo_field.name;
         }
         else if (exo_field_type == EX_BASIS) {
-          // If we don't already have the basis, read and create it...
-          if (!basis_read) {
-            read_exodus_basis(get_file_pointer());
-            basis_read = true;
-          }
-          ios_field_type = Ioss::Utils::lowercase(exo_field.type_name);
+          ios_field_type = Ioss::Utils::lowercase(type_names[0]);
         }
         else if (exo_field_type == EX_QUADRATURE) {
-          // If we haven't already read the quadrature definitions, read them now.
-          if (!quad_read) {
-            read_exodus_quadrature(get_file_pointer());
-            quad_read = true;
-          }
-          ios_field_type = Ioss::Utils::lowercase(exo_field.type_name);
+          ios_field_type = Ioss::Utils::lowercase(type_names[0]);
         }
         else {
           ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
@@ -1832,20 +1750,13 @@ namespace Ioex {
         if (exo_field.nesting == 2) {
           // For IOSS, the nesting is basically N copies of the field
           // at nesting level 1, so we just need to verify that the
-          // field type is "EX_FIELD_TYPE_SEQUENCE" or "EX_BASIS" and
-          // then get the cardinality...
+          // field type is `EX_FIELD_TYPE_SEQUENCE`, `EX_BASIS`, or
+          // `EX_QUADRATURE` and then get the cardinality...
           if (exo_field.type[1] == EX_FIELD_TYPE_SEQUENCE) {
             num_copies = exo_field.cardinality[1];
           }
-          else if (exo_field.type[1] == EX_BASIS) {
-            // If we don't already have the basis, read and create it...
-            if (!basis_read) {
-              // Negative copy count is currently kluge to indicate basis is the nested field type.
-              num_copies = -read_exodus_basis(get_file_pointer());
-              basis_read = true;
-            }
-            auto types           = Ioss::tokenize(exo_field.type_name, ",", true);
-            secondary_field_type = Ioss::Utils::lowercase(types[1]);
+          else if (exo_field.type[1] == EX_BASIS || exo_field.type[1] == EX_QUADRATURE) {
+            secondary_field_type = Ioss::Utils::lowercase(type_names[1]);
           }
           else {
             fmt::print("ERROR: Unrecognized field type for nested field.\n");
@@ -1897,8 +1808,12 @@ namespace Ioex {
           }
         }
 
-        fmt::print(Ioss::DebugOut(), "Enhanced Field:  Adding to {} {}:\n\t{}\n",
-                   entity->type_string(), entity->name(), field);
+#if IOSS_DEBUG_OUTPUT
+        if (myProcessor == 0) {
+          fmt::print(Ioss::DebugOut(), "Enhanced Field:  Adding to {} {}:\n\t{}\n",
+                     entity->type_string(), entity->name(), field);
+        }
+#endif
       }
     }
     return fields;
@@ -2107,6 +2022,20 @@ namespace Ioex {
           exo_field.cardinality[0]         = composed->get_base_type()->component_count();
           char separator0                  = field.get_suffix_separator();
           exo_field.component_separator[0] = separator0 == 1 ? '_' : separator0;
+
+          if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
+            auto nsvt =
+                dynamic_cast<const Ioss::NamedSuffixVariableType *>(composed->get_base_type());
+            assert(nsvt != nullptr);
+            std::string suffices{};
+            for (int i = 0; i < nsvt->component_count(); i++) {
+              if (i > 0) {
+                suffices += ",";
+              }
+              suffices += nsvt->label(i + 1, 0);
+            }
+            Ioss::Utils::copy_string(exo_field.suffices, suffices.c_str(), EX_MAX_NAME + 1);
+          }
 
           exo_field.type[1]        = Ioex::map_ioss_field_type(composed->get_secondary_type());
           exo_field.cardinality[1] = composed->get_secondary_type()->component_count();

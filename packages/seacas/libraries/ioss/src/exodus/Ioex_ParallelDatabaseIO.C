@@ -782,6 +782,9 @@ namespace Ioex {
     decomp->decompose_model(exoid);
 
     read_region();
+    Ioex::read_exodus_basis(get_file_pointer());
+    Ioex::read_exodus_quadrature(get_file_pointer());
+
     get_elemblocks();
 
     get_step_times_nl();
@@ -893,8 +896,8 @@ namespace Ioex {
     // Get information records from database and add to informationRecords...
     int num_info = ex_inquire_int(get_file_pointer(), EX_INQ_INFO);
     if (num_info > 0) {
-      char **info_rec = Ioex::get_name_array(
-          num_info, max_line_length); // 'total_lines' pointers to char buffers
+      char **info_rec =
+          Ioex::get_name_array(num_info, max_line_length); // 'total_lines' pointers to char buffers
       ex_get_info(get_file_pointer(), info_rec);
       for (int i = 0; i < num_info; i++) {
         add_information_record(info_rec[i]);
