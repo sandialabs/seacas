@@ -323,47 +323,47 @@ bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
 
   if (this->type_ != rhs.type_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD type mismatch ({} v. {})\n", this->type_string(),
-                 rhs.type_string());
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} type mismatch ({} v. {})\n", this->name_,
+                 this->type_string(), rhs.type_string());
     }
     is_same = false;
   }
 
   if (this->role_ != rhs.role_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD role mismatch ({} v. {})\n", this->role_string(),
-                 rhs.role_string());
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} role mismatch ({} v. {})\n", this->name_,
+                 this->role_string(), rhs.role_string());
     }
     is_same = false;
   }
 
   if (this->rawCount_ != rhs.rawCount_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD rawCount mismatch ({} v. {})\n", this->rawCount_,
-                 rhs.rawCount_);
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} rawCount mismatch ({} v. {})\n", this->name_,
+                 this->rawCount_, rhs.rawCount_);
     }
     is_same = false;
   }
 
   if (this->transCount_ != rhs.transCount_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD transCount mismatch ({} v. {})\n", this->transCount_,
-                 rhs.transCount_);
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} transCount mismatch ({} v. {})\n", this->name_,
+                 this->transCount_, rhs.transCount_);
     }
     is_same = false;
   }
 
   if (this->get_size() != rhs.get_size()) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD size mismatch ({} v. {})\n", this->get_size(),
-                 rhs.get_size());
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} size mismatch ({} v. {})\n", this->name_,
+                 this->get_size(), rhs.get_size());
     }
     is_same = false;
   }
 
   if (!quiet) {
     if (this->get_suffices_uppercase() != rhs.get_suffices_uppercase()) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD suffices_uppercase mismatch ({} v. {})\n",
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} suffices_uppercase mismatch ({} v. {})\n", this->name_,
                  this->get_suffices_uppercase(), rhs.get_suffices_uppercase());
       is_same = false;
     }
@@ -371,7 +371,7 @@ bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
 
   if (!quiet) {
     if (this->zero_copy_enabled() != rhs.zero_copy_enabled()) {
-      fmt::print(Ioss::OUTPUT(), "\tFIELD zero_copy_enabled mismatch ({} v. {})\n",
+      fmt::print(Ioss::OUTPUT(), "\tFIELD {} zero_copy_enabled mismatch ({} v. {})\n", this->name_,
                  this->zero_copy_enabled(), rhs.zero_copy_enabled());
       is_same = false;
     }
