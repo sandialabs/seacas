@@ -95,15 +95,16 @@ int main(int argc, char **argv)
   /* ======================================================================== */
   /* Transient Variables */
   char *var_names[] = {
-      "DispX",        "DispY",        "DispZ",        "Velocity%X",   "Velocity%Y",
-      "Velocity%Z",   "Gradient-X$0", "Gradient-Y$0", "Gradient-Z$0", "Gradient-X$1",
-      "Gradient-Y$1", "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
-      "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
-      "Gradient-Z$4", "Gradient-X$5", "Gradient-Y$5", "Gradient-Z$5", "Gradient-X$6",
-      "Gradient-Y$6", "Gradient-Z$6", "Gradient-X$7", "Gradient-Y$7", "Gradient-Z$7",
-      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "Curl@1",       "Curl@2",
-      "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",       "Curl@7",
-      "Curl@8",       "Species_h2o",  "Species_gas",  "Species_ch4",  "Species_methane"};
+      "DispX",         "DispY",         "DispZ",         "Velocity%X",       "Velocity%Y",
+      "Velocity%Z",    "Gradient-X$0",  "Gradient-Y$0",  "Gradient-Z$0",     "Gradient-X$1",
+      "Gradient-Y$1",  "Gradient-Z$1",  "Gradient-X$2",  "Gradient-Y$2",     "Gradient-Z$2",
+      "Gradient-X$3",  "Gradient-Y$3",  "Gradient-Z$3",  "Gradient-X$4",     "Gradient-Y$4",
+      "Gradient-Z$4",  "Gradient-X$5",  "Gradient-Y$5",  "Gradient-Z$5",     "Gradient-X$6",
+      "Gradient-Y$6",  "Gradient-Z$6",  "Gradient-X$7",  "Gradient-Y$7",     "Gradient-Z$7",
+      "Gradient-X$8",  "Gradient-Y$8",  "Gradient-Z$8",  "Curl@1",           "Curl@2",
+      "Curl@3",        "Curl@4",        "Curl@5",        "Curl@6",           "Curl@7",
+      "Curl@8",        "Species_h2o-0", "Species_gas-0", "Species_ch4-0",    "Species_methane-0",
+      "Species_h2o-1", "Species_gas-1", "Species_ch4-1", "Species_methane-1"};
   int num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
   int num_node_vars  = 6;
 
@@ -168,6 +169,17 @@ int main(int argc, char **argv)
   }
 
   {
+    double xi[]     = {-0.5, 0.5};
+    double eta[]    = {0.5, -0.5};
+    double zeta[]   = {-0.5, 0.5};
+    double weight[] = {1.0, 1.0};
+
+    struct ex_quadrature quad = (ex_quadrature){
+        .name = "1x2x1", .cardinality = 2, .xi = xi, .eta = eta, .zeta = zeta, .weight = weight};
+    EXCHECK(ex_put_quadrature_metadata(exoid, quad));
+  }
+
+  {
     int    subc_dim[]         = {0, 0, 0, 0, 1, 1, 1, 1, 2};
     int    subc_ordinal[]     = {0, 1, 2, 3, 0, 1, 2, 3, 0};
     int    subc_dof_ordinal[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -219,13 +231,14 @@ int main(int argc, char **argv)
   }
 
   {
-    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
-                                       .entity_id           = blocks[1].id,
-                                       .name                = "Species",
-                                       .type                = {EX_FIELD_TYPE_USER_DEFINED},
-                                       .nesting             = 1,
-                                       .cardinality         = {4},
-                                       .component_separator = {'_'}};
+    struct ex_field field = (ex_field){.entity_type = EX_ELEM_BLOCK,
+                                       .entity_id   = blocks[1].id,
+                                       .name        = "Species",
+                                       .type        = {EX_FIELD_TYPE_USER_DEFINED, EX_QUADRATURE},
+                                       .type_name   = {",1x2x1"},
+                                       .nesting     = 2,
+                                       .cardinality = {4},
+                                       .component_separator = {'_', '-'}};
     EXCHECK(ex_put_field_metadata(exoid, field));
     EXCHECK(ex_put_field_suffices(exoid, field, "h2o,gas,ch4,methane"));
   }

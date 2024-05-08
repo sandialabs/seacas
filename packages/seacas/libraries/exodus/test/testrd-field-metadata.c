@@ -232,8 +232,8 @@ int main(int argc, char **argv)
   }
   // ------------------------------------------------------------------------
   int quad_cnt = ex_get_quadrature_metadata_count(exoid);
-  assert(quad_cnt == 1);
-  struct ex_quadrature quad[1];
+  assert(quad_cnt == 2);
+  struct ex_quadrature quad[2];
   EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, 0));
   EXCHECK(ex_get_quadrature_metadata(exoid, quad));
 

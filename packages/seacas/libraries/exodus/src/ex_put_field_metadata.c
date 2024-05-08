@@ -49,22 +49,12 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   int  status = 0;
   char errmsg[MAX_ERR_LENGTH];
 
+#if 0
   fprintf(stderr,
           "ex_put_field_metadata: Field '%s' of type '%s' with separator '%s' on block %lld\n",
           field.name, ex_field_type_enum_to_string(field.type[0]), field.component_separator,
           field.entity_id);
-
-  for (int i = 0; i < field.nesting; i++) {
-    if (field.type[i] == EX_FIELD_TYPE_USER_DEFINED) {
-      if (field.nesting > 1) {
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: Field '%s' nesting is %d, it must be 1 for a user-defined field type.",
-                 field.name, field.nesting);
-        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-        return EX_FATAL;
-      }
-    }
-  }
+#endif
 
   static char *field_template = "Field@%s@%s";
   char         attribute_name[NC_MAX_NAME + 1];

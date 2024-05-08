@@ -194,15 +194,6 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         if (field[count].nesting == 0) {
           field[count].nesting = val_count;
         }
-        if (field[count].type[0] == EX_FIELD_TYPE_USER_DEFINED && field[count].nesting != 1) {
-          char errmsg[MAX_ERR_LENGTH];
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: Invalid nesting for field %s on %s with id %" PRId64
-                   ". Must be 1 for user-defined field type.\n",
-                   field[count].name, ex_name_of_object(field->entity_type), field->entity_id);
-          ex_err_fn(exoid, __func__, errmsg, status);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
       }
       else if (strcmp(fld_type, "separator") == 0) {
         status = nc_get_att_text(exoid, varid, attr_name, field[count].component_separator);
