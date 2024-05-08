@@ -46,9 +46,6 @@ int ex_put_field_metadata(int exoid, const ex_field field)
    * Else the size must equal nesting and it specifies a potentially different separator for each
    * level.
    */
-  int  status = 0;
-  char errmsg[MAX_ERR_LENGTH];
-
 #if 0
   fprintf(stderr,
           "ex_put_field_metadata: Field '%s' of type '%s' with separator '%s' on block %lld\n",
@@ -56,6 +53,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
           field.entity_id);
 #endif
 
+  int          status         = 0;
   static char *field_template = "Field@%s@%s";
   char         attribute_name[NC_MAX_NAME + 1];
   sprintf(attribute_name, field_template, field.name, "type");
