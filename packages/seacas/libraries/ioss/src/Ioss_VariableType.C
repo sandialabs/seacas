@@ -156,13 +156,11 @@ namespace Ioss {
     // See if the variable already exists...
     std::string basis_name = Utils::lowercase(type_name);
     if (registry().find(basis_name) != registry().end()) {
-      fmt::print("Basis {} exists.\n", type_name);
       return false;
     }
 
     // Create the variable.  Note that the 'true' argument means Ioss will delete
     // the pointer.
-    fmt::print("Basis {} created.\n", type_name);
     new BasisVariableType(type_name, basis, true);
     return true;
   }
