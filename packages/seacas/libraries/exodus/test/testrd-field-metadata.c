@@ -96,14 +96,12 @@ static void get_field_cardinality(ex_field *field, ex_basis *basis, int bas_cnt,
 static void print_basis_metadata(ex_basis *basis, size_t num_basis)
 {
   for (size_t j = 0; j < num_basis; j++) {
-    fprintf(stderr, "\nBasis Metadata: Name: `%s`, Cardinality: %d\n", basis[j].name,
-            basis[j].cardinality);
-    fprintf(stderr,
-            "ordinal,\t subc:  _dim\t_ordinal\t_dof_ordinal\t_num_dof\t xi      eta     zeta\n");
+    printf("\nBasis Metadata: Name: `%s`, Cardinality: %d\n", basis[j].name, basis[j].cardinality);
+    printf("ordinal,\t subc:  _dim\t_ordinal\t_dof_ordinal\t_num_dof\t xi      eta     zeta\n");
     for (int i = 0; i < basis[j].cardinality; i++) {
-      fprintf(stderr, "%8d\t%8d\t%8d\t%8d\t%8d\t%6.3f\t%6.3f\t%6.3f\n", i, basis[j].subc_dim[i],
-              basis[j].subc_ordinal[i], basis[j].subc_dof_ordinal[i], basis[j].subc_num_dof[i],
-              basis[j].xi[i], basis[j].eta[i], basis[j].zeta[i]);
+      printf("%8d\t%8d\t%8d\t%8d\t%8d\t%6.3f\t%6.3f\t%6.3f\n", i, basis[j].subc_dim[i],
+             basis[j].subc_ordinal[i], basis[j].subc_dof_ordinal[i], basis[j].subc_num_dof[i],
+             basis[j].xi[i], basis[j].eta[i], basis[j].zeta[i]);
     }
   }
 }
@@ -111,38 +109,38 @@ static void print_basis_metadata(ex_basis *basis, size_t num_basis)
 static void print_quad_metadata(ex_quadrature *quad, size_t num_quad)
 {
   for (size_t j = 0; j < num_quad; j++) {
-    fprintf(stderr, "\nQuadrature Metadata: Name: `%s`, Cardinality: %d\n", quad[j].name,
-            quad[j].cardinality);
-    fprintf(stderr, "ordinal,\t  xi      eta     zeta    weight\n");
+    printf("\nQuadrature Metadata: Name: `%s`, Cardinality: %d\n", quad[j].name,
+           quad[j].cardinality);
+    printf("ordinal,\t  xi      eta     zeta    weight\n");
     for (int i = 0; i < quad[j].cardinality; i++) {
-      fprintf(stderr, "%8d\t%6.3f\t%6.3f\t%6.3f\t%6.3f\n", i, quad[j].xi[i], quad[j].eta[i],
-              quad[j].zeta[i], quad[j].weight[i]);
+      printf("%8d\t%6.3f\t%6.3f\t%6.3f\t%6.3f\n", i, quad[j].xi[i], quad[j].eta[i], quad[j].zeta[i],
+             quad[j].weight[i]);
     }
   }
 }
 
 static void print_field_metadata(ex_field *field)
 {
-  fprintf(stderr, "\n");
-  fprintf(stderr, "Field Metadata: Name: `%s`, Nesting: %d\n", field->name, field->nesting);
+  printf("\n");
+  printf("Field Metadata: Name: `%s`, Nesting: %d\n", field->name, field->nesting);
   for (int j = 0; j < field->nesting; j++) {
     char sep = field->component_separator[j] == 0 ? ' ' : field->component_separator[j];
     if (field->type[j] == EX_BASIS) {
       char *basis_type = get_type_name(field->type_name, j);
-      fprintf(stderr, "\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
-              ex_field_type_enum_to_string(field->type[j]), basis_type, field->cardinality[j], sep);
+      printf("\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
+             ex_field_type_enum_to_string(field->type[j]), basis_type, field->cardinality[j], sep);
     }
     else if (field->type[j] == EX_QUADRATURE) {
       char *quad_type = get_type_name(field->type_name, j);
-      fprintf(stderr, "\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
-              ex_field_type_enum_to_string(field->type[j]), quad_type, field->cardinality[j], sep);
+      printf("\tNesting level: %d, Type: %s (%s), Cardinality: %d, Separator: \"%c\"\n", j,
+             ex_field_type_enum_to_string(field->type[j]), quad_type, field->cardinality[j], sep);
     }
     else {
-      fprintf(stderr, "\tNesting level: %d, Type: %s, Cardinality: %d, Separator: \"%c\"\n", j,
-              ex_field_type_enum_to_string(field->type[j]), field->cardinality[j], sep);
+      printf("\tNesting level: %d, Type: %s, Cardinality: %d, Separator: \"%c\"\n", j,
+             ex_field_type_enum_to_string(field->type[j]), field->cardinality[j], sep);
     }
     if (field->type[0] == EX_FIELD_TYPE_USER_DEFINED) {
-      fprintf(stderr, "\tUser-defined suffices: %s\n", field->suffices);
+      printf("\tUser-defined suffices: %s\n", field->suffices);
     }
   }
 }
@@ -152,14 +150,14 @@ static void print_full_field_names(ex_field *field)
   if (field->nesting == 1) {
     for (int jj = 1; jj <= field->cardinality[0]; jj++) {
       const char *name = ex_component_field_name(field, (int[]){jj});
-      fprintf(stderr, "\t\tComponent %d, Full name = %s\n", jj, name);
+      printf("\t\tComponent %d, Full name = %s\n", jj, name);
     }
   }
   else if (field->nesting == 2) {
     for (int kk = 1; kk <= field->cardinality[1]; kk++) {
       for (int jj = 1; jj <= field->cardinality[0]; jj++) {
         const char *name = ex_component_field_name(field, (int[]){jj, kk});
-        fprintf(stderr, "\t\tComponent %d %d, Full name = %s\n", jj, kk, name);
+        printf("\t\tComponent %d %d, Full name = %s\n", jj, kk, name);
       }
     }
   }
@@ -168,7 +166,7 @@ static void print_full_field_names(ex_field *field)
       for (int kk = 1; kk <= field->cardinality[1]; kk++) {
         for (int jj = 1; jj <= field->cardinality[0]; jj++) {
           const char *name = ex_component_field_name(field, (int[]){jj, kk, ii});
-          fprintf(stderr, "\t\tComponent %d %d %d, Full name = %s\n", jj, kk, ii, name);
+          printf("\t\tComponent %d %d %d, Full name = %s\n", jj, kk, ii, name);
         }
       }
     }
@@ -179,7 +177,7 @@ static void print_full_field_names(ex_field *field)
         for (int kk = 1; kk <= field->cardinality[1]; kk++) {
           for (int jj = 1; jj <= field->cardinality[0]; jj++) {
             const char *name = ex_component_field_name(field, (int[]){jj, kk, ii, mm});
-            fprintf(stderr, "\t\tComponent %d %d %d %d, Full name = %s\n", jj, kk, ii, mm, name);
+            printf("\t\tComponent %d %d %d %d, Full name = %s\n", jj, kk, ii, mm, name);
           }
         }
       }
