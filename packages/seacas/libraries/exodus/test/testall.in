@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+# Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
 # of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 # NTESS, the U.S. Government retains certain rights in this software.
 #
@@ -351,6 +351,21 @@ echo "begin testrd 1D" >> test.output
 ${PREFIX} ${BINDIR}/testrd${SUFFIX} | grep -v version | ${DIFF} - ${SRCDIR}/testrd-oned.dmp | tee testrd-oned.res
 ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[2]}))
 echo "end testrd 1D, status = $ret_status" >> test.output
+
+echo "testwt-field-metadata - write mesh with enhanced field metadata..."
+echo "begin testwt-field-metadata" >> test.output
+${PREFIX} ${BINDIR}/testwt-field-metadata${SUFFIX} >> test.output
+ret_status=$((ret_status+$?))
+# Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
+${NCDUMP} -d5,5 test-field-metadata.exo | grep @ | ${DIFF} - ${SRCDIR}/testwt-field-metadata.dmp | tee testwt-field-metadata.res
+ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[5]}))
+echo "end testwt-field-metadata, status = $ret_status" >> test.output
+
+echo "testrd-field-metadata - read test of enhanced field metadata file..."
+echo "begin testrd-field-metadata" >> test.output
+${PREFIX} ${BINDIR}/testrd-field-metadata${SUFFIX} | ${DIFF} - ${SRCDIR}/testrd-field-metadata.dmp | tee testrd-field-metadata.res
+ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[2]}))
+echo "end testrd-field-metadata, status = $ret_status" >> test.output
 
 if [ "$THREAD_SAFE" == "YES" ]; then
 
