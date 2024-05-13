@@ -14,6 +14,22 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x)  STRINGIFY(x)
 
+#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) ||                             \
+    defined(__INTEL_LLVM_COMPILER)
+char *strsep(char **stringp, const char *delim)
+{
+  char *rv = *stringp;
+  if (rv) {
+    *stringp += strcspn(*stringp, delim);
+    if (**stringp)
+      *(*stringp)++ = '\0';
+    else
+      *stringp = NULL;
+  }
+  return rv;
+}
+#endif
+
 #define EXCHECK(funcall)                                                                           \
   do {                                                                                             \
     int error = (funcall);                                                                         \
