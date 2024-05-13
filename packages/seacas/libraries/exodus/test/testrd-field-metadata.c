@@ -51,10 +51,10 @@ static char *get_type_name(char *type_name, size_t which)
       token = strsep(&string, ",");
     }
     if (token != NULL) {
-      static char type_name[256 + 1];
-      ex_copy_string(type_name, token, 256);
+      static char tmp_type_name[256 + 1];
+      ex_copy_string(tmp_type_name, token, 256);
       free(tofree);
-      return type_name;
+      return tmp_type_name;
     }
     free(tofree);
   }
