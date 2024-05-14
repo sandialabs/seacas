@@ -123,8 +123,8 @@ Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::getExodusDatabaseFromFile(std::stri
   return edbi;
 }
 
-const Ioss::SideSetContainer* Iocatalyst_DatabaseIOTest::getCatalystDatabaseSideSetsFromExodusFile(std::string &filename, 
-                                                                                  Ioss::PropertyManager dbProps)
+conduit_cpp::Node Iocatalyst_DatabaseIOTest::getConduitFromExodusFile(std::string &filename, 
+                                                                      Ioss::PropertyManager dbProps)
 {
   Iocatalyst::CatalystManager::getInstance().reset();
 
@@ -138,7 +138,7 @@ const Ioss::SideSetContainer* Iocatalyst_DatabaseIOTest::getCatalystDatabaseSide
       Ioss::IOFactory::create(CATALYST_DATABASE_TYPE, CATALYST_DUMMY_DATABASE, Ioss::WRITE_RESULTS,
                               Ioss::ParallelUtils::comm_world(), cdbwProps);
   if (cdb_on_write == nullptr || !cdb_on_write->ok(true)) {
-    return nullptr;
+    return conduit_cpp::Node();
   }
   
   Ioss::Region          cor(edbi);
@@ -147,13 +147,19 @@ const Ioss::SideSetContainer* Iocatalyst_DatabaseIOTest::getCatalystDatabaseSide
   options.data_storage_type = 1;
   Ioss::copy_database(cor, cir, options);
 
-  //Get conduit from Cat Db on write
   auto c_node = reinterpret_cast<conduit_node *>(
         ((Iocatalyst::DatabaseIO *)cdb_on_write)->get_catalyst_conduit_node());
-  
   conduit_cpp::Node conduitNode;
-  conduit_node_set_node(conduit_cpp::c_node(&conduitNode), c_node);
-  
+  auto cpp_node = conduit_cpp::cpp_node(c_node);
+  conduitNode.set(cpp_node);
+  return conduitNode;
+
+}
+
+Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::getCatalystDatabaseFromConduit(conduit_cpp::Node &conduitNode, 
+                                                                                  Ioss::PropertyManager dbProps)
+{
+
   Ioss::PropertyManager cdbrProps = Ioss::PropertyManager(dbProps);
   cdbrProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", conduit_cpp::c_node(&conduitNode)));
   
@@ -165,9 +171,7 @@ const Ioss::SideSetContainer* Iocatalyst_DatabaseIOTest::getCatalystDatabaseSide
     return nullptr;
   }
 
-  Ioss::Region cat_reg(cdb_on_read);
-  auto cat_sideSets = &(cat_reg.get_sidesets());
-  return cat_sideSets;
+  return cdb_on_read;
 }
 
 Ioss::DatabaseIO* Iocatalyst_DatabaseIOTest::getDatabaseOnReadFromFileName(const std::string &fileName,

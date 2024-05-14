@@ -39,7 +39,9 @@ protected:
   
   Ioss::DatabaseIO* getExodusDatabaseFromFile(std::string &filename, 
                                               Ioss::PropertyManager dbProps = {});
-  const Ioss::SideSetContainer* getCatalystDatabaseSideSetsFromExodusFile(std::string &filename, 
+  conduit_cpp::Node getConduitFromExodusFile(std::string &filename, 
+                                             Ioss::PropertyManager dbProps = {});
+  Ioss::DatabaseIO* getCatalystDatabaseFromConduit(conduit_cpp::Node &conduitNode, 
                                                             Ioss::PropertyManager dbProps = {});
 
   Ioss::DatabaseIO* getDatabaseOnReadFromFileName(const std::string &fileName,

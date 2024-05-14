@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
-
+#include <catalyst/Iocatalyst_DatabaseIO.h>
 
 #include <Ioss_ElementBlock.h>
 
@@ -77,9 +77,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_ON)
   addBlockMesh(bm);
 
   Ioss::PropertyManager iossProp;
-  //iossProp.add(Ioss::Property("ENABLE_FIELD_RECOGNITION", "OFF"));
+  iossProp.add(Ioss::Property("ENABLE_FIELD_RECOGNITION", "ON"));
   Ioss::DatabaseIO *exo_d = writeAndGetExodusDatabaseOnRead("test_eb_1_enable_field_recog", iossProp);
-  //Ioss::DatabaseIO *cat_d = writeAndGetCatalystDatabaseOnRead();
 
   Iocatalyst::BlockMeshSet::IOSSparams iop("cat", EXODUS_DATABASE_TYPE, iossProp);
 
@@ -118,8 +117,7 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_OFF)
   Ioss::PropertyManager iossProp;
   iossProp.add(Ioss::Property("ENABLE_FIELD_RECOGNITION", "OFF"));
   Ioss::DatabaseIO *exo_d = writeAndGetExodusDatabaseOnRead("test_eb_1_enable_field_recog", iossProp);
-  //Ioss::DatabaseIO *cat_d = writeAndGetCatalystDatabaseOnRead();
-
+  
   Iocatalyst::BlockMeshSet::IOSSparams iop("cat", EXODUS_DATABASE_TYPE, iossProp);
 
   Ioss::DatabaseIO *cat_d = bmSet.getCatalystDatabase(iop);
@@ -157,7 +155,6 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_ON)
   Ioss::PropertyManager iossProp;
   iossProp.add(Ioss::Property("IGNORE_REALN_FIELDS", "ON"));
   Ioss::DatabaseIO *exo_d = writeAndGetExodusDatabaseOnRead("test_eb_1_ignore_realn_fields", iossProp);
-  //Ioss::DatabaseIO *cat_d = writeAndGetCatalystDatabaseOnRead();
 
   Iocatalyst::BlockMeshSet::IOSSparams iop("cat", EXODUS_DATABASE_TYPE, iossProp);
 
@@ -194,7 +191,6 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_OFF)
   Ioss::PropertyManager iossProp;
   iossProp.add(Ioss::Property("IGNORE_REALN_FIELDS", "OFF"));
   Ioss::DatabaseIO *exo_d = writeAndGetExodusDatabaseOnRead("test_eb_1_ignore_realn_fields_off", iossProp);
-  //Ioss::DatabaseIO *cat_d = writeAndGetCatalystDatabaseOnRead();
 
   Iocatalyst::BlockMeshSet::IOSSparams iop("cat", EXODUS_DATABASE_TYPE, iossProp);
 
@@ -235,7 +231,6 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
   iossProp.add(Ioss::Property("FIELD_SUFFIX_SEPARATOR", ":"));
   
   Ioss::DatabaseIO *exo_d = writeAndGetExodusDatabaseOnRead("test_eb_1_field_suf_sep", iossProp);
-  //Ioss::DatabaseIO *cat_d = writeAndGetCatalystDatabaseOnRead();
 
   Iocatalyst::BlockMeshSet::IOSSparams iop("cat", EXODUS_DATABASE_TYPE, iossProp);
   Ioss::DatabaseIO *cat_d = bmSet.getCatalystDatabase(iop);
@@ -274,7 +269,6 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
   bm.addTransientCellField("foo_y", 3);
   bm.addTransientCellField("foo_z", 4);
 
-
   addBlockMesh(bm);
 
   Ioss::PropertyManager iossProp;
@@ -282,7 +276,6 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
   iossProp.add(Ioss::Property("FIELD_SUFFIX_SEPARATOR", ""));
 
   Ioss::DatabaseIO *exo_d = writeAndGetExodusDatabaseOnRead("test_eb_1_field_strip_tr_unders", iossProp);
-  //Ioss::DatabaseIO *cat_d = writeAndGetCatalystDatabaseOnRead();
 
   Iocatalyst::BlockMeshSet::IOSSparams iop("cat", EXODUS_DATABASE_TYPE, iossProp);
 
@@ -295,10 +288,6 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
   
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
-
-  /*for(auto fname : exo_elemBlock->field_describe(Ioss::Field::TRANSIENT)){
-    std::cout<<fname.c_str()<<std::endl;
-  }*/
 
   bool exo_foo_exists = exo_elemBlock->field_exists("foo");
   bool cat_foo_exists = cat_elemBlock->field_exists("foo");
@@ -323,16 +312,25 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_SURFACE_SPLIT_TYPE)
 
   std::string exoFile = "can.ex2";
   
-  //Ioss::DatabaseIO *cat_d = getCatalystDatabaseFromExodusFile(exoFile, iossProp);
-  const Ioss::SideSetContainer* cat_sideSets = getCatalystDatabaseSideSetsFromExodusFile(exoFile, iossProp);
-  if(cat_sideSets == nullptr){ EXPECT_TRUE(false) << "Catalyst db unable to initialize"; }
+  conduit_cpp::Node c_node = getConduitFromExodusFile(exoFile, iossProp);
+
+  Ioss::DatabaseIO *cat_d = getCatalystDatabaseFromConduit(c_node, iossProp);
+  if(cat_d == nullptr){ EXPECT_TRUE(false) << "Catalyst db unable to initialize"; }
+ 
+  Ioss::Region cat_reg(cat_d);
   
-  EXPECT_TRUE(cat_sideSets->empty())<<"Cat sidesets not empty when different SURFACE_SPLIT_TYPE on write and read";
+  Ioss::SideSetContainer cat_sideSets = cat_reg.get_sidesets();
+  
+  EXPECT_TRUE(cat_sideSets.empty())<<"Cat sidesets not empty when different SURFACE_SPLIT_TYPE";
 
   Ioss::PropertyManager iossProp_s;
   iossProp_s.add(Ioss::Property("SURFACE_SPLIT_TYPE", "TOPOLOGY"));
-  cat_sideSets = getCatalystDatabaseSideSetsFromExodusFile(exoFile, iossProp_s);
-  if(cat_sideSets == nullptr){ EXPECT_TRUE(false) << "Catalyst db unable to initialize"; }
+  cat_d = getCatalystDatabaseFromConduit(c_node, iossProp);
+
+  if(cat_d == nullptr){ EXPECT_TRUE(false) << "Catalyst db unable to initialize"; }
   
-  EXPECT_TRUE(!cat_sideSets->empty())<<"Cat sidesets empty when identical SURFACE_SPLIT_TYPE on write and read";
+  cat_sideSets = cat_reg.get_sidesets();
+
+  EXPECT_TRUE(!cat_sideSets.empty())<<"Cat sidesets empty when identical SURFACE_SPLIT_TYPE";
+
 }

@@ -186,13 +186,10 @@ namespace Iocatalyst {
 
   void BlockMeshSet::saveConduitNode(IOSSparams &iop)
   {
-    //Try to make copy of data here
     auto c_node = reinterpret_cast<conduit_node *>(
         ((Iocatalyst::DatabaseIO *)iop.databaseIO)->get_catalyst_conduit_node());
-    //auto c_node_cpy = conduit_node_create();
-    //auto s = sizeof(conduit_node);
-    //conduit_node_move(c_node, c_node_cpy);
-    conduit_node_set_node(conduit_cpp::c_node(&iop.conduitNode), c_node);
+    auto cpp_node = conduit_cpp::cpp_node(c_node);
+    iop.conduitNode.set(cpp_node);
   }
 
   void BlockMeshSet::writeStructuredBlockDefinitions(IOSSparams &iop)
