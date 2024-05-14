@@ -260,7 +260,7 @@ int ex_get_basis_metadata_count(int exoid) { return exi_get_metadata_count(exoid
 
 int ex_get_quadrature_metadata_count(int exoid) { return exi_get_metadata_count(exoid, "Quad@"); }
 
-int ex_get_basis_metadata(int exoid, ex_basis *basis)
+int ex_get_basis_metadata(int exoid, ex_basis *basis, int num_basis)
 {
   /*
    * -- If this function is called an there is no basis metadata on the
@@ -312,8 +312,11 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis)
       /* Get the basis name.  We know that the `name` is of the form "Basis@{name}@{item}" */
       const char *basis_name = exi_get_attribute_metadata_name(attr_name, 6);
 
-      /* If this is the first time we have seen this `quadrature_name`, then increment count and
-       * store the name */
+      /* This routine can be called multiptle times -- one to get name and cardinality; then
+       * the arrays are allocated and the routine is called again to fill in the array data.
+       * This means that the names/cardinality may or may not be set and we need to make sure
+       * that if it is set, we don't overwrite it
+       */
       int found = -1;
       int which = 0;
       for (int i = 0; i < count; i++) {
@@ -326,6 +329,13 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis)
 
       if (found == -1) {
         which = count;
+        if (count > num_basis) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: Found more basis metadata on the database then space to store them.");
+          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
         strcpy(basis[count].name, basis_name);
         count++;
       }
@@ -405,7 +415,7 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
-int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature)
+int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature, int num_quad)
 {
   /*
    * -- If this function is called an there is no quadrature metadata on the
@@ -457,12 +467,17 @@ int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature)
       /* Get the quadrature name.  We know that the `name` is of the form "Quad@{name}@{item}" */
       const char *quadrature_name = exi_get_attribute_metadata_name(attr_name, 5);
 
-      /* If this is the first time we have seen this `quadrature_name`, then increment count and
-       * store the name */
+      /* This routine can be called multiptle times -- one to get name and cardinality; then
+       * the arrays are allocated and the routine is called again to fill in the array data.
+       * This means that the names/cardinality may or may not be set and we need to make sure
+       * that if it is set, we don't overwrite it
+       */
+
+      /* If this is the first time we have seen this `quadrature_name`, store the name */
       int found = -1;
       int which = 0;
-      for (int i = 0; i < count; i++) {
-        if (strcmp(quadrature[i].name, quadrature_name) == 0) {
+      for (int i = 0; i < num_quad; i++) {
+        if (quadrature[i].name[0] != '\0' && strcmp(quadrature[i].name, quadrature_name) == 0) {
           found = i;
           which = i;
           break;
@@ -470,6 +485,14 @@ int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature)
       }
 
       if (found == -1) {
+        if (count > num_quad) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(
+              errmsg, MAX_ERR_LENGTH,
+              "ERROR: Found more quadrature metadata on the database then space to store them.");
+          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
         which = count;
         strcpy(quadrature[count].name, quadrature_name);
         count++;

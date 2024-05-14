@@ -1052,11 +1052,11 @@ EXODUS_EXPORT int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type
 EXODUS_EXPORT int ex_get_field_suffices(int exoid, const ex_field field, char *suffices);
 
 EXODUS_EXPORT int ex_get_basis_metadata_count(int exoid);
-EXODUS_EXPORT int ex_get_basis_metadata(int exoid, ex_basis *basis);
+EXODUS_EXPORT int ex_get_basis_metadata(int exoid, ex_basis *basis, int num_basis);
 EXODUS_EXPORT int ex_put_basis_metadata(int exoid, const ex_basis basis);
 
 EXODUS_EXPORT int ex_get_quadrature_metadata_count(int exoid);
-EXODUS_EXPORT int ex_get_quadrature_metadata(int exoid, ex_quadrature *quad);
+EXODUS_EXPORT int ex_get_quadrature_metadata(int exoid, ex_quadrature *quad, int num_quad);
 EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, const ex_quadrature quad);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */

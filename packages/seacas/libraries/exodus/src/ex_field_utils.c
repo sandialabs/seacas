@@ -163,13 +163,14 @@ int ex_initialize_quadrature_struct(ex_quadrature *quad, size_t num_quad, int mo
       free(quad[i].weight);
     }
   }
-  /* Fall through if `cardinality < 0` */
   if (mode <= 0) {
     for (size_t i = 0; i < num_quad; i++) {
-      quad[i].xi     = NULL;
-      quad[i].eta    = NULL;
-      quad[i].zeta   = NULL;
-      quad[i].weight = NULL;
+      quad[i].name[0]     = '\0';
+      quad[i].cardinality = 0;
+      quad[i].xi          = NULL;
+      quad[i].eta         = NULL;
+      quad[i].zeta        = NULL;
+      quad[i].weight      = NULL;
     }
   }
   return EX_NOERR;

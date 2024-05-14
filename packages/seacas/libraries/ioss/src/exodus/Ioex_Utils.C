@@ -272,7 +272,7 @@ namespace Ioex {
     // In this call, since the `ex_basis` structs are initialized to
     // all zero and NULL, only the name and cardinality will be
     // populated.
-    ex_get_basis_metadata(exoid, Data(exo_basis));
+    ex_get_basis_metadata(exoid, Data(exo_basis), exo_basis.size());
 
     // allocate memory for all pointer members of `ex_basis`
     // structs. This will query the cardinality and then allocate the
@@ -280,7 +280,7 @@ namespace Ioex {
     ex_initialize_basis_struct(Data(exo_basis), exo_basis.size(), 1);
 
     // Now populate the array data...
-    ex_get_basis_metadata(exoid, Data(exo_basis));
+    ex_get_basis_metadata(exoid, Data(exo_basis), exo_basis.size());
 
     for (const auto &ebasis : exo_basis) {
       Ioss::Basis basis;
@@ -312,7 +312,7 @@ namespace Ioex {
     // In this call, since the `ex_quadrature` structs are initialized to
     // all zero and NULL, only the name and cardinality will be
     // populated.
-    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
+    ex_get_quadrature_metadata(exoid, Data(exo_quadrature), exo_quadrature.size());
 
     // allocate memory for all pointer members of `ex_quadrature`
     // structs. This will query the cardinality and then allocate the
@@ -320,7 +320,7 @@ namespace Ioex {
     ex_initialize_quadrature_struct(Data(exo_quadrature), exo_quadrature.size(), 1);
 
     // Now populate the array data...
-    ex_get_quadrature_metadata(exoid, Data(exo_quadrature));
+    ex_get_quadrature_metadata(exoid, Data(exo_quadrature), exo_quadrature.size());
 
     for (const auto &equadrature : exo_quadrature) {
       std::vector<Ioss::QuadraturePoint> quadrature;

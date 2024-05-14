@@ -247,13 +247,13 @@ int main(int argc, char **argv)
   assert(quad_cnt == 2);
   struct ex_quadrature quad[2];
   EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, 0));
-  EXCHECK(ex_get_quadrature_metadata(exoid, quad));
+  EXCHECK(ex_get_quadrature_metadata(exoid, quad, quad_cnt));
 
   /*
    * Now, allocate memory for all pointer members of quad and call to populate...
    */
   EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, 1));
-  EXCHECK(ex_get_quadrature_metadata(exoid, quad));
+  EXCHECK(ex_get_quadrature_metadata(exoid, quad, quad_cnt));
   print_quad_metadata(quad, quad_cnt);
 
   // ------------------------------------------------------------------------
@@ -261,13 +261,13 @@ int main(int argc, char **argv)
   assert(bas_cnt == 2);
   struct ex_basis basis[2];
   EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, 0));
-  EXCHECK(ex_get_basis_metadata(exoid, basis));
+  EXCHECK(ex_get_basis_metadata(exoid, basis, bas_cnt));
 
   /*
    * Now, allocate memory for all pointer members of basis and call to populate...
    */
   EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, 1));
-  EXCHECK(ex_get_basis_metadata(exoid, basis));
+  EXCHECK(ex_get_basis_metadata(exoid, basis, bas_cnt));
   print_basis_metadata(basis, 2);
 
   {
