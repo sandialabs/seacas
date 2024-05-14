@@ -303,8 +303,8 @@ echo "begin testwt-assembly" >> test.output
 ${PREFIX} ${BINDIR}/testwt-assembly${SUFFIX} >> test.output
 ret_status=$((ret_status+$?))
 # Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
-${NCDUMP} -d5,5 test-assembly.exo | grep -v version | grep -v int64_status| grep -v floating_point | grep -v _FillValue |grep -v word_size|grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/testwt-assembly.dmp | tee testwt-assembly.res
-ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[7]}))
+${NCDUMP} -d5,5 test-assembly.exo | grep -v version | grep -v int64_status| grep -v floating_point | grep -v _FillValue |grep -v word_size|grep -v "maximum_name_length" | grep -v ":SOLID_MODEL" | ${DIFF} - ${SRCDIR}/testwt-assembly.dmp | tee testwt-assembly.res
+ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[8]}))
 echo "end testwt-assembly, status = $ret_status" >> test.output
 
 echo "testrd-assembly - read file containing assembly data"
@@ -318,8 +318,8 @@ echo "begin test-add-assembly" >> test.output
 ${PREFIX} ${BINDIR}/test-add-assembly${SUFFIX} >> test.output
 ret_status=$((ret_status+$?))
 # Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
-${NCDUMP} -d5,5 test-assembly.exo | grep -v version | grep -v int64_status | grep -v floating_point | grep -v _FillValue |grep -v word_size|grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/test-add-assembly.dmp | tee test-add-assembly.res
-ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[7]}))
+${NCDUMP} -d5,5 test-assembly.exo | grep -v version | grep -v int64_status | grep -v floating_point | grep -v _FillValue |grep -v word_size|grep -v "maximum_name_length" | grep -v ":SOLID_MODEL" | ${DIFF} - ${SRCDIR}/test-add-assembly.dmp | tee test-add-assembly.res
+ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[8]}))
 echo "end test-add-assembly, status = $ret_status" >> test.output
 
 echo "testwt-blob - write file containing blob data"
@@ -327,8 +327,8 @@ echo "begin testwt-blob" >> test.output
 ${PREFIX} ${BINDIR}/testwt-blob${SUFFIX} >> test.output
 ret_status=$((ret_status+$?))
 # Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
-${NCDUMP} -d5,5 test-blob.exo | grep -v version | grep -v int64_status | grep -v floating_point | grep -v _FillValue |grep -v word_size|grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/testwt-blob.dmp | tee testwt-blob.res
-ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[7]}))
+${NCDUMP} -d5,5 test-blob.exo | grep -v version | grep -v int64_status | grep -v floating_point | grep -v _FillValue |grep -v word_size|grep -v "maximum_name_length" | grep -v ":SOLID_MODEL" | ${DIFF} - ${SRCDIR}/testwt-blob.dmp | tee testwt-blob.res
+ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[8]}))
 echo "end testwt-blob, status = $ret_status" >> test.output
 
 echo "testrd-blob - read file containing blob data"
@@ -361,10 +361,18 @@ ${NCDUMP} -d5,5 test-field-metadata.exo | grep @ |sort | ${DIFF} - ${SRCDIR}/tes
 ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[3]}))
 echo "end testwt-field-metadata, status = $ret_status" >> test.output
 
+# NOTE: netcdf-4 can put attributes in different order, so in that
+# case, we only test the return status of the application, not diff
+# the output.
 echo "testrd-field-metadata - read test of enhanced field metadata file..."
 echo "begin testrd-field-metadata" >> test.output
-${PREFIX} ${BINDIR}/testrd-field-metadata${SUFFIX} | ${DIFF} - ${SRCDIR}/testrd-field-metadata.dmp | tee testrd-field-metadata.res
-ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[1]}))
+if [ "$1" == "netcdf4" ]; then
+    ${PREFIX} ${BINDIR}/testrd-field-metadata${SUFFIX} | tee testrd-field-metadata.res
+    ret_status=$((ret_status+$?))
+else
+    ${PREFIX} ${BINDIR}/testrd-field-metadata${SUFFIX} | ${DIFF} - ${SRCDIR}/testrd-field-metadata.dmp | tee testrd-field-metadata.res
+    ret_status=$((ret_status+${PIPESTATUS[0]}+${PIPESTATUS[1]}))
+fi
 echo "end testrd-field-metadata, status = $ret_status" >> test.output
 
 if [ "$THREAD_SAFE" == "YES" ]; then
