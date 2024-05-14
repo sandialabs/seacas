@@ -61,8 +61,6 @@ static char *get_type_name(char *type_name, size_t which)
   return NULL;
 }
 
-// TODO: Modify so gets the correct basis or quadrature instead of assuming the first one.
-// TODO: Pass in the quadrature rules also.
 static void get_field_cardinality(ex_field *field, ex_basis *basis, int bas_cnt,
                                   ex_quadrature *quad, int quad_cnt)
 {
