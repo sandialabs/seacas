@@ -14,9 +14,7 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x)  STRINGIFY(x)
 
-#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) ||                             \
-    defined(__INTEL_LLVM_COMPILER)
-char *strsep(char **stringp, const char *delim)
+char *my_strsep(char **stringp, const char *delim)
 {
   char *rv = *stringp;
   if (rv) {
@@ -28,7 +26,6 @@ char *strsep(char **stringp, const char *delim)
   }
   return rv;
 }
-#endif
 
 #define EXCHECK(funcall)                                                                           \
   do {                                                                                             \
@@ -46,9 +43,9 @@ static char *get_type_name(char *type_name, size_t which)
   if (type_name != NULL && type_name[0] != '\0') {
     char *string = strdup(type_name);
     char *tofree = string;
-    char *token  = strsep(&string, ",");
+    char *token  = my_strsep(&string, ",");
     for (int i = 0; i < which; i++) {
-      token = strsep(&string, ",");
+      token = my_strsep(&string, ",");
     }
     if (token != NULL) {
       static char tmp_type_name[256 + 1];

@@ -14,10 +14,7 @@
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
 
-#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) ||                             \
-    defined(__INTEL_LLVM_COMPILER)
-#if !defined(strsep)
-char *strsep(char **stringp, const char *delim)
+char *my_strsep(char **stringp, const char *delim)
 {
   char *rv = *stringp;
   if (rv) {
@@ -29,8 +26,7 @@ char *strsep(char **stringp, const char *delim)
   }
   return rv;
 }
-#endif
-size_t strlcat(char *restrict dst, const char *restrict src, size_t maxlen)
+size_t my_strlcat(char *restrict dst, const char *restrict src, size_t maxlen)
 {
   const size_t srclen = strlen(src);
   const size_t dstlen = strnlen(dst, maxlen);
@@ -45,8 +41,6 @@ size_t strlcat(char *restrict dst, const char *restrict src, size_t maxlen)
   }
   return dstlen + srclen;
 }
-
-#endif
 
 static int number_width(const size_t number)
 {
@@ -84,7 +78,7 @@ const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_
       field_name[fnl]     = field->component_separator[i];
       field_name[fnl + 1] = '\0';
     }
-    strlcat(field_name, suffices[i], EX_MAX_NAME);
+    my_strlcat(field_name, suffices[i], EX_MAX_NAME);
   }
   return field_name;
 }
@@ -311,9 +305,9 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
       // `user_suffices` is a comma-separated string.  Assume component is valid.
       char *string = strdup(field->suffices);
       char *tofree = string;
-      char *token  = strsep(&string, ",");
+      char *token  = my_strsep(&string, ",");
       for (int i = 0; i < component - 1; i++) {
-        token = strsep(&string, ",");
+        token = my_strsep(&string, ",");
       }
       if (token != NULL) {
         static char user_suffix[32 + 1];
