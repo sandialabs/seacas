@@ -43,7 +43,7 @@ char *strsep(char **stringp, const char *delim)
 
 static char *get_type_name(char *type_name, size_t which)
 {
-  if (type_name[0] != '\0') {
+  if (type_name != NULL && type_name[0] != '\0') {
     char *string = strdup(type_name);
     char *tofree = string;
     char *token  = strsep(&string, ",");
