@@ -10,21 +10,10 @@
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include <assert.h>
 #include <math.h>
+#define _GNU_SOURCE
 #include <string.h>
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
-
-char *my_strdup(const char *s)
-{
-  size_t slen   = strlen(s);
-  char  *result = malloc(slen + 1);
-  if (result == NULL) {
-    return NULL;
-  }
-
-  memcpy(result, s, slen + 1);
-  return result;
-}
 
 char *my_strsep(char **stringp, const char *delim)
 {
@@ -315,7 +304,7 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
   case EX_FIELD_TYPE_USER_DEFINED: {
     if (field->suffices[0] != '\0') {
       // `user_suffices` is a comma-separated string.  Assume component is valid.
-      char *string = my_strdup(field->suffices);
+      char *string = strdup(field->suffices);
       char *tofree = string;
       char *token  = my_strsep(&string, ",");
       for (int i = 0; i < component - 1; i++) {
