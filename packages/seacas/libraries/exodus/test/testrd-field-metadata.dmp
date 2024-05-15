@@ -1,31 +1,5 @@
 
 after ex_open
-after ex_get_field_metadata(exoid, fields), error = 0
-
-Field Metadata: Name: `Disp`, Nesting: 1
-	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: " "
-		Component 1, Full name = DispX
-		Component 2, Full name = DispY
-		Component 3, Full name = DispZ
-
-Field Metadata: Name: `Velocity`, Nesting: 1
-	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: "%"
-		Component 1, Full name = Velocity%X
-		Component 2, Full name = Velocity%Y
-		Component 3, Full name = Velocity%Z
-after ex_get_field_metadata(exoid, fields), error = 0
-
-Field Metadata: Name: `Disp`, Nesting: 1
-	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: " "
-		Component 1, Full name = DispX
-		Component 2, Full name = DispY
-		Component 3, Full name = DispZ
-
-Field Metadata: Name: `Velocity`, Nesting: 1
-	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: "%"
-		Component 1, Full name = Velocity%X
-		Component 2, Full name = Velocity%Y
-		Component 3, Full name = Velocity%Z
 after ex_initialize_quadrature_struct(quad, quad_cnt, 0), error = 0
 after ex_get_quadrature_metadata(exoid, quad, quad_cnt), error = 0
 after ex_initialize_quadrature_struct(quad, quad_cnt, 1), error = 0
@@ -68,6 +42,32 @@ ordinal,	 subc:  _dim	_ordinal	_dof_ordinal	_num_dof	 xi      eta     zeta
        0	       0	       0	       0	       1	-1.000	-1.000	 1.000
        1	       0	       1	       0	       1	 1.000	-1.000	-1.000
        2	       0	       2	       0	       1	 1.000	 1.000	 1.000
+after ex_get_field_metadata(exoid, fields), error = 0
+
+Field Metadata: Name: `Disp`, Nesting: 1
+	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: " "
+		Component 1, Full name = DispX
+		Component 2, Full name = DispY
+		Component 3, Full name = DispZ
+
+Field Metadata: Name: `Velocity`, Nesting: 1
+	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: "%"
+		Component 1, Full name = Velocity%X
+		Component 2, Full name = Velocity%Y
+		Component 3, Full name = Velocity%Z
+after ex_get_field_metadata(exoid, fields), error = 0
+
+Field Metadata: Name: `Disp`, Nesting: 1
+	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: " "
+		Component 1, Full name = DispX
+		Component 2, Full name = DispY
+		Component 3, Full name = DispZ
+
+Field Metadata: Name: `Velocity`, Nesting: 1
+	Nesting level: 0, Type: EX_VECTOR_3D, Cardinality: 3, Separator: "%"
+		Component 1, Full name = Velocity%X
+		Component 2, Full name = Velocity%Y
+		Component 3, Full name = Velocity%Z
 after ex_get_field_metadata(exoid, fields), error = 0
 
 Field Metadata: Name: `Gradient`, Nesting: 2
@@ -126,5 +126,6 @@ Field Metadata: Name: `Species`, Nesting: 2
 		Component 3 2, Full name = Species_ch4-1
 		Component 4 2, Full name = Species_methane-1
 after ex_initialize_basis_struct(basis, bas_cnt, -1), error = 0
+after ex_initialize_quadrature_struct(quad, quad_cnt, -1), error = 0
 
 after ex_close, error =   0

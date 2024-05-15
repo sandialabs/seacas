@@ -239,33 +239,6 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  /* Check for nodal fields... */
-  {
-    int fld_cnt = ex_get_field_metadata_count(exoid, EX_NODAL, 0);
-    assert(fld_cnt == 2);
-    ex_field fields[2] = {{.entity_type = EX_NODAL}, {.entity_type = EX_NODAL}};
-    EXCHECK(ex_get_field_metadata(exoid, fields));
-
-    for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], NULL, 0, NULL, 0);
-      print_field_metadata(&fields[i]);
-      print_full_field_names(&fields[i]);
-    }
-  }
-
-  {
-    int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 10);
-    assert(fld_cnt == 2);
-    ex_field fields[2] = {{.entity_id = 10, .entity_type = EX_ELEM_BLOCK},
-                          {.entity_id = 10, .entity_type = EX_ELEM_BLOCK}};
-    EXCHECK(ex_get_field_metadata(exoid, fields));
-
-    for (int i = 0; i < fld_cnt; i++) {
-      get_field_cardinality(&fields[i], NULL, 0, NULL, 0);
-      print_field_metadata(&fields[i]);
-      print_full_field_names(&fields[i]);
-    }
-  }
   // ------------------------------------------------------------------------
   int quad_cnt = ex_get_quadrature_metadata_count(exoid);
   assert(quad_cnt == 2);
@@ -294,6 +267,33 @@ int main(int argc, char **argv)
   EXCHECK(ex_get_basis_metadata(exoid, basis, bas_cnt));
   print_basis_metadata(basis, 2);
 
+  /* Check for nodal fields... */
+  {
+    int fld_cnt = ex_get_field_metadata_count(exoid, EX_NODAL, 0);
+    assert(fld_cnt == 2);
+    ex_field fields[2] = {{.entity_type = EX_NODAL}, {.entity_type = EX_NODAL}};
+    EXCHECK(ex_get_field_metadata(exoid, fields));
+
+    for (int i = 0; i < fld_cnt; i++) {
+      get_field_cardinality(&fields[i], NULL, 0, NULL, 0);
+      print_field_metadata(&fields[i]);
+      print_full_field_names(&fields[i]);
+    }
+  }
+
+  {
+    int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 10);
+    assert(fld_cnt == 2);
+    ex_field fields[2] = {{.entity_id = 10, .entity_type = EX_ELEM_BLOCK},
+                          {.entity_id = 10, .entity_type = EX_ELEM_BLOCK}};
+    EXCHECK(ex_get_field_metadata(exoid, fields));
+
+    for (int i = 0; i < fld_cnt; i++) {
+      get_field_cardinality(&fields[i], NULL, 0, NULL, 0);
+      print_field_metadata(&fields[i]);
+      print_full_field_names(&fields[i]);
+    }
+  }
   {
     int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 11);
     assert(fld_cnt == 3);
