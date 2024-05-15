@@ -16,8 +16,11 @@
 
 char *my_strsep(char **stringp, const char *delim)
 {
+  assert(delim != NULL);
   char *rv = *stringp;
   if (rv) {
+    assert(stringp != NULL);
+    assert(*stringp != NULL);
     *stringp += strcspn(*stringp, delim);
     if (**stringp)
       *(*stringp)++ = '\0';

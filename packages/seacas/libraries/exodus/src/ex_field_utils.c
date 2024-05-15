@@ -14,6 +14,18 @@
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
 
+char *my_strdup(const char *s)
+{
+  size_t slen   = strlen(s);
+  char  *result = malloc(slen + 1);
+  if (result == NULL) {
+    return NULL;
+  }
+
+  memcpy(result, s, slen + 1);
+  return result;
+}
+
 char *my_strsep(char **stringp, const char *delim)
 {
   char *rv = *stringp;
@@ -29,7 +41,7 @@ char *my_strsep(char **stringp, const char *delim)
 size_t my_strlcat(char *restrict dst, const char *restrict src, size_t maxlen)
 {
   const size_t srclen = strlen(src);
-  const size_t dstlen = strnlen(dst, maxlen);
+  const size_t dstlen = strlen(dst);
   if (dstlen == maxlen)
     return maxlen + srclen;
   if (srclen < maxlen - dstlen) {
@@ -63,7 +75,7 @@ const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_
   //       For thread-safety, it is up to calling code.
 
   // Return the name of the field corresponding to the specified 1-based component(s)
-  static char field_name[EX_MAX_NAME];
+  static char field_name[EX_MAX_NAME + 1];
   const char *suffices[EX_MAX_FIELD_NESTING] = {NULL};
   for (int i = 0; i < field->nesting; i++) {
     suffices[i] = ex_field_component_suffix(field, i, component[i]);
@@ -303,7 +315,7 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
   case EX_FIELD_TYPE_USER_DEFINED: {
     if (field->suffices[0] != '\0') {
       // `user_suffices` is a comma-separated string.  Assume component is valid.
-      char *string = strdup(field->suffices);
+      char *string = my_strdup(field->suffices);
       char *tofree = string;
       char *token  = my_strsep(&string, ",");
       for (int i = 0; i < component - 1; i++) {
