@@ -279,6 +279,7 @@ int main(int argc, char **argv)
   EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, 1));
   EXCHECK(ex_get_quadrature_metadata(exoid, quad, quad_cnt));
   print_quad_metadata(quad, quad_cnt);
+  EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, -1));
 
   // ------------------------------------------------------------------------
   int bas_cnt = ex_get_basis_metadata_count(exoid);
