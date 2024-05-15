@@ -6,6 +6,7 @@
  * See packages/seacas/LICENSE for details
  */
 
+#undef NDEBUG
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

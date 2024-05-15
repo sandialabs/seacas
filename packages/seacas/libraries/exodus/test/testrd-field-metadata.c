@@ -5,15 +5,27 @@
  *
  * See packages/seacas/LICENSE for details
  */
+#undef NDEBUG
 #include "exodusII.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define _GNU_SOURCE
 #include <string.h>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x)  STRINGIFY(x)
+
+char *my_strdup(const char *s)
+{
+  size_t slen   = strlen(s);
+  char  *result = malloc(slen + 1);
+  if (result == NULL) {
+    return NULL;
+  }
+
+  memcpy(result, s, slen + 1);
+  return result;
+}
 
 char *my_strsep(char **stringp, const char *delim)
 {
@@ -45,7 +57,7 @@ char *my_strsep(char **stringp, const char *delim)
 static char *get_type_name(char *type_name, size_t which)
 {
   if (type_name != NULL && type_name[0] != '\0') {
-    char *string = strdup(type_name);
+    char *string = my_strdup(type_name);
     char *tofree = string;
     char *token  = my_strsep(&string, ",");
     for (int i = 0; i < which; i++) {
@@ -162,16 +174,20 @@ static void print_field_metadata(ex_field *field)
 
 static void print_full_field_names(ex_field *field)
 {
+  int component[EX_MAX_FIELD_NESTING];
   if (field->nesting == 1) {
     for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-      const char *name = ex_component_field_name(field, (int[]){jj});
+      component[0]     = jj;
+      const char *name = ex_component_field_name(field, component);
       printf("\t\tComponent %d, Full name = %s\n", jj, name);
     }
   }
   else if (field->nesting == 2) {
     for (int kk = 1; kk <= field->cardinality[1]; kk++) {
       for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-        const char *name = ex_component_field_name(field, (int[]){jj, kk});
+        component[0]     = jj;
+        component[1]     = kk;
+        const char *name = ex_component_field_name(field, component);
         printf("\t\tComponent %d %d, Full name = %s\n", jj, kk, name);
       }
     }
@@ -180,7 +196,10 @@ static void print_full_field_names(ex_field *field)
     for (int ii = 1; ii <= field->cardinality[2]; ii++) {
       for (int kk = 1; kk <= field->cardinality[1]; kk++) {
         for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-          const char *name = ex_component_field_name(field, (int[]){jj, kk, ii});
+          component[0]     = jj;
+          component[1]     = kk;
+          component[2]     = ii;
+          const char *name = ex_component_field_name(field, component);
           printf("\t\tComponent %d %d %d, Full name = %s\n", jj, kk, ii, name);
         }
       }
@@ -191,7 +210,11 @@ static void print_full_field_names(ex_field *field)
       for (int ii = 1; ii <= field->cardinality[2]; ii++) {
         for (int kk = 1; kk <= field->cardinality[1]; kk++) {
           for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-            const char *name = ex_component_field_name(field, (int[]){jj, kk, ii, mm});
+            component[0]     = jj;
+            component[1]     = kk;
+            component[2]     = ii;
+            component[3]     = mm;
+            const char *name = ex_component_field_name(field, component);
             printf("\t\tComponent %d %d %d %d, Full name = %s\n", jj, kk, ii, mm, name);
           }
         }
