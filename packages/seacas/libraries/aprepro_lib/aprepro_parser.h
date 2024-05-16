@@ -2,7 +2,7 @@
 
 // Skeleton interface for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015, 2018-2021, 2023 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #ifndef YY_SEAMS_APREPRO_PARSER_H_INCLUDED
 #define YY_SEAMS_APREPRO_PARSER_H_INCLUDED
 
-// NOLINTBEGIN
 #include <cstdlib> // std::abort
 #include <iostream>
 #include <stdexcept>
@@ -178,7 +177,6 @@
 #endif /* ! defined SEAMSDEBUG */
 
 namespace SEAMS {
-#line 190 "aprepro_parser.h"
 
   /// A Bison parser.
   class Parser
@@ -192,14 +190,11 @@ namespace SEAMS {
 #else
     /// Symbol semantic values.
     union value_type {
-#line 69 "/Users/gdsjaar/src/seacas/packages/seacas/libraries/aprepro_lib/aprepro.yy"
 
       double         val;    /* For returning numbers.               */
       struct symrec *tptr;   /* For returning symbol-table pointers  */
       char          *string; /* For returning quoted strings         */
       struct array  *arrval; /* For returning arrays                 */
-
-#line 215 "aprepro_parser.h"
     };
 #endif
     /// Backward compatibility (Bison 3.8).
@@ -781,7 +776,7 @@ namespace SEAMS {
 
     /// Constants.
     enum {
-      yylast_  = 1324, ///< Last index in yytable_.
+      yylast_  = 1841, ///< Last index in yytable_.
       yynnts_  = 7,    ///< Number of nonterminal symbols.
       yyfinal_ = 2     ///< Termination state number.
     };
@@ -791,7 +786,5 @@ namespace SEAMS {
   };
 
 } // namespace SEAMS
-#line 881 "aprepro_parser.h"
 
-// NOLINTEND
 #endif // !YY_SEAMS_APREPRO_PARSER_H_INCLUDED

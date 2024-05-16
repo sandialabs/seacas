@@ -25,31 +25,31 @@ function check_exec()
 
 function check_valid()
 {
-    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
+    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ] || [ "${!1}" == "yes" ] || [ "${!1}" == "on" ]; then
         echo "YES"
-        return 1
+        return 0
     fi
-    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
+    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ] || [ "${!1}" == "no" ] || [ "${!1}" == "off" ]; then
         echo "NO"
-        return 1
+        return 0
     fi
-    echo "${txtred}Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF${txtrst}"
+    printf "${txtred}\nERROR: Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF\n\n${txtrst}" >& 2
     exit 1
 }
 
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
-DOWNLOAD=$(check_valid DOWNLOAD)
+DOWNLOAD=$(check_valid DOWNLOAD) || exit
 
 BUILD=${BUILD:-YES}
-BUILD=$(check_valid BUILD)
+BUILD=$(check_valid BUILD) || exit
 
 # Force downloading and installation even if the TPL already exists in lib/include
 FORCE=${FORCE:-NO}
-FORCE=$(check_valid FORCE)
+FORCE=$(check_valid FORCE) || exit
 
 DEBUG=${DEBUG:-NO}
-DEBUG=$(check_valid DEBUG)
+DEBUG=$(check_valid DEBUG) || exit
 
 # Shared libraries or static libraries?
 # For CRAY, must explicitly specify SHARED=YES, or it will default to NO
@@ -60,36 +60,36 @@ then
 else
     SHARED="${SHARED:-YES}"
 fi
-SHARED=$(check_valid SHARED)
+SHARED=$(check_valid SHARED) || exit
 
 # Enable Burst-Buffer support in PnetCDF?
 BB=${BB:-NO}
-BB=$(check_valid BB)
+BB=$(check_valid BB) || exit
 
 CRAY=${CRAY:-NO}
-CRAY=$(check_valid CRAY)
+CRAY=$(check_valid CRAY) || exit
 
 MPI=${MPI:-NO}
-MPI=$(check_valid MPI)
+MPI=$(check_valid MPI) || exit
 
 # Which TPLS? (NetCDF always, but can be disabled if using an external version, PnetCDF if MPI=ON)
 NETCDF=${NETCDF:-YES}
-NETCDF=$(check_valid NETCDF)
+NETCDF=$(check_valid NETCDF) || exit
 PNETCDF=${PNETCDF:-${MPI}}
-PNETCDF=$(check_valid PNETCDF)
+PNETCDF=$(check_valid PNETCDF) || exit
 HDF5=${HDF5:-YES}
-HDF5=$(check_valid HDF5)
+HDF5=$(check_valid HDF5) || exit
 CGNS=${CGNS:-${HDF5}}
-CGNS=$(check_valid CGNS)
+CGNS=$(check_valid CGNS) || exit
 
 MATIO=${MATIO:-YES}
-MATIO=$(check_valid MATIO)
+MATIO=$(check_valid MATIO) || exit
 
 PARMETIS=${PARMETIS:-NO}
-PARMETIS=$(check_valid PARMETIS)
+PARMETIS=$(check_valid PARMETIS) || exit
 
 METIS=${METIS:-NO}
-METIS=$(check_valid METIS)
+METIS=$(check_valid METIS) || exit
 
 if [ "$PARMETIS" == "YES" ]
 then
@@ -97,13 +97,13 @@ then
 fi
 
 FMT=${FMT:-YES}
-FMT=$(check_valid FMT)
+FMT=$(check_valid FMT) || exit
 
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
-GNU_PARALLEL=$(check_valid GNU_PARALLEL)
+GNU_PARALLEL=$(check_valid GNU_PARALLEL) || exit
 
 USE_ZLIB_NG=${USE_ZLIB_NG:-NO}
-USE_ZLIB_NG=$(check_valid USE_ZLIB_NG)
+USE_ZLIB_NG=$(check_valid USE_ZLIB_NG) || exit
 
 if [ "${USE_ZLIB_NG}" == "YES" ]
 then
@@ -111,39 +111,39 @@ then
 fi
 
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
-NEEDS_ZLIB=$(check_valid NEEDS_ZLIB)
+NEEDS_ZLIB=$(check_valid NEEDS_ZLIB) || exit
 
 NEEDS_SZIP=${NEEDS_SZIP:-NO}
-NEEDS_SZIP=$(check_valid NEEDS_SZIP)
+NEEDS_SZIP=$(check_valid NEEDS_SZIP) || exit
 
 USE_AEC=${USE_AEC:-NO}
-USE_AEC=$(check_valid USE_AEC)
+USE_AEC=$(check_valid USE_AEC) || exit
 
 KOKKOS=${KOKKOS:-NO}
-KOKKOS=$(check_valid KOKKOS)
+KOKKOS=$(check_valid KOKKOS) || exit
 
 H5VERSION=${H5VERSION:-V114}
 # Build/Install the HDF5 C++ library?
 H5CPP=${H5CPP:-NO}
-H5CPP=$(check_valid H5CPP)
+H5CPP=$(check_valid H5CPP) || exit
 
 FAODEL=${FAODEL:-NO}
-FAODEL=$(check_valid FAODEL)
+FAODEL=$(check_valid FAODEL) || exit
 
 BOOST=${BOOST:-NO}
-BOOST=$(check_valid BOOST)
+BOOST=$(check_valid BOOST) || exit
 
 ADIOS2=${ADIOS2:-NO}
-ADIOS2=$(check_valid ADIOS2)
+ADIOS2=$(check_valid ADIOS2) || exit
 
 CATALYST2=${CATALYST2:-NO}
-CATALYST2=$(check_valid CATALYST2)
+CATALYST2=$(check_valid CATALYST2) || exit
 
 GTEST=${GTEST:-${FAODEL}}
-GTEST=$(check_valid GTEST)
+GTEST=$(check_valid GTEST) || exit
 
 CATCH2=${CATCH2:-YES}
-CATCH2=$(check_valid CATCH2)
+CATCH2=$(check_valid CATCH2) || exit
 
 
 SUDO=${SUDO:-}
@@ -151,7 +151,7 @@ JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
 
 USE_PROXY=${USE_PROXY:-NO}
-USE_PROXY=$(check_valid USE_PROXY)
+USE_PROXY=$(check_valid USE_PROXY) || exit
 
 if [ "${USE_PROXY}" == "YES" ]
 then
@@ -159,7 +159,7 @@ then
     export https_proxy="https://proxy.sandia.gov:80"
 fi
 
-pwd
+echo "Current Location = $(pwd)"
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "YES" ] && [ "$CRAY" == "YES" ]
@@ -482,6 +482,7 @@ then
             fi
 	fi
 	# Create default plugin directory...
+	mkdir  ${INSTALL_PATH}/lib
 	mkdir  ${INSTALL_PATH}/lib/hdf5
 	mkdir  ${INSTALL_PATH}/lib/hdf5/lib
 	mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
