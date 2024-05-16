@@ -99,6 +99,11 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_ON)
   if(exo_foo_exists && cat_foo_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("foo") == cat_elemBlock->get_field("foo"));
   
+  //Check foo_x doesn't exist
+  bool exo_foo_x_exists = exo_elemBlock->field_exists("foo_x");
+  bool cat_foo_x_exists = cat_elemBlock->field_exists("foo_x");
+  EXPECT_FALSE(exo_foo_x_exists);
+  EXPECT_FALSE(cat_foo_x_exists);
 }
 
 //Sanity Test
@@ -325,11 +330,13 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_SURFACE_SPLIT_TYPE)
 
   Ioss::PropertyManager iossProp_s;
   iossProp_s.add(Ioss::Property("SURFACE_SPLIT_TYPE", "TOPOLOGY"));
-  cat_d = getCatalystDatabaseFromConduit(c_node, iossProp);
+  cat_d = getCatalystDatabaseFromConduit(c_node, iossProp_s);
 
   if(cat_d == nullptr){ EXPECT_TRUE(false) << "Catalyst db unable to initialize"; }
+
+  Ioss::Region cat_reg_same(cat_d);
   
-  cat_sideSets = cat_reg.get_sidesets();
+  cat_sideSets = cat_reg_same.get_sidesets();
 
   EXPECT_TRUE(!cat_sideSets.empty())<<"Cat sidesets empty when identical SURFACE_SPLIT_TYPE";
 
