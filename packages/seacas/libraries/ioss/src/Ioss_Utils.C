@@ -599,7 +599,7 @@ namespace {
           // will be 1,2,...)
           bool is_composite = dynamic_cast<const Ioss::CompositeVariableType *>(
                                   field.transformed_storage()) != nullptr;
-          
+
           Ioss::Suffix suffix{tmp[tmp.size() - (is_composite ? 2 : 1)]};
           field.set_suffices_uppercase(suffix.is_uppercase());
           field.set_index(index);
@@ -1344,7 +1344,7 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
 }
 
 void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
-                              const std::string &header, const std::string &suffix)
+                              const std::string &header, const std::string &suffix, bool detail)
 {
   Ioss::NameList fields = ige->field_describe(role);
 
@@ -1367,13 +1367,19 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
     cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
   }
   for (const auto &field_name : fields) {
-    const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
-    int                       comp_count = var_type->component_count();
-    fmt::print("{1:>{0}s}:{2}  ", max_width, field_name, comp_count);
-    cur_out += max_width + 4;
-    if (cur_out + max_width >= width) {
-      fmt::print(suffix);
-      cur_out = 8;
+    if (detail) {
+      const auto &field_ref = ige->get_fieldref(field_name);
+      fmt::print("{}{}", field_ref, suffix);
+    }
+    else {
+      const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
+      int                       comp_count = var_type->component_count();
+      fmt::print("{1:>{0}s}:{2}  ", max_width, field_name, comp_count);
+      cur_out += max_width + 4;
+      if (cur_out + max_width >= width) {
+        fmt::print(suffix);
+        cur_out = 8;
+      }
     }
   }
   if (!header.empty()) {

@@ -562,7 +562,8 @@ namespace Ioss {
     static void generate_history_mesh(Ioss::Region *region);
 
     static void info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
-                            const std::string &header, const std::string &suffix = "\n\t");
+                            const std::string &header, const std::string &suffix = "\n\t",
+                            bool detail = false);
 
     static void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
                               const std::string &header, const std::string &suffix = "\n\t",

@@ -64,15 +64,15 @@
 namespace {
   void info_timesteps(Ioss::Region &region);
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interFace);
-  void info_edgeblock(Ioss::Region &region);
-  void info_faceblock(Ioss::Region &region);
+  void info_edgeblock(Ioss::Region &region, const Info::Interface &interFace);
+  void info_faceblock(Ioss::Region &region, const Info::Interface &interFace);
   void info_elementblock(Ioss::Region &region, const Info::Interface &interFace);
   void info_structuredblock(Ioss::Region &region, const Info::Interface &interFace);
 
-  void info_nodesets(Ioss::Region &region);
-  void info_edgesets(Ioss::Region &region);
-  void info_facesets(Ioss::Region &region);
-  void info_elementsets(Ioss::Region &region);
+  void info_nodesets(Ioss::Region &region, const Info::Interface &interFace);
+  void info_edgesets(Ioss::Region &region, const Info::Interface &interFace);
+  void info_facesets(Ioss::Region &region, const Info::Interface &interFace);
+  void info_elementsets(Ioss::Region &region, const Info::Interface &interFace);
 
   void info_sidesets(Ioss::Region &region, const Info::Interface &interFace);
   void info_coordinate_frames(Ioss::Region &region);
@@ -265,7 +265,8 @@ namespace {
     Ioss::Utils::info_fields(&nb, Ioss::Field::ATTRIBUTE,
                              prefix + "\tAttributes: ", "\n\t\t" + prefix);
     Ioss::Utils::info_fields(&nb, Ioss::Field::TRANSIENT,
-                             prefix + "\tTransient:  ", "\n\t\t" + prefix);
+                             prefix + "\tTransient:  ", "\n\t\t" + prefix,
+                             interFace.field_details());
 
     if (interFace.compute_bbox() && region.mesh_type() != Ioss::MeshType::STRUCTURED) {
       print_bbox(nb);
@@ -299,7 +300,8 @@ namespace {
                  fmt::group_digits(num_node));
 
       info_aliases(region, sb, true, false);
-      Ioss::Utils::info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      Ioss::Utils::info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(sb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ", "\t");
       info_nodeblock(region, sb->get_node_block(), interFace, "\t");
       fmt::print("\n");
@@ -403,7 +405,8 @@ namespace {
           fmt::print("{}  ", block);
         }
       }
-      Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(eb, Ioss::Field::REDUCTION, "\n\tTransient  (Reduction):  ");
 
       if (interFace.compute_bbox()) {
@@ -412,7 +415,7 @@ namespace {
     }
   }
 
-  void info_edgeblock(Ioss::Region &region)
+  void info_edgeblock(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::EdgeBlockContainer &ebs = region.get_edge_blocks();
     for (auto &eb : ebs) {
@@ -433,13 +436,14 @@ namespace {
           fmt::print("{}  ", block);
         }
 #endif
-      Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(eb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       fmt::print("\n");
     }
   }
 
-  void info_faceblock(Ioss::Region &region)
+  void info_faceblock(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::FaceBlockContainer &ebs = region.get_face_blocks();
     for (auto &eb : ebs) {
@@ -460,7 +464,8 @@ namespace {
           fmt::print("{}  ", block);
         }
 #endif
-      Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(eb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       fmt::print("\n");
     }
@@ -480,7 +485,8 @@ namespace {
 #endif
       }
       info_aliases(region, fs, true, false);
-      Ioss::Utils::info_fields(fs, Ioss::Field::TRANSIENT, "\n\tTransient: ");
+      Ioss::Utils::info_fields(fs, Ioss::Field::TRANSIENT, "\n\tTransient: ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(fs, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       if (interFace.adjacencies()) {
         Ioss::NameList blocks;
@@ -499,14 +505,15 @@ namespace {
         fmt::print("\t{}, {:8} sides, {:3d} attributes, {:8} distribution factors.\n", name(fb),
                    fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
         info_df(fb, "\t\t");
-        Ioss::Utils::info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient: ", "\n\t\t");
+        Ioss::Utils::info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient: ", "\n\t\t",
+                                 interFace.field_details());
         Ioss::Utils::info_fields(fb, Ioss::Field::REDUCTION,
                                  "\t\tTransient (Reduction):  ", "\n\t\t");
       }
     }
   }
 
-  void info_nodesets(Ioss::Region &region)
+  void info_nodesets(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::NodeSetContainer &nss = region.get_nodesets();
     for (auto &ns : nss) {
@@ -519,12 +526,13 @@ namespace {
       info_aliases(region, ns, false, true);
       info_df(ns, "\t");
       Ioss::Utils::info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
-      Ioss::Utils::info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      Ioss::Utils::info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(ns, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
-  void info_edgesets(Ioss::Region &region)
+  void info_edgesets(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::EdgeSetContainer &nss = region.get_edgesets();
     for (auto &ns : nss) {
@@ -535,12 +543,13 @@ namespace {
       info_aliases(region, ns, false, true);
       info_df(ns, "\t");
       Ioss::Utils::info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
-      Ioss::Utils::info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      Ioss::Utils::info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(ns, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
-  void info_facesets(Ioss::Region &region)
+  void info_facesets(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::FaceSetContainer &fss = region.get_facesets();
     for (auto &fs : fss) {
@@ -551,12 +560,13 @@ namespace {
       info_aliases(region, fs, false, true);
       info_df(fs, "\t");
       Ioss::Utils::info_fields(fs, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
-      Ioss::Utils::info_fields(fs, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      Ioss::Utils::info_fields(fs, Ioss::Field::TRANSIENT, "\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(fs, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
-  void info_elementsets(Ioss::Region &region)
+  void info_elementsets(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::ElementSetContainer &ess = region.get_elementsets();
     for (auto &es : ess) {
@@ -565,7 +575,8 @@ namespace {
       info_aliases(region, es, false, true);
       info_df(es, "\t");
       Ioss::Utils::info_fields(es, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
-      Ioss::Utils::info_fields(es, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      Ioss::Utils::info_fields(es, Ioss::Field::TRANSIENT, "\tTransient:  ", "\n\t",
+                               interFace.field_details());
       Ioss::Utils::info_fields(es, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
@@ -688,15 +699,15 @@ namespace Ioss {
           info_region(region);
           info_assemblies(region);
           info_nodeblock(region, interFace);
-          info_edgeblock(region);
-          info_faceblock(region);
+          info_edgeblock(region, interFace);
+          info_faceblock(region, interFace);
           info_elementblock(region, interFace);
           info_structuredblock(region, interFace);
 
-          info_nodesets(region);
-          info_edgesets(region);
-          info_facesets(region);
-          info_elementsets(region);
+          info_nodesets(region, interFace);
+          info_edgesets(region, interFace);
+          info_facesets(region, interFace);
+          info_elementsets(region, interFace);
 
           info_sidesets(region, interFace);
           info_blobs(region);
