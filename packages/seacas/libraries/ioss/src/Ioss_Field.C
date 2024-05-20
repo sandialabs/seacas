@@ -42,13 +42,20 @@ namespace Ioss {
     for (size_t i = 0; i < components.size(); i++) {
       components[i] = fld.get_component_name(i + 1, Field::InOut::INPUT, 1);
     }
-    fmt::print(os,
-               "\tField: {}, {}\t{}\t{} ({} x {}), Sep1: '{}', Sep2: '{}'\n"
-               "\t\tComponents: {}\n",
-               fld.get_name(), fld.type_string(), fld.role_string(), fld.raw_storage()->name(),
-               fld.get_component_count(Field::InOut::INPUT), fld.raw_count(),
-               fld.get_suffix_separator(0), fld.get_suffix_separator(1),
-               fmt::join(components, ", "));
+    auto storage = fld.raw_storage()->name();
+    if (storage == "scalar") {
+      fmt::print(os, "\tField: {}, Storage: {}\t{}\t{}\n", fld.get_name(),
+                 fld.raw_storage()->name(), fld.type_string(), fld.role_string());
+    }
+    else {
+      fmt::print(os,
+                 "\tField: {}, Storage: {} ({}),\t{},\t{}, Sep1: '{}', Sep2: '{}'\n"
+                 "\t\tComponents ({}): {}\n",
+                 fld.get_name(), fld.raw_storage()->name(), fld.raw_storage()->type_string(),
+                 fld.type_string(), fld.role_string(), fld.get_suffix_separator(0),
+                 fld.get_suffix_separator(1), fld.get_component_count(Field::InOut::INPUT),
+                 fmt::join(components, ", "));
+    }
     return os;
   }
 } // namespace Ioss
