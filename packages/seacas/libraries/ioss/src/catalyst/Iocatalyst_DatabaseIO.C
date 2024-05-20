@@ -766,7 +766,7 @@ namespace Iocatalyst {
         this->readProperties(child[detail::PROPERTIES], block);
 
         // read fields (meta-data only)
-        this->readFields(child[detail::FIELDS], block, region->get_database());
+        this->readFields(child[detail::FIELDS], block);
       }
       return true;
     }
@@ -816,9 +816,10 @@ namespace Iocatalyst {
     }
 
     template <typename GroupingEntityT>
-    bool readFields(const conduit_cpp::Node &&parent, GroupingEntityT *block, Ioss::DatabaseIO  *dbase) const
+    bool readFields(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
       //Assumption: count = entity_count (in block)
+      Ioss::DatabaseIO  *dbase = block->get_database();
       Ioss::EntityType b_t = block->type();
       bool is_entity_block = false;
       if(b_t == Ioss::EntityType::ELEMENTBLOCK ||
@@ -897,7 +898,7 @@ namespace Iocatalyst {
       this->readProperties(child[detail::PROPERTIES], region);
 
       // read fields (meta-data only)
-      this->readFields(child[detail::FIELDS], region, region->get_database());
+      this->readFields(child[detail::FIELDS], region);
     }
     return true;
   }
@@ -923,7 +924,7 @@ namespace Iocatalyst {
       this->readProperties(child[detail::PROPERTIES], block);
 
       // read fields (meta-data only)
-      this->readFields(child[detail::FIELDS], block, region->get_database());
+      this->readFields(child[detail::FIELDS], block);
     }
     return true;
   }
@@ -950,7 +951,7 @@ namespace Iocatalyst {
       this->readProperties(child[detail::PROPERTIES], block);
 
       // read fields (meta-data only)
-      this->readFields(child[detail::FIELDS], block, region->get_database());
+      this->readFields(child[detail::FIELDS], block);
     }
     sideBlocks.clear();
     return true;
@@ -999,7 +1000,7 @@ namespace Iocatalyst {
       this->readProperties(child[detail::PROPERTIES], block);
 
       // read fields (meta-data only)
-      this->readFields(child[detail::FIELDS], block, region->get_database());
+      this->readFields(child[detail::FIELDS], block);
     }
     return true;
   }
@@ -1021,9 +1022,9 @@ namespace Iocatalyst {
       block->get_node_block().property_add(parent);
 
       // read fields (meta-data only)
-      this->readFields(child[detail::FIELDS], block, region->get_database());
+      this->readFields(child[detail::FIELDS], block);
       this->readFields(child[getName(&block->get_node_block()) + detail::FS + detail::FIELDS],
-                       &block->get_node_block(), region->get_database());
+                       &block->get_node_block());
 
       readZoneConnectivity(child[detail::ZONECONNECTIVITY], block);
       readBoundaryConditions(child[detail::BOUNDARYCONDS], block);
