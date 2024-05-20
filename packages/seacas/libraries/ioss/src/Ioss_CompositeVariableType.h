@@ -20,6 +20,12 @@ namespace Ioss {
     IOSS_NODISCARD static VariableType *composite_variable_type(const VariableType *inst,
                                                                 int                 copies);
 
+    IOSS_NODISCARD VariableType::Type type() const override { return Type::COMPOSITE; }
+    IOSS_NODISCARD std::string type_string() const override
+    {
+      return fmt::format("Composite: {}*{}", baseType->type_string(), copies_);
+    }
+
     IOSS_NODISCARD std::string label(int which, char suffix_sep = '_') const override;
     CompositeVariableType(const std::string &my_name, int number_components, bool delete_me);
     CompositeVariableType(const VariableType *base_type, int copies, bool delete_me);

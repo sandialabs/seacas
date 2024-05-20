@@ -52,6 +52,9 @@ namespace Ioss {
     registry().insert(VTM_ValuePair(up_type, this), false);
   }
 
+  VariableType::Type VariableType::type() const { return Type::UNKNOWN; }
+  std::string        VariableType::type_string() const { return "Unknown"; }
+
   void VariableType::alias(const std::string &base, const std::string &syn)
   {
     registry().insert(

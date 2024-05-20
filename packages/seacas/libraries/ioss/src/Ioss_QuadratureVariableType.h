@@ -45,6 +45,9 @@ namespace Ioss {
 
     QuadratureVariableType(const QuadratureVariableType &) = delete;
 
+    IOSS_NODISCARD VariableType::Type type() const override { return Type::QUADRATURE; }
+    IOSS_NODISCARD std::string type_string() const override { return "Quadrature"; }
+
     IOSS_NODISCARD std::vector<Ioss::QuadraturePoint> get_quadrature() const
     {
       return m_quadrature_;

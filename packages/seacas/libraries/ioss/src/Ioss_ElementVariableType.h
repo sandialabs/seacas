@@ -28,6 +28,9 @@ namespace Ioss {
     }
     IOSS_NODISCARD int suffix_count() const override { return 0; }
 
+    IOSS_NODISCARD VariableType::Type type() const override { return Type::ELEMENT; }
+    IOSS_NODISCARD std::string type_string() const override { return "Element"; }
+
   protected:
     ElementVariableType(const std::string &type, int comp_count);
   };

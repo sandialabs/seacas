@@ -69,6 +69,19 @@ namespace Ioss {
   class IOSS_EXPORT VariableType
   {
   public:
+    enum class Type {
+      UNKNOWN,
+      SCALAR,
+      STANDARD,
+      COMPOSED,
+      COMPOSITE,
+      CONSTRUCTED,
+      ELEMENT,
+      NAMED_SUFFIX,
+      BASIS,
+      QUADRATURE
+    };
+
     static void                    alias(const std::string &base, const std::string &syn);
     static int                     describe(NameList *names);
     IOSS_NODISCARD static NameList describe();
@@ -96,7 +109,9 @@ namespace Ioss {
     // For example, a 'vector_2d' has suffices "x" and "y"
     // A 'quad4' has no suffices...
     IOSS_NODISCARD virtual int suffix_count() const;
-    IOSS_NODISCARD std::string name() const;
+    IOSS_NODISCARD std::string         name() const;
+    IOSS_NODISCARD virtual Type        type() const        = 0;
+    IOSS_NODISCARD virtual std::string type_string() const = 0;
 
     IOSS_NODISCARD static std::string  numeric_label(int which, int ncomp, const std::string &name);
     IOSS_NODISCARD virtual std::string label(int which, char suffix_sep = '_') const = 0;

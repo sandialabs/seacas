@@ -53,6 +53,9 @@ namespace Ioss {
 
     BasisVariableType(const BasisVariableType &) = delete;
 
+    IOSS_NODISCARD VariableType::Type type() const override { return Type::BASIS; }
+    IOSS_NODISCARD std::string type_string() const override { return "Basis"; }
+
     IOSS_NODISCARD const Ioss::Basis &get_basis() const { return m_basis_; }
     IOSS_NODISCARD const Ioss::BasisComponent &get_basis_component(int which) const
     {

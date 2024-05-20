@@ -1684,9 +1684,9 @@ namespace Ioex {
         entity->field_add(field);
       }
 
-      for (int i = 0; i < nvar; i++) {
+      for (auto [i, name] : Ioss::enumerate(names)) {
         // Verify that all names were used for a field...
-        SMART_ASSERT(names[i].empty() || (local_truth && local_truth[i] == 0))(i)(names[i]);
+        SMART_ASSERT(name.empty() || (local_truth && local_truth[i] == 0))(i)(name);
       }
     }
     return nvar;
