@@ -25,10 +25,28 @@ protected:
 
   bool regionsAreEqual(const std::string &fileName, const std::string &catFileName,
                        const std::string &iossDatabaseType);
+  
+  bool regionsAreEqualCatalystAndIoss(const std::string &fileName,
+                                      Ioss::DatabaseIO &cat_d,
+                                      const std::string &iossDatabaseType);
 
   void runStructuredTest(const std::string &testName);
 
   void runUnstructuredTest(const std::string &testName);
+
+  Ioss::DatabaseIO* writeAndGetExodusDatabaseOnRead(const std::string &testName,
+                                                    Ioss::PropertyManager dbProps = {});
+  
+  Ioss::DatabaseIO* getExodusDatabaseFromFile(std::string &filename, 
+                                              Ioss::PropertyManager dbProps = {});
+  conduit_cpp::Node getConduitFromExodusFile(std::string &filename, 
+                                             Ioss::PropertyManager dbProps = {});
+  Ioss::DatabaseIO* getCatalystDatabaseFromConduit(conduit_cpp::Node &conduitNode, 
+                                                            Ioss::PropertyManager dbProps = {});
+
+  Ioss::DatabaseIO* getDatabaseOnReadFromFileName(const std::string &fileName,
+                                                        const std::string &iossDatabaseType, 
+                                                        Ioss::PropertyManager dbProps = {});
 
   void checkZeroCopyFields(Iocatalyst::BlockMeshSet::IOSSparams &iop);
 
@@ -63,4 +81,6 @@ protected:
   const std::string EXODUS_FILE_EXTENSION     = ".ex2";
   const std::string CATALYST_TEST_FILE_PREFIX = "catalyst_";
   const std::string CATALYST_TEST_FILE_NP     = "_np_";
+  inline static const std::string CATALYST_DATABASE_TYPE  = "catalyst";
+  inline static const std::string CATALYST_DUMMY_DATABASE = "dummy.db";
 };
