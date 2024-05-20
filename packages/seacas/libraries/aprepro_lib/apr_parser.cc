@@ -2,7 +2,7 @@
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021, 2024 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -749,15 +749,11 @@ namespace SEAMS {
           case 44: // bool: exp EQ sexp
           {
             (yylhs.value.val) = false;
-            yyerror(aprepro, "Comparison of arithmetic with string not defined");
-            yyerrok;
           } break;
 
           case 45: // bool: exp NE sexp
           {
             (yylhs.value.val) = true;
-            yyerror(aprepro, "Comparison of arithmetic with string not defined");
-            yyerrok;
           } break;
 
           case 46: // bool: sexp LT exp
@@ -791,15 +787,11 @@ namespace SEAMS {
           case 50: // bool: sexp EQ exp
           {
             (yylhs.value.val) = false;
-            yyerror(aprepro, "Comparison of string with arithmetic not defined");
-            yyerrok;
           } break;
 
           case 51: // bool: sexp NE exp
           {
             (yylhs.value.val) = true;
-            yyerror(aprepro, "Comparison of string with arithmetic not defined");
-            yyerrok;
           } break;
 
           case 52: // bool: UNDVAR LT sexp
