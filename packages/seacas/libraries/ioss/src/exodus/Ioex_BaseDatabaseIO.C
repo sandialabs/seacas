@@ -1724,24 +1724,20 @@ namespace Ioex {
       for (const auto &exo_field : exo_fields) {
         std::string ios_field_type{};
 
-        auto exo_field_type = exo_field.type[0];
-        auto type_names     = Ioss::tokenize(exo_field.type_name, ",", true);
-        if (exo_field_type == EX_FIELD_TYPE_SEQUENCE) {
+        auto type_names = Ioss::tokenize(exo_field.type_name, ",", true);
+        if (exo_field.type[0] == EX_FIELD_TYPE_SEQUENCE) {
           ios_field_type = fmt::format("Real[{}]", exo_field.cardinality[0]);
         }
-        else if (exo_field_type == EX_FIELD_TYPE_USER_DEFINED) {
+        else if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
           auto suffices = Ioss::tokenize(exo_field.suffices, ",");
           Ioss::VariableType::create_named_suffix_field_type(exo_field.name, suffices);
           ios_field_type = exo_field.name;
         }
-        else if (exo_field_type == EX_BASIS) {
-          ios_field_type = Ioss::Utils::lowercase(type_names[0]);
-        }
-        else if (exo_field_type == EX_QUADRATURE) {
+        else if (exo_field.type[0] == EX_BASIS || exo_field.type[0] == EX_QUADRATURE) {
           ios_field_type = Ioss::Utils::lowercase(type_names[0]);
         }
         else {
-          ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
+          ios_field_type = Ioex::map_ioss_field_type(exo_field.type[0]);
         }
 
         int         num_copies = 1;
