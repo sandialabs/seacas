@@ -73,6 +73,7 @@ namespace {
     options.add_proc_id       = interFace.add_processor_id_field;
     options.boundary_sideset  = interFace.boundary_sideset;
     options.ignore_qa_info    = interFace.ignore_qa_info;
+    options.omitted_blocks    = !interFace.omitted_blocks.empty();
     return options;
   }
 
@@ -261,6 +262,11 @@ namespace {
           }
           return;
         }
+      }
+
+      if (!interFace.omitted_blocks.empty()) {
+        std::vector<std::string> inclusions{};
+        dbi->set_block_omissions(interFace.omitted_blocks, inclusions);
       }
 
       // NOTE: 'region' owns 'db' pointer at this time...

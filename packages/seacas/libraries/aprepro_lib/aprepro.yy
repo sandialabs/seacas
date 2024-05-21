@@ -189,15 +189,15 @@ bool:     sexp LT sexp          { $$ = (strcmp($1,$3) <  0 ? 1 : 0);    }
         | exp GT sexp           { $$ = false; yyerror(aprepro, "Comparison of arithmetic with string not defined"); yyerrok;}
         | exp LE sexp           { $$ = false; yyerror(aprepro, "Comparison of arithmetic with string not defined"); yyerrok;}
         | exp GE sexp           { $$ = false; yyerror(aprepro, "Comparison of arithmetic with string not defined"); yyerrok;}
-        | exp EQ sexp           { $$ = false; yyerror(aprepro, "Comparison of arithmetic with string not defined"); yyerrok;}
-        | exp NE sexp           { $$ = true; yyerror(aprepro, "Comparison of arithmetic with string not defined"); yyerrok;}
+        | exp EQ sexp           { $$ = false; }
+        | exp NE sexp           { $$ = true;  }
 
 	| sexp LT exp           { $$ = false; yyerror(aprepro, "Comparison of string with arithmetic not defined"); yyerrok;}
         | sexp GT exp           { $$ = false; yyerror(aprepro, "Comparison of string with arithmetic not defined"); yyerrok;}
         | sexp LE exp           { $$ = false; yyerror(aprepro, "Comparison of string with arithmetic not defined"); yyerrok;}
         | sexp GE exp           { $$ = false; yyerror(aprepro, "Comparison of string with arithmetic not defined"); yyerrok;}
-        | sexp EQ exp           { $$ = false; yyerror(aprepro, "Comparison of string with arithmetic not defined"); yyerrok;}
-        | sexp NE exp           { $$ = true; yyerror(aprepro, "Comparison of string with arithmetic not defined"); yyerrok;}
+        | sexp EQ exp           { $$ = false; }
+        | sexp NE exp           { $$ = true; }
 
         | UNDVAR LT sexp        { $$ = (strcmp("",$3) <  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
         | UNDVAR GT sexp        { $$ = (strcmp("",$3) >  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
