@@ -7,8 +7,8 @@
 #include <cstddef>
 #include <tokenize.h>
 
-#include "Ioss_CommSet.h"         // for CommSet
 #include "Ioss_CodeTypes.h"       // for IOSS_SCALAR()
+#include "Ioss_CommSet.h"         // for CommSet
 #include "Ioss_DBUsage.h"         // for DatabaseUsage, etc
 #include "Ioss_DatabaseIO.h"      // for DatabaseIO
 #include "Ioss_EdgeBlock.h"       // for EdgeBlock
@@ -142,7 +142,7 @@ namespace Iocatalyst {
     inline static const std::string RANGEEND = "m_rangeEnd";
     inline static const std::string FACE     = "m_face";
 
-    inline static const std::string SURFACESPLITTYPE    = "surface_split_type";
+    inline static const std::string SURFACESPLITTYPE = "surface_split_type";
 
     std::string getValuePath(const std::string &prop)
     {
@@ -308,9 +308,10 @@ namespace Iocatalyst {
 
     bool defineModel(Ioss::Region *region)
     {
-      if(!region->model_defined()) {
+      if (!region->model_defined()) {
         std::ostringstream errmsg;
-        errmsg << "Catalyst Write in defineModel(): model isn't defined in region"<<"\n";
+        errmsg << "Catalyst Write in defineModel(): model isn't defined in region"
+               << "\n";
         IOSS_ERROR(errmsg);
       }
 
@@ -818,22 +819,17 @@ namespace Iocatalyst {
     template <typename GroupingEntityT>
     bool readFields(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
-      //Assumption: count = entity_count (in block)
-      Ioss::DatabaseIO  *dbase = block->get_database();
-      Ioss::EntityType b_t = block->type();
-      bool is_entity_block = false;
-      if(b_t == Ioss::EntityType::ELEMENTBLOCK ||
-        b_t == Ioss::EntityType::EDGEBLOCK ||
-        b_t == Ioss::EntityType::FACEBLOCK ||
-        b_t == Ioss::EntityType::NODEBLOCK ||
-        b_t == Ioss::EntityType::SIDEBLOCK ||
-        b_t == Ioss::EntityType::STRUCTUREDBLOCK) {
-          is_entity_block = true;
+      // Assumption: count = entity_count (in block)
+      Ioss::DatabaseIO *dbase           = block->get_database();
+      Ioss::EntityType  b_t             = block->type();
+      bool              is_entity_block = false;
+      if (b_t == Ioss::EntityType::ELEMENTBLOCK || b_t == Ioss::EntityType::EDGEBLOCK ||
+          b_t == Ioss::EntityType::FACEBLOCK || b_t == Ioss::EntityType::NODEBLOCK ||
+          b_t == Ioss::EntityType::SIDEBLOCK || b_t == Ioss::EntityType::STRUCTUREDBLOCK) {
+        is_entity_block = true;
       }
-      const int FNAME_MAX_LENGTH = 255;
-      size_t field_count = 0;
-      char **field_names = 
-        Ioss::Utils::get_name_array(parent.number_of_children(), FNAME_MAX_LENGTH);
+      Ioss::NameList field_names;
+      field_names.reserve(parent.number_of_children());
       size_t entity_count = 0;
 
       for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
@@ -845,17 +841,15 @@ namespace Iocatalyst {
         const auto index   = child[detail::INDEX].as_int64();
         const auto storage = child[detail::STORAGE].as_string();
         if (!block->field_exists(name)) {
-          if(storage == IOSS_SCALAR() && role==Ioss::Field::TRANSIENT && is_entity_block) {
-            //Add to get_fields() call
-            char field_name[FNAME_MAX_LENGTH + 1];
-            Ioss::Utils::copy_string(field_name, name, FNAME_MAX_LENGTH + 1);
-            Ioss::Utils::copy_string(field_names[field_count++], field_name, FNAME_MAX_LENGTH + 1);
-            if(entity_count == 0)
+          if (storage == IOSS_SCALAR() && role == Ioss::Field::TRANSIENT && is_entity_block) {
+            // Add to get_fields() call
+            field_names.push_back(name);
+            if (entity_count == 0)
               entity_count = count;
           }
           else {
             block->field_add(
-              Ioss::Field(name, type, storage, role, count, index).set_zero_copy_enabled());
+                Ioss::Field(name, type, storage, role, count, index).set_zero_copy_enabled());
           }
         }
         else {
@@ -864,22 +858,23 @@ namespace Iocatalyst {
           if (!field_block.has_transform()) {
             block->get_fieldref(name).set_zero_copy_enabled();
           }
-          auto field_conduit = Ioss::Field(name, type, storage, role, count, index).set_zero_copy_enabled();
-          if(field_block != field_conduit) {
+          auto field_conduit =
+              Ioss::Field(name, type, storage, role, count, index).set_zero_copy_enabled();
+          if (field_block != field_conduit) {
             std::ostringstream errmsg;
-              errmsg << "Catalyst Read: Field '"<<name<<"' from conduit "<<
-                "already exists in block '"<<block->name().c_str()<<
-                "' of type '"<<block->type_string()<<"' and differs from it\n";
+            errmsg << "Catalyst Read: Field '" << name << "' from conduit "
+                   << "already exists in block '" << block->name().c_str() << "' of type '"
+                   << block->type_string() << "' and differs from it\n";
             IOSS_ERROR(errmsg);
           }
         }
       }
-      
-      //Apply Exodus Properties to Scalar Fields in Entity Blocks
-      if(field_count > 0) {
+
+      // Apply Exodus Properties to Scalar Fields in Entity Blocks
+      if (!field_names.empty()) {
         std::vector<Ioss::Field> fields;
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
-                                dbase, nullptr, fields);
+        Ioss::Utils::get_fields(entity_count, field_names, field_names.size(),
+                                Ioss::Field::TRANSIENT, dbase, nullptr, fields);
         for (const auto &field : fields) {
           block->field_add(field.set_zero_copy_enabled());
         }
@@ -1091,10 +1086,10 @@ namespace Iocatalyst {
     auto &node = this->DBNode;
     region->get_database()->set_int_byte_size_api(
         static_cast<Ioss::DataSize>(node[detail::getAPISizePath()].as_int8()));
-    const auto write_split_type = 
-      static_cast<Ioss::SurfaceSplitType>(node[detail::SURFACESPLITTYPE].as_int8());
-    if(write_split_type != region->get_database()->get_surface_split_type()) {
-      static_cast<DatabaseIO*>(region->get_database())->set_split_type_changed(true);
+    const auto write_split_type =
+        static_cast<Ioss::SurfaceSplitType>(node[detail::SURFACESPLITTYPE].as_int8());
+    if (write_split_type != region->get_database()->get_surface_split_type()) {
+      static_cast<DatabaseIO *>(region->get_database())->set_split_type_changed(true);
     }
 
     auto tpath = detail::REGION + detail::FS + detail::TIME;
@@ -1107,9 +1102,9 @@ namespace Iocatalyst {
     this->readEntityGroup<Ioss::EdgeBlock>(node[detail::EDGEBLOCKS], region);
     this->readEntityGroup<Ioss::FaceBlock>(node[detail::FACEBLOCKS], region);
 
-    bool surface_split_changed = 
-      static_cast<DatabaseIO*>(region->get_database())->split_type_changed();
-    if(!surface_split_changed) {
+    bool surface_split_changed =
+        static_cast<DatabaseIO *>(region->get_database())->split_type_changed();
+    if (!surface_split_changed) {
       this->readEntityGroup<Ioss::SideBlock>(node[detail::SIDEBLOCKS], region);
       this->readEntityGroup<Ioss::SideSet>(node[detail::SIDESETS], region);
     }
@@ -1180,17 +1175,19 @@ namespace Iocatalyst {
 
   bool DatabaseIO::end_nl(Ioss::State state)
   {
-    if(this->dbState != state) {
+    if (this->dbState != state) {
       std::ostringstream errmsg;
-      errmsg << "Catalyst: dbState != state in end_nl"<<"\n";
+      errmsg << "Catalyst: dbState != state in end_nl"
+             << "\n";
       IOSS_ERROR(errmsg);
     }
 
     if (!is_input()) {
       auto region = this->get_region();
-      if(region == nullptr) {
+      if (region == nullptr) {
         std::ostringstream errmsg;
-        errmsg << "Catalyst: region is nullptr in end_nl"<<"\n";
+        errmsg << "Catalyst: region is nullptr in end_nl"
+               << "\n";
         IOSS_ERROR(errmsg);
       }
 
@@ -1252,9 +1249,10 @@ namespace Iocatalyst {
   void DatabaseIO::read_meta_data_nl()
   {
     auto region = this->get_region();
-    if(region == nullptr) {
+    if (region == nullptr) {
       std::ostringstream errmsg;
-      errmsg << "Catalyst: region is nullptr in read_meta_data_nl()"<<"\n";
+      errmsg << "Catalyst: region is nullptr in read_meta_data_nl()"
+             << "\n";
       IOSS_ERROR(errmsg);
     }
 
@@ -1265,9 +1263,10 @@ namespace Iocatalyst {
   void DatabaseIO::get_step_times_nl()
   {
     auto region = this->get_region();
-    if(region == nullptr) {
+    if (region == nullptr) {
       std::ostringstream errmsg;
-      errmsg << "Catalyst: region is nullptr in get_step_times_nl()"<<"\n";
+      errmsg << "Catalyst: region is nullptr in get_step_times_nl()"
+             << "\n";
       IOSS_ERROR(errmsg);
     }
 
@@ -1500,7 +1499,9 @@ namespace Iocatalyst {
   int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    if(split_type_changed()) { return -1; }
+    if (split_type_changed()) {
+      return -1;
+    }
     auto &impl = (*this->Impl.get());
     return impl.getField(detail::SIDEBLOCKS, sb, field, data, data_size);
   }
@@ -1531,7 +1532,9 @@ namespace Iocatalyst {
   int64_t DatabaseIO::get_field_internal(const Ioss::SideSet *ss, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    if(split_type_changed()) { return -1; }
+    if (split_type_changed()) {
+      return -1;
+    }
     auto &impl = (*this->Impl.get());
     return impl.getField(detail::SIDESETS, ss, field, data, data_size);
   }
@@ -1613,7 +1616,9 @@ namespace Iocatalyst {
   int64_t DatabaseIO::get_zc_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field,
                                             void **data, size_t *data_size) const
   {
-    if(split_type_changed()) { return -1; }
+    if (split_type_changed()) {
+      return -1;
+    }
     auto &impl = (*this->Impl.get());
     return impl.getFieldZeroCopy(detail::SIDEBLOCKS, sb, field, data, data_size);
   }
@@ -1644,7 +1649,9 @@ namespace Iocatalyst {
   int64_t DatabaseIO::get_zc_field_internal(const Ioss::SideSet *ss, const Ioss::Field &field,
                                             void **data, size_t *data_size) const
   {
-    if(split_type_changed()) { return -1; }
+    if (split_type_changed()) {
+      return -1;
+    }
     auto &impl = (*this->Impl.get());
     return impl.getFieldZeroCopy(detail::SIDESETS, ss, field, data, data_size);
   }
