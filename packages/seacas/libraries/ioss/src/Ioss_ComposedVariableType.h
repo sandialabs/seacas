@@ -22,10 +22,7 @@ namespace Ioss {
                                                                const VariableType *secondary);
 
     IOSS_NODISCARD VariableType::Type type() const override { return Type::COMPOSED; }
-    IOSS_NODISCARD std::string type_string() const override
-    {
-      return fmt::format("Composed: {}*{}", baseType->type_string(), secondaryType->type_string());
-    }
+    IOSS_NODISCARD std::string type_string() const override;
 
     IOSS_NODISCARD std::string label(int which, char suffix_sep = '_') const override;
 

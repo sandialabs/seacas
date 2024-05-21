@@ -54,6 +54,14 @@ namespace Ioss {
 
   VariableType::Type VariableType::type() const { return Type::UNKNOWN; }
   std::string        VariableType::type_string() const { return "Unknown"; }
+  std::string        CompositeVariableType::type_string() const
+  {
+    return fmt::format("Composite: {}*{}", baseType->type_string(), copies_);
+  }
+  std::string ComposedVariableType::type_string() const
+  {
+    return fmt::format("Composed: {}*{}", baseType->type_string(), secondaryType->type_string());
+  }
 
   void VariableType::alias(const std::string &base, const std::string &syn)
   {
