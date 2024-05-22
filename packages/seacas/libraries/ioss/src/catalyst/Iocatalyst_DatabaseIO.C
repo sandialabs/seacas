@@ -873,8 +873,8 @@ namespace Iocatalyst {
       // Apply Exodus Properties to Scalar Fields in Entity Blocks
       if (!field_names.empty()) {
         std::vector<Ioss::Field> fields;
-        Ioss::Utils::get_fields(entity_count, field_names, field_names.size(),
-                                Ioss::Field::TRANSIENT, dbase, nullptr, fields);
+        Ioss::Utils::get_fields(entity_count, field_names, Ioss::Field::TRANSIENT, dbase, nullptr,
+                                fields);
         for (const auto &field : fields) {
           block->field_add(field.set_zero_copy_enabled());
         }
