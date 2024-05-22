@@ -1697,7 +1697,9 @@ namespace Ioex {
                                                       ex_entity_type type, Ioss::NameList &names)
   {
     std::vector<Ioss::Field> fields;
-
+    if (!entity->get_database()->get_field_recognition()) {
+      return fields;
+    }
     // See if this entity is using enhanced field attributes...
     auto id = entity->get_optional_property("id", 0);
     int  enhanced_fld_cnt;
@@ -1998,6 +2000,7 @@ namespace Ioex {
                                         Ioss::GroupingEntity *entity)
     {
       // Get all transient fields on this entity...
+      char default_separator = entity->get_database()->get_field_separator();
       auto results_fields = entity->field_describe(Ioss::Field::TRANSIENT);
       for (const auto &field_name : results_fields) {
         const auto &field = entity->get_fieldref(field_name);
@@ -2017,7 +2020,7 @@ namespace Ioex {
           exo_field.type[0]                = Ioex::map_ioss_field_type(composed->get_base_type());
           exo_field.cardinality[0]         = composed->get_base_type()->component_count();
           char separator0                  = field.get_suffix_separator();
-          exo_field.component_separator[0] = separator0 == 1 ? '_' : separator0;
+          exo_field.component_separator[0] = separator0 == 1 ? default_separator : separator0;
 
           if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
             auto nsvt =
@@ -2036,7 +2039,7 @@ namespace Ioex {
           exo_field.type[1]        = Ioex::map_ioss_field_type(composed->get_secondary_type());
           exo_field.cardinality[1] = composed->get_secondary_type()->component_count();
           char separator1          = field.get_suffix_separator(1);
-          exo_field.component_separator[1] = separator1 == 1 ? '_' : separator1;
+          exo_field.component_separator[1] = separator1 == 1 ? default_separator : separator1;
           if (exo_field.type[1] == EX_BASIS || exo_field.type[1] == EX_QUADRATURE) {
             exo_field.type_name[0] = ',';
             Ioss::Utils::copy_string(&exo_field.type_name[1],
@@ -2049,12 +2052,12 @@ namespace Ioex {
           exo_field.type[0]                = Ioex::map_ioss_field_type(composite->get_base_type());
           exo_field.cardinality[0]         = composite->get_base_type()->component_count();
           char separator0                  = field.get_suffix_separator();
-          exo_field.component_separator[0] = separator0 == 1 ? '_' : separator0;
+          exo_field.component_separator[0] = separator0 == 1 ? default_separator : separator0;
 
           exo_field.type[1]                = EX_FIELD_TYPE_SEQUENCE;
           exo_field.cardinality[1]         = composite->get_num_copies();
           char separator1                  = field.get_suffix_separator(1);
-          exo_field.component_separator[1] = separator1 == 1 ? '_' : separator1;
+          exo_field.component_separator[1] = separator1 == 1 ? default_separator : separator1;
         }
         else {
           exo_field.nesting = 1;
@@ -2088,7 +2091,7 @@ namespace Ioex {
             Ioss::Utils::copy_string(exo_field.suffices, suffices.c_str(), EX_MAX_NAME + 1);
           }
           char separator                   = field.get_suffix_separator();
-          exo_field.component_separator[0] = separator == 1 ? '_' : separator;
+          exo_field.component_separator[0] = separator == 1 ? default_separator : separator;
         }
 
         if (exo_field.type[0] != EX_SCALAR) {
