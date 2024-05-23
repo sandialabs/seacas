@@ -50,7 +50,7 @@ namespace Ioss {
     else {
       fmt::print(os,
                  "\tField: {}, Storage: {} ({}),\t{},\t{}, Sep1: '{}', Sep2: '{}'\n"
-                 "\t\tComponents ({}): {}\n",
+                 "\t\t\tComponents ({}): {}\n",
                  fld.get_name(), fld.raw_storage()->name(), fld.raw_storage()->type_string(),
                  fld.type_string(), fld.role_string(), fld.get_suffix_separator(0),
                  fld.get_suffix_separator(1), fld.get_component_count(Field::InOut::INPUT),
