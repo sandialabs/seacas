@@ -129,7 +129,7 @@ int exi_put_quad_attribute(int exoid, const char *quad_name, const char *type, e
                                 quad_entry);
 }
 
-int ex_put_basis_metadata(int exoid, const ex_basis basis)
+int ex_put_basis(int exoid, const ex_basis basis)
 {
   /*
    * typedef struct ex_basis {
@@ -188,7 +188,7 @@ int ex_put_basis_metadata(int exoid, const ex_basis basis)
   return EX_NOERR;
 }
 
-int ex_put_quadrature_metadata(int exoid, const ex_quadrature quad)
+int ex_put_quadrature(int exoid, const ex_quadrature quad)
 {
   /*
    * typedef struct ex_quad {

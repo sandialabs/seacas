@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 
     struct ex_quadrature quad = (ex_quadrature){
         .name = "2x2x2", .cardinality = 8, .xi = xi, .eta = eta, .zeta = zeta, .weight = weight};
-    EXCHECK(ex_put_quadrature_metadata(exoid, quad));
+    EXCHECK(ex_put_quadrature(exoid, quad));
   }
 
   {
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 
     struct ex_quadrature quad = (ex_quadrature){
         .name = "1x2x1", .cardinality = 2, .xi = xi, .eta = eta, .zeta = zeta, .weight = weight};
-    EXCHECK(ex_put_quadrature_metadata(exoid, quad));
+    EXCHECK(ex_put_quadrature(exoid, quad));
   }
 
   {
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
                                        .xi               = xi,
                                        .eta              = eta,
                                        .zeta             = NULL};
-    EXCHECK(ex_put_basis_metadata(exoid, basis));
+    EXCHECK(ex_put_basis(exoid, basis));
 
     struct ex_basis basis1 = (ex_basis){.name             = "TESTING_SECOND_BASIS",
                                         .cardinality      = 3,
@@ -210,7 +210,7 @@ int main(int argc, char **argv)
                                         .eta              = eta,
                                         .zeta             = zeta};
 
-    EXCHECK(ex_put_basis_metadata(exoid, basis1));
+    EXCHECK(ex_put_basis(exoid, basis1));
 
     struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                        .entity_id           = blocks[1].id,

@@ -2103,7 +2103,7 @@ namespace Ioex {
       }
     }
 
-    void output_basis_metadata(int exoid, const Ioss::BasisVariableType *basis)
+    void output_basis(int exoid, const Ioss::BasisVariableType *basis)
     {
       ex_basis exo_basis{};
       exo_basis.cardinality = basis->component_count();
@@ -2119,11 +2119,11 @@ namespace Ioex {
         exo_basis.eta[i]              = component.eta;
         exo_basis.zeta[i]             = component.zeta;
       }
-      ex_put_basis_metadata(exoid, exo_basis);
+      ex_put_basis(exoid, exo_basis);
       ex_initialize_basis_struct(&exo_basis, 1, -1);
     }
 
-    void output_quad_metadata(int exoid, const Ioss::QuadratureVariableType *quadrature)
+    void output_quad(int exoid, const Ioss::QuadratureVariableType *quadrature)
     {
       ex_quadrature exo_quadrature{};
       exo_quadrature.cardinality = quadrature->component_count();
@@ -2136,7 +2136,7 @@ namespace Ioex {
         exo_quadrature.zeta[i]   = component.zeta;
         exo_quadrature.weight[i] = component.weight;
       }
-      ex_put_quadrature_metadata(exoid, exo_quadrature);
+      ex_put_quadrature(exoid, exo_quadrature);
       ex_initialize_quadrature_struct(&exo_quadrature, 1, -1);
     }
 
@@ -2147,12 +2147,12 @@ namespace Ioex {
       for (auto &var : var_list) {
         const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(var);
         if (basis != nullptr) {
-          output_basis_metadata(exoid, basis);
+          output_basis(exoid, basis);
           continue;
         }
         const auto *quad = dynamic_cast<const Ioss::QuadratureVariableType *>(var);
         if (quad != nullptr) {
-          output_quad_metadata(exoid, quad);
+          output_quad(exoid, quad);
           continue;
         }
       }

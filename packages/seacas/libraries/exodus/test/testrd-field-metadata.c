@@ -126,9 +126,12 @@ static void print_basis_metadata(ex_basis *basis, size_t num_basis)
     printf("\nBasis Metadata: Name: `%s`, Cardinality: %d\n", basis[j].name, basis[j].cardinality);
     printf("ordinal,\t subc:  _dim\t_ordinal\t_dof_ordinal\t_num_dof\t xi      eta     zeta\n");
     for (int i = 0; i < basis[j].cardinality; i++) {
+      double xi   = basis[j].xi != NULL ? basis[j].xi[i] : 0.0;
+      double eta  = basis[j].eta != NULL ? basis[j].eta[i] : 0.0;
+      double zeta = basis[j].zeta != NULL ? basis[j].zeta[i] : 0.0;
       printf("%8d\t%8d\t%8d\t%8d\t%8d\t%6.3f\t%6.3f\t%6.3f\n", i, basis[j].subc_dim[i],
-             basis[j].subc_ordinal[i], basis[j].subc_dof_ordinal[i], basis[j].subc_num_dof[i],
-             basis[j].xi[i], basis[j].eta[i], basis[j].zeta[i]);
+             basis[j].subc_ordinal[i], basis[j].subc_dof_ordinal[i], basis[j].subc_num_dof[i], xi,
+             eta, zeta);
     }
   }
 }
@@ -140,8 +143,11 @@ static void print_quad_metadata(ex_quadrature *quad, size_t num_quad)
            quad[j].cardinality);
     printf("ordinal,\t  xi      eta     zeta    weight\n");
     for (int i = 0; i < quad[j].cardinality; i++) {
-      printf("%8d\t%6.3f\t%6.3f\t%6.3f\t%6.3f\n", i, quad[j].xi[i], quad[j].eta[i], quad[j].zeta[i],
-             quad[j].weight[i]);
+      double xi   = quad[j].xi != NULL ? quad[j].xi[i] : 0.0;
+      double eta  = quad[j].eta != NULL ? quad[j].eta[i] : 0.0;
+      double zeta = quad[j].zeta != NULL ? quad[j].zeta[i] : 0.0;
+      double wgt  = quad[j].weight != NULL ? quad[j].weight[i] : 1.0;
+      printf("%8d\t%6.3f\t%6.3f\t%6.3f\t%6.3f\n", i, xi, eta, zeta, wgt);
     }
   }
 }
@@ -240,32 +246,16 @@ int main(int argc, char **argv)
   }
 
   // ------------------------------------------------------------------------
-  int quad_cnt = ex_get_quadrature_metadata_count(exoid);
-  assert(quad_cnt == 2);
-  struct ex_quadrature quad[2];
-  EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, 0));
-  EXCHECK(ex_get_quadrature_metadata(exoid, quad, quad_cnt));
-
-  /*
-   * Now, allocate memory for all pointer members of quad and call to populate...
-   */
-  EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, 1));
-  EXCHECK(ex_get_quadrature_metadata(exoid, quad, quad_cnt));
+  int            quad_cnt = 0;
+  ex_quadrature *quad     = NULL;
+  EXCHECK(ex_get_quadrature(exoid, &quad, &quad_cnt));
   print_quad_metadata(quad, quad_cnt);
 
   // ------------------------------------------------------------------------
-  int bas_cnt = ex_get_basis_metadata_count(exoid);
-  assert(bas_cnt == 2);
-  struct ex_basis basis[2];
-  EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, 0));
-  EXCHECK(ex_get_basis_metadata(exoid, basis, bas_cnt));
-
-  /*
-   * Now, allocate memory for all pointer members of basis and call to populate...
-   */
-  EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, 1));
-  EXCHECK(ex_get_basis_metadata(exoid, basis, bas_cnt));
-  print_basis_metadata(basis, 2);
+  int       bas_cnt = 0;
+  ex_basis *basis   = NULL;
+  EXCHECK(ex_get_basis(exoid, &basis, &bas_cnt));
+  print_basis_metadata(basis, bas_cnt);
 
   /* Check for nodal fields... */
   {

@@ -256,31 +256,34 @@ int exi_get_metadata_count(int exoid, const char *which)
   EX_FUNC_LEAVE(count);
 }
 
-int ex_get_basis_metadata_count(int exoid) { return exi_get_metadata_count(exoid, "Basis@"); }
+int ex_get_basis_count(int exoid) { return exi_get_metadata_count(exoid, "Basis@"); }
 
-int ex_get_quadrature_metadata_count(int exoid) { return exi_get_metadata_count(exoid, "Quad@"); }
+int ex_get_quadrature_count(int exoid) { return exi_get_metadata_count(exoid, "Quad@"); }
 
-int ex_get_basis_metadata(int exoid, ex_basis *basis, int num_basis)
+int ex_get_basis(int exoid, ex_basis **pbasis, int *num_basis)
 {
   /*
-   * -- If this function is called an there is no basis metadata on the
-   *    entity, it will return EX_NOTFOUND; otherwise it will populate
-   *    (portions of) `basis` and return EX_NOERR.
+   * -- If this function is called and there is no basis metadata on the
+   *    entity, it will return EX_NOTFOUND;
    *
-   * -- name and cardinality will be populated if empty at time of call.
-   * -- other fields will be populated if they are non-null.
-   * -- so, can call first time with empty `basis' with 'NULL' on all pointer members.
-   *    - `name` and `cardinality` will be populated
-   *    - Then malloc/calloc the pointer members that you want populated
-   *    - then call again.  `name` will not be populated if non-empty.
-   *    - `cardinality` will be checked and must be >= to value on database.
-   *      - assumed to be the size of the pointer member allocated space.
-   *      - if > value on database, will be set to value on database.
-   *      - if < value on database, error unless 0.
-   *    - pointer members will be populated if non-NULL.
+   * -- If there are basis defined on the database, it will:
+   *    - determine number of basis defined on database and return the count in `num_basis`
+   *    - allocate `num_basis` copies of `ex_basis`
+   *    - determine the cardinality of each basis and allocate the array members of each basis
+   * struct.
+   *    - populate the array members for each basis.
+   *
+   *    Upon return, the `pbasis` will contain `num_basis` structs fully populated.
    */
 
+  // TODO: Should all array members of the struct be allocated and initialized to zero, or
+  //       only the members that are actually defined on the database...
   EX_FUNC_ENTER();
+
+  *num_basis = ex_get_basis_count(exoid);
+  if (*num_basis == 0) {
+    EX_FUNC_LEAVE(EX_NOTFOUND);
+  }
 
   int varid;
   int att_count = exi_get_attribute_count(exoid, EX_GLOBAL, 0, &varid);
@@ -291,8 +294,57 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis, int num_basis)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  /* Iterate through each Basis metadata attribute and populate `basis` */
+  if (*pbasis == NULL) {
+    struct ex_basis *basis = (ex_basis *)calloc(*num_basis, sizeof(struct ex_basis));
+    *pbasis                = basis;
+  }
+  struct ex_basis *basis = *pbasis;
+
+  // First, iterate through each attribute and get the basis name and cardinality
   int count = 0;
+  for (int att = 0; att < att_count; att++) {
+    char attr_name[EX_MAX_NAME + 1];
+    int  status;
+    if ((status = nc_inq_attname(exoid, varid, att, attr_name)) != NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get attribute named %s", attr_name);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
+    if (strncmp("Basis@", attr_name, 6) != 0) {
+      continue;
+    }
+
+    const char *basis_type = exi_get_metadata_attribute(attr_name, "Basis@", 6);
+    if (basis_type != NULL && strcmp(basis_type, "cardinality") == 0) {
+      /* Get the basis name.  We know that the `name` is of the form "Basis@{name}@{item}" */
+      const char *basis_name = exi_get_attribute_metadata_name(attr_name, 6);
+      strcpy(basis[count].name, basis_name);
+
+      int cardinality          = 0;
+      status                   = nc_get_att_int(exoid, varid, attr_name, &cardinality);
+      basis[count].cardinality = cardinality;
+      count++;
+      if (count == *num_basis) {
+        break;
+      }
+      continue;
+    }
+  }
+
+  if (count != *num_basis) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Internal error populating basis name and cardinality.  Did not find correct "
+             "number of basis attributes.");
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  ex_initialize_basis_struct(basis, *num_basis, 1);
+
+  // Now iterate the attributes again and fully populate the basis struct(s)
   for (int att = 0; att < att_count; att++) {
     char attr_name[EX_MAX_NAME + 1];
     int  status;
@@ -312,96 +364,45 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis, int num_basis)
       /* Get the basis name.  We know that the `name` is of the form "Basis@{name}@{item}" */
       const char *basis_name = exi_get_attribute_metadata_name(attr_name, 6);
 
-      /* This routine can be called multiptle times -- one to get name and cardinality; then
-       * the arrays are allocated and the routine is called again to fill in the array data.
-       * This means that the names/cardinality may or may not be set and we need to make sure
-       * that if it is set, we don't overwrite it
-       */
-      int found = -1;
-      int which = 0;
-      for (int i = 0; i < count; i++) {
+      // There is no guarantee that we will be getting names in the same order as above since
+      // attributes can be in any order. But, the name and cardinality for each basis will already
+      // be set, so we just need to find the correct one...
+      int which = -1;
+      for (int i = 0; i < *num_basis; i++) {
         if (strcmp(basis[i].name, basis_name) == 0) {
-          found = i;
           which = i;
           break;
         }
       }
 
-      if (found == -1) {
-        which = count;
-        if (count > num_basis) {
-          char errmsg[MAX_ERR_LENGTH];
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: Found more basis metadata on the database then space to store them.");
-          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
-        strcpy(basis[count].name, basis_name);
-        count++;
+      if (which == -1) {
+        // Internal error...
       }
 
       if (strcmp(basis_type, "cardinality") == 0) {
-        int cardinality = 0;
-        status          = nc_get_att_int(exoid, varid, attr_name, &cardinality);
-        if (basis[which].cardinality > 0 && basis[which].cardinality != cardinality) {
-          char errmsg[MAX_ERR_LENGTH];
-          snprintf(
-              errmsg, MAX_ERR_LENGTH,
-              "ERROR: Basis cardinality on the database is %d, but the value passed in the basis "
-              "struct is %d.\n\tThis indicates that"
-              " not enough memory has been allocated to store the other basis fields.",
-              cardinality, basis[which].cardinality);
-          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
-        basis[which].cardinality = cardinality;
+        // Cardinality already set; skip
       }
-
-      /* Now, for each non-NULL parameter of `basis`, query the data... */
-      else if (basis[which].subc_dim != NULL && strcmp(basis_type, "subc_dim") == 0) {
+      else if (strcmp(basis_type, "subc_dim") == 0) {
         status = nc_get_att_int(exoid, varid, attr_name, basis[which].subc_dim);
       }
-      else if (status == NC_NOERR && basis[which].subc_ordinal != NULL &&
-               strcmp(basis_type, "subc_ordinal") == 0) {
+      else if (status == NC_NOERR && strcmp(basis_type, "subc_ordinal") == 0) {
         status = nc_get_att_int(exoid, varid, attr_name, basis[which].subc_ordinal);
       }
-      else if (status == NC_NOERR && basis[which].subc_dof_ordinal != NULL &&
-               strcmp(basis_type, "subc_dof_ordinal") == 0) {
+      else if (status == NC_NOERR && strcmp(basis_type, "subc_dof_ordinal") == 0) {
         status = nc_get_att_int(exoid, varid, attr_name, basis[which].subc_dof_ordinal);
       }
-      else if (status == NC_NOERR && basis[which].subc_num_dof != NULL &&
-               strcmp(basis_type, "subc_num_dof") == 0) {
+      else if (status == NC_NOERR && strcmp(basis_type, "subc_num_dof") == 0) {
         status = nc_get_att_int(exoid, varid, attr_name, basis[which].subc_num_dof);
       }
-      else if (status == NC_NOERR && basis[which].xi != NULL && strcmp(basis_type, "xi") == 0) {
+      else if (status == NC_NOERR && strcmp(basis_type, "xi") == 0) {
         status = nc_get_att_double(exoid, varid, attr_name, basis[which].xi);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < basis[which].cardinality; i++) {
-            basis[which].eta[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
       }
-      else if (status == NC_NOERR && basis[which].eta != NULL && strcmp(basis_type, "eta") == 0) {
+      else if (status == NC_NOERR && strcmp(basis_type, "eta") == 0) {
         status = nc_get_att_double(exoid, varid, attr_name, basis[which].eta);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < basis[which].cardinality; i++) {
-            basis[which].eta[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
       }
-      else if (status == NC_NOERR && basis[which].zeta != NULL && strcmp(basis_type, "zeta") == 0) {
+      else if (status == NC_NOERR && strcmp(basis_type, "zeta") == 0) {
         status = nc_get_att_double(exoid, varid, attr_name, basis[which].zeta);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < basis[which].cardinality; i++) {
-            basis[which].zeta[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
       }
-      // NOTE: Do not put an else since will fall through if the
-      // arrays are NULL even though basis_type is valid.
 
       if (status != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
@@ -415,27 +416,31 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis, int num_basis)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
-int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature, int num_quad)
+int ex_get_quadrature(int exoid, ex_quadrature **pquad, int *num_quad)
 {
   /*
-   * -- If this function is called an there is no quadrature metadata on the
-   *    entity, it will return EX_NOTFOUND; otherwise it will populate
-   *    (portions of) `quadrature` and return EX_NOERR.
+   * -- If this function is called and there is no quadrature metadata on the
+   *    entity, it will return EX_NOTFOUND;
    *
-   * -- name and cardinality will be populated if empty at time of call.
-   * -- other fields will be populated if they are non-null.
-   * -- so, can call first time with empty `quadrature' with 'NULL' on all pointer members.
-   *    - `name` and `cardinality` will be populated
-   *    - Then malloc/calloc the pointer members that you want populated
-   *    - then call again.  `name` will not be populated if non-empty.
-   *    - `cardinality` will be checked and must be >= to value on database.
-   *      - assumed to be the size of the pointer member allocated space.
-   *      - if > value on database, will be set to value on database.
-   *      - if < value on database, error unless 0.
-   *    - pointer members will be populated if non-NULL.
+   * -- If there are quadrature defined on the database, it will:
+   *    - determine number of quadrature defined on database and return the count in `num_quad`
+   *    - allocate `num_quad` copies of `ex_quad`
+   *    - determine the cardinality of each quadrature and allocate the array members of each
+   * quadrature struct.
+   *    - populate the array members for each quadrature.
+   *
+   *    Upon return, the `pquad` will contain `num_basis` structs fully populated.
    */
 
+  // TODO: Should all array members of the struct(xi, eta, zeta,
+  //       weight) be allocated and initialized to zero, or only the
+  //       members that are actually defined on the database...
   EX_FUNC_ENTER();
+
+  *num_quad = ex_get_quadrature_count(exoid);
+  if (*num_quad == 0) {
+    EX_FUNC_LEAVE(EX_NOTFOUND);
+  }
 
   int varid;
   int att_count = exi_get_attribute_count(exoid, EX_GLOBAL, 0, &varid);
@@ -446,7 +451,13 @@ int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature, int num_qua
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  /* Iterate through each Quadrature metadata attribute and populate `quadrature` */
+  if (*pquad == NULL) {
+    struct ex_quadrature *quad = (ex_quadrature *)calloc(*num_quad, sizeof(struct ex_quadrature));
+    *pquad                     = quad;
+  }
+  struct ex_quadrature *quad = *pquad;
+
+  // First, iterate through each attribute and get the quadrature name and cardinality
   int count = 0;
   for (int att = 0; att < att_count; att++) {
     char attr_name[EX_MAX_NAME + 1];
@@ -463,99 +474,83 @@ int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature, int num_qua
     }
 
     const char *quadrature_type = exi_get_metadata_attribute(attr_name, "Quad@", 5);
+    if (quadrature_type != NULL && strcmp(quadrature_type, "cardinality") == 0) {
+      /* Get the quadrature name.  We know that the `name` is of the form "Quad@{name}@{item}" */
+      const char *quadrature_name = exi_get_attribute_metadata_name(attr_name, 5);
+      strcpy(quad[count].name, quadrature_name);
+
+      int cardinality         = 0;
+      status                  = nc_get_att_int(exoid, varid, attr_name, &cardinality);
+      quad[count].cardinality = cardinality;
+      count++;
+      if (count == *num_quad) {
+        break;
+      }
+      continue;
+    }
+  }
+
+  if (count != *num_quad) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Internal error populating quadrature name and cardinality.  Did not find "
+             "correct number of quadrature attributes.");
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  ex_initialize_quadrature_struct(quad, *num_quad, 1);
+
+  // Now iterate the attributes again and fully populate the quadrature struct(s)
+  for (int att = 0; att < att_count; att++) {
+    char attr_name[EX_MAX_NAME + 1];
+    int  status;
+    if ((status = nc_inq_attname(exoid, varid, att, attr_name)) != NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get attribute named %s", attr_name);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
+    if (strncmp("Quad@", attr_name, 5) != 0) {
+      continue;
+    }
+
+    const char *quadrature_type = exi_get_metadata_attribute(attr_name, "Quad@", 5);
     if (quadrature_type != NULL) {
+
       /* Get the quadrature name.  We know that the `name` is of the form "Quad@{name}@{item}" */
       const char *quadrature_name = exi_get_attribute_metadata_name(attr_name, 5);
 
-      /* This routine can be called multiptle times -- one to get name and cardinality; then
-       * the arrays are allocated and the routine is called again to fill in the array data.
-       * This means that the names/cardinality may or may not be set and we need to make sure
-       * that if it is set, we don't overwrite it
-       */
-
-      /* If this is the first time we have seen this `quadrature_name`, store the name */
-      int found = -1;
-      int which = 0;
-      for (int i = 0; i < num_quad; i++) {
-        if (quadrature[i].name[0] != '\0' && strcmp(quadrature[i].name, quadrature_name) == 0) {
-          found = i;
+      // There is no guarantee that we will be getting names in the same order as above since
+      // attributes can be in any order. But, the name and cardinality for each quadrature will
+      // already be set, so we just need to find the correct one...
+      int which = -1;
+      for (int i = 0; i < *num_quad; i++) {
+        if (strcmp(quad[i].name, quadrature_name) == 0) {
           which = i;
           break;
         }
       }
 
-      if (found == -1) {
-        if (count > num_quad) {
-          char errmsg[MAX_ERR_LENGTH];
-          snprintf(
-              errmsg, MAX_ERR_LENGTH,
-              "ERROR: Found more quadrature metadata on the database then space to store them.");
-          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
-        which = count;
-        strcpy(quadrature[count].name, quadrature_name);
-        count++;
+      if (which == -1) {
+        // Internal error...
       }
 
       if (strcmp(quadrature_type, "cardinality") == 0) {
-        int cardinality = 0;
-        status          = nc_get_att_int(exoid, varid, attr_name, &cardinality);
-        if (quadrature[which].cardinality > 0 && quadrature[which].cardinality != cardinality) {
-          char errmsg[MAX_ERR_LENGTH];
-          snprintf(
-              errmsg, MAX_ERR_LENGTH,
-              "ERROR: Quadrature cardinality for %s on the database is %d, but the value passed in "
-              "the quadrature "
-              "struct is %d.\n\tThis indicates that"
-              " not enough memory has been allocated to store the other quadrature fields.",
-              quadrature[which].name, cardinality, quadrature[which].cardinality);
-          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
-        quadrature[which].cardinality = cardinality;
+        // Cardinality already set; skip
       }
-
-      /* Now, for each non-NULL parameter of `quadrature`, query the data... */
-      else if (status == NC_NOERR && quadrature[which].xi != NULL &&
-               strcmp(quadrature_type, "xi") == 0) {
-        status = nc_get_att_double(exoid, varid, attr_name, quadrature[which].xi);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < quadrature[which].cardinality; i++) {
-            quadrature[which].eta[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
+      else if (strcmp(quadrature_type, "xi") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, quad[which].xi);
       }
-      else if (status == NC_NOERR && quadrature[which].eta != NULL &&
-               strcmp(quadrature_type, "eta") == 0) {
-        status = nc_get_att_double(exoid, varid, attr_name, quadrature[which].eta);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < quadrature[which].cardinality; i++) {
-            quadrature[which].eta[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
+      else if (status == NC_NOERR && strcmp(quadrature_type, "eta") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, quad[which].eta);
       }
-      else if (status == NC_NOERR && quadrature[which].zeta != NULL &&
-               strcmp(quadrature_type, "zeta") == 0) {
-        status = nc_get_att_double(exoid, varid, attr_name, quadrature[which].zeta);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < quadrature[which].cardinality; i++) {
-            quadrature[which].zeta[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
+      else if (status == NC_NOERR && strcmp(quadrature_type, "zeta") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, quad[which].zeta);
       }
-      else if (status == NC_NOERR && quadrature[which].weight != NULL &&
-               strcmp(quadrature_type, "weight") == 0) {
-        status = nc_get_att_double(exoid, varid, attr_name, quadrature[which].weight);
-        if (status == NC_ENOTATT) {
-          for (int i = 0; i < quadrature[which].cardinality; i++) {
-            quadrature[which].weight[i] = 0.0;
-          }
-          status = NC_NOERR;
-        }
+      else if (status == NC_NOERR && strcmp(quadrature_type, "weight") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, quad[which].weight);
       }
       // NOTE: Do not put an else since will fall through if the
       // arrays are NULL even though quadrature_type is valid.
@@ -563,7 +558,7 @@ int ex_get_quadrature_metadata(int exoid, ex_quadrature *quadrature, int num_qua
       if (status != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read field Quadrature %s metadata",
-                 quadrature[which].name);
+                 quad[which].name);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }

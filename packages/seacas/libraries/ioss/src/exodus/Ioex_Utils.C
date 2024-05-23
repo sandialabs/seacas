@@ -263,24 +263,13 @@ namespace Ioex {
 
   int read_exodus_basis(int exoid)
   {
-    auto bas_cnt = ex_get_basis_metadata_count(exoid);
+    auto bas_cnt = ex_get_basis_count(exoid);
     if (bas_cnt == 0) {
       return 0;
     }
     std::vector<ex_basis> exo_basis(bas_cnt);
-
-    // In this call, since the `ex_basis` structs are initialized to
-    // all zero and NULL, only the name and cardinality will be
-    // populated.
-    ex_get_basis_metadata(exoid, Data(exo_basis), exo_basis.size());
-
-    // allocate memory for all pointer members of `ex_basis`
-    // structs. This will query the cardinality and then allocate the
-    // arrays to that size.
-    ex_initialize_basis_struct(Data(exo_basis), exo_basis.size(), 1);
-
-    // Now populate the array data...
-    ex_get_basis_metadata(exoid, Data(exo_basis), exo_basis.size());
+    auto                 *pbasis = Data(exo_basis);
+    ex_get_basis(exoid, &pbasis, &bas_cnt);
 
     for (const auto &ebasis : exo_basis) {
       Ioss::Basis basis;
@@ -302,25 +291,14 @@ namespace Ioex {
 
   int read_exodus_quadrature(int exoid)
   {
-    auto quad_cnt = ex_get_quadrature_metadata_count(exoid);
+    auto quad_cnt = ex_get_quadrature_count(exoid);
     if (quad_cnt == 0) {
       return quad_cnt;
     }
 
     std::vector<ex_quadrature> exo_quadrature(quad_cnt);
-
-    // In this call, since the `ex_quadrature` structs are initialized to
-    // all zero and NULL, only the name and cardinality will be
-    // populated.
-    ex_get_quadrature_metadata(exoid, Data(exo_quadrature), exo_quadrature.size());
-
-    // allocate memory for all pointer members of `ex_quadrature`
-    // structs. This will query the cardinality and then allocate the
-    // arrays to that size.
-    ex_initialize_quadrature_struct(Data(exo_quadrature), exo_quadrature.size(), 1);
-
-    // Now populate the array data...
-    ex_get_quadrature_metadata(exoid, Data(exo_quadrature), exo_quadrature.size());
+    auto                      *pquad = Data(exo_quadrature);
+    ex_get_quadrature(exoid, &pquad, &quad_cnt);
 
     for (const auto &equadrature : exo_quadrature) {
       std::vector<Ioss::QuadraturePoint> quadrature;
