@@ -1,9 +1,6 @@
 
 after ex_open
-after ex_initialize_quadrature_struct(quad, quad_cnt, 0), error = 0
-after ex_get_quadrature_metadata(exoid, quad, quad_cnt), error = 0
-after ex_initialize_quadrature_struct(quad, quad_cnt, 1), error = 0
-after ex_get_quadrature_metadata(exoid, quad, quad_cnt), error = 0
+after ex_get_quadrature(exoid, &quad, &quad_cnt), error = 0
 
 Quadrature Metadata: Name: `2x2x2`, Cardinality: 8
 ordinal,	  xi      eta     zeta    weight
@@ -20,10 +17,7 @@ Quadrature Metadata: Name: `1x2x1`, Cardinality: 2
 ordinal,	  xi      eta     zeta    weight
        0	-0.500	 0.500	-0.500	 1.000
        1	 0.500	-0.500	 0.500	 1.000
-after ex_initialize_basis_struct(basis, bas_cnt, 0), error = 0
-after ex_get_basis_metadata(exoid, basis, bas_cnt), error = 0
-after ex_initialize_basis_struct(basis, bas_cnt, 1), error = 0
-after ex_get_basis_metadata(exoid, basis, bas_cnt), error = 0
+after ex_get_basis(exoid, &basis, &bas_cnt), error = 0
 
 Basis Metadata: Name: `HGRAD_QUAD_C2_FEM`, Cardinality: 9
 ordinal,	 subc:  _dim	_ordinal	_dof_ordinal	_num_dof	 xi      eta     zeta

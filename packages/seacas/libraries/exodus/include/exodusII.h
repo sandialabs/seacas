@@ -316,7 +316,7 @@ enum ex_field_type {
 };
 typedef enum ex_field_type ex_field_type;
 
-#define EX_MAX_FIELD_NESTING 4
+#define EX_MAX_FIELD_NESTING 2
 typedef struct ex_field
 {
   ex_entity_type entity_type;
