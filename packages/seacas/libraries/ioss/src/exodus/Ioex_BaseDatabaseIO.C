@@ -2010,19 +2010,21 @@ namespace Ioex {
         exo_field.entity_type = type;
         exo_field.entity_id   = entity->get_optional_property("id", 0);
 
-        auto       *storage   = field.transformed_storage();
-        const auto *composite = dynamic_cast<const Ioss::CompositeVariableType *>(storage);
-        const auto *composed  = dynamic_cast<const Ioss::ComposedVariableType *>(storage);
+        auto *storage      = field.transformed_storage();
+        auto  storage_type = storage->type();
 
-        if (composed != nullptr) {
+        if (storage_type == Ioss::VariableType::Type::COMPOSED) {
           exo_field.nesting = 2;
 
+          const auto *composed = dynamic_cast<const Ioss::ComposedVariableType *>(storage);
+          assert(composed != nullptr);
           exo_field.type[0]                = Ioex::map_ioss_field_type(composed->get_base_type());
           exo_field.cardinality[0]         = composed->get_base_type()->component_count();
           char separator0                  = field.get_suffix_separator();
           exo_field.component_separator[0] = separator0 == 1 ? default_separator : separator0;
 
           if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
+            assert(composed->get_base_type()->type() == Ioss::VariableType::Type::NAMED_SUFFIX);
             auto nsvt =
                 dynamic_cast<const Ioss::NamedSuffixVariableType *>(composed->get_base_type());
             assert(nsvt != nullptr);
@@ -2046,9 +2048,11 @@ namespace Ioex {
                                      composed->get_secondary_type()->name(), EX_MAX_NAME);
           }
         }
-        else if (composite != nullptr) {
+        else if (storage_type == Ioss::VariableType::Type::COMPOSITE) {
           exo_field.nesting = 2;
 
+          const auto *composite = dynamic_cast<const Ioss::CompositeVariableType *>(storage);
+          assert(composite != nullptr);
           exo_field.type[0]                = Ioex::map_ioss_field_type(composite->get_base_type());
           exo_field.cardinality[0]         = composite->get_base_type()->component_count();
           char separator0                  = field.get_suffix_separator();
@@ -2066,18 +2070,21 @@ namespace Ioex {
             exo_field.cardinality[0] = storage->component_count();
           }
           if (exo_field.type[0] == EX_BASIS) {
+            assert(storage->type() == Ioss::VariableType::Type::BASIS);
             const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(storage);
             assert(basis != nullptr);
             exo_field.cardinality[0] = storage->component_count();
             Ioss::Utils::copy_string(exo_field.type_name, basis->name());
           }
           if (exo_field.type[0] == EX_QUADRATURE) {
+            assert(storage->type() == Ioss::VariableType::Type::QUADRATURE);
             const auto *quad = dynamic_cast<const Ioss::QuadratureVariableType *>(storage);
             assert(quad != nullptr);
             exo_field.cardinality[0] = storage->component_count();
             Ioss::Utils::copy_string(exo_field.type_name, quad->name());
           }
           if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
+            assert(storage->type() == Ioss::VariableType::Type::NAMED_SUFFIX);
             auto nsvt = dynamic_cast<const Ioss::NamedSuffixVariableType *>(storage);
             assert(nsvt != nullptr);
             exo_field.cardinality[0] = nsvt->component_count();
