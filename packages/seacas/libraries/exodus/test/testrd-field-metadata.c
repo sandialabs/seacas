@@ -198,6 +198,7 @@ static void print_full_field_names(ex_field *field)
       }
     }
   }
+#if EX_MAX_FIELD_NESTING > 2
   else if (field->nesting == 3) {
     for (int ii = 1; ii <= field->cardinality[2]; ii++) {
       for (int kk = 1; kk <= field->cardinality[1]; kk++) {
@@ -211,6 +212,8 @@ static void print_full_field_names(ex_field *field)
       }
     }
   }
+#endif
+#if EX_MAX_FIELD_NESTING > 3
   else if (field->nesting == 4) {
     for (int mm = 1; mm <= field->cardinality[3]; mm++) {
       for (int ii = 1; ii <= field->cardinality[2]; ii++) {
@@ -227,6 +230,7 @@ static void print_full_field_names(ex_field *field)
       }
     }
   }
+#endif
 }
 
 int main(int argc, char **argv)
