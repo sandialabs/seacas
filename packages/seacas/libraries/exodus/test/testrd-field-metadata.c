@@ -302,6 +302,8 @@ int main(int argc, char **argv)
   // Now, deallocate any memory allocated on the `basis` struct.
   EXCHECK(ex_initialize_basis_struct(basis, bas_cnt, -1));
   EXCHECK(ex_initialize_quadrature_struct(quad, quad_cnt, -1));
+  free(basis);
+  free(quad);
 
   int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 12);
   assert(fld_cnt == 0);
