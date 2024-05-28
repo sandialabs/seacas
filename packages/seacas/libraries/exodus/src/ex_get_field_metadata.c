@@ -406,7 +406,7 @@ int ex_get_basis(int exoid, ex_basis **pbasis, int *num_basis)
 
       if (status != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read field Basis %s metadata",
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read Basis %s metadata",
                  basis[which].name);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
@@ -557,7 +557,7 @@ int ex_get_quadrature(int exoid, ex_quadrature **pquad, int *num_quad)
 
       if (status != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read field Quadrature %s metadata",
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read Quadrature %s metadata",
                  quad[which].name);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
