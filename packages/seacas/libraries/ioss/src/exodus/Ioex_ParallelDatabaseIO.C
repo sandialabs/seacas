@@ -648,7 +648,7 @@ namespace Ioex {
         }
       }
 
-      // Check whether we are on a NFS filesyste -- composed output is sometimes slow/hangs
+      // Check whether we are on a NFS filesystem -- composed output is sometimes slow/hangs
       // on NFS
       if (myProcessor == 0) {
         if (file.is_nfs()) {
