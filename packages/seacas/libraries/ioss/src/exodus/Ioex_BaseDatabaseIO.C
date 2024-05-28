@@ -1732,7 +1732,7 @@ namespace Ioex {
         }
         else if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
           auto suffices = Ioss::tokenize(exo_field.suffices, ",");
-          Ioss::VariableType::create_named_suffix_field_type(exo_field.name, suffices);
+          Ioss::VariableType::create_named_suffix_type(exo_field.name, suffices);
           ios_field_type = exo_field.name;
         }
         else if (exo_field.type[0] == EX_BASIS || exo_field.type[0] == EX_QUADRATURE) {
@@ -2001,7 +2001,7 @@ namespace Ioex {
     {
       // Get all transient fields on this entity...
       char default_separator = entity->get_database()->get_field_separator();
-      auto results_fields = entity->field_describe(Ioss::Field::TRANSIENT);
+      auto results_fields    = entity->field_describe(Ioss::Field::TRANSIENT);
       for (const auto &field_name : results_fields) {
         const auto &field = entity->get_fieldref(field_name);
 
@@ -2110,8 +2110,10 @@ namespace Ioex {
       }
     }
 
-    void output_basis(int exoid, const Ioss::BasisVariableType *basis)
+    void output_basis(int exoid, const Ioss::VariableType *var)
     {
+      const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(var);
+      assert(basis != nullptr);
       ex_basis exo_basis{};
       exo_basis.cardinality = basis->component_count();
       ex_initialize_basis_struct(&exo_basis, 1, 1);
@@ -2130,14 +2132,16 @@ namespace Ioex {
       ex_initialize_basis_struct(&exo_basis, 1, -1);
     }
 
-    void output_quad(int exoid, const Ioss::QuadratureVariableType *quadrature)
+    void output_quad(int exoid, const Ioss::VariableType *var)
     {
+      const auto *quadrature = dynamic_cast<const Ioss::QuadratureVariableType *>(var);
+      assert(quadrature != nullptr);
       ex_quadrature exo_quadrature{};
       exo_quadrature.cardinality = quadrature->component_count();
       ex_initialize_quadrature_struct(&exo_quadrature, 1, 1);
       Ioss::Utils::copy_string(exo_quadrature.name, quadrature->name(), EX_MAX_NAME);
-      for (int i = 0; i < quadrature->component_count(); i++) {
-        auto component           = quadrature->get_quadrature(i + 1);
+      const auto &quad = quadrature->get_quadrature();
+      for (const auto &[i, component] : Ioss::enumerate(quad)) {
         exo_quadrature.xi[i]     = component.xi;
         exo_quadrature.eta[i]    = component.eta;
         exo_quadrature.zeta[i]   = component.zeta;
@@ -2150,18 +2154,14 @@ namespace Ioex {
     void output_type_metadata(int exoid)
     {
       // Iterate the list and output the `quadrature` and `basis` types...
-      auto var_list = Ioss::VariableType::external_types();
-      for (auto &var : var_list) {
-        const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(var);
-        if (basis != nullptr) {
-          output_basis(exoid, basis);
-          continue;
-        }
-        const auto *quad = dynamic_cast<const Ioss::QuadratureVariableType *>(var);
-        if (quad != nullptr) {
-          output_quad(exoid, quad);
-          continue;
-        }
+      auto basis_list = Ioss::VariableType::external_types(Ioss::VariableType::Type::BASIS);
+      for (auto &var : basis_list) {
+        output_basis(exoid, var);
+      }
+
+      auto quad_list = Ioss::VariableType::external_types(Ioss::VariableType::Type::QUADRATURE);
+      for (auto &var : quad_list) {
+        output_quad(exoid, var);
       }
     }
 

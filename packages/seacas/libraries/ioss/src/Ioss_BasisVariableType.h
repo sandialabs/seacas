@@ -63,6 +63,8 @@ namespace Ioss {
       return m_basis_.basies[which - 1];
     }
 
+    void print() const override final;
+
   private:
     std::string m_basis_type_{};
     Ioss::Basis m_basis_{};

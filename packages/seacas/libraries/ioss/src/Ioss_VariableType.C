@@ -46,10 +46,6 @@ namespace Ioss {
   {
     std::string low_type = Utils::lowercase(type);
     registry().insert(VTM_ValuePair(low_type, this), delete_me);
-
-    // Register uppercase version also
-    std::string up_type = Utils::uppercase(type);
-    registry().insert(VTM_ValuePair(up_type, this), false);
   }
 
   VariableType::Type VariableType::type() const { return Type::UNKNOWN; }
@@ -63,13 +59,49 @@ namespace Ioss {
     return fmt::format("Composed: {}*{}", baseType->type_string(), secondaryType->type_string());
   }
 
+  void VariableType::print() const
+  {
+    fmt::print("\tVariableType '{}' of type '{}' with {} components.\n\n", name(), type_string(),
+               component_count());
+  }
+
+  void BasisVariableType::print() const
+  {
+    fmt::print("\tVariableType '{}' of type '{}' with {} components\n\t\tordinal  subc: _dim, "
+               "_ordinal, _dof_ordinal, _num_dof\t    xi     eta    zeta\n",
+               name(), type_string(), component_count());
+    for (int i = 0; i < component_count(); i++) {
+      auto basis = get_basis_component(i + 1);
+      fmt::print("\t\t {:6}\t\t{:6}\t{:6}\t{:6}\t{:6}\t\t{:6.3}\t{:6.3}\t{:6.3}\n", i + 1,
+                 basis.subc_dim, basis.subc_ordinal, basis.subc_dof_ordinal, basis.subc_num_dof,
+                 basis.xi, basis.eta, basis.zeta);
+    }
+    fmt::print("\n");
+  }
+
+  void QuadratureVariableType::print() const
+  {
+    fmt::print("\tVariableType '{}' of type '{}' with {} components\n\t\t\t    xi     eta    zeta  "
+               "weight\n",
+               name(), type_string(), component_count());
+    for (int i = 0; i < component_count(); i++) {
+      auto quad = get_quadrature_component(i + 1);
+      fmt::print("\t\t{}\t{:6.3}\t{:6.3}\t{:6.3}\t{:6.3}\n", i + 1, quad.xi, quad.eta, quad.zeta,
+                 quad.weight);
+    }
+    fmt::print("\n");
+  }
+
+  void NamedSuffixVariableType::print() const
+  {
+    fmt::print("\tVariableType '{}' of type '{}' with {} components\n\t\tSuffices: {}\n\n", name(),
+               type_string(), component_count(), fmt::join(suffixList, ", "));
+  }
+
   void VariableType::alias(const std::string &base, const std::string &syn)
   {
     registry().insert(
         VTM_ValuePair(Utils::lowercase(syn), const_cast<VariableType *>(factory(base))), false);
-    // Register uppercase version also
-    std::string up_type = Utils::uppercase(syn);
-    registry().insert(VTM_ValuePair(up_type, const_cast<VariableType *>(factory(base))), false);
   }
 
   Registry &VariableType::registry()
@@ -104,21 +136,19 @@ namespace Ioss {
     return names;
   }
 
-  std::vector<const Ioss::VariableType *> VariableType::external_types()
+  std::vector<Ioss::VariableType *> VariableType::external_types(Ioss::VariableType::Type type)
   {
     auto vars = registry().m_deleteThese;
 
-    std::vector<const Ioss::VariableType *> user_vars;
-    for (const auto *var : vars) {
-      const auto *basis = dynamic_cast<const Ioss::BasisVariableType *>(var);
-      if (basis != nullptr) {
-        user_vars.push_back(var);
-        continue;
-      }
-      const auto *quad = dynamic_cast<const Ioss::QuadratureVariableType *>(var);
-      if (quad != nullptr) {
-        user_vars.push_back(var);
-        continue;
+    std::vector<Ioss::VariableType *> user_vars;
+    if (type == Ioss::VariableType::Type::UNKNOWN) {
+      user_vars = vars;
+    }
+    else {
+      for (auto *var : vars) {
+        if (var->type() == type) {
+          user_vars.push_back(var);
+        }
       }
     }
     return user_vars;
@@ -138,8 +168,8 @@ namespace Ioss {
     return registry().customFieldTypes.insert(std::make_pair(field, type)).second;
   }
 
-  bool VariableType::create_named_suffix_field_type(const std::string    &type_name,
-                                                    const Ioss::NameList &suffices)
+  bool VariableType::create_named_suffix_type(const std::string    &type_name,
+                                              const Ioss::NameList &suffices)
   {
     size_t count = suffices.size();
     if (count < 1) {
@@ -162,7 +192,7 @@ namespace Ioss {
     return true;
   }
 
-  bool VariableType::create_basis_field_type(const std::string &type_name, const Ioss::Basis &basis)
+  bool VariableType::create_basis_type(const std::string &type_name, const Ioss::Basis &basis)
   {
     // See if the variable already exists...
     std::string basis_name = Utils::lowercase(type_name);
@@ -176,9 +206,8 @@ namespace Ioss {
     return true;
   }
 
-  bool
-  VariableType::create_quadrature_field_type(const std::string                        &type_name,
-                                             const std::vector<Ioss::QuadraturePoint> &quad_points)
+  bool VariableType::create_quadrature_type(const std::string                        &type_name,
+                                            const std::vector<Ioss::QuadraturePoint> &quad_points)
   {
     size_t count = quad_points.size();
     if (count < 1) {
@@ -193,10 +222,8 @@ namespace Ioss {
 
     // Create the variable.  Note that the 'true' argument means Ioss will delete
     // the pointer.
-    auto *var_type = new QuadratureVariableType(type_name, count, true);
-    var_type->add_quadrature(quad_points);
-
-    return true;
+    auto *var_type = new QuadratureVariableType(type_name, quad_points, true);
+    return (var_type != nullptr);
   }
 
   bool VariableType::get_field_type_mapping(const std::string &field, std::string *type)

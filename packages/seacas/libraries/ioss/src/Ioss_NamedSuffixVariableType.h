@@ -40,6 +40,8 @@ namespace Ioss {
     // If user doesn't add suffices, then 'label' will return "UNSET"
     void add_suffix(size_t which, const std::string &suffix) { suffixList[which - 1] = suffix; }
 
+    void print() const override final;
+
   private:
     Ioss::NameList suffixList{};
   };

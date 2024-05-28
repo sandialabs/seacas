@@ -83,6 +83,14 @@ namespace {
   void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
                     bool nl_post);
 
+  void info_variable_types()
+  {
+    auto var_list = Ioss::VariableType::external_types(Ioss::VariableType::Type::UNKNOWN);
+    for (auto &var : var_list) {
+      var->print();
+    }
+  }
+
   void file_info(const Info::Interface &interFace);
   void group_info(Info::Interface &interFace);
 
@@ -206,7 +214,7 @@ namespace {
     if (!custom_field.empty()) {
       auto suffices = Ioss::tokenize(custom_field, ",");
       if (suffices.size() > 1) {
-        Ioss::VariableType::create_named_suffix_field_type("UserDefined", suffices);
+        Ioss::VariableType::create_named_suffix_type("UserDefined", suffices);
       }
     }
 
@@ -346,6 +354,7 @@ namespace {
     Ioss::Utils::info_property(&region, Ioss::Property::ATTRIBUTE,
                                "\tAttributes (Reduction): ", "\t");
     Ioss::Utils::info_fields(&region, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
+    info_variable_types();
   }
 
   void info_assemblies(Ioss::Region &region)

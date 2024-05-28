@@ -280,7 +280,7 @@ namespace Ioex {
             ebasis.zeta[i]};
         basis.basies.push_back(bc);
       }
-      Ioss::VariableType::create_basis_field_type(ebasis.name, basis);
+      Ioss::VariableType::create_basis_type(ebasis.name, basis);
     }
 
     // deallocate any memory allocated in the 'ex_basis' structs.
@@ -308,7 +308,7 @@ namespace Ioex {
                                 equadrature.weight[i]};
         quadrature.push_back(q);
       }
-      Ioss::VariableType::create_quadrature_field_type(equadrature.name, quadrature);
+      Ioss::VariableType::create_quadrature_type(equadrature.name, quadrature);
     }
 
     // deallocate any memory allocated in the 'ex_quadrature' structs.

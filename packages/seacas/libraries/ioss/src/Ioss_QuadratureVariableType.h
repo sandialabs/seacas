@@ -36,11 +36,11 @@ namespace Ioss {
       return VariableType::numeric_label(which, component_count(), name());
     }
 
-    QuadratureVariableType(const std::string &my_name, int number_components, bool delete_me)
-        : Ioss::VariableType(Ioss::Utils::lowercase(my_name), number_components, delete_me),
-          m_quadratureType_(my_name)
+    QuadratureVariableType(const std::string                        &my_name,
+                           const std::vector<Ioss::QuadraturePoint> &quad_points, bool delete_me)
+        : Ioss::VariableType(Ioss::Utils::lowercase(my_name), quad_points.size(), delete_me),
+          m_quadratureType_(my_name), m_quadrature_(quad_points)
     {
-      m_quadrature_.resize(number_components);
     }
 
     QuadratureVariableType(const QuadratureVariableType &) = delete;
@@ -52,21 +52,13 @@ namespace Ioss {
     {
       return m_quadrature_;
     }
-    IOSS_NODISCARD Ioss::QuadraturePoint get_quadrature(int which) const
+    IOSS_NODISCARD Ioss::QuadraturePoint get_quadrature_component(int which) const
     {
       assert(which > 0 && which <= component_count());
       return m_quadrature_[which - 1];
     }
 
-    void add_quadrature(int which, const Ioss::QuadraturePoint &quadrature)
-    {
-      assert(which > 0 && which <= component_count());
-      m_quadrature_[which - 1] = quadrature;
-    }
-    void add_quadrature(const std::vector<Ioss::QuadraturePoint> &quadrature)
-    {
-      m_quadrature_ = quadrature;
-    }
+    void print() const override final;
 
   private:
     std::string                        m_quadratureType_{};
