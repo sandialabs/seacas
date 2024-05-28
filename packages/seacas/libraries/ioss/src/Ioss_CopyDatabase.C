@@ -1204,8 +1204,6 @@ namespace {
     size_t isize = ige->get_field(field_name).get_size();
     assert(isize == oge->get_field(field_name).get_size());
 
-    int basic_type = ige->get_field(field_name).get_type();
-
     if (field_name == "mesh_model_coordinates_x") {
       return;
     }
@@ -1261,25 +1259,6 @@ namespace {
 
     switch (options.data_storage_type) {
     case 1: ige->get_field_data(field_name, pool.data.data(), isize); break;
-    case 2:
-      if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
-        ige->get_field_data(field_name, pool.data);
-      }
-      else if (basic_type == Ioss::Field::INT32) {
-        ige->get_field_data(field_name, pool.data_int);
-      }
-      else if (basic_type == Ioss::Field::INT64) {
-        ige->get_field_data(field_name, pool.data_int64);
-      }
-      else if (basic_type == Ioss::Field::REAL) {
-        ige->get_field_data(field_name, pool.data_double);
-      }
-      else if (basic_type == Ioss::Field::COMPLEX) {
-        ige->get_field_data(field_name, pool.data_complex);
-      }
-      else {
-      }
-      break;
 #ifdef SEACAS_HAVE_KOKKOS
     case 3:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
@@ -1355,25 +1334,6 @@ namespace {
 
     switch (options.data_storage_type) {
     case 1: oge->put_field_data(field_name, pool.data.data(), isize); break;
-    case 2:
-      if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
-        oge->put_field_data(field_name, pool.data);
-      }
-      else if (basic_type == Ioss::Field::INT32) {
-        oge->put_field_data(field_name, pool.data_int);
-      }
-      else if (basic_type == Ioss::Field::INT64) {
-        oge->put_field_data(field_name, pool.data_int64);
-      }
-      else if (basic_type == Ioss::Field::REAL) {
-        oge->put_field_data(field_name, pool.data_double);
-      }
-      else if (basic_type == Ioss::Field::COMPLEX) {
-        oge->put_field_data(field_name, pool.data_complex);
-      }
-      else {
-      }
-      break;
 #ifdef SEACAS_HAVE_KOKKOS
     case 3:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
