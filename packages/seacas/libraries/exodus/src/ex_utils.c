@@ -2309,7 +2309,7 @@ int exi_get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
     "coor_names" variable.  Not exactly logical, but it exists in any
     model that has nodes, so it at least gives us a place to put the
     attribute. Another possibility would be the nodal x-coordinate
-    varible...
+    variable...
     */
     int varid = 0;
     if ((status = nc_inq_varid(exoid, VAR_NAME_COOR, &varid)) != NC_NOERR) {
