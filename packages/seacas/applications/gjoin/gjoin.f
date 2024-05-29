@@ -567,7 +567,7 @@ C   --"Munch" the nodal point sets
          CALL MDDEL ('NNNPO')
          CALL MDDEL ('ISCR')
          call mddel ('nodscr')
-         call mddel ('NAMSCR')
+         call mcdel ('NAMSCR')
 
 C      --Squeeze the nodal point sets
 
