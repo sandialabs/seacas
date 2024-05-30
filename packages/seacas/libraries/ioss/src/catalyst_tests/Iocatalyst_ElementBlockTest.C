@@ -4,10 +4,18 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
-#include <catalyst/Iocatalyst_DatabaseIO.h>
-
+#include <Ioss_Compare.h>
+#include <Ioss_CopyDatabase.h>
+#include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementBlock.h>
+#include <Ioss_IOFactory.h>
+#include <Ioss_MeshCopyOptions.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_StructuredBlock.h>
+#include <catalyst/Iocatalyst_DatabaseIO.h>
+#include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
+#include <catalyst/Iocatalyst_CatalystManager.h>
+
 
 
 TEST_F(Iocatalyst_DatabaseIOTest, WriteThreeElementBlocksWith24Cells)
@@ -92,6 +100,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_ON)
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
+  checkEntityContainerZeroCopyFields(cat_reg.get_element_blocks());
+
   bool exo_foo_exists = exo_elemBlock->field_exists("foo");
   bool cat_foo_exists = cat_elemBlock->field_exists("foo");
   EXPECT_TRUE(exo_foo_exists);
@@ -135,6 +145,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_OFF)
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
+  checkEntityContainerZeroCopyFields(cat_reg.get_element_blocks());
+
   bool exo_foo_x_exists = exo_elemBlock->field_exists("foo_x");
   bool cat_foo_x_exists = cat_elemBlock->field_exists("foo_x");
   EXPECT_TRUE(exo_foo_x_exists);
@@ -173,12 +185,15 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_ON)
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
+  checkEntityContainerZeroCopyFields(cat_reg.get_element_blocks());
+
   bool exo_foo_1_exists = exo_elemBlock->field_exists("foo_1");
   bool cat_foo_1_exists = cat_elemBlock->field_exists("foo_1");
   EXPECT_TRUE(exo_foo_1_exists);
   EXPECT_TRUE(cat_foo_1_exists);
   if(exo_foo_1_exists && cat_foo_1_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("foo_1") == cat_elemBlock->get_field("foo_1"));
+  
 }
 
 TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_OFF)
@@ -186,8 +201,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_OFF)
   Iocatalyst::BlockMesh bm;
   setBlockMeshSize(2, 2, 2);
 
-  bm.addTransientCellField("foo_1", 2);
-  bm.addTransientCellField("foo_2", 3);
+  bm.addTransientCellField("foo_1", 3);
+  bm.addTransientCellField("foo_2", 2);
   bm.addTransientCellField("foo_3", 4);
 
 
@@ -209,12 +224,15 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_OFF)
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
+  checkEntityContainerZeroCopyFields(cat_reg.get_element_blocks());
+
   bool exo_foo_exists = exo_elemBlock->field_exists("foo");
   bool cat_foo_exists = cat_elemBlock->field_exists("foo");
   EXPECT_TRUE(exo_foo_exists);
   EXPECT_TRUE(cat_foo_exists);
   if(exo_foo_exists && cat_foo_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("foo") == cat_elemBlock->get_field("foo"));
+  
 }
 
 TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
@@ -248,6 +266,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
   
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
+
+  checkEntityContainerZeroCopyFields(cat_reg.get_element_blocks());
 
   bool exo_foo_x_exists = exo_elemBlock->field_exists("foo_x");
   bool cat_foo_x_exists = cat_elemBlock->field_exists("foo_x");
@@ -294,6 +314,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
   auto cat_elemBlock = cat_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
   auto exo_elemBlock = exo_reg.get_element_block(bmSet.getUnstructuredBlockName(bm.getID()));
 
+  checkEntityContainerZeroCopyFields(cat_reg.get_element_blocks());
+
   bool exo_foo_exists = exo_elemBlock->field_exists("foo");
   bool cat_foo_exists = cat_elemBlock->field_exists("foo");
   EXPECT_TRUE(exo_foo_exists);
@@ -325,6 +347,7 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_SURFACE_SPLIT_TYPE)
   Ioss::Region cat_reg(cat_d);
   
   Ioss::SideSetContainer cat_sideSets = cat_reg.get_sidesets();
+  checkEntityContainerZeroCopyFields(cat_sideSets);
   
   EXPECT_TRUE(cat_sideSets.empty())<<"Cat sidesets not empty when different SURFACE_SPLIT_TYPE";
 
