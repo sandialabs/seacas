@@ -94,6 +94,14 @@ namespace Ioss {
 
     static bool create_named_suffix_type(const std::string    &type_name,
                                          const Ioss::NameList &suffices);
+
+    // Backward compatibility...
+    __attribute__((__deprecated__)) static bool
+    create_named_suffix_field_type(const std::string &type_name, const Ioss::NameList &suffices)
+    {
+      return create_named_suffix_type(type_name, suffices);
+    }
+
     static bool create_basis_type(const std::string &type_name, const Ioss::Basis &basis);
     static bool create_quadrature_type(const std::string                        &type_name,
                                        const std::vector<Ioss::QuadraturePoint> &quad_points);
