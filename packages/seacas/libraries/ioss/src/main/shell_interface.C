@@ -648,9 +648,6 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       if (std::strcmp(temp, "POINTER") == 0) {
         data_storage_type = 1;
       }
-      else if (std::strcmp(temp, "STD_VECTOR") == 0) {
-        data_storage_type = 2;
-      }
 #ifdef SEACAS_HAVE_KOKKOS
       else if (std::strcmp(temp, "KOKKOS_VIEW_1D") == 0) {
         data_storage_type = 3;
@@ -667,10 +664,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         if (my_processor == 0) {
           fmt::print(stderr, "ERROR: Option data_storage must be one of\n");
 #ifdef SEACAS_HAVE_KOKKOS
-          fmt::print(stderr, "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
+          fmt::print(stderr, "       POINTER, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
                              "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE\n");
 #else
-          fmt::print(stderr, "       POINTER, or STD_VECTOR\n");
+          fmt::print(stderr, "       POINTER\n");
 #endif
         }
         return false;

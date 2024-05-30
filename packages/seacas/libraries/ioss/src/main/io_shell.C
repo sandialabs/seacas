@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
   if (!interFace.customField.empty()) {
     auto suffices = Ioss::tokenize(interFace.customField, ",");
     if (suffices.size() > 1) {
-      Ioss::VariableType::create_named_suffix_field_type("UserDefined", suffices);
+      Ioss::VariableType::create_named_suffix_type("UserDefined", suffices);
     }
   }
   std::string in_file  = interFace.inputFile[0];
