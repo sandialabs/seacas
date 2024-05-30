@@ -109,6 +109,17 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_ENABLE_FIELD_RECOGNITION_ON)
   if(exo_foo_exists && cat_foo_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("foo") == cat_elemBlock->get_field("foo"));
   
+  //Check field data for equality
+  auto cat_field = cat_elemBlock->get_fieldref("foo");
+  std::vector<std::byte> dcBuffer(cat_field.get_size());
+  cat_elemBlock->get_field_data("foo", Data(dcBuffer), dcBuffer.size());
+
+  exo_reg.begin_state(1);
+  auto exo_field = exo_elemBlock->get_fieldref("foo");
+  std::vector<std::byte> deBuffer(exo_field.get_size());
+  exo_elemBlock->get_field_data("foo", Data(deBuffer), deBuffer.size());
+  EXPECT_EQ(dcBuffer, deBuffer);
+
   //Check foo_x doesn't exist
   bool exo_foo_x_exists = exo_elemBlock->field_exists("foo_x");
   bool cat_foo_x_exists = cat_elemBlock->field_exists("foo_x");
@@ -233,6 +244,17 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_IGNORE_REALN_FIELDS_OFF)
   if(exo_foo_exists && cat_foo_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("foo") == cat_elemBlock->get_field("foo"));
   
+  //Check field data for equality
+  auto cat_field = cat_elemBlock->get_fieldref("foo");
+  std::vector<std::byte> dcBuffer(cat_field.get_size());
+  cat_elemBlock->get_field_data("foo", Data(dcBuffer), dcBuffer.size());
+
+  exo_reg.begin_state(1);
+  auto exo_field = exo_elemBlock->get_fieldref("foo");
+  std::vector<std::byte> deBuffer(exo_field.get_size());
+  exo_elemBlock->get_field_data("foo", Data(deBuffer), deBuffer.size());
+  EXPECT_EQ(dcBuffer, deBuffer);
+  
 }
 
 TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
@@ -282,6 +304,17 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_SUFFIX_SEPARATOR)
   EXPECT_TRUE(cat_bar_exists);
   if(exo_bar_exists && cat_bar_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("bar") == cat_elemBlock->get_field("bar"));
+  
+  //Check bar field data for equality
+  auto cat_field = cat_elemBlock->get_fieldref("bar");
+  std::vector<std::byte> dcBuffer(cat_field.get_size());
+  cat_elemBlock->get_field_data("bar", Data(dcBuffer), dcBuffer.size());
+
+  exo_reg.begin_state(1);
+  auto exo_field = exo_elemBlock->get_fieldref("bar");
+  std::vector<std::byte> deBuffer(exo_field.get_size());
+  exo_elemBlock->get_field_data("bar", Data(deBuffer), deBuffer.size());
+  EXPECT_EQ(dcBuffer, deBuffer);
 
 }
 
@@ -322,6 +355,17 @@ TEST_F(Iocatalyst_DatabaseIOTest, Exodus_Prop_FIELD_STRIP_TRAILING_UNDERSCORE)
   EXPECT_TRUE(cat_foo_exists);
   if(exo_foo_exists && cat_foo_exists) 
     EXPECT_TRUE(exo_elemBlock->get_field("foo") == cat_elemBlock->get_field("foo"));
+  
+  //Check field data for equality
+  auto cat_field = cat_elemBlock->get_fieldref("foo");
+  std::vector<std::byte> dcBuffer(cat_field.get_size());
+  cat_elemBlock->get_field_data("foo", Data(dcBuffer), dcBuffer.size());
+
+  exo_reg.begin_state(1);
+  auto exo_field = exo_elemBlock->get_fieldref("foo");
+  std::vector<std::byte> deBuffer(exo_field.get_size());
+  exo_elemBlock->get_field_data("foo", Data(deBuffer), deBuffer.size());
+  EXPECT_EQ(dcBuffer, deBuffer);
 
 }
 
