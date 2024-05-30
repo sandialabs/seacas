@@ -39,7 +39,7 @@
 #endif
 
 namespace Ioss {
-  IOSS_EXPORT const std::vector<std::string> &valid_decomp_methods();
+  IOSS_EXPORT const Ioss::NameList &valid_decomp_methods();
 
   class IOSS_EXPORT BlockDecompositionData
   {

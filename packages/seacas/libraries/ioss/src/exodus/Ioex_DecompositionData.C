@@ -16,26 +16,26 @@
 #include "Ioss_Utils.h"
 #include "exodus/Ioex_Utils.h"
 
-#include <algorithm> // for lower_bound, copy, etc
-#include <cassert>   // for assert
-#include <climits>   // for INT_MAX
+#include <algorithm>
+#include <cassert>
+#include <climits>
 #include <cmath>
-#include <cstdlib> // for exit, EXIT_FAILURE
+#include <cstdlib>
 #include <cstring>
 #include <fmt/ostream.h>
-#include <iostream> // for operator<<, ostringstream, etc
-#include <iterator> // for distance
-#include <map>      // for map
-#include <numeric>  // for accumulate
-#include <utility>  // for pair, make_pair
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <numeric>
+#include <utility>
 
 #if !defined(NO_PARMETIS_SUPPORT)
-#include <parmetis.h> // for ParMETIS_V3_Mesh2Dual, etc
+#include <parmetis.h>
 #endif
 
 #if !defined(NO_ZOLTAN_SUPPORT)
-#include <zoltan.h>     // for Zoltan_Initialize
-#include <zoltan_cpp.h> // for Zoltan
+#include <zoltan.h>
+#include <zoltan_cpp.h>
 #endif
 
 namespace {
@@ -185,7 +185,7 @@ namespace Ioex {
       if (map_count > 0) {
         int max_name_length = ex_inquire_int(filePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
         max_name_length     = max_name_length < 32 ? 32 : max_name_length;
-        char **names        = Ioss::Utils::get_name_array(map_count, max_name_length);
+        char **names        = Ioex::get_name_array(map_count, max_name_length);
         ex_get_names(filePtr, EX_ELEM_MAP, names);
 
         for (int i = 0; i < map_count; i++) {
@@ -197,7 +197,7 @@ namespace Ioex {
             break;
           }
         }
-        Ioss::Utils::delete_name_array(names, map_count);
+        Ioex::delete_name_array(names, map_count);
       }
 
       if (!map_read) {
@@ -221,7 +221,7 @@ namespace Ioex {
       if (var_count > 0) {
         int max_name_length = ex_inquire_int(filePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
         max_name_length     = max_name_length < 32 ? 32 : max_name_length;
-        char **names        = Ioss::Utils::get_name_array(var_count, max_name_length);
+        char **names        = Ioex::get_name_array(var_count, max_name_length);
         ex_get_variable_names(filePtr, EX_ELEM_BLOCK, var_count, names);
 
         for (int i = 0; i < var_count; i++) {
@@ -230,7 +230,7 @@ namespace Ioex {
             break;
           }
         }
-        Ioss::Utils::delete_name_array(names, var_count);
+        Ioex::delete_name_array(names, var_count);
       }
 
       if (var_index == 0) {

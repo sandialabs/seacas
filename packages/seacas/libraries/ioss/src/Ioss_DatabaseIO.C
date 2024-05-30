@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -722,10 +722,10 @@ namespace Ioss {
       return;
     }
 
-    std::string              prop   = properties.get(property_name).get_string();
-    std::vector<std::string> groups = tokenize(prop, ":");
+    std::string    prop   = properties.get(property_name).get_string();
+    Ioss::NameList groups = tokenize(prop, ":");
     for (auto &group : groups) {
-      std::vector<std::string> group_spec = tokenize(group, ",");
+      Ioss::NameList group_spec = tokenize(group, ",");
 
       // group_spec should contain the name of the new group as
       // the first location and the members of the group as subsequent
@@ -746,7 +746,7 @@ namespace Ioss {
 
   template <typename T>
   void DatabaseIO::create_group(EntityType /*type*/, const std::string &type_name,
-                                const std::vector<std::string> &group_spec, const T * /*set_type*/)
+                                const Ioss::NameList &group_spec, const T * /*set_type*/)
   {
     fmt::print(Ioss::WarnOut(),
                "Grouping of {0} sets is not yet implemented.\n"
@@ -755,9 +755,8 @@ namespace Ioss {
   }
 
   template <>
-  void DatabaseIO::create_group(EntityType type, const std::string & /*type_name*/,
-                                const std::vector<std::string> &group_spec,
-                                const SideSet * /*set_type*/)
+  void DatabaseIO::create_group(EntityType            type, const std::string            &/*type_name*/,
+                                const Ioss::NameList &group_spec, const SideSet * /*set_type*/)
   {
     // Not generalized yet... This only works for T == SideSet
     if (type != SIDESET) {
@@ -845,7 +844,7 @@ namespace Ioss {
    *
    *  \param[in] info The strings to add.
    */
-  void DatabaseIO::add_information_records(const std::vector<std::string> &info)
+  void DatabaseIO::add_information_records(const Ioss::NameList &info)
   {
     informationRecords.reserve(informationRecords.size() + info.size());
     informationRecords.insert(informationRecords.end(), info.begin(), info.end());
@@ -879,8 +878,8 @@ namespace Ioss {
     qaRecords.push_back(time);
   }
 
-  void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions,
-                                       const std::vector<std::string> &inclusions)
+  void DatabaseIO::set_block_omissions(const Ioss::NameList &omissions,
+                                       const Ioss::NameList &inclusions)
   {
     if (!omissions.empty() && !inclusions.empty()) {
       // Only one can be non-empty
@@ -920,8 +919,8 @@ namespace Ioss {
     }
   }
 
-  void DatabaseIO::set_assembly_omissions(const std::vector<std::string> &omissions,
-                                          const std::vector<std::string> &inclusions)
+  void DatabaseIO::set_assembly_omissions(const Ioss::NameList &omissions,
+                                          const Ioss::NameList &inclusions)
   {
     if (!omissions.empty() && !inclusions.empty()) {
       // Only one can be non-empty
@@ -1025,7 +1024,7 @@ namespace Ioss {
   }
 
   void DatabaseIO::get_block_adjacencies_nl(const Ioss::ElementBlock *eb,
-                                            std::vector<std::string> &block_adjacency) const
+                                            Ioss::NameList           &block_adjacency) const
   {
     if (!blockAdjacenciesCalculated) {
       compute_block_adjacencies();

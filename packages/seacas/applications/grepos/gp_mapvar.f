@@ -49,6 +49,7 @@ C     well when trying to reduce the size of NOLD
       
       do 30 ivar = 1, nvar
         do 10 i = 1, nnew
+           write (*,*) i, map(i)
           scr(i) = vars(map(i) + nold * (ivar-1) )
  10     continue
 

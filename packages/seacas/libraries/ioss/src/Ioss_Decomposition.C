@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -138,29 +138,29 @@ namespace {
 
 namespace Ioss {
 
-  IOSS_EXPORT const std::vector<std::string> &valid_decomp_methods()
+  IOSS_EXPORT const Ioss::NameList &valid_decomp_methods()
   {
-    static const std::vector<std::string> valid_methods{"EXTERNAL"
+    static const Ioss::NameList valid_methods{"EXTERNAL"
 #ifdef SEACAS_HAVE_MPI
-                                                        ,
-                                                        "LINEAR",
-                                                        "MAP",
-                                                        "VARIABLE"
+                                              ,
+                                              "LINEAR",
+                                              "MAP",
+                                              "VARIABLE"
 #if !defined(NO_ZOLTAN_SUPPORT)
-                                                        ,
-                                                        "BLOCK",
-                                                        "CYCLIC",
-                                                        "RANDOM",
-                                                        "RCB",
-                                                        "RIB",
-                                                        "HSFC"
+                                              ,
+                                              "BLOCK",
+                                              "CYCLIC",
+                                              "RANDOM",
+                                              "RCB",
+                                              "RIB",
+                                              "HSFC"
 #endif
 #if !defined(NO_PARMETIS_SUPPORT)
-                                                        ,
-                                                        "KWAY",
-                                                        "KWAY_GEOM",
-                                                        "GEOM_KWAY",
-                                                        "METIS_SFC"
+                                              ,
+                                              "KWAY",
+                                              "KWAY_GEOM",
+                                              "GEOM_KWAY",
+                                              "METIS_SFC"
 #endif
 #endif
     };
