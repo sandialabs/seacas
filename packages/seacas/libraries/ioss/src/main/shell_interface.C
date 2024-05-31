@@ -312,6 +312,12 @@ void IOShell::Interface::enroll_options()
                   "retained in the output.",
                   nullptr);
 
+  options_.enroll("omit_sets", Ioss::GetLongOption::MandatoryValue,
+                  "comma-separated list of nodeset/edgeset/faceset/elemset/sideset names that "
+                  "should NOT be transferred to "
+                  "output database",
+                  nullptr);
+
   options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
                   "Output a sideset for all boundary faces of the model", nullptr);
 
@@ -619,6 +625,16 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       auto omit_str = Ioss::tokenize(std::string(temp), ",");
       for (const auto &str : omit_str) {
         omitted_blocks.push_back(str);
+      }
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("omit_sets");
+    if (temp != nullptr) {
+      auto omit_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : omit_str) {
+        omitted_sets.push_back(str);
       }
     }
   }

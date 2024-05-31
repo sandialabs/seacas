@@ -42,7 +42,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "6.7 (2024/05/01)";
+  std::string version = "6.8 (2024/05/31)";
 
   bool mem_stats = false;
 
@@ -74,6 +74,12 @@ namespace {
     options.boundary_sideset  = interFace.boundary_sideset;
     options.ignore_qa_info    = interFace.ignore_qa_info;
     options.omitted_blocks    = !interFace.omitted_blocks.empty();
+
+    options.omitted_sets = interFace.omitted_sets;
+    Ioss::sort(options.omitted_sets);
+    for (auto &name : options.omitted_sets) {
+      name = Ioss::Utils::lowercase(name);
+    }
     return options;
   }
 
