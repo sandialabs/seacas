@@ -2119,7 +2119,7 @@ namespace Ioex {
       ex_initialize_basis_struct(&exo_basis, 1, 1);
       Ioss::Utils::copy_string(exo_basis.name, basis->name(), EX_MAX_NAME);
       for (int i = 0; i < basis->component_count(); i++) {
-        auto component                = basis->get_basis_component(i + 1);
+        const auto &component         = basis->get_basis_component(i + 1);
         exo_basis.subc_dim[i]         = component.subc_dim;
         exo_basis.subc_ordinal[i]     = component.subc_ordinal;
         exo_basis.subc_dof_ordinal[i] = component.subc_dof_ordinal;
