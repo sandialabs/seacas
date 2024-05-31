@@ -816,8 +816,104 @@ namespace Iocatalyst {
       return true;
     }
 
+    std::vector<std::string> getScalarNamesFromNonScalarField(const Ioss::Field &field) const
+    {
+      int ncomp = field.get_component_count(Ioss::Field::InOut::INPUT);
+      std::vector<std::string> fnames;
+      for(int i=1; i<=ncomp; i++){
+        fnames.push_back(field.get_component_name(i, Ioss::Field::InOut::INPUT));
+      }
+      return fnames;
+    }
+
+    template <typename T>
+    std::vector<T> getInterweavedScalarDataFromConduitNode(const std::vector<std::string> fnames, conduit_cpp::Node &node) const
+    {
+      int ncomp = fnames.size();
+      auto &&t_node = node[fnames[0] + detail::FS + detail::VALUE];
+      int num_get = t_node.number_of_elements();
+      std::vector<T> vals(ncomp*num_get);
+      
+      for(int i=0; i<num_get; i++) {
+        for(int j=0; j<ncomp; j++){
+          std::string path_to_value = fnames[j] + detail::FS + detail::VALUE;
+          auto     &&child_value   = node[path_to_value];
+          vals[i*ncomp + j] = 
+            reinterpret_cast<const T *>(child_value.element_ptr(0))[i];
+        }
+      }
+      return vals;
+    }
+
+    template <typename T>
+    void addFieldNodeAndDataToConduitNode(const Ioss::Field &field, void *data, conduit_cpp::Node &node) const
+    {
+      int ncomp = field.get_component_count(Ioss::Field::InOut::INPUT);
+      int num_get = field.raw_count();
+      node[field.get_name()] = conduit_cpp::Node();
+      auto &&f_node = node[field.get_name()];
+      f_node[detail::ROLE].set(static_cast<std::int8_t>(field.get_role()));
+      f_node[detail::TYPE].set(static_cast<std::int8_t>(field.get_type()));
+      f_node[detail::COUNT].set(static_cast<std::int64_t>(field.raw_count()));
+      f_node[detail::INDEX].set(static_cast<std::int64_t>(field.get_index()));
+      f_node[detail::COMPONENTCOUNT].set(static_cast<std::int64_t>(ncomp));
+      f_node[detail::STORAGE].set(field.raw_storage()->name());
+      f_node[detail::VALUE].set(static_cast< T *>(data), ncomp * num_get);
+    }
+
+    void combineScalarFieldsInConduitNodeToNonScalarField(
+      const Ioss::Field &field, conduit_cpp::Node &node) const
+    {
+      std::vector<std::string> fnames = 
+        this->getScalarNamesFromNonScalarField(field);
+
+      switch (field.get_type()) {
+        case Ioss::Field::BasicType::DOUBLE:
+          this->addFieldNodeAndDataToConduitNode<double>(
+            field, 
+            this->getInterweavedScalarDataFromConduitNode<double>(fnames, node).data(), 
+            node
+          );
+          break;
+
+        case Ioss::Field::BasicType::INT32:
+          this->addFieldNodeAndDataToConduitNode<std::int32_t>(
+            field, 
+            this->getInterweavedScalarDataFromConduitNode<std::int32_t>(fnames, node).data(), 
+            node
+          );
+          break;
+
+        case Ioss::Field::BasicType::INT64:
+          this->addFieldNodeAndDataToConduitNode<std::int64_t>(
+            field, 
+            this->getInterweavedScalarDataFromConduitNode<std::int64_t>(fnames, node).data(), 
+            node
+          );
+          break;
+
+        case Ioss::Field::BasicType::CHARACTER:
+          this->addFieldNodeAndDataToConduitNode<std::int8_t>(
+            field, 
+            this->getInterweavedScalarDataFromConduitNode<char>(fnames, node).data(), 
+            node
+          );
+          break;
+        default:
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "ERROR in {} on read: {}, unsupported field type: {}\n", __func__,
+                      field.get_name(), field.type_string());
+          IOSS_ERROR(errmsg);
+      }
+      
+      //Remove Related Scalars from Conduit Node
+      for(int i=0; i<fnames.size(); i++) {
+        node.remove(fnames[i]);
+      }
+    }
+
     template <typename GroupingEntityT>
-    bool readFields(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
+    bool readFields(conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
       // Assumption: count = entity_count (in block)
       Ioss::DatabaseIO *dbase           = block->get_database();
@@ -877,6 +973,12 @@ namespace Iocatalyst {
                                 fields);
         for (const auto &field : fields) {
           block->field_add(field.set_zero_copy_enabled());
+        }
+
+        for (const auto &field : fields) {
+          if(field.raw_storage()->name() != IOSS_SCALAR()) {
+            this->combineScalarFieldsInConduitNodeToNonScalarField(field, parent);
+          }
         }
       }
 
