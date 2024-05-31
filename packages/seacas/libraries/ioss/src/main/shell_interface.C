@@ -319,7 +319,7 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
-                  "Output a sideset for all boundary faces of the model", nullptr);
+                  "Output a sideset for all boundary faces of the model", nullptr, nullptr, true);
 
   options_.enroll(
       "delay", Ioss::GetLongOption::MandatoryValue,
@@ -331,12 +331,12 @@ void IOShell::Interface::enroll_options()
                   "Data type used internally to store field data\n"
                   "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, "
                   "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE",
-                  "POINTER", nullptr, true);
+                  "POINTER");
 #else
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
                   "Data type used internally to store field data\n"
                   "\t\tOptions are: POINTER, STD_VECTOR",
-                  "POINTER", nullptr, true);
+                  "POINTER");
 #endif
 
   options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
