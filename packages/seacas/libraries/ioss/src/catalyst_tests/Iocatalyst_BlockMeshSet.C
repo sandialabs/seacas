@@ -434,6 +434,7 @@ namespace Iocatalyst {
         values.push_back(itr->second + j*0.1);
       }
       elemBlock->put_field_data(itr->first, values);
+      values.clear();
     } 
   }
 
@@ -449,6 +450,7 @@ namespace Iocatalyst {
         values.push_back(itr->second + j*0.1);
       }
       nodeBlock->put_field_data(itr->first, values);
+      values.clear();
     } 
   }
 
