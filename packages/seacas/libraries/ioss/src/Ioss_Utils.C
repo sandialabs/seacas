@@ -498,8 +498,8 @@ namespace {
     // not valid for this grouping entity (truth_table entry == 0).
     assert(index < names.size() && !names[index].empty() &&
            (truth_table == nullptr || truth_table[index] == 1));
-    auto name        = names[index];
-    auto name_length = name.length();
+    const auto &name        = names[index];
+    auto        name_length = name.length();
 
     // Split the name up into tokens separated by the
     // 'suffix_separator'.  Note that the basename itself could
@@ -560,8 +560,8 @@ namespace {
         // suffices have a basename that match other names with only a
         // single suffix lc_cam_x, lc_cam_y, lc_sfarea.
         for (size_t id = index + 1; id < names.size(); id++) {
-          auto tst_name  = names[id];
-          auto subtokens = field_tokenize(tst_name, suffix_separator);
+          const auto &tst_name  = names[id];
+          auto        subtokens = field_tokenize(tst_name, suffix_separator);
           if ((truth_table == nullptr || truth_table[id] == 1) && // Defined on this entity
               Ioss::Utils::str_equal(name.substr(0, bn_len),
                                      tst_name.substr(0, bn_len)) && // base portion must match
