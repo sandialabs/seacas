@@ -418,22 +418,12 @@ then
     then
 	echo "${txtgrn}+++ HDF5${txtrst}"
 	hdf_suffix=""
-	if [ "${H5VERSION}" == "V18" ]; then
-            hdf_version="1.8.23"
-            hdf_base="1.8"
-	elif [ "${H5VERSION}" == "V110" ]; then
-            hdf_version="1.10.10"
-            hdf_base="1.10"
+	if [ "${H5VERSION}" == "V110" ]; then
+	    hdf_version="hdf5-1_10_11"
 	elif [ "${H5VERSION}" == "V112" ]; then
-            hdf_version="1.12.2"
-            hdf_base="1.12"
-	elif [ "${H5VERSION}" == "V113" ]; then
-            hdf_version="1.13.1"
-            hdf_base="1.13"
+            hdf_version="hdf5-1_12_3"
 	elif [ "${H5VERSION}" == "V114" ]; then
-            hdf_version="1.14.3"
-            hdf_base="1.14"
-	    hdf_suffix=""
+            hdf_version="hdf5_1.14.4.3"
 	elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
 	else
@@ -449,21 +439,21 @@ then
             rm -rf hdf5-${hdf_version}${hdf_suffix}
             rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
             if [ "${H5VERSION}" == "develop" ]; then
-		git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
+		git clone --depth=1 https://github.com/HDFGroup/hdf5.git hdf5-develop
             else
-		wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+		wget --no-check-certificate https://github.com/HDFGroup/hdf5/archive/refs/tags/${hdf_version}.tar.gz
             fi
             if [ "${H5VERSION}" != "develop" ]
             then
-		tar -jxf hdf5-${hdf_version}${hdf_suffix}.tar.bz2
-		rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+		tar -zxf ${hdf_version}.tar.gz
+		rm -f ${hdf_version}.tar.gz
             fi
 	fi
 	
 	if [ "$BUILD" == "YES" ]
 	then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd hdf5-${hdf_version}${hdf_suffix} || exit
+            cd hdf5-${hdf_version} || exit
             rm -rf build
             mkdir build
             cd build || exit
@@ -695,7 +685,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parmetis
-            git clone https://github.com/gsjaardema/parmetis
+            git clone --depth=1 https://github.com/gsjaardema/parmetis
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -869,7 +859,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf ADIOS2
-            git clone https://github.com/ornladios/ADIOS2.git
+            git clone --depth=1 https://github.com/ornladios/ADIOS2.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -1104,7 +1094,7 @@ then
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf faodel*
-      git clone https://github.com/sandialabs/faodel.git
+      git clone --depth=1 https://github.com/sandialabs/faodel.git
     fi
 
     if [ "$BUILD" == "YES" ]
