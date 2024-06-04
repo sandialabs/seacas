@@ -32,11 +32,11 @@ namespace Ioss {
     IOSS_NODISCARD int                 get_num_copies() const { return copies_; }
 
     // Kept for backward compatibility...
-    IOSS_NODISCARD __attribute__((__deprecated__)) const VariableType *getBaseType() const
+    IOSS_NODISCARD [[deprecated("Use get_base_type")]] const VariableType *getBaseType() const
     {
       return baseType;
     }
-    IOSS_NODISCARD __attribute__((__deprecated__)) int getNumCopies() const { return copies_; }
+    IOSS_NODISCARD [[deprecated("Use get_num_copies")]] int getNumCopies() const { return copies_; }
 
   private:
     const VariableType *baseType;
