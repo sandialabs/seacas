@@ -281,7 +281,8 @@ namespace Ioex {
     if (do_timer) {
       double t_end    = Ioss::Utils::timer();
       double duration = t_end - t_begin;
-      fmt::print(Ioss::DebugOut(), "Input File Open Time = {}\n", duration);
+      fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
+                 decoded_filename());
     }
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);

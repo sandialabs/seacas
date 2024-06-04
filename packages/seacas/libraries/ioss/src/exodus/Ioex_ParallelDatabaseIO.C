@@ -539,7 +539,7 @@ namespace Ioex {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-        fmt::print(Ioss::DebugOut(), "File Open Time = {}\n", duration);
+        fmt::print(Ioss::DebugOut(), "File Open Time = {} ({})\n", duration, filename);
       }
     }
 
@@ -671,7 +671,7 @@ namespace Ioex {
       double      duration    = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       std::string open_create = fileExists ? "Open" : "Create";
       if (myProcessor == 0) {
-        fmt::print(Ioss::DebugOut(), "File {} Time = {}\n", open_create, duration);
+        fmt::print(Ioss::DebugOut(), "File {} Time = {} ({})\n", open_create, duration, filename);
       }
     }
 
