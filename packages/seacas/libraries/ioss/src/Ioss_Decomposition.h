@@ -281,6 +281,8 @@ namespace Ioss {
     void calculate_element_centroids(const std::vector<double> &x, const std::vector<double> &y,
                                      const std::vector<double> &z);
 
+    void calculate_element_chains();
+
 #if !defined(NO_ZOLTAN_SUPPORT)
     void zoltan_decompose(Zoltan &zz);
 
@@ -806,6 +808,7 @@ namespace Ioss {
 
     std::vector<INT>    m_elementToProc; // Used by "MAP" scheme...
     std::vector<double> m_centroids;
+    std::vector<float>  m_weights;
     std::vector<INT>    m_pointer;   // Index into adjacency, processor list for each element...
     std::vector<INT>    m_adjacency; // Size is sum of element connectivity sizes
 

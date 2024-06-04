@@ -66,6 +66,7 @@ namespace Ioex {
     IOSS_NODISCARD virtual size_t decomp_elem_count() const  = 0;
 
     IOSS_NODISCARD virtual std::vector<double> &centroids() = 0;
+    IOSS_NODISCARD virtual std::vector<float> &weights() = 0;
 
     Ioss_MPI_Comm comm_;
 
@@ -136,6 +137,7 @@ namespace Ioex {
     IOSS_NODISCARD size_t decomp_elem_count() const { return m_decomposition.file_elem_count(); }
 
     IOSS_NODISCARD std::vector<double> &centroids() { return m_decomposition.m_centroids; }
+    IOSS_NODISCARD std::vector<float> &weights() { return m_decomposition.m_weights; }
 
     template <typename T>
     void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const

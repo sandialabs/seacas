@@ -79,7 +79,12 @@ namespace {
     }
 
     if (wdim != 0) {
-      std::fill(wgts, wgts + element_count, 1.0);
+      if (zdata->weights().empty()) {
+	std::fill(wgts, wgts + element_count, 1.0);
+      }
+      else {
+	std::copy(zdata->weights().begin(), zdata->weights().end(), &wgts[0]);
+      }
     }
 
     if (ngid_ent == 1) {

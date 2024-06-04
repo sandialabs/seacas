@@ -7,6 +7,7 @@
  */
 
 #include "Ioss_Decomposition.h"
+#include "Ioss_ChainGenerator.h"
 #include "Ioss_ElementTopology.h"
 #include "Ioss_Enumerate.h"
 #include "Ioss_ParallelUtils.h"
@@ -488,6 +489,31 @@ namespace Ioss {
     Ioss::Utils::clear(m_elementDist);
     Ioss::Utils::clear(m_nodeDist);
     show_progress("\tIoss::decompose model finished");
+  }
+
+  template IOSS_EXPORT void Decomposition<int>::calculate_element_chains();
+  template IOSS_EXPORT void Decomposition<int64_t>::calculate_element_chains();
+  template <typename INT>
+  void Decomposition<INT>::calculate_element_chains()
+  {
+#if 0
+    Ioss::chain_t<INT> element_chains;
+    std::vector<float>   weights;
+    element_chains =
+      Ioss::generate_element_chains(region, interFace.lineSurfaceList_, debug_level, dummy);
+    progress("Ioss::generate_element_chains");
+
+    if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
+	interFace.decomposition_method() == "hsfc") {
+      weights =
+	line_decomp_weights(element_chains, region.get_property("element_count").get_int());
+      progress("generate_element_weights");
+    }
+
+    if (weights.empty()) {
+      weights.resize(region.get_property("element_count").get_int(), 1);
+    }
+#endif
   }
 
   template IOSS_EXPORT void Decomposition<int>::calculate_element_centroids(
@@ -1080,6 +1106,7 @@ namespace Ioss {
 #endif
 
 #if !defined(NO_ZOLTAN_SUPPORT)
+
   template <typename INT> void Decomposition<INT>::zoltan_decompose(Zoltan &zz)
   {
     show_progress(__func__);
