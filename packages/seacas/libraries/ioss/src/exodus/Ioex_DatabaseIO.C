@@ -272,17 +272,19 @@ namespace Ioex {
 
     bool do_timer = false;
     Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
-    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    double t_begin = ((do_timer && isParallel) ? Ioss::Utils::timer() : 0);
 
     int app_opt_val = ex_opts(EX_VERBOSE);
     m_exodusFilePtr = ex_open(decoded_filename().c_str(), EX_READ | mode, &cpu_word_size,
                               &io_word_size, &version);
 
-    if (do_timer) {
+    if (do_timer && isParallel) {
       double t_end    = Ioss::Utils::timer();
-      double duration = t_end - t_begin;
-      fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
-                 decoded_filename());
+      double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+      if (myProcessor == 0) {
+	fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
+		   decoded_filename());
+      }
     }
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
