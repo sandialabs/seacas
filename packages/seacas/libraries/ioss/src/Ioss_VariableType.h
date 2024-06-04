@@ -96,7 +96,7 @@ namespace Ioss {
                                          const Ioss::NameList &suffices);
 
     // Backward compatibility...
-    __attribute__((__deprecated__)) static bool
+    [[deprecated("Use create_named_suffix_type")]] static bool
     create_named_suffix_field_type(const std::string &type_name, const Ioss::NameList &suffices)
     {
       return create_named_suffix_type(type_name, suffices);
