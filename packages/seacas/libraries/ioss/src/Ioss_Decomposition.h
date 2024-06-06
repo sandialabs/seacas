@@ -282,8 +282,6 @@ namespace Ioss {
     void calculate_element_centroids(const std::vector<double> &x, const std::vector<double> &y,
                                      const std::vector<double> &z);
 
-    void calculate_element_chains();
-
 #if !defined(NO_ZOLTAN_SUPPORT)
     void zoltan_decompose(Zoltan &zz);
 

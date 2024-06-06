@@ -503,30 +503,6 @@ namespace Ioss {
     show_progress("\tIoss::decompose model finished");
   }
 
-  template IOSS_EXPORT void Decomposition<int>::calculate_element_chains();
-  template IOSS_EXPORT void Decomposition<int64_t>::calculate_element_chains();
-  template <typename INT>
-  void Decomposition<INT>::calculate_element_chains()
-  {
-#if 0
-    Ioss::chain_t<INT> element_chains;
-    std::vector<float>   weights;
-    element_chains =
-      Ioss::generate_element_chains(region, interFace.lineSurfaceList_, debug_level, dummy);
-    progress("Ioss::generate_element_chains");
-
-    if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
-	interFace.decomposition_method() == "hsfc") {
-      weights =
-	line_decomp_weights(element_chains, region.get_property("element_count").get_int());
-      progress("generate_element_weights");
-    }
-
-    if (weights.empty()) {
-      weights.resize(region.get_property("element_count").get_int(), 1);
-    }
-#endif
-  }
 
   template IOSS_EXPORT void Decomposition<int>::calculate_element_centroids(
       const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &z);
