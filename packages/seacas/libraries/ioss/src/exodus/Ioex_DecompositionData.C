@@ -277,7 +277,7 @@ namespace Ioex {
 	Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART,
 							Ioss::ParallelUtils::comm_self(), properties);
 	Ioss::Region region(dbi, "line_decomp_region");
-	int status = Ioss::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global);
+	int status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global);
       }
 
       // Now broadcast the parts of the `element_to_proc_global`

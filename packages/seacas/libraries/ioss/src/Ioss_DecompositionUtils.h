@@ -10,24 +10,28 @@
 #include "ioss_export.h"
 
 #include "Ioss_ChainGenerator.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_Region.h"
 #include <string>
 #include <vector>
 
 namespace Ioss {
-  template <typename INT>
-  void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<int> &elem_to_proc,
-                          int proc_count);
+  class IOSS_EXPORT DecompUtils
+  {
+  public:
+    template <typename INT>
+    static void line_decomp_modify(const Ioss::chain_t<INT> &element_chains,
+                                   std::vector<int> &elem_to_proc, int proc_count);
 
-  template <typename INT>
-  void output_decomposition_statistics(const std::vector<INT> &elem_to_proc, int proc_count,
-                                       size_t number_elements);
+    template <typename INT>
+    static void output_decomposition_statistics(const std::vector<INT> &elem_to_proc,
+                                                int proc_count, size_t number_elements);
 
-  template <typename INT>
-  std::vector<float> line_decomp_weights(const Ioss::chain_t<INT> &element_chains,
-                                         size_t                    element_count);
+    template <typename INT>
+    static std::vector<float> line_decomp_weights(const Ioss::chain_t<INT> &element_chains,
+                                                  size_t                    element_count);
 
-  IOSS_EXPORT int line_decompose(Region &region, size_t num_ranks, const std::string &method,
-                                 const std::string &surface_list,
-                                 std::vector<int>  &element_to_proc);
+    static int line_decompose(Region &region, size_t num_ranks, const std::string &method,
+                              const std::string &surface_list, std::vector<int> &element_to_proc);
+  };
 } // namespace Ioss
