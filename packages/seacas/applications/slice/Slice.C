@@ -1428,7 +1428,7 @@ namespace {
       Ioss::MeshCopyOptions options{};
       options.ints_64_bit       = sizeof(INT) == 64;
       options.delete_timesteps  = true;
-      options.data_storage_type = 2;
+      options.data_storage_type = 1;
       options.verbose           = true;
 
       // Copy mesh portion of input region to the output region
