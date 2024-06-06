@@ -7,10 +7,14 @@
 #include "Ioss_CodeTypes.h"
 #include "exodus/Ioex_DecompositionData.h"
 #if defined PARALLEL_AWARE_EXODUS
-#include "Ioss_ElementTopology.h" // for ElementTopology
-#include "Ioss_Field.h"           // for Field, etc
-#include "Ioss_Map.h"             // for Map, MapContainer
-#include "Ioss_PropertyManager.h" // for PropertyManager
+#include "Ioss_ChainGenerator.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Field.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Map.h"      
+#include "Ioss_NodeBlock.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
@@ -39,8 +43,8 @@
 #endif
 
 namespace {
-  // ZOLTAN Callback functions...
 
+  // ZOLTAN Callback functions...
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
   {
@@ -112,6 +116,350 @@ namespace {
     *ierr = ZOLTAN_OK;
   }
 #endif
+
+template <typename INT>
+std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_chains)
+{
+  std::map<INT, std::vector<INT>> chains;
+
+  for (size_t i = 0; i < element_chains.size(); i++) {
+    auto &chain_entry = element_chains[i];
+    if (chain_entry.link >= 0) {
+      chains[chain_entry.element].push_back(i + 1);
+    }
+  }
+  return chains;
+}
+
+template <typename INT>
+std::vector<float> line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)
+{
+  int debug_level = 0;
+  auto chains = string_chains(element_chains);
+
+  if ((debug_level & 16) != 0) {
+    for (const auto &[chain_root, chain_elements] : chains) {
+      fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
+    }
+  }
+
+  std::vector<float> weights(element_count, 1);
+  // Now, for each chain...
+  for (const auto &[chain_root, chain_elements] : chains) {
+    // * Set the weights of all elements in the chain...
+    // * non-root = 0, root = length of chain.
+    for (const auto &element : chain_elements) {
+      weights[element - 1] = 0;
+    }
+    weights[chain_root - 1] = static_cast<float>(chain_elements.size());
+  }
+  return weights;
+}
+template std::vector<float> line_decomp_weights(const Ioss::chain_t<int> &element_chains,
+                                              size_t                    element_count);
+template std::vector<float> line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
+                                              size_t                        element_count);
+
+
+template <typename INT>
+void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<int> &elem_to_proc,
+                        int proc_count)
+{
+  int debug_level = 0;
+  // Get a map of all chains and the elements in the chains.  Map key will be root.
+  auto chains = string_chains(element_chains);
+
+  // Delta: elements added/removed from each processor...
+  std::vector<int> delta(proc_count);
+
+  // Now, for each chain...
+  for (const auto &[chain_root, chain_elements] : chains) {
+    if ((debug_level & 16) != 0) {
+      fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
+    }
+
+    std::vector<INT> chain_proc_count(proc_count);
+
+    // * get processors used by elements in the chain...
+    for (const auto &element : chain_elements) {
+      auto proc = elem_to_proc[element - 1];
+      chain_proc_count[proc]++;
+    }
+
+    // * Now, subtract the `delta` from each count
+    for (int i = 0; i < proc_count; i++) {
+      chain_proc_count[i] -= delta[i];
+    }
+
+    // * Assign all elements in the chain to processor at chain root
+    // * Update the deltas for all processors that gain/lose elements...
+    auto root_proc = elem_to_proc[chain_root - 1];
+    for (const auto &element : chain_elements) {
+      if (elem_to_proc[element - 1] != root_proc) {
+        auto old_proc             = elem_to_proc[element - 1];
+        elem_to_proc[element - 1] = root_proc;
+        delta[root_proc]++;
+        delta[old_proc]--;
+      }
+    }
+  }
+
+  std::vector<INT> proc_element_count(proc_count);
+  for (auto proc : elem_to_proc) {
+    proc_element_count[proc]++;
+  }
+  if ((debug_level & 32) != 0) {
+    fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
+    fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
+  }
+}
+
+  template <typename INT>
+  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+  get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
+  {
+    size_t element_count = region.get_property("element_count").get_int();
+
+    // The zoltan methods supported in slice are all geometry based
+    // and use the element centroid.
+    std::vector<double> x(element_count);
+    std::vector<double> y(element_count);
+    std::vector<double> z(element_count);
+
+    const auto         *nb = region.get_node_blocks()[0];
+    std::vector<double> coor;
+    nb->get_field_data("mesh_model_coordinates", coor);
+
+    const auto &blocks = region.get_element_blocks();
+    size_t      el     = 0;
+    for (auto &eb : blocks) {
+      std::vector<INT> connectivity;
+      eb->get_field_data("connectivity_raw", connectivity);
+      size_t blk_element_count = eb->entity_count();
+      size_t blk_element_nodes = eb->topology()->number_nodes();
+
+      for (size_t j = 0; j < blk_element_count; j++) {
+        for (size_t k = 0; k < blk_element_nodes; k++) {
+          auto node = connectivity[j * blk_element_nodes + k] - 1;
+          x[el] += coor[node * 3 + 0];
+          y[el] += coor[node * 3 + 1];
+          z[el] += coor[node * 3 + 2];
+        }
+        x[el] /= blk_element_nodes;
+        y[el] /= blk_element_nodes;
+        z[el] /= blk_element_nodes;
+        el++;
+      }
+    }
+    return {x, y, z};
+  }
+  /*****************************************************************************/
+  /***** Global data structure used by Zoltan callbacks.                   *****/
+  /***** Could implement Zoltan callbacks without global data structure,   *****/
+  /***** but using the global data structure makes implementation quick.   *****/
+  struct
+  {
+    size_t  ndot; /* Length of x, y, z, and part (== # of elements) */
+    float  *vwgt; /* vertex weights */
+    double *x;    /* x-coordinates */
+    double *y;    /* y-coordinates */
+    double *z;    /* z-coordinates */
+  } Zoltan_Data;
+
+  /*****************************************************************************/
+  /***** ZOLTAN CALLBACK FUNCTIONS *****/
+  int zoltan_num_dim_ser(void * /*data*/, int *ierr)
+  {
+    /* Return dimensionality of coordinate data.
+     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
+     */
+    *ierr = ZOLTAN_OK;
+    if (Zoltan_Data.z != nullptr) {
+      return 3;
+    }
+    if (Zoltan_Data.y != nullptr) {
+      return 2;
+    }
+    return 1;
+  }
+
+  int zoltan_num_obj_ser(void * /*data*/, int *ierr)
+  {
+    /* Return number of objects.
+     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
+     */
+    *ierr = ZOLTAN_OK;
+    return Zoltan_Data.ndot;
+  }
+
+  void zoltan_obj_list_ser(void * /*data*/, int /*ngid_ent*/, int /*nlid_ent*/, ZOLTAN_ID_PTR gids,
+                       ZOLTAN_ID_PTR /*lids*/, int wdim, float *wgts, int *ierr)
+  {
+    /* Return list of object IDs.
+     * Return only global IDs; don't need local IDs since running in serial.
+     * gids are array indices for coordinate and vwgts arrays.
+     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
+     */
+    std::iota(gids, gids + Zoltan_Data.ndot, 0);
+    if (wdim != 0) {
+      for (size_t i = 0; i < Zoltan_Data.ndot; i++) {
+        wgts[i] = static_cast<float>(Zoltan_Data.vwgt[i]);
+      }
+    }
+
+    *ierr = ZOLTAN_OK;
+  }
+
+  void zoltan_geom_ser(void * /*data*/, int /*ngid_ent*/, int /*nlid_ent*/, int nobj,
+                   const ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR /*lids*/, int ndim, double *geom,
+                   int *ierr)
+  {
+    /* Return coordinates for objects.
+     * gids are array indices for coordinate arrays.
+     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
+     */
+
+    for (size_t i = 0; i < static_cast<size_t>(nobj); i++) {
+      size_t j       = gids[i];
+      geom[i * ndim] = Zoltan_Data.x[j];
+      if (ndim > 1) {
+        geom[i * ndim + 1] = Zoltan_Data.y[j];
+      }
+      if (ndim > 2) {
+        geom[i * ndim + 2] = Zoltan_Data.z[j];
+      }
+    }
+
+    *ierr = ZOLTAN_OK;
+  }
+
+  template <typename INT>
+  void decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+                        std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+                        IOSS_MAYBE_UNUSED INT dummy)
+  {
+    if (ranks == 1) {
+      return;
+    }
+
+    size_t element_count = region.get_property("element_count").get_int();
+    if (element_count != static_cast<size_t>(static_cast<int>(element_count))) {
+      fmt::print(stderr, "ERROR: Cannot have a mesh with more than 2.1 Billion elements in a "
+                         "Zoltan decomposition.\n");
+      exit(EXIT_FAILURE);
+    }
+
+    auto [x, y, z] = get_element_centroid(region, dummy);
+
+    // Copy mesh data and pointers into structure accessible from callback fns.
+    Zoltan_Data.ndot = element_count;
+    Zoltan_Data.vwgt = const_cast<float *>(Data(weights));
+
+    Zoltan_Data.x = Data(x);
+    Zoltan_Data.y = Data(y);
+    Zoltan_Data.z = Data(z);
+
+    // Initialize Zoltan
+    int    argc = 0;
+    char **argv = nullptr;
+
+    float ver = 0.0;
+    Zoltan_Initialize(argc, argv, &ver);
+    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver),
+               method);
+
+    Zoltan zz(Ioss::ParallelUtils::comm_self());
+
+    // Register Callback functions
+    // Using global Zoltan_Data; could register it here instead as data field.
+    zz.Set_Num_Obj_Fn(zoltan_num_obj_ser, nullptr);
+    zz.Set_Obj_List_Fn(zoltan_obj_list_ser, nullptr);
+    zz.Set_Num_Geom_Fn(zoltan_num_dim_ser, nullptr);
+    zz.Set_Geom_Multi_Fn(zoltan_geom_ser, nullptr);
+
+    // Set parameters for Zoltan
+    zz.Set_Param("DEBUG_LEVEL", "0");
+    std::string str = fmt::format("{}", ranks);
+    zz.Set_Param("NUM_GLOBAL_PARTS", str);
+    zz.Set_Param("OBJ_WEIGHT_DIM", "1");
+    zz.Set_Param("LB_METHOD", method);
+    zz.Set_Param("NUM_LID_ENTRIES", "0");
+    zz.Set_Param("REMAP", "0");
+    zz.Set_Param("RETURN_LISTS", "PARTITION_ASSIGNMENTS");
+    zz.Set_Param("RCB_RECTILINEAR_BLOCKS", "1");
+
+    int num_global = sizeof(INT) / sizeof(ZOLTAN_ID_TYPE);
+    num_global     = num_global < 1 ? 1 : num_global;
+
+    // Call partitioner
+    int           changes           = 0;
+    int           num_local         = 0;
+    int           num_import        = 1;
+    int           num_export        = 1;
+    ZOLTAN_ID_PTR import_global_ids = nullptr;
+    ZOLTAN_ID_PTR import_local_ids  = nullptr;
+    ZOLTAN_ID_PTR export_global_ids = nullptr;
+    ZOLTAN_ID_PTR export_local_ids  = nullptr;
+    int          *import_procs      = nullptr;
+    int          *import_to_part    = nullptr;
+    int          *export_procs      = nullptr;
+    int          *export_to_part    = nullptr;
+    int rc = zz.LB_Partition(changes, num_global, num_local, num_import, import_global_ids,
+                             import_local_ids, import_procs, import_to_part, num_export,
+                             export_global_ids, export_local_ids, export_procs, export_to_part);
+
+    if (rc != ZOLTAN_OK) {
+      fmt::print(stderr, "ERROR: Problem during call to Zoltan LB_Partition.\n");
+      goto End;
+    }
+
+    // Sanity check
+    if (element_count != static_cast<size_t>(num_export)) {
+      fmt::print(stderr, "Sanity check failed; ndot {} != num_export {}.\n", element_count,
+                 static_cast<size_t>(num_export));
+      goto End;
+    }
+
+    elem_to_proc.resize(element_count);
+    for (size_t i = 0; i < element_count; i++) {
+      elem_to_proc[i] = export_to_part[i];
+    }
+
+  End:
+    /* Clean up */
+    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+  }
+
+template void line_decomp_modify(const Ioss::chain_t<int> &element_chains,
+                                 std::vector<int> &elem_to_proc, int proc_count);
+template void line_decomp_modify(const Ioss::chain_t<int64_t> &element_chains,
+                                 std::vector<int> &elem_to_proc, int proc_count);
+
+  int line_decompose(Ioss::Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> element_to_proc)
+  {
+    
+    int dummy = 0;
+    Ioss::chain_t<int> element_chains =
+      Ioss::generate_element_chains(region, surface_list, 0, dummy);
+    region.get_database()->progress("Ioss::generate_element_chains");
+
+    std::vector<float> weights =
+      line_decomp_weights(element_chains, region.get_property("element_count").get_int());
+    region.get_database()->progress("generate_element_weights");
+
+    double start        = Ioss::Utils::timer();
+    std::vector<int> elem_to_proc;
+    decompose_zoltan(region, num_ranks, method, elem_to_proc, weights, dummy);
+    double end          = Ioss::Utils::timer();
+    fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
+    region.get_database()->progress("exit decompose_elements");
+
+    // Make sure all elements on a chain are on the same processor rank...
+    line_decomp_modify(element_chains, elem_to_proc, num_ranks);
+
+    return 1;
+  }
 } // namespace
 
 namespace Ioex {
@@ -130,7 +478,7 @@ namespace Ioex {
     m_processorCount = pu.parallel_size();
   }
 
-  template <typename INT> void DecompositionData<INT>::decompose_model(int filePtr)
+  template <typename INT> void DecompositionData<INT>::decompose_model(int filePtr, const std::string &filename)
   {
     m_decomposition.show_progress(__func__);
     // Initial decomposition is linear where processor #p contains
@@ -261,6 +609,44 @@ namespace Ioex {
       }
     }
 
+    if (m_decomposition.m_lineDecomp) {
+      // For first iteration of this, we do the line-decomp modified decomposition on a single rank
+      // and then communicate the m_elementToProc vector to each of the ranks.  This is then used
+      // do do the parallel distributions/decomposition of the elements assuming a "guided" decomposition.
+      std::vector<int> element_to_proc_global{};
+
+      if (m_processor == 0) {
+	Ioss::PropertyManager properties;
+	Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART,
+							Ioss::ParallelUtils::comm_self(), properties);
+	Ioss::Region region(dbi, "line_decomp_region");
+	int status = line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global);
+      }
+
+      // Now broadcast the parts of the `element_to_proc_global`
+      // vector to the owning ranks in the initial linear
+      // decomposition...
+
+      std::vector<int> sendcounts(m_processorCount);
+      std::vector<int> displs(m_processorCount);
+      m_decomposition.m_elementToProc.resize(decomp_elem_count());
+
+      // calculate send counts and displacements
+      int sum = 0;
+      int rem = globalElementCount % m_processorCount;
+      for (int i = 0; i < m_processorCount; i++) {
+        sendcounts[i] = globalElementCount/m_processorCount;
+        if (rem > 0) {
+	  sendcounts[i]++;
+	  rem--;
+        }
+        displs[i] = sum;
+        sum += sendcounts[i];
+      }
+      MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT, Data(m_decomposition.m_elementToProc), decomp_elem_count(), Ioss::mpi_type(INT(0)), 0, m_decomposition.m_comm);
+    }
+
+  
 #if !defined(NO_ZOLTAN_SUPPORT)
     float version = 0.0;
     Zoltan_Initialize(0, nullptr, &version);

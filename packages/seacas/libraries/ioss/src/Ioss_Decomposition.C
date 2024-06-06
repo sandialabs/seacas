@@ -7,7 +7,6 @@
  */
 
 #include "Ioss_Decomposition.h"
-#include "Ioss_ChainGenerator.h"
 #include "Ioss_ElementTopology.h"
 #include "Ioss_Enumerate.h"
 #include "Ioss_ParallelUtils.h"
@@ -302,6 +301,13 @@ namespace Ioss {
         props.get("PARMETIS_COMMON_NODE_COUNT").get_int() > 0) {
       m_commonNodeCount = props.get("PARMETIS_COMMON_NODE_COUNT").get_int();
     }
+
+    if (props.exists("LINE_DECOMPOSITION")) {
+      // The value of the property should be a comma-separated list of surface/sideset names from which the lines will grow,
+      // or the value "ALL" for all surfaces in the model.
+      m_lineDecomp = true;
+      m_decompExtra = props.get("LINE_DECOMPOSITION").get_string();
+    }
   }
 
   template IOSS_EXPORT void
@@ -451,6 +457,12 @@ namespace Ioss {
       guided_decompose();
     }
     if (m_method == "MAP") {
+      guided_decompose();
+    }
+    if (m_method == "SPECIFIED") {
+      // Currently used for line decomposition with another decomposition type.
+      // The line-modified decomposition is done prior to this and builds the 
+      // m_elementToProc which is then used here to decompose the elements...
       guided_decompose();
     }
 
@@ -1104,6 +1116,15 @@ namespace Ioss {
     m_centroids.clear();
   }
 #endif
+
+  template <typename INT> void Decomposition<INT>::line_decompose()
+  {
+    show_progress(__func__);
+    // Currently, we perform the line decomposition in serial on rank
+    // 0 and then broadcast the `elementToProc` map to each rank which
+    // then does a guided decompostion.
+    
+  }
 
 #if !defined(NO_ZOLTAN_SUPPORT)
 
