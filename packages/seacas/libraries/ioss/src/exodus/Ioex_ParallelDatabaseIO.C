@@ -779,11 +779,11 @@ namespace Ioex {
       decomp = std::make_unique<DecompositionData<int>>(properties, util().communicator());
     }
     assert(decomp != nullptr);
-    decomp->decompose_model(exoid);
+    decomp->decompose_model(exoid, get_filename());
 
     read_region();
-    Ioex::read_exodus_basis(get_file_pointer());
-    Ioex::read_exodus_quadrature(get_file_pointer());
+    Ioex::read_exodus_basis(exoid);
+    Ioex::read_exodus_quadrature(exoid);
 
     get_elemblocks();
 

@@ -50,11 +50,11 @@ namespace Ioex {
     DecompositionDataBase(const DecompositionDataBase &)            = delete;
     DecompositionDataBase &operator=(const DecompositionDataBase &) = delete;
 
-    virtual ~DecompositionDataBase()                           = default;
-    IOSS_NODISCARD virtual int    int_size() const             = 0;
-    virtual void                  decompose_model(int filePtr) = 0;
-    IOSS_NODISCARD virtual size_t ioss_node_count() const      = 0;
-    IOSS_NODISCARD virtual size_t ioss_elem_count() const      = 0;
+    virtual ~DecompositionDataBase()               = default;
+    IOSS_NODISCARD virtual int    int_size() const = 0;
+    virtual void                  decompose_model(int filePtr, const std::string &filename) = 0;
+    IOSS_NODISCARD virtual size_t ioss_node_count() const                                   = 0;
+    IOSS_NODISCARD virtual size_t ioss_elem_count() const                                   = 0;
 
     IOSS_NODISCARD virtual int    spatial_dimension() const = 0;
     IOSS_NODISCARD virtual size_t global_node_count() const = 0;
@@ -66,7 +66,7 @@ namespace Ioex {
     IOSS_NODISCARD virtual size_t decomp_elem_count() const  = 0;
 
     IOSS_NODISCARD virtual std::vector<double> &centroids() = 0;
-    IOSS_NODISCARD virtual std::vector<float> &weights() = 0;
+    IOSS_NODISCARD virtual std::vector<float>  &weights()   = 0;
 
     Ioss_MPI_Comm comm_;
 
@@ -121,7 +121,7 @@ namespace Ioex {
 
     IOSS_NODISCARD int int_size() const { return sizeof(INT); }
 
-    void decompose_model(int filePtr);
+    void decompose_model(int filePtr, const std::string &filename);
 
     IOSS_NODISCARD int spatial_dimension() const { return m_decomposition.m_spatialDimension; }
 
