@@ -8,6 +8,8 @@
 
 #include <map>
 #include <numeric>
+#include <vector>
+#include <string>
 
 #include "Ioss_DecompositionUtils.h"
 #include "Ioss_CodeTypes.h"
@@ -18,6 +20,17 @@
 #include "Ioss_Region.h"
 
 #include "Ioss_ChainGenerator.h"
+
+#include <cassert>
+#include <fstream>
+
+#if !defined __NVCC__
+#include <fmt/color.h>
+#endif
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+#include <init/Ionit_Initializer.h>
 
 #if !defined(NO_ZOLTAN_SUPPORT)
 #include <zoltan.h>     // for Zoltan_Initialize
