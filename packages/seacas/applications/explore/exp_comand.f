@@ -251,7 +251,7 @@ C   --Read first time step variables
 
       WRITE (*, *)
       CALL PRTERR ('CMDREQ',
-     & 'Use "precision low|normal|high|#" to control" output precision')
+     & 'Use "precision low|normal|high|#" to control output precision')
 
       if (domape .and. domapn) then
         call PRTERR('CMDREQ',
