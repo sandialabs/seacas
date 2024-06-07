@@ -680,7 +680,7 @@ namespace Ioss {
   template <typename INT> void Decomposition<INT>::guided_decompose()
   {
     show_progress(__func__);
-    assert(m_method == "MAP" || m_method == "VARIABLE");
+    assert(m_method == "MAP" || m_method == "VARIABLE" || m_method == "SPECIFIED");
     // - Read my portion of the map / variable.
     // - count # of exports to each rank
     // -- exportElementCount[proc]
@@ -689,13 +689,7 @@ namespace Ioss {
     // - communicate to all proc -- becomes   importElementMap.
     // Create `exportElementIndex` from `exportElementCount`
 
-    std::string label;
-    if (m_method == "MAP") {
-      label = "map";
-    }
-    else {
-      label = "variable";
-    }
+    std::string label = m_method;
 
     // If the "m_decompExtra" string contains a comma, then the
     // value following the comma is either an integer "scale"
@@ -713,7 +707,7 @@ namespace Ioss {
     // [0..m_processorCount).
     double scale = 1.0;
     auto   pos   = m_decompExtra.find(",");
-    if (pos != std::string::npos) {
+    if (m_method != "SPECIFIED" && pos != std::string::npos) {
       // Extract the string following the comma...
       auto scale_str = m_decompExtra.substr(pos + 1);
       if (scale_str == "AUTO" || scale_str == "auto") {
