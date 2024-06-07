@@ -17,6 +17,7 @@
 #include "Ioss_Decomposition.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_ElementBlock.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
 
