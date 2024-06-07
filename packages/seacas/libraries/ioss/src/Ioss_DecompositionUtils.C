@@ -11,18 +11,14 @@
 #include <vector>
 #include <string>
 
-#include "Ioss_DecompositionUtils.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_ChainGenerator.h"
-#include "Ioss_Decomposition.h"
+#include "Ioss_DecompositionUtils.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
-
-#include <cassert>
-#include <fstream>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -133,46 +129,6 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
   return chains;
 }
 
-  template <typename INT>
-  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
-  get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
-  {
-    size_t element_count = region.get_property("element_count").get_int();
-
-    // The zoltan methods supported in slice are all geometry based
-    // and use the element centroid.
-    std::vector<double> x(element_count);
-    std::vector<double> y(element_count);
-    std::vector<double> z(element_count);
-
-    const auto         *nb = region.get_node_blocks()[0];
-    std::vector<double> coor;
-    nb->get_field_data("mesh_model_coordinates", coor);
-
-    const auto &blocks = region.get_element_blocks();
-    size_t      el     = 0;
-    for (auto &eb : blocks) {
-      std::vector<INT> connectivity;
-      eb->get_field_data("connectivity_raw", connectivity);
-      size_t blk_element_count = eb->entity_count();
-      size_t blk_element_nodes = eb->topology()->number_nodes();
-
-      for (size_t j = 0; j < blk_element_count; j++) {
-        for (size_t k = 0; k < blk_element_nodes; k++) {
-          auto node = connectivity[j * blk_element_nodes + k] - 1;
-          x[el] += coor[node * 3 + 0];
-          y[el] += coor[node * 3 + 1];
-          z[el] += coor[node * 3 + 2];
-        }
-        x[el] /= blk_element_nodes;
-        y[el] /= blk_element_nodes;
-        z[el] /= blk_element_nodes;
-        el++;
-      }
-    }
-    return {x, y, z};
-  }
-
   void output_histogram(const std::vector<size_t> &proc_work, size_t avg_work, size_t median)
   {
     fmt::print("Work-per-processor Histogram\n");
@@ -247,7 +203,7 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
       exit(EXIT_FAILURE);
     }
 
-    auto [x, y, z] = get_element_centroid(region, dummy);
+    auto [x, y, z] = Ioss::DecompUtils::get_element_centroid(region, dummy);
 
     // Copy mesh data and pointers into structure accessible from callback fns.
     Zoltan_Data.ndot = element_count;
@@ -514,4 +470,53 @@ template void DecompUtils::output_decomposition_statistics(const std::vector<int
                                               size_t number_elements);
 template void DecompUtils::output_decomposition_statistics(const std::vector<int64_t> &elem_to_proc,
                                               int proc_count, size_t number_elements);
+
+  template <typename INT>
+  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+    DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
+  {
+    size_t element_count = region.get_property("element_count").get_int();
+
+    // The zoltan methods supported in slice are all geometry based
+    // and use the element centroid.
+    std::vector<double> x(element_count);
+    std::vector<double> y(element_count);
+    std::vector<double> z(element_count);
+
+    const auto         *nb = region.get_node_blocks()[0];
+    std::vector<double> coor;
+    nb->get_field_data("mesh_model_coordinates", coor);
+
+    const auto &blocks = region.get_element_blocks();
+    size_t      el     = 0;
+    for (auto &eb : blocks) {
+      std::vector<INT> connectivity;
+      eb->get_field_data("connectivity_raw", connectivity);
+      size_t blk_element_count = eb->entity_count();
+      size_t blk_element_nodes = eb->topology()->number_nodes();
+
+      for (size_t j = 0; j < blk_element_count; j++) {
+        for (size_t k = 0; k < blk_element_nodes; k++) {
+          auto node = connectivity[j * blk_element_nodes + k] - 1;
+          x[el] += coor[node * 3 + 0];
+          y[el] += coor[node * 3 + 1];
+          z[el] += coor[node * 3 + 2];
+        }
+        x[el] /= blk_element_nodes;
+        y[el] /= blk_element_nodes;
+        z[el] /= blk_element_nodes;
+        el++;
+      }
+    }
+    return {x, y, z};
+  }
+
+  template 
+  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+    DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int dummy);
+
+  template 
+  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+    DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int64_t dummy);
+
 }

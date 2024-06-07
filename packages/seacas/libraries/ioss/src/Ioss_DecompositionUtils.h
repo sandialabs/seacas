@@ -33,5 +33,9 @@ namespace Ioss {
 
     static int line_decompose(Region &region, size_t num_ranks, const std::string &method,
                               const std::string &surface_list, std::vector<int> &element_to_proc);
+
+    template <typename INT>
+    static std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+    get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy);
   };
 } // namespace Ioss
