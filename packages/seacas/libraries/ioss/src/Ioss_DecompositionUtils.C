@@ -287,10 +287,11 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
 }
 
 namespace Ioss {
-  int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc)
+  template <typename INT>
+  int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, INT dummy)
 {
-  int dummy = 0;
-  Ioss::chain_t<int> element_chains =
+  
+  Ioss::chain_t<INT> element_chains =
     Ioss::generate_element_chains(region, surface_list, 0, dummy);
   region.get_database()->progress("Ioss::generate_element_chains");
   
@@ -299,17 +300,19 @@ namespace Ioss {
   region.get_database()->progress("generate_element_weights");
   
   double start        = Ioss::Utils::timer();
-  std::vector<int> elem_to_proc;
-  decompose_zoltan(region, num_ranks, method, elem_to_proc, weights, dummy);
+  decompose_zoltan(region, num_ranks, method, element_to_proc, weights, dummy);
   double end          = Ioss::Utils::timer();
   fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
   region.get_database()->progress("exit decompose_elements");
   
   // Make sure all elements on a chain are on the same processor rank...
-  line_decomp_modify(element_chains, elem_to_proc, num_ranks);
+  line_decomp_modify(element_chains, element_to_proc, num_ranks);
   
   return 1;
 }
+
+  template int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int dummy);
+  template int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int64_t dummy);
 
 template <typename INT>
 std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)

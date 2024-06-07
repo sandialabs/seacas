@@ -31,8 +31,9 @@ namespace Ioss {
     static std::vector<float> line_decomp_weights(const Ioss::chain_t<INT> &element_chains,
                                                   size_t                    element_count);
 
+    template <typename INT>
     static int line_decompose(Region &region, size_t num_ranks, const std::string &method,
-                              const std::string &surface_list, std::vector<int> &element_to_proc);
+                              const std::string &surface_list, std::vector<int> &element_to_proc, INT dummy);
 
     template <typename INT>
     static std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>

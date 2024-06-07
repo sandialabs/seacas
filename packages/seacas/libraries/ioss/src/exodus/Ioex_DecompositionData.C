@@ -277,9 +277,15 @@ namespace Ioex {
 	Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART,
 							Ioss::ParallelUtils::comm_self(), properties);
 	Ioss::Region region(dbi, "line_decomp_region");
-	int status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global);
-      }
 
+	int status = 0;
+	if (dbi->int_byte_size_api() == 8) {
+	  status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global, int64_t(0));
+	}
+	else {
+	  status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global, int(0));
+	}
+      }
       // Now broadcast the parts of the `element_to_proc_global`
       // vector to the owning ranks in the initial linear
       // decomposition...
