@@ -509,11 +509,11 @@ void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_t
     return {x, y, z};
   }
 
-  template 
+template IOSS_EXPORT  
   std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
     DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int dummy);
 
-  template 
+template IOSS_EXPORT  
   std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
     DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int64_t dummy);
 
