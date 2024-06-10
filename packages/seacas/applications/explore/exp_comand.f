@@ -319,7 +319,8 @@ C   --Read command line
         IF (LISTYP .EQ. ' ') THEN
           CALL ABRSTR (LISTYP, WORD, SELTBL)
           IF (LISTYP .NE. ' ') THEN
-            CALL PRTERR ('CMDREQ', 'Please use the SELECT command')
+            CALL PRTERR ('CMDREQ', 'Please use the SELECT '
+     $            // LISTYP(:LENSTR(LISTYP)) // ' command')
             VERB = 'SELECT'
           ELSE
             LISTYP = WORD
