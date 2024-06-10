@@ -186,12 +186,29 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
     }
     fmt::print("\n");
   }
+}
+
+namespace Ioss {
+  template void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+					      std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+					      bool ignore_x, bool ignore_y, bool ignore_z,
+					      IOSS_MAYBE_UNUSED int dummy);
+  template void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+					      std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+					      bool ignore_x, bool ignore_y, bool ignore_z,
+					      IOSS_MAYBE_UNUSED int64_t dummy);
 
   template <typename INT>
-  void decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
-                        std::vector<int> &elem_to_proc, const std::vector<float> &weights,
-                        IOSS_MAYBE_UNUSED INT dummy)
+  void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+				     std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+				     bool ignore_x, bool ignore_y, bool ignore_z,
+				     IOSS_MAYBE_UNUSED INT dummy)
   {
+#if defined(NO_ZOLTAN_SUPPORT)
+    fmt::print(stderr, "ERROR: Zoltan library not enabled in this version of slice.\n"
+                       "       The 'rcb', 'rib', and 'hsfc' methods are not available.\n\n");
+    std::exit(1);
+#else
     if (ranks == 1) {
       return;
     }
@@ -209,9 +226,32 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
     Zoltan_Data.ndot = element_count;
     Zoltan_Data.vwgt = const_cast<float *>(Data(weights));
 
-    Zoltan_Data.x = Data(x);
-    Zoltan_Data.y = Data(y);
-    Zoltan_Data.z = Data(z);
+    if (ignore_x && ignore_y) {
+      Zoltan_Data.x = Data(z);
+    }
+    else if (ignore_x && ignore_z) {
+      Zoltan_Data.x = Data(y);
+    }
+    else if (ignore_y && ignore_z) {
+      Zoltan_Data.x = Data(x);
+    }
+    else if (ignore_x) {
+      Zoltan_Data.x = Data(y);
+      Zoltan_Data.y = Data(z);
+    }
+    else if (ignore_y) {
+      Zoltan_Data.x = Data(x);
+      Zoltan_Data.y = Data(z);
+    }
+    else if (ignore_z) {
+      Zoltan_Data.x = Data(x);
+      Zoltan_Data.y = Data(y);
+    }
+    else {
+      Zoltan_Data.x = Data(x);
+      Zoltan_Data.y = Data(y);
+      Zoltan_Data.z = Data(z);
+    }
 
     // Initialize Zoltan
     int    argc = 0;
@@ -283,10 +323,9 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
     /* Clean up */
     Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
     Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+#endif
   }
-}
 
-namespace Ioss {
   template <typename INT>
   int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, INT dummy)
 {
@@ -300,7 +339,7 @@ namespace Ioss {
   region.get_database()->progress("generate_element_weights");
   
   double start        = Ioss::Utils::timer();
-  decompose_zoltan(region, num_ranks, method, element_to_proc, weights, dummy);
+  decompose_zoltan(region, num_ranks, method, element_to_proc, weights, false, false, false, dummy);
   double end          = Ioss::Utils::timer();
   fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
   region.get_database()->progress("exit decompose_elements");

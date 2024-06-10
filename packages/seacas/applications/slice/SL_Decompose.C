@@ -36,11 +36,6 @@
 using idx_t = int;
 #endif
 
-#if USE_ZOLTAN
-#include <zoltan.h>     // for Zoltan_Initialize
-#include <zoltan_cpp.h> // for Zoltan
-#endif
-
 extern int    debug_level;
 extern double seacas_timer();
 extern void   progress(const std::string &output);
@@ -126,209 +121,6 @@ namespace {
            std::equal(s1.begin(), s1.end(), s2.begin(),
                       [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
-
-#if USE_ZOLTAN
-  /*****************************************************************************/
-  /***** Global data structure used by Zoltan callbacks.                   *****/
-  /***** Could implement Zoltan callbacks without global data structure,   *****/
-  /***** but using the global data structure makes implementation quick.   *****/
-  struct
-  {
-    size_t  ndot; /* Length of x, y, z, and part (== # of elements) */
-    float  *vwgt; /* vertex weights */
-    double *x;    /* x-coordinates */
-    double *y;    /* y-coordinates */
-    double *z;    /* z-coordinates */
-  } Zoltan_Data;
-
-  /*****************************************************************************/
-  /***** ZOLTAN CALLBACK FUNCTIONS *****/
-  int zoltan_num_dim(void * /*data*/, int *ierr)
-  {
-    /* Return dimensionality of coordinate data.
-     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
-     */
-    *ierr = ZOLTAN_OK;
-    if (Zoltan_Data.z != nullptr) {
-      return 3;
-    }
-    if (Zoltan_Data.y != nullptr) {
-      return 2;
-    }
-    return 1;
-  }
-
-  int zoltan_num_obj(void * /*data*/, int *ierr)
-  {
-    /* Return number of objects.
-     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
-     */
-    *ierr = ZOLTAN_OK;
-    return Zoltan_Data.ndot;
-  }
-
-  void zoltan_obj_list(void * /*data*/, int /*ngid_ent*/, int /*nlid_ent*/, ZOLTAN_ID_PTR gids,
-                       ZOLTAN_ID_PTR /*lids*/, int wdim, float *wgts, int *ierr)
-  {
-    /* Return list of object IDs.
-     * Return only global IDs; don't need local IDs since running in serial.
-     * gids are array indices for coordinate and vwgts arrays.
-     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
-     */
-    std::iota(gids, gids + Zoltan_Data.ndot, 0);
-    if (wdim != 0) {
-      for (size_t i = 0; i < Zoltan_Data.ndot; i++) {
-        wgts[i] = static_cast<float>(Zoltan_Data.vwgt[i]);
-      }
-    }
-
-    *ierr = ZOLTAN_OK;
-  }
-
-  void zoltan_geom(void * /*data*/, int /*ngid_ent*/, int /*nlid_ent*/, int nobj,
-                   const ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR /*lids*/, int ndim, double *geom,
-                   int *ierr)
-  {
-    /* Return coordinates for objects.
-     * gids are array indices for coordinate arrays.
-     * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
-     */
-
-    for (size_t i = 0; i < static_cast<size_t>(nobj); i++) {
-      size_t j       = gids[i];
-      geom[i * ndim] = Zoltan_Data.x[j];
-      if (ndim > 1) {
-        geom[i * ndim + 1] = Zoltan_Data.y[j];
-      }
-      if (ndim > 2) {
-        geom[i * ndim + 2] = Zoltan_Data.z[j];
-      }
-    }
-
-    *ierr = ZOLTAN_OK;
-  }
-
-  template <typename INT>
-  void decompose_zoltan(const Ioss::Region &region, int ranks, SystemInterface &interFace,
-                        std::vector<int> &elem_to_proc, const std::vector<float> &weights,
-                        IOSS_MAYBE_UNUSED INT dummy)
-  {
-    if (ranks == 1) {
-      return;
-    }
-
-    size_t element_count = region.get_property("element_count").get_int();
-    if (element_count != static_cast<size_t>(static_cast<int>(element_count))) {
-      fmt::print(stderr, "ERROR: Cannot have a mesh with more than 2.1 Billion elements in a "
-                         "Zoltan decomposition.\n");
-      exit(EXIT_FAILURE);
-    }
-
-    auto [x, y, z] = Ioss::DecompUtils::get_element_centroid(region, dummy);
-
-    // Copy mesh data and pointers into structure accessible from callback fns.
-    Zoltan_Data.ndot = element_count;
-    Zoltan_Data.vwgt = const_cast<float *>(Data(weights));
-
-    if (interFace.ignore_x_ && interFace.ignore_y_) {
-      Zoltan_Data.x = Data(z);
-    }
-    else if (interFace.ignore_x_ && interFace.ignore_z_) {
-      Zoltan_Data.x = Data(y);
-    }
-    else if (interFace.ignore_y_ && interFace.ignore_z_) {
-      Zoltan_Data.x = Data(x);
-    }
-    else if (interFace.ignore_x_) {
-      Zoltan_Data.x = Data(y);
-      Zoltan_Data.y = Data(z);
-    }
-    else if (interFace.ignore_y_) {
-      Zoltan_Data.x = Data(x);
-      Zoltan_Data.y = Data(z);
-    }
-    else if (!interFace.ignore_z_) {
-      Zoltan_Data.x = Data(x);
-      Zoltan_Data.y = Data(y);
-    }
-    else {
-      Zoltan_Data.x = Data(x);
-      Zoltan_Data.y = Data(y);
-      Zoltan_Data.z = Data(z);
-    }
-
-    // Initialize Zoltan
-    int    argc = 0;
-    char **argv = nullptr;
-
-    float ver = 0.0;
-    Zoltan_Initialize(argc, argv, &ver);
-    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver),
-               interFace.decomposition_method());
-
-    Zoltan zz(Ioss::ParallelUtils::comm_world());
-
-    // Register Callback functions
-    // Using global Zoltan_Data; could register it here instead as data field.
-    zz.Set_Num_Obj_Fn(zoltan_num_obj, nullptr);
-    zz.Set_Obj_List_Fn(zoltan_obj_list, nullptr);
-    zz.Set_Num_Geom_Fn(zoltan_num_dim, nullptr);
-    zz.Set_Geom_Multi_Fn(zoltan_geom, nullptr);
-
-    // Set parameters for Zoltan
-    zz.Set_Param("DEBUG_LEVEL", "0");
-    std::string str = fmt::format("{}", ranks);
-    zz.Set_Param("NUM_GLOBAL_PARTS", str);
-    zz.Set_Param("OBJ_WEIGHT_DIM", "1");
-    zz.Set_Param("LB_METHOD", interFace.decomposition_method());
-    zz.Set_Param("NUM_LID_ENTRIES", "0");
-    zz.Set_Param("REMAP", "0");
-    zz.Set_Param("RETURN_LISTS", "PARTITION_ASSIGNMENTS");
-    zz.Set_Param("RCB_RECTILINEAR_BLOCKS", "1");
-
-    int num_global = sizeof(INT) / sizeof(ZOLTAN_ID_TYPE);
-    num_global     = num_global < 1 ? 1 : num_global;
-
-    // Call partitioner
-    int           changes           = 0;
-    int           num_local         = 0;
-    int           num_import        = 1;
-    int           num_export        = 1;
-    ZOLTAN_ID_PTR import_global_ids = nullptr;
-    ZOLTAN_ID_PTR import_local_ids  = nullptr;
-    ZOLTAN_ID_PTR export_global_ids = nullptr;
-    ZOLTAN_ID_PTR export_local_ids  = nullptr;
-    int          *import_procs      = nullptr;
-    int          *import_to_part    = nullptr;
-    int          *export_procs      = nullptr;
-    int          *export_to_part    = nullptr;
-    int rc = zz.LB_Partition(changes, num_global, num_local, num_import, import_global_ids,
-                             import_local_ids, import_procs, import_to_part, num_export,
-                             export_global_ids, export_local_ids, export_procs, export_to_part);
-
-    if (rc != ZOLTAN_OK) {
-      fmt::print(stderr, "ERROR: Problem during call to Zoltan LB_Partition.\n");
-      goto End;
-    }
-
-    // Sanity check
-    if (element_count != static_cast<size_t>(num_export)) {
-      fmt::print(stderr, "Sanity check failed; ndot {} != num_export {}.\n", element_count,
-                 static_cast<size_t>(num_export));
-      goto End;
-    }
-
-    elem_to_proc.resize(element_count);
-    for (size_t i = 0; i < element_count; i++) {
-      elem_to_proc[i] = export_to_part[i];
-    }
-
-  End:
-    /* Clean up */
-    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
-    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
-  }
-#endif
 
 #if USE_METIS
   int get_common_node_count(const Ioss::Region &region)
@@ -552,13 +344,9 @@ std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface 
 
   else if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
            interFace.decomposition_method() == "hsfc") {
-#if USE_ZOLTAN
-    decompose_zoltan(region, interFace.processor_count(), interFace, elem_to_proc, weights, dummy);
-#else
-    fmt::print(stderr, "ERROR: Zoltan library not enabled in this version of slice.\n"
-                       "       The 'rcb', 'rib', and 'hsfc' methods are not available.\n\n");
-    std::exit(1);
-#endif
+    Ioss::DecompUtils::decompose_zoltan(region, interFace.processor_count(), interFace.decomposition_method(), 
+					elem_to_proc, weights, 
+					interFace.ignore_x_, interFace.ignore_y_, interFace.ignore_z_, dummy);
   }
 
   else if (interFace.decomposition_method() == "rb" || interFace.decomposition_method() == "kway") {
