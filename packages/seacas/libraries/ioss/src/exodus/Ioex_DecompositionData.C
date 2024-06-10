@@ -280,7 +280,7 @@ namespace Ioex {
       // do do the parallel distributions/decomposition of the elements assuming a "guided" decomposition.
       std::vector<int> element_to_proc_global{};
 
-      m_decomposition.show_progress("\tline_decompose begin");
+      m_decomposition.show_progress("***LINE_DECOMPOSE BEGIN***");
       if (m_processor == 0) {
 	Ioss::PropertyManager properties;
 	Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART,
@@ -313,7 +313,7 @@ namespace Ioex {
       MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT, 
 		   Data(m_decomposition.m_elementToProc), decomp_elem_count(), MPI_INT, 0, m_decomposition.m_comm);
       m_decomposition.m_method = "SPECIFIED";
-      m_decomposition.show_progress("\tline_decompose end");
+      m_decomposition.show_progress("***LINE_DECOMPOSE END***");
     }
 
   
