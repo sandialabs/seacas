@@ -7,13 +7,13 @@
  */
 #pragma once
 
-#include "ioss_export.h"
-
 #include "Ioss_ChainGenerator.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_Region.h"
 #include <string>
 #include <vector>
+
+#include "ioss_export.h"
 
 namespace Ioss {
   class IOSS_EXPORT DecompUtils
@@ -32,7 +32,8 @@ namespace Ioss {
 
     template <typename INT>
     static int line_decompose(Region &region, size_t num_ranks, const std::string &method,
-                              const std::string &surface_list, std::vector<int> &element_to_proc, INT dummy);
+                              const std::string &surface_list, std::vector<int> &element_to_proc,
+                              INT dummy);
 
     template <typename INT>
     static std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
