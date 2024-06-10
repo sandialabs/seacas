@@ -8,14 +8,14 @@
 
 #include <map>
 #include <numeric>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "Ioss_CodeTypes.h"
 #include "Ioss_ChainGenerator.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_DecompositionUtils.h"
-#include "Ioss_NodeBlock.h"
 #include "Ioss_ElementBlock.h"
+#include "Ioss_NodeBlock.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
@@ -115,19 +115,19 @@ namespace {
   }
 #endif
 
-template <typename INT>
-std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_chains)
-{
-  std::map<INT, std::vector<INT>> chains;
+  template <typename INT>
+  std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_chains)
+  {
+    std::map<INT, std::vector<INT>> chains;
 
-  for (size_t i = 0; i < element_chains.size(); i++) {
-    auto &chain_entry = element_chains[i];
-    if (chain_entry.link >= 0) {
-      chains[chain_entry.element].push_back(i + 1);
+    for (size_t i = 0; i < element_chains.size(); i++) {
+      auto &chain_entry = element_chains[i];
+      if (chain_entry.link >= 0) {
+        chains[chain_entry.element].push_back(i + 1);
+      }
     }
+    return chains;
   }
-  return chains;
-}
 
   void output_histogram(const std::vector<size_t> &proc_work, size_t avg_work, size_t median)
   {
@@ -186,23 +186,25 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
     }
     fmt::print("\n");
   }
-}
+} // namespace
 
 namespace Ioss {
-  template IOSS_EXPORT void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
-					      std::vector<int> &elem_to_proc, const std::vector<float> &weights,
-					      bool ignore_x, bool ignore_y, bool ignore_z,
-					      IOSS_MAYBE_UNUSED int dummy);
-  template IOSS_EXPORT void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
-					      std::vector<int> &elem_to_proc, const std::vector<float> &weights,
-					      bool ignore_x, bool ignore_y, bool ignore_z,
-					      IOSS_MAYBE_UNUSED int64_t dummy);
+  template IOSS_EXPORT void
+  DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+                                std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+                                bool ignore_x, bool ignore_y, bool ignore_z,
+                                IOSS_MAYBE_UNUSED int dummy);
+  template IOSS_EXPORT void
+  DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+                                std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+                                bool ignore_x, bool ignore_y, bool ignore_z,
+                                IOSS_MAYBE_UNUSED int64_t dummy);
 
   template <typename INT>
-  void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
-				     std::vector<int> &elem_to_proc, const std::vector<float> &weights,
-				     bool ignore_x, bool ignore_y, bool ignore_z,
-				     IOSS_MAYBE_UNUSED INT dummy)
+  void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks,
+                                     const std::string &method, std::vector<int> &elem_to_proc,
+                                     const std::vector<float> &weights, bool ignore_x,
+                                     bool ignore_y, bool ignore_z, IOSS_MAYBE_UNUSED INT dummy)
   {
 #if defined(NO_ZOLTAN_SUPPORT)
     fmt::print(stderr, "ERROR: Zoltan library not enabled in this version of slice.\n"
@@ -259,8 +261,7 @@ namespace Ioss {
 
     float ver = 0.0;
     Zoltan_Initialize(argc, argv, &ver);
-    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver),
-               method);
+    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
 
     Zoltan zz(Ioss::ParallelUtils::comm_self());
 
@@ -327,190 +328,203 @@ namespace Ioss {
   }
 
   template <typename INT>
-  int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, INT dummy)
-{
-  
-  Ioss::chain_t<INT> element_chains =
-    Ioss::generate_element_chains(region, surface_list, 0, dummy);
-  region.get_database()->progress("Ioss::generate_element_chains");
-  
-  std::vector<float> weights =
-    line_decomp_weights(element_chains, region.get_property("element_count").get_int());
-  region.get_database()->progress("generate_element_weights");
-  
-  double start        = Ioss::Utils::timer();
-  decompose_zoltan(region, num_ranks, method, element_to_proc, weights, false, false, false, dummy);
-  double end          = Ioss::Utils::timer();
-  fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
-  region.get_database()->progress("exit decompose_elements");
-  
-  // Make sure all elements on a chain are on the same processor rank...
-  line_decomp_modify(element_chains, element_to_proc, num_ranks);
-  
-  return 1;
-}
-
-  template IOSS_EXPORT int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int dummy);
-  template IOSS_EXPORT int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int64_t dummy);
-
-template <typename INT>
-std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)
-{
-  int debug_level = 0;
-  auto chains = string_chains(element_chains);
-
-  if ((debug_level & 16) != 0) {
-    for (const auto &[chain_root, chain_elements] : chains) {
-      fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
-    }
-  }
-
-  std::vector<float> weights(element_count, 1);
-  // Now, for each chain...
-  for (const auto &[chain_root, chain_elements] : chains) {
-    // * Set the weights of all elements in the chain...
-    // * non-root = 0, root = length of chain.
-    for (const auto &element : chain_elements) {
-      weights[element - 1] = 0;
-    }
-    weights[chain_root - 1] = static_cast<float>(chain_elements.size());
-  }
-  return weights;
-}
-template IOSS_EXPORT std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<int> &element_chains,
-                                              size_t                    element_count);
-template IOSS_EXPORT std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
-                                              size_t                        element_count);
-
-
-template <typename INT>
-void DecompUtils::line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<int> &elem_to_proc,
-                        int proc_count)
-{
-  int debug_level = 0;
-  // Get a map of all chains and the elements in the chains.  Map key will be root.
-  auto chains = string_chains(element_chains);
-
-  // Delta: elements added/removed from each processor...
-  std::vector<int> delta(proc_count);
-
-  // Now, for each chain...
-  for (const auto &[chain_root, chain_elements] : chains) {
-    if ((debug_level & 16) != 0) {
-      fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
-    }
-
-    std::vector<INT> chain_proc_count(proc_count);
-
-    // * get processors used by elements in the chain...
-    for (const auto &element : chain_elements) {
-      auto proc = elem_to_proc[element - 1];
-      chain_proc_count[proc]++;
-    }
-
-    // * Now, subtract the `delta` from each count
-    for (int i = 0; i < proc_count; i++) {
-      chain_proc_count[i] -= delta[i];
-    }
-
-    // * Assign all elements in the chain to processor at chain root
-    // * Update the deltas for all processors that gain/lose elements...
-    auto root_proc = elem_to_proc[chain_root - 1];
-    for (const auto &element : chain_elements) {
-      if (elem_to_proc[element - 1] != root_proc) {
-        auto old_proc             = elem_to_proc[element - 1];
-        elem_to_proc[element - 1] = root_proc;
-        delta[root_proc]++;
-        delta[old_proc]--;
-      }
-    }
-  }
-
-  std::vector<INT> proc_element_count(proc_count);
-  for (auto proc : elem_to_proc) {
-    proc_element_count[proc]++;
-  }
-  if ((debug_level & 32) != 0) {
-    fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
-    fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
-  }
-}
-
-
-template IOSS_EXPORT void DecompUtils::line_decomp_modify(const Ioss::chain_t<int> &element_chains,
-                                 std::vector<int> &elem_to_proc, int proc_count);
-template IOSS_EXPORT void DecompUtils::line_decomp_modify(const Ioss::chain_t<int64_t> &element_chains,
-                                 std::vector<int> &elem_to_proc, int proc_count);
-
-void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_to_proc, int proc_count,
-                                     size_t number_elements)
-{
-  // Output histogram of elements / rank...
-  std::vector<size_t> elem_per_rank(proc_count);
-  for (int proc : elem_to_proc) {
-    elem_per_rank[proc]++;
-  }
-
-  size_t proc_width = Ioss::Utils::number_width(proc_count, false);
-  size_t work_width = Ioss::Utils::number_width(number_elements, true);
-
-  auto   min_work = *std::min_element(elem_per_rank.begin(), elem_per_rank.end());
-  auto   max_work = *std::max_element(elem_per_rank.begin(), elem_per_rank.end());
-  size_t median   = 0;
+  int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method,
+                                  const std::string &surface_list,
+                                  std::vector<int> &element_to_proc, INT dummy)
   {
-    auto pw_copy(elem_per_rank);
-    std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
-    median = pw_copy[pw_copy.size() / 2];
-    fmt::print("\nElements per processor:\n\tMinimum = {}, Maximum = {}, Median = {}, Ratio = "
-               "{:.3}\n\n",
-               fmt::group_digits(min_work), fmt::group_digits(max_work), fmt::group_digits(median),
-               (double)(max_work) / min_work);
-  }
-  if (min_work == max_work) {
-    fmt::print("\nWork on all processors is {}\n\n", fmt::group_digits(min_work));
-  }
-  else {
-    int max_star = 40;
-    int min_star = max_star * ((double)min_work / (double)(max_work));
-    min_star     = std::max(1, min_star);
-    int delta    = max_star - min_star;
 
-    double avg_work = (double)number_elements / (double)proc_count;
-    for (size_t i = 0; i < elem_per_rank.size(); i++) {
-      int star_cnt =
-          (double)(elem_per_rank[i] - min_work) / (max_work - min_work) * delta + min_star;
-      std::string stars(star_cnt, '*');
-      std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
-      if (elem_per_rank[i] == max_work) {
-        fmt::print(
-#if !defined __NVCC__
-            fg(fmt::color::red),
-#endif
-            format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
-            (double)elem_per_rank[i] / avg_work, stars);
-      }
-      else if (elem_per_rank[i] == min_work) {
-        fmt::print(
-#if !defined __NVCC__
-            fg(fmt::color::green),
-#endif
-            format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
-            elem_per_rank[i] / avg_work, stars);
-      }
-      else {
-        fmt::print(format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
-                   elem_per_rank[i] / avg_work, stars);
+    Ioss::chain_t<INT> element_chains =
+        Ioss::generate_element_chains(region, surface_list, 0, dummy);
+    region.get_database()->progress("Ioss::generate_element_chains");
+
+    std::vector<float> weights =
+        line_decomp_weights(element_chains, region.get_property("element_count").get_int());
+    region.get_database()->progress("generate_element_weights");
+
+    double start = Ioss::Utils::timer();
+    decompose_zoltan(region, num_ranks, method, element_to_proc, weights, false, false, false,
+                     dummy);
+    double end = Ioss::Utils::timer();
+    fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
+    region.get_database()->progress("exit decompose_elements");
+
+    // Make sure all elements on a chain are on the same processor rank...
+    line_decomp_modify(element_chains, element_to_proc, num_ranks);
+
+    return 1;
+  }
+
+  template IOSS_EXPORT int DecompUtils::line_decompose(Region &region, size_t num_ranks,
+                                                       const std::string &method,
+                                                       const std::string &surface_list,
+                                                       std::vector<int>  &element_to_proc,
+                                                       int                dummy);
+  template IOSS_EXPORT int DecompUtils::line_decompose(Region &region, size_t num_ranks,
+                                                       const std::string &method,
+                                                       const std::string &surface_list,
+                                                       std::vector<int>  &element_to_proc,
+                                                       int64_t            dummy);
+
+  template <typename INT>
+  std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<INT> &element_chains,
+                                                      size_t                    element_count)
+  {
+    int  debug_level = 0;
+    auto chains      = string_chains(element_chains);
+
+    if ((debug_level & 16) != 0) {
+      for (const auto &[chain_root, chain_elements] : chains) {
+        fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
       }
     }
 
-    // Output Histogram...
-    output_histogram(elem_per_rank, (size_t)avg_work, median);
+    std::vector<float> weights(element_count, 1);
+    // Now, for each chain...
+    for (const auto &[chain_root, chain_elements] : chains) {
+      // * Set the weights of all elements in the chain...
+      // * non-root = 0, root = length of chain.
+      for (const auto &element : chain_elements) {
+        weights[element - 1] = 0;
+      }
+      weights[chain_root - 1] = static_cast<float>(chain_elements.size());
+    }
+    return weights;
   }
-}
+  template IOSS_EXPORT std::vector<float>
+  DecompUtils::line_decomp_weights(const Ioss::chain_t<int> &element_chains, size_t element_count);
+  template IOSS_EXPORT std::vector<float>
+  DecompUtils::line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
+                                   size_t                        element_count);
+
+  template <typename INT>
+  void DecompUtils::line_decomp_modify(const Ioss::chain_t<INT> &element_chains,
+                                       std::vector<int> &elem_to_proc, int proc_count)
+  {
+    int debug_level = 0;
+    // Get a map of all chains and the elements in the chains.  Map key will be root.
+    auto chains = string_chains(element_chains);
+
+    // Delta: elements added/removed from each processor...
+    std::vector<int> delta(proc_count);
+
+    // Now, for each chain...
+    for (const auto &[chain_root, chain_elements] : chains) {
+      if ((debug_level & 16) != 0) {
+        fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
+      }
+
+      std::vector<INT> chain_proc_count(proc_count);
+
+      // * get processors used by elements in the chain...
+      for (const auto &element : chain_elements) {
+        auto proc = elem_to_proc[element - 1];
+        chain_proc_count[proc]++;
+      }
+
+      // * Now, subtract the `delta` from each count
+      for (int i = 0; i < proc_count; i++) {
+        chain_proc_count[i] -= delta[i];
+      }
+
+      // * Assign all elements in the chain to processor at chain root
+      // * Update the deltas for all processors that gain/lose elements...
+      auto root_proc = elem_to_proc[chain_root - 1];
+      for (const auto &element : chain_elements) {
+        if (elem_to_proc[element - 1] != root_proc) {
+          auto old_proc             = elem_to_proc[element - 1];
+          elem_to_proc[element - 1] = root_proc;
+          delta[root_proc]++;
+          delta[old_proc]--;
+        }
+      }
+    }
+
+    std::vector<INT> proc_element_count(proc_count);
+    for (auto proc : elem_to_proc) {
+      proc_element_count[proc]++;
+    }
+    if ((debug_level & 32) != 0) {
+      fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
+      fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
+    }
+  }
+
+  template IOSS_EXPORT void
+  DecompUtils::line_decomp_modify(const Ioss::chain_t<int> &element_chains,
+                                  std::vector<int> &elem_to_proc, int proc_count);
+  template IOSS_EXPORT void
+  DecompUtils::line_decomp_modify(const Ioss::chain_t<int64_t> &element_chains,
+                                  std::vector<int> &elem_to_proc, int proc_count);
+
+  void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_to_proc,
+                                                    int proc_count, size_t number_elements)
+  {
+    // Output histogram of elements / rank...
+    std::vector<size_t> elem_per_rank(proc_count);
+    for (int proc : elem_to_proc) {
+      elem_per_rank[proc]++;
+    }
+
+    size_t proc_width = Ioss::Utils::number_width(proc_count, false);
+    size_t work_width = Ioss::Utils::number_width(number_elements, true);
+
+    auto   min_work = *std::min_element(elem_per_rank.begin(), elem_per_rank.end());
+    auto   max_work = *std::max_element(elem_per_rank.begin(), elem_per_rank.end());
+    size_t median   = 0;
+    {
+      auto pw_copy(elem_per_rank);
+      std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
+      median = pw_copy[pw_copy.size() / 2];
+      fmt::print("\nElements per processor:\n\tMinimum = {}, Maximum = {}, Median = {}, Ratio = "
+                 "{:.3}\n\n",
+                 fmt::group_digits(min_work), fmt::group_digits(max_work),
+                 fmt::group_digits(median), (double)(max_work) / min_work);
+    }
+    if (min_work == max_work) {
+      fmt::print("\nWork on all processors is {}\n\n", fmt::group_digits(min_work));
+    }
+    else {
+      int max_star = 40;
+      int min_star = max_star * ((double)min_work / (double)(max_work));
+      min_star     = std::max(1, min_star);
+      int delta    = max_star - min_star;
+
+      double avg_work = (double)number_elements / (double)proc_count;
+      for (size_t i = 0; i < elem_per_rank.size(); i++) {
+        int star_cnt =
+            (double)(elem_per_rank[i] - min_work) / (max_work - min_work) * delta + min_star;
+        std::string stars(star_cnt, '*');
+        std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
+        if (elem_per_rank[i] == max_work) {
+          fmt::print(
+#if !defined __NVCC__
+              fg(fmt::color::red),
+#endif
+              format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
+              (double)elem_per_rank[i] / avg_work, stars);
+        }
+        else if (elem_per_rank[i] == min_work) {
+          fmt::print(
+#if !defined __NVCC__
+              fg(fmt::color::green),
+#endif
+              format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
+              elem_per_rank[i] / avg_work, stars);
+        }
+        else {
+          fmt::print(format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
+                     elem_per_rank[i] / avg_work, stars);
+        }
+      }
+
+      // Output Histogram...
+      output_histogram(elem_per_rank, (size_t)avg_work, median);
+    }
+  }
 
   template <typename INT>
   std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
-    DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
+  DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
   {
     size_t element_count = region.get_property("element_count").get_int();
 
@@ -548,12 +562,10 @@ void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_t
     return {x, y, z};
   }
 
-template IOSS_EXPORT  
-  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
-    DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int dummy);
+  template IOSS_EXPORT std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+  DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int dummy);
 
-template IOSS_EXPORT  
-  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
-    DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int64_t dummy);
+  template IOSS_EXPORT std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+  DecompUtils::get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED int64_t dummy);
 
-}
+} // namespace Ioss

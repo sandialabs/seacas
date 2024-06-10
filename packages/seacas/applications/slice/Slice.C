@@ -1375,7 +1375,7 @@ namespace {
     Ioss::PropertyManager properties = set_properties(interFace);
 
     Ioss::chain_t<INT> element_chains;
-    std::vector<float>   weights;
+    std::vector<float> weights;
     if (interFace.lineDecomp_) {
       element_chains =
           Ioss::generate_element_chains(region, interFace.lineSurfaceList_, debug_level, dummy);
@@ -1383,8 +1383,8 @@ namespace {
 
       if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
           interFace.decomposition_method() == "hsfc") {
-        weights =
-	  Ioss::DecompUtils::line_decomp_weights(element_chains, region.get_property("element_count").get_int());
+        weights = Ioss::DecompUtils::line_decomp_weights(
+            element_chains, region.get_property("element_count").get_int());
         progress("generate_element_weights");
       }
     }
@@ -1401,12 +1401,13 @@ namespace {
 
     if (interFace.lineDecomp_) {
       // Make sure all elements on a chain are on the same processor rank...
-      Ioss::DecompUtils::line_decomp_modify(element_chains, elem_to_proc, interFace.processor_count());
+      Ioss::DecompUtils::line_decomp_modify(element_chains, elem_to_proc,
+                                            interFace.processor_count());
     }
 
     if (debug_level & 32) {
       Ioss::DecompUtils::output_decomposition_statistics(elem_to_proc, interFace.processor_count(),
-                                      elem_to_proc.size());
+                                                         elem_to_proc.size());
     }
 
     if (!create_split_files) {

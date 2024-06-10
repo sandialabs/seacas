@@ -84,10 +84,9 @@ namespace {
 
   template <typename INT>
   void get_line_front(Ioss::SideSet *fs, const Ioss::ElementBlock *block,
-                      Ioss::chain_t<INT> &element_chains,
-                      front_t<INT> &front)
+                      Ioss::chain_t<INT> &element_chains, front_t<INT> &front)
   {
-    const auto adj_block_name = block->name();
+    const auto     adj_block_name = block->name();
     Ioss::NameList blocks;
     fs->block_membership(blocks);
     for (const auto &fs_block : blocks) {
@@ -215,10 +214,10 @@ namespace Ioss {
       auto *eb = region.get_element_block(blk_name);
       assert(eb != nullptr);
       if (eb->topology()->shape() != Ioss::ElementShape::HEX) {
-	fmt::print("Skipping Element Block {}; it does not contain HEX elements.\n", blk_name);
+        fmt::print("Skipping Element Block {}; it does not contain HEX elements.\n", blk_name);
       }
       else {
-	adjacent_blocks.push_back(eb);
+        adjacent_blocks.push_back(eb);
       }
     }
 
@@ -228,8 +227,8 @@ namespace Ioss {
 
     for (const auto *block : adjacent_blocks) {
       // Get the offset into the element_chains vector...
-      auto        offset = block->get_offset() + 1;
-      auto        count  = block->entity_count();
+      auto offset = block->get_offset() + 1;
+      auto count  = block->entity_count();
 
       auto front = get_line_front(region, block, element_chains, surface_list);
       if (front.empty()) {

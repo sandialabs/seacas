@@ -273,9 +273,9 @@ namespace {
 
 template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
                                              const std::vector<float> &weights,
-                                             IOSS_MAYBE_UNUSED int   dummy);
+                                             IOSS_MAYBE_UNUSED int     dummy);
 template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                                             const std::vector<float>   &weights,
+                                             const std::vector<float> &weights,
                                              IOSS_MAYBE_UNUSED int64_t dummy);
 
 template <typename INT>
@@ -344,9 +344,9 @@ std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface 
 
   else if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
            interFace.decomposition_method() == "hsfc") {
-    Ioss::DecompUtils::decompose_zoltan(region, interFace.processor_count(), interFace.decomposition_method(), 
-					elem_to_proc, weights, 
-					interFace.ignore_x_, interFace.ignore_y_, interFace.ignore_z_, dummy);
+    Ioss::DecompUtils::decompose_zoltan(
+        region, interFace.processor_count(), interFace.decomposition_method(), elem_to_proc,
+        weights, interFace.ignore_x_, interFace.ignore_y_, interFace.ignore_z_, dummy);
   }
 
   else if (interFace.decomposition_method() == "rb" || interFace.decomposition_method() == "kway") {

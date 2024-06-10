@@ -330,7 +330,7 @@ namespace Ioss {
   FaceUnorderedSet &FaceGenerator::faces(const Ioss::ElementBlock *block)
   {
     auto name = block->name();
-    return faces_[name]; 
+    return faces_[name];
   }
 
   template IOSS_EXPORT void FaceGenerator::generate_faces(int, bool, bool);
@@ -356,11 +356,14 @@ namespace Ioss {
     }
   }
 
-  template IOSS_EXPORT void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &, int, bool);
-  template IOSS_EXPORT void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &, int64_t, bool);
+  template IOSS_EXPORT void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &,
+                                                                int, bool);
+  template IOSS_EXPORT void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &,
+                                                                int64_t, bool);
 
-  template <typename INT> void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &ebs, 
-								   INT /*dummy*/, bool local_ids)
+  template <typename INT>
+  void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &ebs, INT /*dummy*/,
+                                           bool                               local_ids)
   {
     // Convert ids into hashed-ids
     Ioss::NodeBlock *nb = region_.get_node_blocks()[0];

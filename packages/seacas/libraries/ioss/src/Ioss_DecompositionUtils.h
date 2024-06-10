@@ -37,9 +37,9 @@ namespace Ioss {
 
     template <typename INT>
     static void decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
-				 std::vector<int> &elem_to_proc, const std::vector<float> &weights,
-				 bool ignore_x, bool ignore_y, bool ignore_z,
-				 IOSS_MAYBE_UNUSED INT dummy);
+                                 std::vector<int> &elem_to_proc, const std::vector<float> &weights,
+                                 bool ignore_x, bool ignore_y, bool ignore_z,
+                                 IOSS_MAYBE_UNUSED INT dummy);
 
     template <typename INT>
     static std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>

@@ -303,9 +303,9 @@ namespace Ioss {
     }
 
     if (props.exists("LINE_DECOMPOSITION")) {
-      // The value of the property should be a comma-separated list of surface/sideset names from which the lines will grow,
-      // or the value "ALL" for all surfaces in the model.
-      m_lineDecomp = true;
+      // The value of the property should be a comma-separated list of surface/sideset names from
+      // which the lines will grow, or the value "ALL" for all surfaces in the model.
+      m_lineDecomp  = true;
       m_decompExtra = props.get("LINE_DECOMPOSITION").get_string();
     }
   }
@@ -461,7 +461,7 @@ namespace Ioss {
     }
     if (m_method == "SPECIFIED") {
       // Currently used for line decomposition with another decomposition type.
-      // The line-modified decomposition is done prior to this and builds the 
+      // The line-modified decomposition is done prior to this and builds the
       // `m_elementToProc` which is then used here to decompose the elements...
       guided_decompose();
     }
@@ -502,7 +502,6 @@ namespace Ioss {
     Ioss::Utils::clear(m_nodeDist);
     show_progress("\tIoss::decompose model finished");
   }
-
 
   template IOSS_EXPORT void Decomposition<int>::calculate_element_centroids(
       const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &z);
