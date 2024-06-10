@@ -229,23 +229,32 @@ namespace Ioss {
     Zoltan_Data.vwgt = const_cast<float *>(Data(weights));
 
     if (ignore_x && ignore_y) {
+      x.clear();
+      y.clear();
       Zoltan_Data.x = Data(z);
     }
     else if (ignore_x && ignore_z) {
+      x.clear();
+      z.clear();
       Zoltan_Data.x = Data(y);
     }
     else if (ignore_y && ignore_z) {
+      y.clear();
+      z.clear();
       Zoltan_Data.x = Data(x);
     }
     else if (ignore_x) {
+      x.clear();
       Zoltan_Data.x = Data(y);
       Zoltan_Data.y = Data(z);
     }
     else if (ignore_y) {
+      y.clear();
       Zoltan_Data.x = Data(x);
       Zoltan_Data.y = Data(z);
     }
     else if (ignore_z) {
+      z.clear();
       Zoltan_Data.x = Data(x);
       Zoltan_Data.y = Data(y);
     }
@@ -322,7 +331,7 @@ namespace Ioss {
 
   End:
     /* Clean up */
-    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+    Zoltan::LB_Free_Part(&import_global_ids, &import_local_ids, &import_procs, &import_to_part);
     Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
 #endif
   }
