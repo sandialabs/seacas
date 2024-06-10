@@ -1087,15 +1087,6 @@ namespace Ioss {
   }
 #endif
 
-  template <typename INT> void Decomposition<INT>::line_decompose()
-  {
-    show_progress(__func__);
-    // Currently, we perform the line decomposition in serial on rank
-    // 0 and then broadcast the `elementToProc` map to each rank which
-    // then does a guided decompostion.
-    
-  }
-
 #if !defined(NO_ZOLTAN_SUPPORT)
 
   template <typename INT> void Decomposition<INT>::zoltan_decompose(Zoltan &zz)
