@@ -21,10 +21,9 @@ namespace Ioss {
   public:
     template <typename INT>
     static void line_decomp_modify(const Ioss::chain_t<INT> &element_chains,
-                                   std::vector<int> &elem_to_proc, int proc_count);
+                                   std::vector<int> &element_to_proc, int proc_count);
 
-    template <typename INT>
-    static void output_decomposition_statistics(const std::vector<INT> &elem_to_proc,
+    static void output_decomposition_statistics(const std::vector<int> &element_to_proc,
                                                 int proc_count, size_t number_elements);
 
     template <typename INT>

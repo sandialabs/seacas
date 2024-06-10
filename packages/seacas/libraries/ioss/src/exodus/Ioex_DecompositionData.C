@@ -201,8 +201,16 @@ namespace Ioex {
         for (int i = 0; i < map_count; i++) {
           if (std::string(names[i]) == map_name) {
             m_decomposition.m_elementToProc.resize(decomp_elem_count());
-            ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
-                                   decomp_elem_count(), Data(m_decomposition.m_elementToProc));
+	    if (sizeof(INT) == 4) {
+	      ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
+				     decomp_elem_count(), Data(m_decomposition.m_elementToProc));
+	    }
+	    else {
+	      std::vector<INT> tmp_map(decomp_elem_count());
+	      ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
+				     decomp_elem_count(), Data(tmp_map));
+	      std::copy(tmp_map.begin(), tmp_map.end(), m_decomposition.m_elementToProc.begin());
+	    }
             map_read = true;
             break;
           }
@@ -278,13 +286,7 @@ namespace Ioex {
 							Ioss::ParallelUtils::comm_self(), properties);
 	Ioss::Region region(dbi, "line_decomp_region");
 
-	int status = 0;
-	if (dbi->int_byte_size_api() == 8) {
-	  status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global, int64_t(0));
-	}
-	else {
-	  status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global, int(0));
-	}
+	int status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global, INT(0));
       }
       // Now broadcast the parts of the `element_to_proc_global`
       // vector to the owning ranks in the initial linear
@@ -306,7 +308,9 @@ namespace Ioex {
         displs[i] = sum;
         sum += sendcounts[i];
       }
-      MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT, Data(m_decomposition.m_elementToProc), decomp_elem_count(), Ioss::mpi_type(INT(0)), 0, m_decomposition.m_comm);
+      MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT, 
+		   Data(m_decomposition.m_elementToProc), decomp_elem_count(), MPI_INT, 0, m_decomposition.m_comm);
+      m_decomposition.m_method = "SPECIFIED";
     }
 
   

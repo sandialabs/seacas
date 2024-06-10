@@ -403,13 +403,12 @@ template void DecompUtils::line_decomp_modify(const Ioss::chain_t<int> &element_
 template void DecompUtils::line_decomp_modify(const Ioss::chain_t<int64_t> &element_chains,
                                  std::vector<int> &elem_to_proc, int proc_count);
 
-template <typename INT>
-void DecompUtils::output_decomposition_statistics(const std::vector<INT> &elem_to_proc, int proc_count,
+void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_to_proc, int proc_count,
                                      size_t number_elements)
 {
   // Output histogram of elements / rank...
   std::vector<size_t> elem_per_rank(proc_count);
-  for (INT proc : elem_to_proc) {
+  for (int proc : elem_to_proc) {
     elem_per_rank[proc]++;
   }
 
@@ -469,10 +468,6 @@ void DecompUtils::output_decomposition_statistics(const std::vector<INT> &elem_t
     output_histogram(elem_per_rank, (size_t)avg_work, median);
   }
 }
-template void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_to_proc, int proc_count,
-                                              size_t number_elements);
-template void DecompUtils::output_decomposition_statistics(const std::vector<int64_t> &elem_to_proc,
-                                              int proc_count, size_t number_elements);
 
   template <typename INT>
   std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
