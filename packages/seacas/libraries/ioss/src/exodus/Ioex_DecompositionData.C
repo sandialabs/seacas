@@ -280,13 +280,15 @@ namespace Ioex {
       // do do the parallel distributions/decomposition of the elements assuming a "guided" decomposition.
       std::vector<int> element_to_proc_global{};
 
+      m_decomposition.show_progress("\tline_decompose begin");
       if (m_processor == 0) {
 	Ioss::PropertyManager properties;
 	Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART,
 							Ioss::ParallelUtils::comm_self(), properties);
 	Ioss::Region region(dbi, "line_decomp_region");
 
-	int status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra, element_to_proc_global, INT(0));
+	int status = Ioss::DecompUtils::line_decompose(region, m_processorCount, m_decomposition.m_method, 
+						       m_decomposition.m_decompExtra, element_to_proc_global, INT(0));
       }
       // Now broadcast the parts of the `element_to_proc_global`
       // vector to the owning ranks in the initial linear
@@ -311,6 +313,7 @@ namespace Ioex {
       MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT, 
 		   Data(m_decomposition.m_elementToProc), decomp_elem_count(), MPI_INT, 0, m_decomposition.m_comm);
       m_decomposition.m_method = "SPECIFIED";
+      m_decomposition.show_progress("\tline_decompose end");
     }
 
   

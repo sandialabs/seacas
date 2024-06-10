@@ -462,7 +462,7 @@ namespace Ioss {
     if (m_method == "SPECIFIED") {
       // Currently used for line decomposition with another decomposition type.
       // The line-modified decomposition is done prior to this and builds the 
-      // m_elementToProc which is then used here to decompose the elements...
+      // `m_elementToProc` which is then used here to decompose the elements...
       guided_decompose();
     }
 
