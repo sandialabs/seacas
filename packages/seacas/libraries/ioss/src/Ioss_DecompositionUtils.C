@@ -311,8 +311,8 @@ namespace Ioss {
   return 1;
 }
 
-  template int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int dummy);
-  template int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int64_t dummy);
+  template IOSS_EXPORT int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int dummy);
+  template IOSS_EXPORT int DecompUtils::line_decompose(Region &region, size_t num_ranks, const std::string &method, const std::string &surface_list, std::vector<int> &element_to_proc, int64_t dummy);
 
 template <typename INT>
 std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)
@@ -338,9 +338,9 @@ std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<INT> &el
   }
   return weights;
 }
-template std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<int> &element_chains,
+template IOSS_EXPORT std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<int> &element_chains,
                                               size_t                    element_count);
-template std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
+template IOSS_EXPORT std::vector<float> DecompUtils::line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
                                               size_t                        element_count);
 
 
@@ -398,9 +398,9 @@ void DecompUtils::line_decomp_modify(const Ioss::chain_t<INT> &element_chains, s
 }
 
 
-template void DecompUtils::line_decomp_modify(const Ioss::chain_t<int> &element_chains,
+template IOSS_EXPORT void DecompUtils::line_decomp_modify(const Ioss::chain_t<int> &element_chains,
                                  std::vector<int> &elem_to_proc, int proc_count);
-template void DecompUtils::line_decomp_modify(const Ioss::chain_t<int64_t> &element_chains,
+template IOSS_EXPORT void DecompUtils::line_decomp_modify(const Ioss::chain_t<int64_t> &element_chains,
                                  std::vector<int> &elem_to_proc, int proc_count);
 
 void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_to_proc, int proc_count,
