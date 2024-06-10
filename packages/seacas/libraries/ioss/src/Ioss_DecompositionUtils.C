@@ -189,11 +189,11 @@ std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_
 }
 
 namespace Ioss {
-  template void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+  template IOSS_EXPORT void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
 					      std::vector<int> &elem_to_proc, const std::vector<float> &weights,
 					      bool ignore_x, bool ignore_y, bool ignore_z,
 					      IOSS_MAYBE_UNUSED int dummy);
-  template void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+  template IOSS_EXPORT void DecompUtils::decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
 					      std::vector<int> &elem_to_proc, const std::vector<float> &weights,
 					      bool ignore_x, bool ignore_y, bool ignore_z,
 					      IOSS_MAYBE_UNUSED int64_t dummy);
