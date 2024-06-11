@@ -282,8 +282,8 @@ namespace Ioex {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-	fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
-		   decoded_filename());
+        fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
+                   decoded_filename());
       }
     }
 

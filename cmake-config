@@ -442,9 +442,9 @@ if [ "$SANITIZER" != "NO" ] ; then
 #sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
 #sanitizer=cfi         #: control flow integrity checks. Requires -flto.
 #sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
-SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
+OPT_SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
 if [ "$SANITIZER" == "integer" ] ; then
-  SANITIZE="$SANITIZE -fno-sanitize=unsigned-integer-overflow"
+  OPT_SANITIZE="$OPT_SANITIZE -fno-sanitize=unsigned-integer-overflow"
 fi
 fi
 
@@ -488,9 +488,9 @@ cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${SANITIZE}" \
--D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${SANITIZE}" \
--D CMAKE_Fortran_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${SANITIZE}" \
+-D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${OPT_SANITIZE}" \
+-D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${OPT_SANITIZE}" \
+-D CMAKE_Fortran_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${OPT_SANITIZE}" \
 -D Seacas_ENABLE_STRONG_C_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D Seacas_ENABLE_STRONG_CXX_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \

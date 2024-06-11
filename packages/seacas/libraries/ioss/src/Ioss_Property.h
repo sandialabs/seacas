@@ -97,6 +97,7 @@ namespace Ioss {
     IOSS_NODISCARD bool operator!=(const Ioss::Property &rhs) const;
     IOSS_NODISCARD bool operator==(const Ioss::Property &rhs) const;
 
+#if 0
     friend void swap(Ioss::Property &first, Ioss::Property &second) noexcept
     {
       using std::swap;
@@ -105,7 +106,7 @@ namespace Ioss {
       swap(first.origin_, second.origin_);
       swap(first.data_, second.data_);
     }
-
+#endif
   private:
     std::string name_{};
     BasicType   type_{INVALID};
