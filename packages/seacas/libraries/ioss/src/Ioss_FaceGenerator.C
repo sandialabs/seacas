@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -327,6 +327,12 @@ namespace Ioss {
 
   FaceGenerator::FaceGenerator(Ioss::Region &region) : region_(region) {}
 
+  FaceUnorderedSet &FaceGenerator::faces(const Ioss::ElementBlock *block)
+  {
+    auto name = block->name();
+    return faces_[name];
+  }
+
   template IOSS_EXPORT void FaceGenerator::generate_faces(int, bool, bool);
   template IOSS_EXPORT void FaceGenerator::generate_faces(int64_t, bool, bool);
 
@@ -334,7 +340,8 @@ namespace Ioss {
   void FaceGenerator::generate_faces(INT /*dummy*/, bool block_by_block, bool local_ids)
   {
     if (block_by_block) {
-      generate_block_faces(INT(0), local_ids);
+      const auto &ebs = region_.get_element_blocks();
+      generate_block_faces(ebs, INT(0), local_ids);
     }
     else {
       generate_model_faces(INT(0), local_ids);
@@ -349,7 +356,14 @@ namespace Ioss {
     }
   }
 
-  template <typename INT> void FaceGenerator::generate_block_faces(INT /*dummy*/, bool local_ids)
+  template IOSS_EXPORT void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &,
+                                                                int, bool);
+  template IOSS_EXPORT void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &,
+                                                                int64_t, bool);
+
+  template <typename INT>
+  void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &ebs, INT /*dummy*/,
+                                           bool                               local_ids)
   {
     // Convert ids into hashed-ids
     Ioss::NodeBlock *nb = region_.get_node_blocks()[0];
@@ -370,7 +384,6 @@ namespace Ioss {
     auto endh = std::chrono::steady_clock::now();
 #endif
 
-    const auto &ebs = region_.get_element_blocks();
     for (const auto &eb : ebs) {
       const std::string &name    = eb->name();
       size_t             numel   = eb->entity_count();

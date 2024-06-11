@@ -301,6 +301,13 @@ namespace Ioss {
         props.get("PARMETIS_COMMON_NODE_COUNT").get_int() > 0) {
       m_commonNodeCount = props.get("PARMETIS_COMMON_NODE_COUNT").get_int();
     }
+
+    if (props.exists("LINE_DECOMPOSITION")) {
+      // The value of the property should be a comma-separated list of surface/sideset names from
+      // which the lines will grow, or the value "ALL" for all surfaces in the model.
+      m_lineDecomp  = true;
+      m_decompExtra = props.get("LINE_DECOMPOSITION").get_string();
+    }
   }
 
   template IOSS_EXPORT void
@@ -450,6 +457,12 @@ namespace Ioss {
       guided_decompose();
     }
     if (m_method == "MAP") {
+      guided_decompose();
+    }
+    if (m_method == "SPECIFIED") {
+      // Currently used for line decomposition with another decomposition type.
+      // The line-modified decomposition is done prior to this and builds the
+      // `m_elementToProc` which is then used here to decompose the elements...
       guided_decompose();
     }
 
@@ -666,7 +679,7 @@ namespace Ioss {
   template <typename INT> void Decomposition<INT>::guided_decompose()
   {
     show_progress(__func__);
-    assert(m_method == "MAP" || m_method == "VARIABLE");
+    assert(m_method == "MAP" || m_method == "VARIABLE" || m_method == "SPECIFIED");
     // - Read my portion of the map / variable.
     // - count # of exports to each rank
     // -- exportElementCount[proc]
@@ -675,13 +688,7 @@ namespace Ioss {
     // - communicate to all proc -- becomes   importElementMap.
     // Create `exportElementIndex` from `exportElementCount`
 
-    std::string label;
-    if (m_method == "MAP") {
-      label = "map";
-    }
-    else {
-      label = "variable";
-    }
+    std::string label = m_method;
 
     // If the "m_decompExtra" string contains a comma, then the
     // value following the comma is either an integer "scale"
@@ -699,7 +706,7 @@ namespace Ioss {
     // [0..m_processorCount).
     double scale = 1.0;
     auto   pos   = m_decompExtra.find(",");
-    if (pos != std::string::npos) {
+    if (m_method != "SPECIFIED" && pos != std::string::npos) {
       // Extract the string following the comma...
       auto scale_str = m_decompExtra.substr(pos + 1);
       if (scale_str == "AUTO" || scale_str == "auto") {
@@ -1080,6 +1087,7 @@ namespace Ioss {
 #endif
 
 #if !defined(NO_ZOLTAN_SUPPORT)
+
   template <typename INT> void Decomposition<INT>::zoltan_decompose(Zoltan &zz)
   {
     show_progress(__func__);

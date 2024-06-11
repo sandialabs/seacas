@@ -5,12 +5,16 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ioss_CodeTypes.h"
+#include "Ioss_DecompositionUtils.h"
 #include "exodus/Ioex_DecompositionData.h"
+
 #if defined PARALLEL_AWARE_EXODUS
-#include "Ioss_ElementTopology.h" // for ElementTopology
-#include "Ioss_Field.h"           // for Field, etc
-#include "Ioss_Map.h"             // for Map, MapContainer
-#include "Ioss_PropertyManager.h" // for PropertyManager
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Field.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Map.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
@@ -39,8 +43,8 @@
 #endif
 
 namespace {
-  // ZOLTAN Callback functions...
 
+  // ZOLTAN Callback functions...
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
   {
@@ -79,7 +83,12 @@ namespace {
     }
 
     if (wdim != 0) {
-      std::fill(wgts, wgts + element_count, 1.0);
+      if (zdata->weights().empty()) {
+        std::fill(wgts, wgts + element_count, 1.0);
+      }
+      else {
+        std::copy(zdata->weights().begin(), zdata->weights().end(), &wgts[0]);
+      }
     }
 
     if (ngid_ent == 1) {
@@ -107,6 +116,7 @@ namespace {
     *ierr = ZOLTAN_OK;
   }
 #endif
+
 } // namespace
 
 namespace Ioex {
@@ -125,7 +135,8 @@ namespace Ioex {
     m_processorCount = pu.parallel_size();
   }
 
-  template <typename INT> void DecompositionData<INT>::decompose_model(int filePtr)
+  template <typename INT>
+  void DecompositionData<INT>::decompose_model(int filePtr, const std::string &filename)
   {
     m_decomposition.show_progress(__func__);
     // Initial decomposition is linear where processor #p contains
@@ -191,8 +202,16 @@ namespace Ioex {
         for (int i = 0; i < map_count; i++) {
           if (std::string(names[i]) == map_name) {
             m_decomposition.m_elementToProc.resize(decomp_elem_count());
-            ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
-                                   decomp_elem_count(), Data(m_decomposition.m_elementToProc));
+            if (sizeof(INT) == 4) {
+              ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
+                                     decomp_elem_count(), Data(m_decomposition.m_elementToProc));
+            }
+            else {
+              std::vector<INT> tmp_map(decomp_elem_count());
+              ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
+                                     decomp_elem_count(), Data(tmp_map));
+              std::copy(tmp_map.begin(), tmp_map.end(), m_decomposition.m_elementToProc.begin());
+            }
             map_read = true;
             break;
           }
@@ -254,6 +273,55 @@ namespace Ioex {
           m_decomposition.m_elementToProc.push_back((int)value);
         }
       }
+    }
+
+    if (m_decomposition.m_lineDecomp) {
+      // For first iteration of this, we do the line-decomp modified decomposition on a single rank
+      // and then communicate the m_elementToProc vector to each of the ranks.  This is then used
+      // do do the parallel distributions/decomposition of the elements assuming a "guided"
+      // decomposition.
+      std::vector<int> element_to_proc_global{};
+
+      m_decomposition.show_progress("***LINE_DECOMPOSE BEGIN***");
+      if (m_processor == 0) {
+        Ioss::PropertyManager properties;
+        Ioss::DatabaseIO     *dbi = Ioss::IOFactory::create(
+            "exodus", filename, Ioss::READ_RESTART, Ioss::ParallelUtils::comm_self(), properties);
+        Ioss::Region region(dbi, "line_decomp_region");
+
+        int status = Ioss::DecompUtils::line_decompose(
+            region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra,
+            element_to_proc_global, INT(0));
+
+	if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
+	  Ioss::DecompUtils::output_decomposition_statistics(element_to_proc_global, m_processorCount);
+	}
+      }
+      // Now broadcast the parts of the `element_to_proc_global`
+      // vector to the owning ranks in the initial linear
+      // decomposition...
+
+      std::vector<int> sendcounts(m_processorCount);
+      std::vector<int> displs(m_processorCount);
+      m_decomposition.m_elementToProc.resize(decomp_elem_count());
+
+      // calculate send counts and displacements
+      int sum = 0;
+      int rem = globalElementCount % m_processorCount;
+      for (int i = 0; i < m_processorCount; i++) {
+        sendcounts[i] = globalElementCount / m_processorCount;
+        if (rem > 0) {
+          sendcounts[i]++;
+          rem--;
+        }
+        displs[i] = sum;
+        sum += sendcounts[i];
+      }
+      MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT,
+                   Data(m_decomposition.m_elementToProc), decomp_elem_count(), MPI_INT, 0,
+                   m_decomposition.m_comm);
+      m_decomposition.m_method = "SPECIFIED";
+      m_decomposition.show_progress("***LINE_DECOMPOSE END***");
     }
 
 #if !defined(NO_ZOLTAN_SUPPORT)

@@ -207,12 +207,10 @@ void IOShell::Interface::enroll_options()
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
                   nullptr);
 
-#if defined(SEACAS_HAVE_CGNS)
   options_.enroll(
       "add_processor_id_field", Ioss::GetLongOption::NoValue,
-      "For CGNS, add a cell-centered field whose value is the processor id of that cell", nullptr);
-#endif
-
+      "Add a cell-centered field whose value is the processor id of that cell", nullptr);
+  
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
                   "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run; 0 to disable",
@@ -510,9 +508,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
 
 #if defined(SEACAS_HAVE_MPI)
-#if defined(SEACAS_HAVE_CGNS)
   add_processor_id_field = (options_.retrieve("add_processor_id_field") != nullptr);
-#endif
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   if (options_.retrieve("rcb") != nullptr) {

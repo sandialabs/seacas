@@ -356,6 +356,14 @@ namespace {
     return total_data_size;
   }
 
+  void add_processor_id_map(Ioss::Region *region)
+  {
+    const auto &blocks = region->get_element_blocks();
+    for (const auto &block : blocks) {
+      block->field_add(Ioss::Field("proc_id", block->field_int_type(), "scalar", Ioss::Field::MAP));
+    }
+  }
+
 } // namespace
 
 namespace Ioex {
@@ -779,11 +787,11 @@ namespace Ioex {
       decomp = std::make_unique<DecompositionData<int>>(properties, util().communicator());
     }
     assert(decomp != nullptr);
-    decomp->decompose_model(exoid);
+    decomp->decompose_model(exoid, get_filename());
 
     read_region();
-    Ioex::read_exodus_basis(get_file_pointer());
-    Ioex::read_exodus_quadrature(get_file_pointer());
+    Ioex::read_exodus_basis(exoid);
+    Ioex::read_exodus_quadrature(exoid);
 
     get_elemblocks();
 
@@ -4797,6 +4805,16 @@ namespace Ioex {
     return num_to_get;
   }
 
+  template <typename INT>
+  void ParallelDatabaseIO::output_processor_id_map(Ioss::Region *region, INT /*dummy*/)
+  {
+    std::vector<INT> proc_id(elementCount, myProcessor);
+    const auto &blocks = region->get_element_blocks();
+    for (const auto &block : blocks) {
+      put_field_internal(block, block->get_field("proc_id"), Data(proc_id), -1);
+    }
+  }
+
   void ParallelDatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
   {
     Ioss::Region *region = get_region();
@@ -4849,7 +4867,14 @@ namespace Ioex {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       output_node_map();
+      add_processor_id_map(region);
       output_other_metadata();
+      if (int_byte_size_api() == 8) {
+	output_processor_id_map(region, int64_t(0));
+      }
+      else {
+	output_processor_id_map(region, int(0));
+      }
     }
   }
 
