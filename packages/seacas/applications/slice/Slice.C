@@ -388,12 +388,11 @@ int main(int argc, char *argv[])
   dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
   dbi->set_field_separator(0);
 
-  // NOTE: 'region' owns 'db' pointer at this time...
-  Ioss::Region region(dbi, "region_1");
-
-  region.output_summary(std::cerr, true);
-
   try {
+    // NOTE: 'region' owns 'db' pointer at this time...
+    Ioss::Region region(dbi, "region_1");
+    region.output_summary(std::cerr, true);
+
     if (dbi->int_byte_size_api() == 4) {
       progress("4-byte slice");
       slice(region, nem_file, interFace, 1);
