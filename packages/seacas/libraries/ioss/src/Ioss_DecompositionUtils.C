@@ -466,7 +466,7 @@ namespace Ioss {
                                   std::vector<int> &elem_to_proc, int proc_count);
 
   void DecompUtils::output_decomposition_statistics(const std::vector<int> &elem_to_proc,
-                                                    int proc_count, size_t number_elements)
+                                                    int proc_count)
   {
     // Output histogram of elements / rank...
     std::vector<size_t> elem_per_rank(proc_count);
@@ -474,6 +474,7 @@ namespace Ioss {
       elem_per_rank[proc]++;
     }
 
+    size_t number_elements = elem_to_proc.size();
     size_t proc_width = Ioss::Utils::number_width(proc_count, false);
     size_t work_width = Ioss::Utils::number_width(number_elements, true);
 
@@ -490,7 +491,7 @@ namespace Ioss {
                  fmt::group_digits(median), (double)(max_work) / min_work);
     }
     if (min_work == max_work) {
-      fmt::print("\nWork on all processors is {}\n\n", fmt::group_digits(min_work));
+      fmt::print("Work on all processors is {}\n\n", fmt::group_digits(min_work));
     }
     else {
       int max_star = 40;

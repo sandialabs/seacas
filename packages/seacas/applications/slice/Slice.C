@@ -1405,8 +1405,7 @@ namespace {
     }
 
     if (debug_level & 32) {
-      Ioss::DecompUtils::output_decomposition_statistics(elem_to_proc, interFace.processor_count(),
-                                                         elem_to_proc.size());
+      Ioss::DecompUtils::output_decomposition_statistics(elem_to_proc, interFace.processor_count());
     }
 
     if (!create_split_files) {

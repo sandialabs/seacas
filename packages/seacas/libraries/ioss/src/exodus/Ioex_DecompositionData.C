@@ -292,6 +292,10 @@ namespace Ioex {
         int status = Ioss::DecompUtils::line_decompose(
             region, m_processorCount, m_decomposition.m_method, m_decomposition.m_decompExtra,
             element_to_proc_global, INT(0));
+
+	if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
+	  Ioss::DecompUtils::output_decomposition_statistics(element_to_proc_global, m_processorCount);
+	}
       }
       // Now broadcast the parts of the `element_to_proc_global`
       // vector to the owning ranks in the initial linear

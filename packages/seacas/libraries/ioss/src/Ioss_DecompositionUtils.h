@@ -24,7 +24,7 @@ namespace Ioss {
                                    std::vector<int> &element_to_proc, int proc_count);
 
     static void output_decomposition_statistics(const std::vector<int> &element_to_proc,
-                                                int proc_count, size_t number_elements);
+                                                int proc_count);
 
     template <typename INT>
     static std::vector<float> line_decomp_weights(const Ioss::chain_t<INT> &element_chains,
