@@ -356,6 +356,24 @@ namespace {
     return total_data_size;
   }
 
+  void add_processor_id_map(Ioss::Region *region)
+  {
+    const auto &blocks = region->get_element_blocks();
+    for (const auto &block : blocks) {
+      block->field_add(Ioss::Field("proc_id", block->field_int_type(), "scalar", Ioss::Field::MAP));
+    }
+  }
+
+  template <typename INT>
+  void output_processor_id_map(Ioss::Region *region, size_t my_element_count, int my_processor, INT /*dummy*/)
+  {
+    std::vector<INT> proc_id(my_element_count, my_processor);
+    const auto &blocks = region->get_element_blocks();
+    for (const auto &block : blocks) {
+      block->put_field_data("proc_id", proc_id);
+    }
+  }
+
 } // namespace
 
 namespace Ioex {
@@ -4849,7 +4867,14 @@ namespace Ioex {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       output_node_map();
+      add_processor_id_map(region);
       output_other_metadata();
+      if (int_byte_size_api() == 8) {
+	output_processor_id_map(region, elementCount, myProcessor, int64_t(0));
+      }
+      else {
+	output_processor_id_map(region, elementCount, myProcessor, int(0));
+      }
     }
   }
 
