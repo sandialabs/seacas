@@ -195,7 +195,6 @@ namespace Ioss {
   {
     debug                    = debug_level;
     size_t             numel = region.get_property("element_count").get_int();
-    Ioss::chain_t<INT> element_chains(numel);
 
     // Determine which element block(s) are adjacent to the faceset specifying "lines"
     // The `adjacent_blocks` contains the names of all element blocks that are adjacent to the
@@ -225,6 +224,7 @@ namespace Ioss {
     Ioss::FaceGenerator face_generator(region);
     face_generator.generate_block_faces(adjacent_blocks, (INT)0, true);
 
+    Ioss::chain_t<INT> element_chains(numel);
     for (const auto *block : adjacent_blocks) {
       // Get the offset into the element_chains vector...
       auto offset = block->get_offset() + 1;
@@ -239,6 +239,7 @@ namespace Ioss {
       connectivity_t face_connectivity(count);
       generate_face_connectivity(face_generator.faces(block), static_cast<int>(offset),
                                  face_connectivity);
+      face_generator.clear(block);
 
       // For each face on the "front" (at the beginning the boundary sideset faces)
       // Set `element_chains` to the `face` "ID"
