@@ -154,7 +154,9 @@ namespace Ioex {
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
     m_decomposition.generate_entity_distributions(globalNodeCount, globalElementCount);
 
-    generate_adjacency_list(filePtr, m_decomposition);
+    if (!m_decomposition.m_lineDecomp) {
+      generate_adjacency_list(filePtr, m_decomposition);
+    }
 
 #if IOSS_DEBUG_OUTPUT
     fmt::print(Ioss::DebugOut(), "Processor {} has {} elements; offset = {}\n", m_processor,
@@ -163,7 +165,7 @@ namespace Ioex {
                fmt::group_digits(decomp_node_count()), fmt::group_digits(decomp_node_offset()));
 #endif
 
-    if (m_decomposition.needs_centroids()) {
+    if (!m_decomposition.m_lineDecomp && m_decomposition.needs_centroids()) {
       // Get my coordinate data using direct exodus calls
       size_t size = decomp_node_count();
       if (size == 0) {
@@ -322,6 +324,12 @@ namespace Ioex {
                    m_decomposition.m_comm);
       m_decomposition.m_method = "SPECIFIED";
       m_decomposition.show_progress("***LINE_DECOMPOSE END***");
+    }
+
+    if (m_decomposition.m_lineDecomp) {
+      // Do not combine into previous if block since we want to release memory for 
+      // the local vectors in that block before allocating the large adjacency vector.
+      generate_adjacency_list(filePtr, m_decomposition);
     }
 
 #if !defined(NO_ZOLTAN_SUPPORT)
