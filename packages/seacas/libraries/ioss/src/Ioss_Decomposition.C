@@ -426,6 +426,10 @@ namespace Ioss {
                  "\nIOSS: Using decomposition method '{}' for {} elements on {} mpi ranks.\n",
                  m_method, fmt::group_digits(m_globalElementCount), m_processorCount);
 
+      if (!m_decompExtra.empty()) {
+	fmt::print(Ioss::OUTPUT(), "\tDecomposition extra data: '{}'.\n", m_decompExtra);
+      }
+      
       if ((size_t)m_processorCount > m_globalElementCount) {
         fmt::print(Ioss::WarnOut(),
                    "Decomposing {} elements across {} mpi ranks will "
@@ -459,7 +463,7 @@ namespace Ioss {
     if (m_method == "MAP") {
       guided_decompose();
     }
-    if (m_method == "SPECIFIED") {
+    if (m_method == "LINE_DECOMP") {
       // Currently used for line decomposition with another decomposition type.
       // The line-modified decomposition is done prior to this and builds the
       // `m_elementToProc` which is then used here to decompose the elements...
@@ -679,7 +683,7 @@ namespace Ioss {
   template <typename INT> void Decomposition<INT>::guided_decompose()
   {
     show_progress(__func__);
-    assert(m_method == "MAP" || m_method == "VARIABLE" || m_method == "SPECIFIED");
+    assert(m_method == "MAP" || m_method == "VARIABLE" || m_method == "LINE_DECOMP");
     // - Read my portion of the map / variable.
     // - count # of exports to each rank
     // -- exportElementCount[proc]
@@ -706,7 +710,7 @@ namespace Ioss {
     // [0..m_processorCount).
     double scale = 1.0;
     auto   pos   = m_decompExtra.find(",");
-    if (m_method != "SPECIFIED" && pos != std::string::npos) {
+    if (m_method != "LINE_DECOMP" && pos != std::string::npos) {
       // Extract the string following the comma...
       auto scale_str = m_decompExtra.substr(pos + 1);
       if (scale_str == "AUTO" || scale_str == "auto") {

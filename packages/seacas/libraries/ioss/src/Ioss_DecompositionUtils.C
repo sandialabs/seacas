@@ -270,7 +270,7 @@ namespace Ioss {
 
     float ver = 0.0;
     Zoltan_Initialize(argc, argv, &ver);
-    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
+    fmt::print("\tUsing Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
 
     Zoltan zz(Ioss::ParallelUtils::comm_self());
 
@@ -354,7 +354,7 @@ namespace Ioss {
     decompose_zoltan(region, num_ranks, method, element_to_proc, weights, false, false, false,
                      dummy);
     double end = Ioss::Utils::timer();
-    fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
+    fmt::print(stderr, "\tDecompose elements = {:.5}\n", end - start);
     region.get_database()->progress("exit decompose_elements");
 
     // Make sure all elements on a chain are on the same processor rank...

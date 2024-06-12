@@ -322,7 +322,7 @@ namespace Ioex {
       MPI_Scatterv(Data(element_to_proc_global), Data(sendcounts), Data(displs), MPI_INT,
                    Data(m_decomposition.m_elementToProc), decomp_elem_count(), MPI_INT, 0,
                    m_decomposition.m_comm);
-      m_decomposition.m_method = "SPECIFIED";
+      m_decomposition.m_method = "LINE_DECOMP";
       m_decomposition.show_progress("***LINE_DECOMPOSE END***");
     }
 
