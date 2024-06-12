@@ -113,6 +113,7 @@ namespace IOShell {
     bool ignore_face_map{false};
     bool delete_qa{false};
     bool delete_info{false};
+    bool line_decomp{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

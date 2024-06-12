@@ -715,6 +715,9 @@ namespace {
       if (interFace.decomp_method == "MAP" || interFace.decomp_method == "VARIABLE") {
         properties.add(Ioss::Property("DECOMPOSITION_EXTRA", interFace.decomp_extra));
       }
+      if (interFace.line_decomp) {
+        properties.add(Ioss::Property("LINE_DECOMPOSITION", interFace.decomp_extra));
+      }
     }
 
     if (interFace.retain_empty_blocks) {
