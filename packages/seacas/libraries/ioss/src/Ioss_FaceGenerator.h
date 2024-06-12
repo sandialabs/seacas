@@ -108,11 +108,11 @@ namespace Ioss {
 #if defined FG_USE_STD
   using FaceUnorderedSet = std::unordered_set<Face, FaceHash, FaceEqual>;
 #elif defined FG_USE_HOPSCOTCH
-  using FaceUnorderedSet = tsl::hopscotch_set<Face, FaceHash, FaceEqual>;
-  // using FaceUnorderedSet = tsl::hopscotch_pg_set<Face, FaceHash, FaceEqual>;
+  //using FaceUnorderedSet = tsl::hopscotch_set<Face, FaceHash, FaceEqual>;
+  using FaceUnorderedSet = tsl::hopscotch_pg_set<Face, FaceHash, FaceEqual>;
 #elif defined FG_USE_ROBIN
-  using FaceUnorderedSet = tsl::robin_set<Face, FaceHash, FaceEqual>;
-  // using FaceUnorderedSet = tsl::robin_pg_set<Face, FaceHash, FaceEqual>;
+  //  using FaceUnorderedSet = tsl::robin_set<Face, FaceHash, FaceEqual>;
+  using FaceUnorderedSet = tsl::robin_pg_set<Face, FaceHash, FaceEqual>;
 #endif
   class IOSS_EXPORT FaceGenerator
   {
@@ -130,11 +130,15 @@ namespace Ioss {
     FaceUnorderedSet &faces(const std::string &name = "ALL") { return faces_[name]; }
     FaceUnorderedSet &faces(const ElementBlock *block);
 
+    void clear(const std::string &name)  {faces_[name].clear();}
+    void clear(const ElementBlock *block);
+
     //! Given a local node id (0-based), return the hashed value.
     size_t node_id_hash(size_t local_node_id) const { return hashIds_[local_node_id]; }
 
   private:
     template <typename INT> void hash_node_ids(const std::vector<INT> &node_ids);
+    void hash_local_node_ids(size_t count);
     template <typename INT> void generate_model_faces(INT /*dummy*/, bool local_ids);
 
     Ioss::Region                           &region_;
