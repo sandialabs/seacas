@@ -39,6 +39,7 @@
 #include <cstdlib>
 #include <fmt/ostream.h>
 #include <map>
+#include <cstdlib>
 
 #include <catalyst.hpp>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
@@ -1244,9 +1245,12 @@ namespace Iocatalyst {
         this->Impl->setDatabaseNode(c_node_ptr);
       }
       else {
-        int timestep = 1;
+        int timestep = 0;
         if (pm.exists(detail::CATREADTIMESTEP)) {
           timestep = pm.get(detail::CATREADTIMESTEP).get_int();
+        }
+        else if(const char* ts = std::getenv(detail::CATREADTIMESTEP.c_str())) {
+          timestep = std::stoi(std::string(ts));
         }
         std::ostringstream path;
         path << get_catalyst_dump_dir() << detail::EXECUTE_INVC << timestep

@@ -70,3 +70,21 @@ TEST_F(Iocatalyst_DatabaseIOTest, SetReaderTimeStepWithIOSSProp)
   EXPECT_EQ(maxt.first, 1);
   EXPECT_DOUBLE_EQ(maxt.second, 0.0011999331181868911);
 }
+
+TEST_F(Iocatalyst_DatabaseIOTest, SetReaderTimeStepWithIOSSEnvVar)
+{
+  setenv("CATALYST_READER_TIME_STEP", "24", 1);
+
+  auto db = getCatalystDatabaseFromConduitFiles("Iocatalyst_can_ex2_MPI_1");
+  ASSERT_TRUE(db != nullptr);
+
+  Ioss::Region reg(db);
+
+  auto mint = reg.get_min_time();
+  EXPECT_EQ(mint.first, 1);
+  EXPECT_DOUBLE_EQ(mint.second, 0.0024000538978725672);
+
+  auto maxt = reg.get_max_time();
+  EXPECT_EQ(maxt.first, 1);
+  EXPECT_DOUBLE_EQ(maxt.second, 0.0024000538978725672);
+}
