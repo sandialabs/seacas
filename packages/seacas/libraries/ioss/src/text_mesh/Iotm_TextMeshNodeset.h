@@ -47,7 +47,7 @@ namespace Iotm {
     public:
       Nodesets()
           : EntityGroup<NodesetData<EntityId>>("NODESET", "NODELIST_",
-                                               {"BLOCK_", "SURFACE_", "ASSEMBLY_"})
+                                               {"BLOCK_", "SURFACE_", "EDGELIST_", "ASSEMBLY_"})
       {
       }
     };

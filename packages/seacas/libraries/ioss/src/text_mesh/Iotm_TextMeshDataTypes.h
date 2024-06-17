@@ -35,6 +35,19 @@ namespace Iotm {
 
     using ErrorHandler = std::function<void(const std::ostringstream &)>;
 
+    enum SplitType { TOPOLOGY, ELEMENT_BLOCK, NO_SPLIT, INVALID_SPLIT };
+
+    inline std::ostream &operator<<(std::ostream &out, const SplitType &t)
+    {
+      switch (t) {
+      case SplitType::TOPOLOGY: return out << "TOPOLOGY"; break;
+      case SplitType::ELEMENT_BLOCK: return out << "ELEMENT_BLOCK"; break;
+      case SplitType::NO_SPLIT: return out << "NO_SPLIT"; break;
+      default: return out << "INVALID"; break;
+      }
+      return out << "INVALID[" << (unsigned)t << "]";
+    }
+
     template <typename T> class TopologyMapping
     {
     public:
@@ -307,6 +320,8 @@ namespace Iotm {
 
     template <typename EntityId, typename Topology> class Sidesets;
 
+    template <typename EntityId, typename Topology> class Edgesets;
+
     template <typename EntityId> class Nodesets;
 
     template <typename EntityId> class Assemblies;
@@ -319,6 +334,7 @@ namespace Iotm {
       std::set<EntityId>                           nodeIds{};
       Coordinates<EntityId>                        coords;
       Sidesets<EntityId, Topology>                 sidesets;
+      Edgesets<EntityId, Topology>                 edgesets;
       Nodesets<EntityId>                           nodesets;
       Assemblies<EntityId>                         assemblies;
 

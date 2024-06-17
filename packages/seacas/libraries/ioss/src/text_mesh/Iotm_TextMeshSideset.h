@@ -105,7 +105,7 @@ namespace Iotm {
     public:
       using BaseClass = EntityGroup<SidesetData<EntityId, Topology>>;
 
-      Sidesets() : BaseClass("SIDESET", "SURFACE_", {"BLOCK_", "NODELIST_", "ASSEMBLY_"}) {}
+      Sidesets() : BaseClass("SIDESET", "SURFACE_", {"BLOCK_", "EDGELIST_", "NODELIST_", "ASSEMBLY_"}) {}
 
       void set_error_handler(ErrorHandler errorHandler) override
       {

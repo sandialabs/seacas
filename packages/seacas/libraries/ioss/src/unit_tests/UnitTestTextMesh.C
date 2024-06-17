@@ -32,7 +32,7 @@ namespace {
   TEST_F(TestTextMesh, singleHex)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8";
     setup_text_mesh(meshDesc);
@@ -44,7 +44,7 @@ namespace {
   TEST_F(TestTextMesh, singleHexWithCoordinates)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,HEX_8,1,2,3,4,5,6,7,8"
                                           "|coordinates:   0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, 0,1,1";
@@ -62,7 +62,7 @@ namespace {
   TEST_F(TestTextMesh, singleHexWithCoordinates_separatedNodeIds)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,HEX_8,1,2,3,4,11,12,13,14";
     EntityIdVector      nodeIds         = EntityIdVector{1, 2, 3, 4, 11, 12, 13, 14};
@@ -79,7 +79,7 @@ namespace {
   TEST_F(TestTextMesh, twoHexesSerial)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12";
@@ -93,7 +93,7 @@ namespace {
   TEST_F(TestTextMesh, twoTet10Serial)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,TET_10,1,2,3,4,5,6,7,8,9,10\n"
                            "0,2,TET_10,2,11,3,4,12,13,6,9,14,10";
@@ -114,7 +114,7 @@ namespace {
   TEST_F(TestTextMesh, twoHexDisconnectedWithCoordinatesAndParts)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
                                           "0,2,HEX_8,9,10,11,12,13,14,15,16,block_2";
@@ -135,7 +135,7 @@ namespace {
   TEST_F(TestTextMesh, twoHexDisconnectedWithDefaultParts)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16";
@@ -156,7 +156,7 @@ namespace {
     //      1-----2-----3       //
 
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,SHELL_TRI_3,1,2,4,block_1\n"
                                           "0,2,SHELL_TRI_3,2,5,4,block_2\n"
@@ -182,7 +182,7 @@ namespace {
     //      1-----2-----3       //
 
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,SHELL_TRI_3,1,2,4\n"
                            "0,2,SHELL_TRI_3,2,5,4\n"
@@ -199,7 +199,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_oneDefaultPartOneElem)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8";
     setup_text_mesh(meshDesc);
@@ -210,7 +210,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_oneDefaultPartTwoElems)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16";
@@ -222,7 +222,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_twoDefaultParts)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16\n"
@@ -236,7 +236,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_oneDefaultPartOneUserSpecifiedPart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,my_cool_part";
@@ -248,7 +248,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_samePartTwice)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,my_cool_part\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,my_cool_part";
@@ -260,7 +260,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_orderingIsByLine)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,2,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partOne\n"
                            "0,1,HEX_8,9,10,11,12,13,14,15,16,partTwo";
@@ -272,7 +272,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_respectExodusNamingConvention_onePart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_101";
     setup_text_mesh(meshDesc);
@@ -283,7 +283,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_respectExodusNamingConvention_twoParts)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_101\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,block_201";
@@ -295,7 +295,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_respectExodusNamingConvention_withDefaultPartFirst)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,block_101";
@@ -307,7 +307,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_respectExodusNamingConvention_withDefaultPartSecond)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_101\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16";
@@ -319,7 +319,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_respectExodusNamingConvention_withDefaultPartIdCollision)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,block_1";
@@ -331,7 +331,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_onePart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,partThree,3";
     setup_text_mesh(meshDesc);
@@ -345,7 +345,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_twoParts)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partThree,3\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,partFive,5";
@@ -357,7 +357,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_twoPartsSameId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partFour,4\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,partFour,4";
@@ -369,7 +369,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_samePartDifferentIds)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partFour,4\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,partFour,5";
@@ -379,7 +379,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_withDefaultPartIdCollision)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,partOne,1";
@@ -391,7 +391,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_withDefaultPart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partThree,3\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16";
@@ -403,7 +403,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_withExodusPart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partThree,3\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,block_4";
@@ -415,7 +415,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_collidesWithExodusPart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partThree,3\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,block_3";
@@ -425,7 +425,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_collidesWithPreviousSpec)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,partThreeA,3\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,partThreeB,3";
@@ -435,7 +435,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_userSpecifiedPartId_forExodusPart)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_2,3\n";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
@@ -444,7 +444,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_shortPartNamesAreValid)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,a\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,b,3";
@@ -456,7 +456,7 @@ namespace {
   TEST_F(TestTextMesh, partIds_integerPartNamesAreInvalid)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,9";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
@@ -465,7 +465,7 @@ namespace {
   TEST_F(TestTextMesh, twoHexesParallel)
   {
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
@@ -493,7 +493,7 @@ namespace {
     //      1-----2-----3
 
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string         meshDesc        = "0,1,SHELL_QUAD_4,1,2,5,4\n"
@@ -523,7 +523,7 @@ namespace {
     //      1-----2-----3       //
 
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string         meshDesc        = "0,1,SHELL_TRI_3,1,2,4\n"
@@ -549,7 +549,7 @@ namespace {
   TEST_F(TestTextMesh, singleHexWithSpaces)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0, 1, HEX_8, 1, 2, 3, 4, 5, 6, 7, 8";
     setup_text_mesh(meshDesc);
@@ -561,7 +561,7 @@ namespace {
   TEST_F(TestTextMesh, singleHexWithCoordinatesAndSpaces)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0, 1, HEX_8, 1, 2, 3, 4, 5, 6, 7, 8";
     EntityIdVector      nodeIds         = EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8};
@@ -578,7 +578,7 @@ namespace {
   TEST_F(TestTextMesh, singleHexWithLowerCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,Hex_8,1,2,3,4,5,6,7,8";
     setup_text_mesh(meshDesc);
@@ -590,7 +590,7 @@ namespace {
   TEST_F(TestTextMesh, singleHexWithCoordinatesAndLowerCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,Hex_8,1,2,3,4,5,6,7,8";
     EntityIdVector      nodeIds         = EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8};
@@ -768,7 +768,7 @@ namespace {
   TEST_F(TestTextMesh, particleWithCoordinates)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,PARTICLE,1|coordinates:2,0,0";
     std::vector<double> goldCoordinates = {2, 0, 0};
@@ -783,7 +783,7 @@ namespace {
   TEST_F(TestTextMesh, particleWithCoordinatesAlreadyProvided)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PARTICLE,1|coordinates:2,0,0|coordinates:3,0,0";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
@@ -792,7 +792,7 @@ namespace {
   TEST_F(TestTextMesh, particleHex)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PARTICLE,1\n"
                            "0,2,HEX_8,2,3,4,5,6,7,8,9";
@@ -806,7 +806,7 @@ namespace {
   TEST_F(TestTextMesh, particleHexWithCoordinates)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,PARTICLE,1\n"
                                           "0,2,HEX_8,2,3,4,5,6,7,8,9";
@@ -820,10 +820,10 @@ namespace {
     verify_coordinates(EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8, 9}, goldCoordinates);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_standardName)
+  TEST_F(TestTextMeshSideset, hexWithSideset_standardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=surface_1; data=1,3";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -832,10 +832,10 @@ namespace {
     verify_single_sideset("surface_1", 1, SideVector{{1, 3}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_nonStandardName)
+  TEST_F(TestTextMeshSideset, hexWithSideset_nonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=my_ss; data=1,2";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -844,10 +844,10 @@ namespace {
     verify_single_sideset("my_ss", 1, SideVector{{1, 2}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_noName)
+  TEST_F(TestTextMeshSideset, hexWithSideset_noName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:data=1,5";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -856,10 +856,10 @@ namespace {
     verify_single_sideset("surface_1", 1, SideVector{{1, 5}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_noData)
+  TEST_F(TestTextMeshSideset, hexWithSideset_noData)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -867,10 +867,10 @@ namespace {
     verify_num_sidesets(0);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_noDataMixedCase)
+  TEST_F(TestTextMeshSideset, hexWithSideset_noDataMixedCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sIdESeT:";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -878,10 +878,10 @@ namespace {
     verify_num_sidesets(0);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_onlyName)
+  TEST_F(TestTextMeshSideset, hexWithSideset_onlyName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=my_ss";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -890,66 +890,66 @@ namespace {
     verify_single_sideset("my_ss", 1, SideVector{});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_invalidPairs)
+  TEST_F(TestTextMeshSideset, hexWithSideset_invalidPairs)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=my_ss; data=1,1, 2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_invalidName)
+  TEST_F(TestTextMeshSideset, hexWithSideset_invalidName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=block_1; data=1,1";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_nameCollisionWithElementBlock)
+  TEST_F(TestTextMeshSideset, hexWithSideset_nameCollisionWithElementBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,my_part|sideset:name=my_part; data=1,1";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_nameCollisionWithSideset)
+  TEST_F(TestTextMeshSideset, hexWithSideset_nameCollisionWithSideset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:my_part,1,1|sideset:name=my_part; data=1,2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_nameCollisionWithSideset_MixedCase)
+  TEST_F(TestTextMeshSideset, hexWithSideset_nameCollisionWithSideset_MixedCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:my_part,1,1|sideset:name=MY_PART; data=1,2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_standardNameWithInvalidId)
+  TEST_F(TestTextMeshSideset, hexWithSideset_standardNameWithInvalidId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=surface_0; data=1,1";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_nonStandardNamesPreserveIdOrder)
+  TEST_F(TestTextMeshSideset, hexWithSideset_nonStandardNamesPreserveIdOrder)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=first_ss; "
                            "data=1,1|sideset:name=second_ss; data=1,2";
@@ -960,10 +960,10 @@ namespace {
     verify_single_sideset("second_ss", 2, SideVector{{1, 2}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_nonStandardNameDoesNotAffectAssignedId)
+  TEST_F(TestTextMeshSideset, hexWithSideset_nonStandardNameDoesNotAffectAssignedId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=ss_5; data=1,1";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -972,10 +972,10 @@ namespace {
     verify_single_sideset("ss_5", 1, SideVector{{1, 1}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_standardNameHasPrecedenceForIdAssignment)
+  TEST_F(TestTextMeshSideset, hexWithSideset_standardNameHasPrecedenceForIdAssignment)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=my_ss; data=1,1|sideset:name=surface_1; data=1,2";
@@ -986,10 +986,10 @@ namespace {
     verify_single_sideset("my_ss", 2, SideVector{{1, 1}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_standardNamesPreserveIds)
+  TEST_F(TestTextMeshSideset, hexWithSideset_standardNamesPreserveIds)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=surface_5; "
                            "data=1,5|sideset:name=surface_1; data=1,1";
@@ -1000,10 +1000,10 @@ namespace {
     verify_single_sideset("surface_5", 5, SideVector{{1, 5}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
+  TEST_F(TestTextMeshSideset, hexWithSideset_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=my_ss;data=1,5|sideset:name="
                            "surface_1;data=1,1|sideset:data=1,3";
@@ -1015,28 +1015,28 @@ namespace {
     verify_single_sideset("my_ss", 3, SideVector{{1, 5}});
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_referenceToInvalidElement)
+  TEST_F(TestTextMeshSideset, hexWithSideset_referenceToInvalidElement)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=surface_1; data=2,1";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithSideset_referenceToInvalidOrdinal)
+  TEST_F(TestTextMeshSideset, hexWithSideset_referenceToInvalidOrdinal)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=surface_1; data=2,-1";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSideset)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSideset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12|sideset:name=surface_1; data=1,1, 2,1";
@@ -1050,10 +1050,10 @@ namespace {
     verify_single_sideset("surface_1", 1, SideVector{{1, 1}, {2, 1}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSidesetAndStandardName_splitByBlock)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSidesetAndStandardName_splitByBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
@@ -1075,10 +1075,10 @@ namespace {
     verify_single_sideset("surface_1", 1, sidesetSubsets, SideVector{{1, 1}, {2, 1}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSidesetAndStandardName_splitByTopology)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSidesetAndStandardName_splitByTopology)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|sideset:name=surface_1; data=1,1, "
@@ -1097,10 +1097,10 @@ namespace {
     verify_single_sideset("surface_1", 1, sidesetSubsets, SideVector{{1, 1}, {2, 1}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSidesetAndNonStandardName_splitByBlock)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSidesetAndNonStandardName_splitByBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
@@ -1120,10 +1120,10 @@ namespace {
     verify_single_sideset("my_ss", 1, sidesetSubsets, SideVector{{1, 1}, {2, 1}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSidesetAndNonStandardName_splitByTopology)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSidesetAndNonStandardName_splitByTopology)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
@@ -1142,10 +1142,10 @@ namespace {
     verify_single_sideset("my_ss", 1, sidesetSubsets, SideVector{{1, 1}, {2, 1}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSideset_invalidSplitType)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSideset_invalidSplitType)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|sideset:name=surface_1; data=1,1, "
@@ -1153,10 +1153,10 @@ namespace {
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, pyramidWithStandardName_splitByBlock)
+  TEST_F(TestTextMeshSideset, pyramidSidesetWithStandardName_splitByBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1|sideset:name=surface_1; data=1,1, 1,2, "
                            "1,3, 1,4, 1,5; split=block";
@@ -1177,10 +1177,10 @@ namespace {
                           SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}});
   }
 
-  TEST_F(TestTextMesh, pyramidWithStandardName_splitByTopology)
+  TEST_F(TestTextMeshSideset, pyramidSidesetWithStandardName_splitByTopology)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1|sideset:name=surface_1; data=1,1, 1,2, "
                            "1,3, 1,4, 1,5; split=topology";
@@ -1201,10 +1201,10 @@ namespace {
                           SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSidesetAndPartiallyOverlayedSideset)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSidesetAndPartiallyOverlayedSideset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12|sideset:name=surface_1; data=1,1, "
@@ -1220,10 +1220,10 @@ namespace {
     verify_single_sideset("surface_2", 2, SideVector{{2, 1}});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningSideset_Parallel)
+  TEST_F(TestTextMeshSideset, twoHexesWithSpanningSideset_Parallel)
   {
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
@@ -1243,10 +1243,442 @@ namespace {
     }
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_standardName)
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_standardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=edgelist_1; data=1,3";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 3}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_nonStandardName)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_es; data=1,2";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("my_es", 1, EdgeVector{{1, 2}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_noName)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:data=1,5";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 5}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_noData)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(0);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_noDataMixedCase)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|eDgESeT:";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(0);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_onlyName)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_es";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("my_es", 1, EdgeVector{});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_invalidPairs)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_es; data=1,1, 2";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_invalidName)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=block_1; data=1,1";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_nameCollisionWithElementBlock)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,my_part|edgeset:name=my_part; data=1,1";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_nameCollisionWithEdgeset)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc =
+        "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_part; data=1,1|edgeset:name=my_part; data=1,2";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_nameCollisionWithEdgeset_MixedCase)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc =
+        "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_part; data=1,1|edgeset:name=MY_PART; data=1,2";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_standardNameWithInvalidId)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=edgelist_0; data=1,1";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_nonStandardNamesPreserveIdOrder)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=first_es; "
+                           "data=1,1|edgeset:name=second_es; data=1,2";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(2);
+    verify_single_edgeset("first_es", 1, EdgeVector{{1, 1}});
+    verify_single_edgeset("second_es", 2, EdgeVector{{1, 2}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_nonStandardNameDoesNotAffectAssignedId)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=es_5; data=1,1";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("es_5", 1, EdgeVector{{1, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_standardNameHasPrecedenceForIdAssignment)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc =
+        "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_es; data=1,1|edgeset:name=edgelist_1; data=1,2";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(2);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 2}});
+    verify_single_edgeset("my_es", 2, EdgeVector{{1, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_standardNamesPreserveIds)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=edgelist_5; "
+                           "data=1,5|edgeset:name=edgelist_1; data=1,1";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(2);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 1}});
+    verify_single_edgeset("edgelist_5", 5, EdgeVector{{1, 5}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=my_es;data=1,5|edgeset:name="
+                           "edgelist_1;data=1,1|edgeset:data=1,3";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+
+    verify_num_edgesets(3);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 1}});
+    verify_single_edgeset("edgelist_2", 2, EdgeVector{{1, 3}});
+    verify_single_edgeset("my_es", 3, EdgeVector{{1, 5}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_referenceToInvalidElement)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=edgelist_1; data=2,1";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_referenceToInvalidOrdinal)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=edgelist_1; data=2,-1";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, hexWithEdgeset_referenceToInvalidOrdinal2)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|edgeset:name=edgelist_1; data=2,20";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgeset)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+                           "0,2,HEX_8,5,6,7,8,9,10,11,12|edgeset:name=edgelist_1; data=1,1, 2,1";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(2);
+    verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+    verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 1}, {2, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgesetAndStandardName_splitByBlock)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc =
+        "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+        "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|edgeset:name=edgelist_1; data=1,1, 2,1; split=block";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(2);
+    verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+    verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+
+    std::vector<std::string> edgesetSubsets;
+    std::string              prefix("edgelist_");
+    edgesetSubsets.push_back(prefix + std::string("block_1") + "_" + get_topology_name("LINE_2") +
+                             "_1");
+    edgesetSubsets.push_back(prefix + std::string("block_2") + "_" + get_topology_name("LINE_2") +
+                             "_1");
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, edgesetSubsets, EdgeVector{{1, 1}, {2, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgesetAndStandardName_splitByTopology)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+                           "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|edgeset:name=edgelist_1; data=1,1, "
+                           "2,1; split=topology";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(2);
+    verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+    verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+
+    std::vector<std::string> edgesetSubsets;
+    edgesetSubsets.push_back("edgelist_" + get_topology_name("HEX_8") + "_" +
+                             get_topology_name("LINE_2") + "_1");
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, edgesetSubsets, EdgeVector{{1, 1}, {2, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgesetAndNonStandardName_splitByBlock)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc =
+        "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+        "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|edgeset:name=my_es; data=1,1, 2,1; split=block";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(2);
+    verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+    verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+
+    std::vector<std::string> edgesetSubsets;
+    std::string              prefix("my_es_");
+    edgesetSubsets.push_back(prefix + std::string("block_1") + "_" + get_topology_name("LINE_2"));
+    edgesetSubsets.push_back(prefix + std::string("block_2") + "_" + get_topology_name("LINE_2"));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("my_es", 1, edgesetSubsets, EdgeVector{{1, 1}, {2, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgesetAndNonStandardName_splitByTopology)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc =
+        "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+        "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|edgeset:name=my_es; data=1,1, 2,1; split=topology";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(2);
+    verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+    verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+
+    std::vector<std::string> edgesetSubsets;
+    edgesetSubsets.push_back("my_es_" + get_topology_name("HEX_8") + "_" +
+                             get_topology_name("LINE_2"));
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("my_es", 1, edgesetSubsets, EdgeVector{{1, 1}, {2, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgeset_invalidSplitType)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+                           "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|edgeset:name=edgelist_1; data=1,1, "
+                           "2,1; split=blahblah";
+    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMeshEdgeset, wedge12EdgesetWithStandardName_splitByBlock)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,WEDGE_12,1,2,3,4,5,6,7,8,9,10,11,12,block_1|edgeset:name=edgelist_1;"
+                           "data=1,1, 1,2, 1,3, 1,4, 1,5, 1,6, 1,7, 1,8, 1,9; split=block";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(1);
+    verify_single_element(1u, "WEDGE_12", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+
+    std::vector<std::string> edgesetSubsets;
+    std::string              prefix("edgelist_");
+    edgesetSubsets.push_back(prefix + std::string("block_1") + "_" + get_topology_name("LINE_2") +
+                             "_1");
+    edgesetSubsets.push_back(prefix + std::string("block_1") + "_" + get_topology_name("LINE_3") +
+                             "_1");
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, edgesetSubsets,
+                          EdgeVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, wedge12EdgesetWithStandardName_splitByTopology)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,WEDGE_12,1,2,3,4,5,6,7,8,9,10,11,12,block_1|edgeset:name=edgelist_1;"
+                           "data=1,1, 1,2, 1,3, 1,4, 1,5, 1,6, 1,7, 1,8, 1,9; split=topology";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(1);
+    verify_single_element(1u, "WEDGE_12", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+
+    std::vector<std::string> edgesetSubsets;
+    std::string              prefix("edgelist_");
+    edgesetSubsets.push_back(prefix + get_topology_name("WEDGE_12") + "_" + get_topology_name("LINE_2") +
+                             "_1");
+    edgesetSubsets.push_back(prefix + get_topology_name("WEDGE_12") + "_" + get_topology_name("LINE_3") +
+                             "_1");
+
+    verify_num_edgesets(1);
+    verify_single_edgeset("edgelist_1", 1, edgesetSubsets,
+                          EdgeVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgesetAndPartiallyOverlayedEdgeset)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+                           "0,2,HEX_8,5,6,7,8,9,10,11,12|edgeset:name=edgelist_1; data=1,1, "
+                           "2,1|edgeset:name=edgelist_2; data=2,1";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(2);
+    verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+    verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+
+    verify_num_edgesets(2);
+    verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 1}, {2, 1}});
+    verify_single_edgeset("edgelist_2", 2, EdgeVector{{2, 1}});
+  }
+
+  TEST_F(TestTextMeshEdgeset, twoHexesWithSpanningEdgeset_Parallel)
+  {
+    if (get_parallel_size() != 2)
+      { GTEST_SKIP(); }
+    int rank = get_parallel_rank();
+
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+                           "1,2,HEX_8,5,6,7,8,9,10,11,12|edgeset:name=edgelist_1; data=1,1, 2,1";
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(1);
+    verify_num_edgesets(1);
+
+    if (rank == 0) {
+      verify_single_element(1u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
+      verify_single_edgeset("edgelist_1", 1, EdgeVector{{1, 1}});
+    }
+    else if (rank == 1) {
+      verify_single_element(2u, "HEX_8", EntityIdVector{5, 6, 7, 8, 9, 10, 11, 12});
+      verify_single_edgeset("edgelist_1", 1, EdgeVector{{2, 1}});
+    }
+  }
+
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_standardName)
+  {
+    if (get_parallel_size() != 1)
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=nodelist_1; data=1,2,3";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1255,10 +1687,10 @@ namespace {
     verify_single_nodeset("nodelist_1", 1, EntityIdVector{1, 2, 3});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_nonStandardName)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_nonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_ns; data=1,2";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1267,10 +1699,10 @@ namespace {
     verify_single_nodeset("my_ns", 1, EntityIdVector{1, 2});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_noName)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_noName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:data=1,5";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1279,10 +1711,10 @@ namespace {
     verify_single_nodeset("nodelist_1", 1, EntityIdVector{1, 5});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_noData)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_noData)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1290,10 +1722,10 @@ namespace {
     verify_num_nodesets(0);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_noDataMixedCase)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_noDataMixedCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nOdESeT:";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1301,10 +1733,10 @@ namespace {
     verify_num_nodesets(0);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_onlyName)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_onlyName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_ns";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1313,80 +1745,80 @@ namespace {
     verify_single_nodeset("my_ns", 1, EntityIdVector{});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_invalidName)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_invalidName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=block_1; data=2,3";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_invalidName2)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_invalidName2)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=surface_1; data=3,4";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_nameCollisionWithElementBlock)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_nameCollisionWithElementBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,my_part|nodeset:name=my_part;data=3,6";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_nameCollisionWithSideset)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_nameCollisionWithSideset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:my_part,1,2|nodeset:name=my_part;data=8";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_nameCollisionWithNodeset_MixedCase)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_nameCollisionWithNodeset_MixedCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_part;data=1,1|nodeset:name=MY_PART;data=3,4";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_standardNameWithInvalidId)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_standardNameWithInvalidId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=nodelist_0; data=1,1";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_nonStandardNamesPreserveIdOrder)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_nonStandardNamesPreserveIdOrder)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
-    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=first_ss;data=1,2|nodeset:name="
-                           "second_ss;data=3,4,5";
+    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=first_ns;data=1,2|nodeset:name="
+                           "second_ns;data=3,4,5";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
 
     verify_num_nodesets(2);
-    verify_single_nodeset("first_ss", 1, EntityIdVector{1, 2});
-    verify_single_nodeset("second_ss", 2, EntityIdVector{3, 4, 5});
+    verify_single_nodeset("first_ns", 1, EntityIdVector{1, 2});
+    verify_single_nodeset("second_ns", 2, EntityIdVector{3, 4, 5});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_nonStandardNameDoesNotAffectAssignedId)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_nonStandardNameDoesNotAffectAssignedId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=ns_5; data=7,8";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1395,10 +1827,10 @@ namespace {
     verify_single_nodeset("ns_5", 1, EntityIdVector{7, 8});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_standardNameHasPrecedenceForIdAssignment)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_standardNameHasPrecedenceForIdAssignment)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_ns; data=1,2|nodeset:name=nodelist_1; data=3,4";
@@ -1409,10 +1841,10 @@ namespace {
     verify_single_nodeset("my_ns", 2, EntityIdVector{1, 2});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_standardNamesPreserveIds)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_standardNamesPreserveIds)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=nodelist_5; "
                            "data=1,5|nodeset:name=nodelist_1; data=3,4";
@@ -1423,10 +1855,10 @@ namespace {
     verify_single_nodeset("nodelist_5", 5, EntityIdVector{1, 5});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_ns;data=5,6,7,8|nodeset:name="
                            "nodelist_1;data=1,2|nodeset:data=3,4";
@@ -1438,19 +1870,19 @@ namespace {
     verify_single_nodeset("my_ns", 3, EntityIdVector{5, 6, 7, 8});
   }
 
-  TEST_F(TestTextMesh, hexWithNodeset_referenceToInvalidNode)
+  TEST_F(TestTextMeshNodeset, hexWithNodeset_referenceToInvalidNode)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=nodelist_1; data=9";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningNodeset)
+  TEST_F(TestTextMeshNodeset, twoHexesWithSpanningNodeset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
@@ -1465,10 +1897,10 @@ namespace {
     verify_single_nodeset("nodelist_1", 1, EntityIdVector{1, 2, 5, 6, 9, 10});
   }
 
-  TEST_F(TestTextMesh, twoHexesWithSpanningNodeset_Parallel)
+  TEST_F(TestTextMeshNodeset, twoHexesWithSpanningNodeset_Parallel)
   {
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string meshDesc =
@@ -1489,10 +1921,10 @@ namespace {
     }
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_standardName)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_standardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|assembly:name=assembly_1; type=block; member=block_1";
@@ -1502,10 +1934,10 @@ namespace {
     verify_single_assembly("assembly_1", 1, {"block_1"});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nonStandardName)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|assembly:name=my_assembly; type=block; member=block_1";
@@ -1515,10 +1947,10 @@ namespace {
     verify_single_assembly("my_assembly", 1, {"block_1"});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_noName)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_noName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|assembly:type=block; member=block_1";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1527,10 +1959,10 @@ namespace {
     verify_single_assembly("assembly_1", 1, {"block_1"});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_noData)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_noData)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1538,10 +1970,10 @@ namespace {
     verify_num_assemblies(0);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_noDataMixedCase)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_noDataMixedCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|aSsEmBlY:";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
@@ -1549,94 +1981,94 @@ namespace {
     verify_num_assemblies(0);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_mustSpecifyTypeWithName)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_mustSpecifyTypeWithName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|assembly:name=my_assembly;";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_invalidName)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_invalidName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=block_1;";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_invalidName2)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_invalidName2)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=surface_1;";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_invalidName3)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_invalidName3)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=nodelist_1;";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nameCollisionWithElementBlock)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nameCollisionWithElementBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,my_part|assembly:name=my_part; type=block";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nameCollisionWithSideset)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nameCollisionWithSideset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|sideset:name=my_part;data=1,2|assembly:name=my_part; type=block";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nameCollisionWithNodeset)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nameCollisionWithNodeset)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_part;data=1,2|assembly:name=my_part; type=block";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nameCollisionWithNodeset_MixedCase)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nameCollisionWithNodeset_MixedCase)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8|nodeset:name=my_part;data=1,2|assembly:name=MY_PART; type=block";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_standardNameWithInvalidId)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_standardNameWithInvalidId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=assembly_0; type=block";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nonStandardNamesPreserveIdOrder)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nonStandardNamesPreserveIdOrder)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=first; "
                            "type=block|assembly:name=second; type=block";
@@ -1647,10 +2079,10 @@ namespace {
     verify_single_assembly("second", 2, {});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_nonStandardNameDoesNotAffectAssignedId)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_nonStandardNameDoesNotAffectAssignedId)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|assembly:name=ass_5; type=block; member=block_1";
@@ -1660,10 +2092,10 @@ namespace {
     verify_single_assembly("ass_5", 1, {"block_1"});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_standardNameHasPrecedenceForIdAssignment)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_standardNameHasPrecedenceForIdAssignment)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=my_assembly; "
                            "type=block|assembly:name=assembly_1; type=block";
@@ -1674,10 +2106,10 @@ namespace {
     verify_single_assembly("my_assembly", 2, {});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_standardNamesPreserveIds)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_standardNamesPreserveIds)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8|assembly:name=assembly_5; "
                            "type=block|assembly:name=assembly_1; type=block";
@@ -1688,10 +2120,10 @@ namespace {
     verify_single_assembly("assembly_5", 5, {});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_idAssignmentOrderIsStandardThenEmptyThenNonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8"
                            "|assembly:name=my_assembly; type=block|assembly:name=assembly_1; "
@@ -1704,20 +2136,20 @@ namespace {
     verify_single_assembly("my_assembly", 3, {});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_referenceToInvalidBlock)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_referenceToInvalidBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|assembly:name=assembly_1; type=block; member=block_2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_deeplyNestedHomogeneous)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_deeplyNestedHomogeneous)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8, 1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
@@ -1741,10 +2173,10 @@ namespace {
     verify_single_assembly("assembly_9005", 9005, {"block_4"});
   }
 
-  TEST_F(TestTextMesh, hexWithBlockAssembly_deeplyNestedNonHomogeneous)
+  TEST_F(TestTextMeshAssembly, hexWithBlockAssembly_deeplyNestedNonHomogeneous)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1"
@@ -1772,7 +2204,7 @@ namespace {
   TEST_F(TestTextMesh2d, singleQuad)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,QUAD_4_2D,1,2,3,4";
     setup_text_mesh(meshDesc);
@@ -1784,7 +2216,7 @@ namespace {
   TEST_F(TestTextMesh2d, twoSprings)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,SPRING_2,1,2\n"
                            "0,2,SPRING_2,2,3";
@@ -1798,7 +2230,7 @@ namespace {
   TEST_F(TestTextMesh2d, threeQuadsWithCoordinates)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string         meshDesc        = "0,1,QUAD_4_2D,1,2,3,4\n"
                                           "0,2,QUAD_4_2D,2,3,5,6\n"
@@ -1823,7 +2255,7 @@ namespace {
     //      1-----2-----3
 
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string         meshDesc        = "0,1,QUAD_4_2D,1,2,5,4\n"
@@ -1849,7 +2281,7 @@ namespace {
   TEST_F(TestTextMesh2d, twoQuadOneShellParallel)
   {
     if (get_parallel_size() != 3)
-      return;
+      { GTEST_SKIP(); }
     int rank = get_parallel_rank();
 
     std::string meshDesc = "0,1,QUAD_4_2D,1,2,3,4\n"
@@ -1880,7 +2312,7 @@ namespace {
   TEST_F(TestTextMesh2d, singleQuadWithSideset_noName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,QUAD_4_2D,1,2,3,4|sideset:data=1,1";
     setup_text_mesh(meshDesc);
@@ -1895,7 +2327,7 @@ namespace {
   TEST_F(TestTextMesh2d, singleQuadWithSideset_standardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,QUAD_4_2D,1,2,3,4|sideset:name=surface_2;data=1,1";
     setup_text_mesh(meshDesc);
@@ -1910,7 +2342,7 @@ namespace {
   TEST_F(TestTextMesh2d, singleQuadWithSideset_nonStandardName)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,QUAD_4_2D,1,2,3,4|sideset:name=my_ss;data=1,1";
     setup_text_mesh(meshDesc);
@@ -1925,7 +2357,7 @@ namespace {
   TEST_F(TestTextMesh1d, oneDimensionNotSupported)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,LINE_2_1D,1,2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
@@ -1934,7 +2366,7 @@ namespace {
   TEST_F(TestTextMeshGraph, singleHex)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8";
     setup_text_mesh_graph(meshDesc);
@@ -1946,7 +2378,7 @@ namespace {
   TEST_F(TestTextMeshGraph, singleHexConnectedShell)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,SHELL_QUAD_4,5,6,7,8";
@@ -1960,7 +2392,7 @@ namespace {
   TEST_F(TestTextMeshGraph, hexShellShell)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,SHELL_QUAD_4,5,6,7,8\n"
@@ -1978,7 +2410,7 @@ namespace {
   TEST_F(TestTextMeshGraph, hexShellShellHex)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,SHELL_QUAD_4,5,6,7,8\n"
@@ -2000,7 +2432,7 @@ namespace {
   TEST_F(TestTextMeshGraph, hexShellShellHex_splitCoincidentShells)
   {
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,SHELL_QUAD_4,5,6,7,8\n"
@@ -2012,7 +2444,7 @@ namespace {
   TEST_F(TestTextMeshGraph, hexShellShellHex_parallelWithLocalGraph)
   {
     if (get_parallel_size() != 3)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "1,2,SHELL_QUAD_4,5,6,7,8\n"
@@ -2034,7 +2466,7 @@ namespace {
   TEST_F(TestTextMeshGraph, singleHexConnectedShell_highOrder)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_20,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\n"
                            "0,2,SHELL_QUAD_8,5,6,7,8,17,18,19,20";
@@ -2048,7 +2480,7 @@ namespace {
   TEST_F(TestTextMeshGraph, singleHexConnectedShell_highOrderWithRotation)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_20,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\n"
                            "0,2,SHELL_QUAD_8,6,7,8,5,18,19,20,17";
@@ -2062,7 +2494,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnected)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12";
@@ -2076,7 +2508,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnected_parallelWithLocalGraph)
   {
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "1,2,HEX_8,5,6,7,8,9,10,11,12";
@@ -2090,7 +2522,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnected_parallelGlobal)
   {
     if (get_parallel_size() != 2)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "1,2,HEX_8,5,6,7,8,9,10,11,12";
@@ -2104,7 +2536,7 @@ namespace {
   TEST_F(TestTextMeshGraph, threeHexConnected)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12\n"
@@ -2120,7 +2552,7 @@ namespace {
   TEST_F(TestTextMeshGraph, threeHexConnected_parallelWithLocalGraph)
   {
     if (get_parallel_size() != 3)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "1,2,HEX_8,5,6,7,8,9,10,11,12\n"
@@ -2151,7 +2583,7 @@ namespace {
   TEST_F(TestTextMeshGraph, threeHexConnected_parallelGlobal)
   {
     if (get_parallel_size() != 3)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12\n"
@@ -2167,7 +2599,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnected_separateBlocks)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2";
@@ -2180,7 +2612,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnected_separateBlocksWithInvalidAdjacency)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2";
@@ -2193,7 +2625,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexDisconnected)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
                            "0,2,HEX_8,9,10,11,12,13,14,15,16,block_2";
@@ -2207,7 +2639,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnectedAndShellDisconnected)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
@@ -2223,7 +2655,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnectedAndShellExternallyConnected)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
@@ -2239,7 +2671,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnectedAndShellExternallyConnected_shellInSeparateBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
                            "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12,block_1\n"
@@ -2253,7 +2685,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnectedAndShellInternallyConnected)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
@@ -2269,7 +2701,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnectedAndShellInternallyConnected_reorderShell)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
                            "0,3,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
@@ -2285,7 +2717,7 @@ namespace {
   TEST_F(TestTextMeshGraph, twoHexConnectedAndShellInternallyConnected_shellInSeperateBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
                            "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12,block_1\n"
@@ -2299,7 +2731,7 @@ namespace {
   TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5\n"
                            "0,2,HEX_8,1,4,3,2,6,9,8,7\n"
@@ -2315,7 +2747,7 @@ namespace {
   TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet_parallel)
   {
     if (get_parallel_size() != 3)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5\n"
                            "1,2,HEX_8,1,4,3,2,6,9,8,7\n"
@@ -2331,7 +2763,7 @@ namespace {
   TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet_graphPyramidAndHexBlocks)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
                            "0,2,HEX_8,1,4,3,2,6,9,8,7,block_2\n"
@@ -2346,7 +2778,7 @@ namespace {
   TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet_graphHexAndTetBlocks)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
                            "0,2,HEX_8,1,4,3,2,6,9,8,7,block_2\n"
@@ -2361,7 +2793,7 @@ namespace {
   TEST_F(TestTextMeshSkin, singleHex_skin)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|sideset:name=skinned; skin=block_1";
     setup_text_mesh(meshDesc);
@@ -2373,7 +2805,7 @@ namespace {
   TEST_F(TestTextMeshSkin, singleHex_invalidComboSkinAndData)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|sideset:name=skinned; data=1,2; skin=block_1";
@@ -2383,7 +2815,7 @@ namespace {
   TEST_F(TestTextMeshSkin, pyramidWithStandardName_skinAndSplitByBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,PYRAMID_5,1,2,3,4,5,block_1|sideset:name=surface_1; skin=block_1; split=block";
@@ -2407,7 +2839,7 @@ namespace {
   TEST_F(TestTextMeshSkin, pyramidWithStandardName_skinAndSplitByTopology)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,PYRAMID_5,1,2,3,4,5,block_1|sideset:name=surface_1; skin=block_1; split=topology";
@@ -2431,7 +2863,7 @@ namespace {
   TEST_F(TestTextMeshSkin, twoHexConnected_separateBlocks_skinOneBlock)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
@@ -2445,7 +2877,7 @@ namespace {
   TEST_F(TestTextMeshSkin, connectedPyramidAndHexAndTet_skinAll)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
                            "0,2,HEX_8,1,4,3,2,6,9,8,7,block_2\n"
@@ -2470,7 +2902,7 @@ namespace {
   TEST_F(TestTextMeshSkin, singleHexAndConnectedShell_skinAll)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
                            "0,2,SHELL_QUAD_4,5,6,7,8,block_2|sideset:name=surface_1; skin=all";
@@ -2484,7 +2916,7 @@ namespace {
   TEST_F(TestTextMeshSkin, twoHexConnectedTwoBlocks_skinIntoTwoSideSets)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
                            "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|sideset:name=surface_1; "
@@ -2501,7 +2933,7 @@ namespace {
   TEST_F(TestTextMeshSkin, threeHexConnectedThreeBlocks_skinTwoEndBlocks)
   {
     if (get_parallel_size() != 1)
-      return;
+      { GTEST_SKIP(); }
 
     std::string meshDesc =
         "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
