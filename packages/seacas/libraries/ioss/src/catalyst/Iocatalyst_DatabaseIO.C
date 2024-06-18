@@ -39,7 +39,6 @@
 #include <cstdlib>
 #include <fmt/ostream.h>
 #include <map>
-#include <cstdlib>
 
 #include <catalyst.hpp>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
@@ -1249,13 +1248,20 @@ namespace Iocatalyst {
         if (pm.exists(detail::CATREADTIMESTEP)) {
           timestep = pm.get(detail::CATREADTIMESTEP).get_int();
         }
-        else if(const char* ts = std::getenv(detail::CATREADTIMESTEP.c_str())) {
+        else if (const char *ts = std::getenv(detail::CATREADTIMESTEP.c_str())) {
           timestep = std::stoi(std::string(ts));
         }
+
+        int proc_count = util().parallel_size();
+        int my_proc    = util().parallel_rank();
+        if (properties.exists("processor_count") && properties.exists("my_processor")) {
+          proc_count = properties.get("processor_count").get_int();
+          my_proc    = properties.get("my_processor").get_int();
+        }
+
         std::ostringstream path;
         path << get_catalyst_dump_dir() << detail::EXECUTE_INVC << timestep
-             << detail::PARAMS_CONDUIT_BIN << util().parallel_size() << detail::DOT
-             << util().parallel_rank();
+             << detail::PARAMS_CONDUIT_BIN << proc_count << detail::DOT << my_proc;
         auto &root  = this->Impl->root();
         auto &dbase = this->Impl->databaseNode();
         conduit_node_load(conduit_cpp::c_node(&root), path.str().c_str(), "conduit_bin");

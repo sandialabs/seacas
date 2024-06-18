@@ -88,3 +88,13 @@ TEST_F(Iocatalyst_DatabaseIOTest, SetReaderTimeStepWithIOSSEnvVar)
   EXPECT_EQ(maxt.first, 1);
   EXPECT_DOUBLE_EQ(maxt.second, 0.0024000538978725672);
 }
+
+TEST_F(Iocatalyst_DatabaseIOTest, SetRankNumRanksSerialParallel)
+{
+  Ioss::PropertyManager iossProp;
+  iossProp.add(Ioss::Property("my_processor", 0));
+  iossProp.add(Ioss::Property("processor_count", 4));
+
+  auto db = getCatalystDatabaseFromConduitFiles("Iocatalyst_can_ex2_MPI_4", iossProp);
+  ASSERT_TRUE(db != nullptr);
+}
