@@ -330,6 +330,11 @@ namespace Ioss {
     return faces_[name];
   }
 
+  void FaceGenerator::progress(const std::string &output) const
+  {
+    region_.get_database()->progress(output);
+  }
+
   void FaceGenerator::clear(const Ioss::ElementBlock *block)
   {
     const auto &name = block->name();
@@ -342,6 +347,7 @@ namespace Ioss {
   template <typename INT>
   void FaceGenerator::generate_faces(INT /*dummy*/, bool block_by_block, bool local_ids)
   {
+    progress(__func__);
     if (block_by_block) {
       const auto &ebs = region_.get_element_blocks();
       generate_block_faces(ebs, INT(0), local_ids);
@@ -353,6 +359,7 @@ namespace Ioss {
 
   template <typename INT> void FaceGenerator::hash_node_ids(const std::vector<INT> &node_ids)
   {
+    progress(__func__);
     hashIds_.reserve(node_ids.size());
     for (auto &id : node_ids) {
       hashIds_.push_back(id_hash(id));
@@ -376,6 +383,7 @@ namespace Ioss {
   void FaceGenerator::generate_block_faces(const Ioss::ElementBlockContainer &ebs, INT /*dummy*/,
                                            bool                               local_ids)
   {
+    progress(__func__);
     // Convert ids into hashed-ids
     Ioss::NodeBlock *nb = region_.get_node_blocks()[0];
 
@@ -395,6 +403,7 @@ namespace Ioss {
 #endif
 
     for (const auto &eb : ebs) {
+      progress("\tgenerate_block_faces: " + eb->name());
       const std::string &name    = eb->name();
       size_t             numel   = eb->entity_count();
       size_t             reserve = 2.0 * numel;
@@ -402,6 +411,7 @@ namespace Ioss {
       faces_[name].max_load_factor(0.9);
       internal_generate_faces(eb, faces_[name], ids, hashIds_, local_ids, (INT)0);
     }
+    progress("\tgenerate_block_faces: end of blocks");
 
 #if DO_TIMING
     auto endf = std::chrono::steady_clock::now();
@@ -437,11 +447,13 @@ namespace Ioss {
     fmt::print("Total time:          \t{:.6} ms\n\n",
                std::chrono::duration<double, std::milli>(endp - starth).count());
 #endif
+    progress("\tgenerate_block_faces: end of routine");
     hashIds_.clear();
   }
 
   template <typename INT> void FaceGenerator::generate_model_faces(INT /*dummy*/, bool local_ids)
   {
+    progress(__func__);
     // Convert ids into hashed-ids
     Ioss::NodeBlock *nb = region_.get_node_blocks()[0];
 
