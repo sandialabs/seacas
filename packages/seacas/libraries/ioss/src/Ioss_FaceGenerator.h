@@ -136,6 +136,8 @@ namespace Ioss {
     //! Given a local node id (0-based), return the hashed value.
     size_t node_id_hash(size_t local_node_id) const { return hashIds_[local_node_id]; }
 
+    void progress(const std::string &output) const;
+
   private:
     template <typename INT> void hash_node_ids(const std::vector<INT> &node_ids);
     void hash_local_node_ids(size_t count);
