@@ -129,7 +129,12 @@ void IOShell::Interface::enroll_options()
   options_.enroll(
       "szip", Ioss::GetLongOption::NoValue,
       "Use the SZip library if compression is enabled. Not as portable as zlib [exodus only]",
-      nullptr, nullptr, true);
+      nullptr);
+
+  options_.enroll("quantize_nsd", Ioss::GetLongOption::MandatoryValue,
+                  "Use the lossy quantize compression method.  Value specifies number of digits to "
+                  "retain (1..15) [exodus only]",
+                  nullptr, nullptr, true);
 
 #if defined(SEACAS_HAVE_MPI)
   options_.enroll(
@@ -215,10 +220,10 @@ void IOShell::Interface::enroll_options()
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
                   nullptr);
 
-  options_.enroll(
-      "add_processor_id_field", Ioss::GetLongOption::NoValue,
-      "Add a cell-centered field whose value is the processor id of that cell", nullptr);
-  
+  options_.enroll("add_processor_id_field", Ioss::GetLongOption::NoValue,
+                  "Add a cell-centered field whose value is the processor id of that cell",
+                  nullptr);
+
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
                   "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run;\n\t\t0 to disable",
@@ -233,10 +238,11 @@ void IOShell::Interface::enroll_options()
       "If non-zero, then put <$val> timesteps in each file. Then close file and start new file.",
       nullptr);
 
-  options_.enroll("split_cyclic", Ioss::GetLongOption::MandatoryValue,
-                  "If non-zero, then the `split_times` timesteps will be put into <$val> files\n\t\tand "
-                  "then recycle filenames.",
-                  nullptr);
+  options_.enroll(
+      "split_cyclic", Ioss::GetLongOption::MandatoryValue,
+      "If non-zero, then the `split_times` timesteps will be put into <$val> files\n\t\tand "
+      "then recycle filenames.",
+      nullptr);
 
   options_.enroll("file_per_state", Ioss::GetLongOption::NoValue,
                   "put transient data for each timestep in separate file (EXPERIMENTAL)", nullptr);
@@ -320,7 +326,7 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("omit_sets", Ioss::GetLongOption::MandatoryValue,
                   "comma-separated list of nodeset/edgeset/faceset/elemset/sideset names\n"
-		  "\t\tthat should NOT be transferred to output database",
+                  "\t\tthat should NOT be transferred to output database",
                   nullptr);
 
   options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
@@ -436,10 +442,19 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   shuffle = (options_.retrieve("shuffle") != nullptr);
   if (options_.retrieve("szip") != nullptr) {
-    szip = true;
-    zlib = false;
+    szip  = true;
+    zlib  = false;
+    quant = false;
   }
   zlib = (options_.retrieve("zlib") != nullptr);
+
+  {
+    const char *temp = options_.retrieve("quantize_nsd");
+    if (temp != nullptr) {
+      quant        = true;
+      quantize_nsd = std::strtol(temp, nullptr, 10);
+    }
+  }
 
   if (szip && zlib) {
     if (my_processor == 0) {
@@ -560,7 +575,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
 
   if (options_.retrieve("line_decomp") != nullptr) {
-    line_decomp = true;
+    line_decomp  = true;
     decomp_extra = options_.get_option_value("line_decomp", decomp_extra);
   }
 

@@ -401,6 +401,11 @@ namespace Ioex {
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
       }
 
+      if (properties.exists("COMPRESSION_QUANTIZE_NSD")) {
+        int quant_level = properties.get("COMPRESSION_QUANTIZE_NSD").get_int();
+        ex_set_option(m_exodusFilePtr, EX_OPT_QUANTIZE_NSD, quant_level);
+      }
+
       if (properties.exists("COMPRESSION_LEVEL")) {
         int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
