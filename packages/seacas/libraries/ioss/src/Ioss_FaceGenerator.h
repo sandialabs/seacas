@@ -39,12 +39,21 @@ namespace Ioss {
 
     void add_element(size_t element_id) const
     {
-      if (elementCount_ < 2) {
-        element[elementCount_++] = element_id;
+      assert(element_id != 0);
+      if (element[0] == 0) {
+	element[0] = element_id;
+      }
+      else if (element[1] == 0) {
+	element[1] = element_id;
       }
       else {
         face_element_error(element_id);
       }
+    }
+
+    int element_count() const 
+    {
+      return (element[0] != 0) + (element[1] != 0);
     }
 
     void add_element(size_t element_id, size_t face_ordinal) const
@@ -70,7 +79,6 @@ namespace Ioss {
     // parallel communication maps.  May need to save the proc it is
     // shared with also (which is available in git history)
     mutable std::array<size_t, 2> element{};
-    mutable int                   elementCount_{0}; // Should be max of 2 solid elements...
     std::array<size_t, 4>         connectivity_{};
   };
 
