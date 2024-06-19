@@ -55,12 +55,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION       "9.00"
+#define EXODUS_VERSION       "9.01"
 #define EXODUS_VERSION_MAJOR 9
-#define EXODUS_VERSION_MINOR 0
+#define EXODUS_VERSION_MINOR 1
 #define EXODUS_RELEASE_DATE  "May 30, 2024"
 
-#define EX_API_VERS       9.00f
+#define EX_API_VERS       9.01f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 #define EX_VERS           EX_API_VERS
 
@@ -242,9 +242,11 @@ NetCDF-4.?.? and later
 enum ex_option_type {
   EX_OPT_MAX_NAME_LENGTH =
       1, /**< Maximum length of names that will be returned/passed via api call. */
-  EX_OPT_COMPRESSION_TYPE,    /**<  Not currently used; default is gzip */
-  EX_OPT_COMPRESSION_LEVEL,   /**<  In the range [0..9]. A value of 0 indicates no compression */
+  EX_OPT_COMPRESSION_TYPE,    /**<  Default is gzip */
+  EX_OPT_COMPRESSION_LEVEL,   /**<  Range depends on compression type. */
   EX_OPT_COMPRESSION_SHUFFLE, /**<  1 if enabled, 0 if disabled */
+  EX_OPT_QUANTIZE_NSD,        /**< if > 0, Number of significant digits to retain in lossy quantize
+                                 compression */
   EX_OPT_INTEGER_SIZE_API, /**<  4 or 8 indicating byte size of integers used in api functions. */
   EX_OPT_INTEGER_SIZE_DB,  /**<  Query only, returns 4 or 8 indicating byte size of integers stored
                              on  the database. */

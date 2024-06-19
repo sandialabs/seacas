@@ -696,6 +696,8 @@ struct exi_file_item
       compression_algorithm : 2;      /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
   unsigned int compression_level : 6; /**< 0 (disabled) to 9 (maximum) compression level for
                                          gzip, 4..32 and even for szip; NetCDF-4 only */
+  unsigned int quantize_nsd : 4;      /**< 0 (disabled) to 15 (maximum) number of significant digits
+                                         retained for lossy quanitzation compression */
   unsigned int user_compute_wordsize : 1; /**< 0 for 4 byte or 1 for 8 byte reals */
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int

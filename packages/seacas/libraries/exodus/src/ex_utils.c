@@ -1763,6 +1763,11 @@ void exi_compress_variable(int exoid, int varid, int type)
         ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
 #endif
       }
+
+      if (type == 2 && file->quantize_nsd > 0) {
+        // Lossy compression using netCDF quantize methods.
+        nc_def_var_quantize(exoid, varid, NC_QUANTIZE_GRANULARBR, file->quantize_nsd);
+      }
     }
 #if defined(PARALLEL_AWARE_EXODUS)
     if (file->is_parallel) {

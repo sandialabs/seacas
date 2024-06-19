@@ -240,6 +240,7 @@ int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->assembly_count        = 0;
   new_file->blob_count            = 0;
   new_file->compression_level     = 0;
+  new_file->quantize_nsd          = 0;
   new_file->shuffle               = 0;
   new_file->file_type             = filetype - 1;
   new_file->is_parallel           = is_parallel;
@@ -454,6 +455,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
       file->compression_level = 0;
     }
     break;
+  case EX_OPT_QUANTIZE_NSD: file->quantize_nsd = option_value; break;
   case EX_OPT_COMPRESSION_SHUFFLE: /* 0 (disabled); 1 (enabled) */
     file->shuffle = option_value != 0 ? 1 : 0;
     break;
