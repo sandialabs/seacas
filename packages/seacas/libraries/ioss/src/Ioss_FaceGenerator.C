@@ -93,8 +93,8 @@ namespace {
         std::array<size_t, 4> conn = {{0, 0, 0, 0}};
         for (int j = 0; j < face_node_count[face]; j++) {
           size_t fnode = offset + face_conn[face][j];
-          size_t lnode = connectivity[fnode]; // local since "connectivity_raw"
-          conn[j]      = local_ids ? lnode : ids[lnode - 1];      // Convert to global
+          size_t lnode = connectivity[fnode];                // local since "connectivity_raw"
+          conn[j]      = local_ids ? lnode : ids[lnode - 1]; // Convert to global
           id += hash_ids[lnode - 1];
         }
         create_face(faces, id, conn, elem_id, face);
@@ -326,13 +326,13 @@ namespace Ioss {
 
   FaceUnorderedSet &FaceGenerator::faces(const Ioss::ElementBlock *block)
   {
-    auto name = block->name();
+    const auto &name = block->name();
     return faces_[name];
   }
 
   void FaceGenerator::clear(const Ioss::ElementBlock *block)
   {
-    auto name = block->name();
+    const auto &name = block->name();
     faces_[name].clear();
   }
 
@@ -380,7 +380,7 @@ namespace Ioss {
     Ioss::NodeBlock *nb = region_.get_node_blocks()[0];
 
 #if DO_TIMING
-      auto starth = std::chrono::steady_clock::now();
+    auto starth = std::chrono::steady_clock::now();
 #endif
     std::vector<INT> ids;
     if (local_ids) {
@@ -391,7 +391,7 @@ namespace Ioss {
       hash_node_ids(ids);
     }
 #if DO_TIMING
-      auto endh = std::chrono::steady_clock::now();
+    auto endh = std::chrono::steady_clock::now();
 #endif
 
     for (const auto &eb : ebs) {
