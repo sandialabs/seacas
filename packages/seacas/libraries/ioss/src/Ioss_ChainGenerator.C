@@ -193,8 +193,10 @@ namespace Ioss {
   Ioss::chain_t<INT> generate_element_chains(Ioss::Region &region, const std::string &surface_list,
                                              int debug_level, INT /*dummy*/)
   {
-    debug        = debug_level;
-    size_t numel = region.get_property("element_count").get_int();
+    region.get_database()->progress(__func__);
+
+    debug                    = debug_level;
+    size_t             numel = region.get_property("element_count").get_int();
 
     // Determine which element block(s) are adjacent to the faceset specifying "lines"
     // The `adjacent_blocks` contains the names of all element blocks that are adjacent to the
@@ -223,6 +225,7 @@ namespace Ioss {
     // Generate the faces for use later... (only generate on the blocks touching the front)
     Ioss::FaceGenerator face_generator(region);
     face_generator.generate_block_faces(adjacent_blocks, (INT)0, true);
+    region.get_database()->progress("\tAfter generate_block_faces");
 
     Ioss::chain_t<INT> element_chains(numel);
     for (const auto *block : adjacent_blocks) {
@@ -296,6 +299,7 @@ namespace Ioss {
         next_front.clear();
       }
     } // End of block loop
+    region.get_database()->progress("\tAfter generating chains");
     return element_chains;
   }
 } // namespace Ioss
