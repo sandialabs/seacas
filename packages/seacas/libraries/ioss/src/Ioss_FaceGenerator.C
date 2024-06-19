@@ -160,7 +160,7 @@ namespace {
       std::vector<INT> potential_count(proc_count);
       std::vector<int> shared_nodes(proc_count);
       for (auto &face : faces) {
-        if (face.elementCount_ == 1) {
+        if (face.element_count() == 1) {
           // On 'boundary' -- try to determine whether on processor or exterior
           // boundary
           int face_node_count = 0;
@@ -193,7 +193,7 @@ namespace {
       std::vector<int64_t> potential_faces(6 * potential);
 
       for (auto &face : faces) {
-        if (face.elementCount_ == 1) {
+        if (face.element_count() == 1) {
           // On 'boundary' -- try to determine whether on processor or exterior
           // boundary
           int face_node_count = 0;
@@ -219,7 +219,7 @@ namespace {
               potential_faces[6 * offset + 3] = face.connectivity_[2];
               potential_faces[6 * offset + 4] = face.connectivity_[3];
               potential_faces[6 * offset + 5] = face.element[0];
-              assert(face.elementCount_ == 1);
+              assert(face.element_count() == 1);
               potential_offset[i]++;
             }
             shared_nodes[i] = 0; // Reset for next trip through face.connectivity_ loop
