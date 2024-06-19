@@ -455,7 +455,18 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
       file->compression_level = 0;
     }
     break;
-  case EX_OPT_QUANTIZE_NSD: file->quantize_nsd = option_value; break;
+  case EX_OPT_QUANTIZE_NSD:
+    if (option_value > 15) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: invalid value %d for Quantize NSD.  Must be less than or equal to 15.  "
+               "Setting value to 15.",
+               option_value);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+      option_value = 15;
+    }
+    file->quantize_nsd = option_value;
+    break;
   case EX_OPT_COMPRESSION_SHUFFLE: /* 0 (disabled); 1 (enabled) */
     file->shuffle = option_value != 0 ? 1 : 0;
     break;
