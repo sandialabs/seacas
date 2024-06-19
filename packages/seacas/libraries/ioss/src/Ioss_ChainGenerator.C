@@ -86,7 +86,7 @@ namespace {
   void get_line_front(Ioss::SideSet *fs, const Ioss::ElementBlock *block,
                       Ioss::chain_t<INT> &element_chains, front_t<INT> &front)
   {
-    const auto     adj_block_name = block->name();
+    const auto    &adj_block_name = block->name();
     Ioss::NameList blocks;
     fs->block_membership(blocks);
     for (const auto &fs_block : blocks) {
@@ -193,8 +193,8 @@ namespace Ioss {
   Ioss::chain_t<INT> generate_element_chains(Ioss::Region &region, const std::string &surface_list,
                                              int debug_level, INT /*dummy*/)
   {
-    debug                    = debug_level;
-    size_t             numel = region.get_property("element_count").get_int();
+    debug        = debug_level;
+    size_t numel = region.get_property("element_count").get_int();
 
     // Determine which element block(s) are adjacent to the faceset specifying "lines"
     // The `adjacent_blocks` contains the names of all element blocks that are adjacent to the
