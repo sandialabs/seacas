@@ -110,6 +110,16 @@ const char *ex_config(void)
 #else
   j += snprintf(buffer + j, buffer_size - j, "\t\tSZip Compression (read/write) NOT enabled\n");
 #endif
+#if NC_HAS_ZSTD == 1
+  j += snprintf(buffer + j, buffer_size - j, "\t\tZstd Compression enabled\n");
+#else
+  j += snprintf(buffer + j, buffer_size - j, "\t\tZstd Compression NOT enabled\n");
+#endif
+#if NC_HAS_QUANTIZE == 1
+  j += snprintf(buffer + j, buffer_size - j, "\t\tQuanization support enabled\n");
+#else
+  j += snprintf(buffer + j, buffer_size - j, "\t\tQuanization support NOT enabled\n");
+#endif
 #endif
 #endif
 #if defined(PARALLEL_AWARE_EXODUS)
@@ -1765,8 +1775,15 @@ void exi_compress_variable(int exoid, int varid, int type)
       }
 
       if (type == 2 && file->quantize_nsd > 0) {
+#if defined(NC_QUANTIZE_GRANULARBR)
         // Lossy compression using netCDF quantize methods.
         nc_def_var_quantize(exoid, varid, NC_QUANTIZE_GRANULARBR, file->quantize_nsd);
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Quanitzation is not supported in this version of netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
       }
     }
 #if defined(PARALLEL_AWARE_EXODUS)
