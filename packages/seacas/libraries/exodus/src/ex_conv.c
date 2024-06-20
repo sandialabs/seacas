@@ -486,10 +486,12 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     }
     file->quantize_nsd = option_value;
 #else
+  {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: Quanitzation is not supported in this version of netCDF library.");
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+  }
 #endif
     break;
   case EX_OPT_COMPRESSION_SHUFFLE: /* 0 (disabled); 1 (enabled) */
