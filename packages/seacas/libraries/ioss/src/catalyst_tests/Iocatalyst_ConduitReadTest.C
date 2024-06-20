@@ -93,8 +93,8 @@ TEST_F(Iocatalyst_DatabaseIOTest, SetRankNumRanksSerialParallel)
 {
   Ioss::PropertyManager iossProp;
   iossProp.add(Ioss::Property("my_processor", 0));
-  iossProp.add(Ioss::Property("processor_count", 4));
+  iossProp.add(Ioss::Property("processor_count", 1));
 
-  auto db = getCatalystDatabaseFromConduitFiles("Iocatalyst_can_ex2_MPI_4", iossProp);
+  auto db = getCatalystDatabaseFromConduitFiles("Iocatalyst_can_ex2_MPI_1", iossProp);
   ASSERT_TRUE(db != nullptr);
 }
