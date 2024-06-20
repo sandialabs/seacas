@@ -448,6 +448,24 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }
+      else if (file->compression_algorithm == EX_COMPRESS_ZSTD) {
+#if NC_HAS_ZSTD == 1
+        if (value < -131072 || value > 22) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: invalid value %d for ZSTD Compression.  Must be between -131072 and 22.",
+                   value);
+          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(
+            errmsg, MAX_ERR_LENGTH,
+            "ERROR: Zstandard compression is not supported in this version of netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
       file->compression_level = value;
       assert(value == file->compression_level);
     }
@@ -456,7 +474,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     }
     break;
   case EX_OPT_QUANTIZE_NSD:
-#if defined(NC_QUANTIZE_GRANULARBR)
+#if NC_HAS_QUANTIZE == 1
     if (option_value > 15) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,

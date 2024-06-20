@@ -26,6 +26,10 @@
 #include "netcdf_meta.h"
 #endif
 
+#if NC_HAS_ZSTD == 1
+#include "netcdf_filter.h"
+#endif
+
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER < 1900
 #define PRId64 "I64d"
 #else

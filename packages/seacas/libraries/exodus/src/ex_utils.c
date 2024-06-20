@@ -1773,9 +1773,20 @@ void exi_compress_variable(int exoid, int varid, int type)
         ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
 #endif
       }
+      else if (file->compression_algorithm == EX_COMPRESS_ZSTD) {
+#if NC_HAS_ZSTD == 1
+        nc_def_var_zstandard(exoid, varid, file->compression_level);
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Compression algorithm ZSTANDARD is not supported in this version of the "
+                 "netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
 
       if (type == 2 && file->quantize_nsd > 0) {
-#if defined(NC_QUANTIZE_GRANULARBR)
+#if NC_HAS_QUANTIZE == 1
         // Lossy compression using netCDF quantize methods.
         nc_def_var_quantize(exoid, varid, NC_QUANTIZE_GRANULARBR, file->quantize_nsd);
 #else
