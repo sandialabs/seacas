@@ -117,8 +117,8 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
-                  "Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used "
-                  "on the output file.",
+                  "Specify the compression level to be used.  Values depend on algorithm:\n"
+                  "\t\tzlib:  0..9\t\tszip:  even, 4..32\t\tzstd:  -131072..22",
                   nullptr);
 
   options_.enroll(
@@ -130,6 +130,10 @@ void IOShell::Interface::enroll_options()
       "szip", Ioss::GetLongOption::NoValue,
       "Use the SZip library if compression is enabled. Not as portable as zlib [exodus only]",
       nullptr);
+
+  options_.enroll("zstd", Ioss::GetLongOption::NoValue,
+                  "Use the Zstandard compression method if compression is enabled [exodus only].",
+                  nullptr);
 
   options_.enroll("quantize_nsd", Ioss::GetLongOption::MandatoryValue,
                   "Use the lossy quantize compression method.  Value specifies number of digits to "
@@ -442,11 +446,20 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   shuffle = (options_.retrieve("shuffle") != nullptr);
   if (options_.retrieve("szip") != nullptr) {
-    szip  = true;
-    zlib  = false;
-    quant = false;
+    szip = true;
+    zlib = false;
+    zstd = false;
   }
-  zlib = (options_.retrieve("zlib") != nullptr);
+  if (options_.retrieve("zstd") != nullptr) {
+    szip = false;
+    zlib = false;
+    zstd = true;
+  }
+  if (options_.retrieve("zlib") != nullptr) {
+    szip = false;
+    zlib = true;
+    zstd = false;
+  }
 
   {
     const char *temp = options_.retrieve("quantize_nsd");
@@ -456,9 +469,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
   }
 
-  if (szip && zlib) {
+  if (szip + zlib + zstd > 1) {
     if (my_processor == 0) {
-      fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+      fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' or 'zstd' can be specified.\n");
     }
     return false;
   }

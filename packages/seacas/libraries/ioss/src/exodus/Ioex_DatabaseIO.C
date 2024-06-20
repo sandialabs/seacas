@@ -388,15 +388,30 @@ namespace Ioex {
 #if NC_HAS_SZIP_WRITE
           exo_method = EX_COMPRESS_SZIP;
 #else
-          fmt::print(Ioss::WarnOut(), "The NetCDF library does not have SZip compression enabled."
-                                      " 'zlib' will be used instead.\n\n");
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(), "The NetCDF library does not have SZip compression enabled."
+                                        " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
+        else if (method == "zstd") {
+#if NC_HAS_ZSTD == 1
+          exo_method = EX_COMPRESS_ZSTD;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have ZStandard compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
 #endif
         }
         else {
-          fmt::print(Ioss::WarnOut(),
-                     "Unrecognized compression method specified: '{}'."
-                     " 'zlib' will be used instead.\n\n",
-                     method);
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "Unrecognized compression method specified: '{}'."
+                       " 'zlib' will be used instead.\n\n",
+                       method);
+          }
         }
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
       }

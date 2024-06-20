@@ -714,6 +714,17 @@ namespace Ioex {
           }
 #endif
         }
+        else if (method == "zstd") {
+#if NC_HAS_ZSTD == 1
+          exo_method = EX_COMPRESS_ZSTD;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have ZStandard compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
         else {
           if (myProcessor == 0) {
             fmt::print(Ioss::WarnOut(),

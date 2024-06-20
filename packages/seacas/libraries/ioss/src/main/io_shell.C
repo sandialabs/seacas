@@ -632,18 +632,22 @@ namespace {
     }
 
     if (interFace.compression_level > 0 || interFace.shuffle || interFace.szip || interFace.quant ||
-        interFace.zlib) {
+        interFace.zlib || interFace.zstd) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level));
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle)));
 
-      if (interFace.szip) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
-      }
-      else if (interFace.zlib) {
+      if (interFace.zlib) {
         properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
       }
-      else if (interFace.quant) {
+      else if (interFace.szip) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zstd) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
+      }
+
+      if (interFace.quant) {
         properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantize_nsd));
       }
     }

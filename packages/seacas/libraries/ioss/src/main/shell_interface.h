@@ -81,6 +81,7 @@ namespace IOShell {
     bool shuffle{false};
     bool zlib{true};
     bool szip{false};
+    bool zstd{false};
     bool quant{false};
     bool debug{false};
     bool detect_nans{false};
