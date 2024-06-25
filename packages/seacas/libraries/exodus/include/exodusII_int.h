@@ -103,7 +103,7 @@ extern "C" {
 /* Utility function to find variable to store entity attribute on */
 int exi_get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id);
 
-void exi_reset_error_status(void);
+EXODUS_EXPORT void exi_reset_error_status(void);
 
 #if defined(EXODUS_THREADSAFE)
 #if !defined(exerrval)
@@ -810,7 +810,7 @@ extern struct exi_obj_stats *exoII_edm;
 extern struct exi_obj_stats *exoII_fam;
 extern struct exi_obj_stats *exoII_nm;
 
-struct exi_file_item *exi_find_file_item(int exoid);
+EXODUS_EXPORT struct exi_file_item *exi_find_file_item(int exoid);
 struct exi_file_item *exi_add_file_item(int exoid);
 struct exi_obj_stats *exi_get_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
 
