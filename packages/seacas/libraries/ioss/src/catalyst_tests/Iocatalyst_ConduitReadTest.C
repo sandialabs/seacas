@@ -9,6 +9,7 @@
 #include <Ioss_StructuredBlock.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
+#include <cstdint>
 
 TEST_F(Iocatalyst_DatabaseIOTest, ReadConduitCanExo)
 {
@@ -97,4 +98,37 @@ TEST_F(Iocatalyst_DatabaseIOTest, SetRankNumRanksSerialParallel)
 
   auto db = getCatalystDatabaseFromConduitFiles("Iocatalyst_can_ex2_MPI_1", iossProp);
   ASSERT_TRUE(db != nullptr);
+}
+
+TEST_F(Iocatalyst_DatabaseIOTest, CellIdsAndCellNodeIds)
+{
+  setenv("CATALYST_READER_TIME_STEP", "1", 1);
+
+  auto db = getCatalystDatabaseFromConduitFiles("Iocatalyst_sparc1_cgns_MPI_1");
+  ASSERT_TRUE(db != nullptr);
+
+  Ioss::Region reg(db);
+
+  auto sb = reg.get_structured_block("blk-1");
+
+  EXPECT_TRUE(sb->field_exists("cell_ids"));
+  EXPECT_TRUE(sb->field_exists("cell_node_ids"));
+
+  auto cids = sb->get_fieldref("cell_ids");
+  EXPECT_TRUE(cids.get_type() == Ioss::Field::INTEGER);
+  std::vector<int32_t> cidBuff(cids.raw_count());
+  EXPECT_EQ(sb->get_field_data("cell_ids", Data(cidBuff), sizeof(int32_t) * cidBuff.size()),
+            cids.raw_count());
+  EXPECT_EQ(cidBuff[0], 1);
+  EXPECT_EQ(cidBuff[cids.raw_count() - 1], 256);
+
+
+  auto cnids = sb->get_fieldref("cell_node_ids");
+  EXPECT_TRUE(cnids.get_type() == Ioss::Field::INTEGER);
+  std::vector<int32_t> cnidsBuff(cnids.raw_count());
+  EXPECT_EQ(
+      sb->get_field_data("cell_node_ids", Data(cnidsBuff), sizeof(int32_t) * cnidsBuff.size()),
+      cnids.raw_count());
+  EXPECT_EQ(cnidsBuff[0], 1);
+  EXPECT_EQ(cnidsBuff[cnids.raw_count() - 1], 594);
 }
