@@ -240,6 +240,7 @@ int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->assembly_count        = 0;
   new_file->blob_count            = 0;
   new_file->compression_level     = 0;
+  new_file->quantize_nsd          = 0;
   new_file->shuffle               = 0;
   new_file->file_type             = filetype - 1;
   new_file->is_parallel           = is_parallel;
@@ -447,12 +448,51 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }
+      else if (file->compression_algorithm == EX_COMPRESS_ZSTD) {
+#if NC_HAS_ZSTD == 1
+        if (value < -131072 || value > 22) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: invalid value %d for ZSTD Compression.  Must be between -131072 and 22.",
+                   value);
+          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(
+            errmsg, MAX_ERR_LENGTH,
+            "ERROR: Zstandard compression is not supported in this version of netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
       file->compression_level = value;
       assert(value == file->compression_level);
     }
     else {
       file->compression_level = 0;
     }
+    break;
+  case EX_OPT_QUANTIZE_NSD:
+#if NC_HAS_QUANTIZE == 1
+    if (option_value > 15) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: invalid value %d for Quantize NSD.  Must be less than or equal to 15.  "
+               "Setting value to 15.",
+               option_value);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+      option_value = 15;
+    }
+    file->quantize_nsd = option_value;
+#else
+  {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Quanitzation is not supported in this version of netCDF library.");
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+  }
+#endif
     break;
   case EX_OPT_COMPRESSION_SHUFFLE: /* 0 (disabled); 1 (enabled) */
     file->shuffle = option_value != 0 ? 1 : 0;

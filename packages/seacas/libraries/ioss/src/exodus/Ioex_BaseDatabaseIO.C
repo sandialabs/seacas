@@ -257,6 +257,7 @@ namespace Ioex {
 
     // See if there are any properties that need to (or can) be
     // handled prior to opening/creating database...
+#if NC_HAS_HDF5
     bool compress = ((properties.exists("COMPRESSION_LEVEL") &&
                       properties.get("COMPRESSION_LEVEL").get_int() > 0) ||
                      (properties.exists("COMPRESSION_SHUFFLE") &&
@@ -265,24 +266,31 @@ namespace Ioex {
     if (compress) {
       exodusMode |= EX_NETCDF4;
     }
+#endif
 
     if (properties.exists("FILE_TYPE")) {
       std::string type = properties.get("FILE_TYPE").get_string();
       if (type == "netcdf3" || type == "netcdf-3") {
         exodusMode = EX_CLOBBER; // Reset back to default...
       }
+#if NC_HAS_HDF5
       if (type == "netcdf4" || type == "netcdf-4" || type == "hdf5") {
         exodusMode |= EX_NETCDF4;
       }
+#endif
+#if NC_HAS_CDF5
       else if (type == "netcdf5" || type == "netcdf-5" || type == "cdf5") {
         exodusMode |= EX_64BIT_DATA;
       }
+#endif
     }
 
+#if NC_HAS_HDF5
     if (properties.exists("ENABLE_FILE_GROUPS")) {
       exodusMode |= EX_NETCDF4;
       exodusMode |= EX_NOCLASSIC;
     }
+#endif
 
     if (properties.exists("MAXIMUM_NAME_LENGTH")) {
       maximumNameLength = properties.get("MAXIMUM_NAME_LENGTH").get_int();
