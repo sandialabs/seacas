@@ -430,6 +430,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     netcdf4     = false;
     netcdf5     = false;
     ints_32_bit = true;
+    zlib        = false;
   }
 
   if (options_.retrieve("netcdf4") != nullptr) {
