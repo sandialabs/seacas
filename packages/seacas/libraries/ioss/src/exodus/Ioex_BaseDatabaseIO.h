@@ -99,8 +99,12 @@ namespace Ioex {
     IOSS_NODISCARD bool ok_nl(bool write_message = false, std::string *error_message = nullptr,
                               int *bad_count = nullptr) const override;
 
+    void release_memory_nl() override;
+
+    bool open_root_group_nl() override;
     bool open_group_nl(const std::string &group_name) override;
     bool create_subgroup_nl(const std::string &group_name) override;
+    bool groups_describe_nl(Ioss::NameList& names, Ioss::NameList *full_names = nullptr) override;
 
     bool begin_nl(Ioss::State state) override;
     bool end_nl(Ioss::State state) override;

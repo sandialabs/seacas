@@ -18,6 +18,7 @@
 #include <iosfwd>
 #include <netcdf.h>
 #include <tokenize.h>
+#include <strings.h>
 
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DatabaseIO.h"
@@ -383,7 +384,7 @@ namespace Ioex {
     // Try to decode an id from the name.
     std::string name_string = entity->get_property(prop_name).get_string();
     std::string type_name   = entity->short_type_string();
-    if (std::strncmp(type_name.c_str(), name_string.c_str(), type_name.size()) == 0) {
+    if (strncasecmp(type_name.c_str(), name_string.c_str(), type_name.size()) == 0) {
       id = extract_id(name_string);
       if (id <= 0) {
         id = 1;

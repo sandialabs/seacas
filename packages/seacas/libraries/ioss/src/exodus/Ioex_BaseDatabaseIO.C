@@ -17,6 +17,7 @@
 #include <string>
 #include <tokenize.h>
 #include <vector>
+#include <algorithm>
 
 #include "Ioex_Utils.h"
 #include "Ioss_Assembly.h"
@@ -79,6 +80,8 @@ namespace {
 
   template <typename T>
   void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities);
+
+  bool add_groups(int exoid, Ioss::NameList& names, Ioss::NameList *full_names = nullptr);
 
   class AssemblyTreeFilter
   {
@@ -481,6 +484,40 @@ namespace Ioex {
     }
 
     ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
+  }
+
+  bool BaseDatabaseIO::open_root_group_nl()
+  {
+    // Get existing file pointer...
+    bool success = false;
+
+    int exoid = get_file_pointer();
+
+    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length+1, '\0');
+
+    // Get name of this group...
+    int   idum;
+    float rdum;
+    int ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
+    if (ierr < 0) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Could not open root group of group named '{}' in file '{}'.\n", m_groupName,
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    m_groupName = std::string(group_name.data());
+    m_exodusFilePtr = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
+
+    if (m_exodusFilePtr < 0) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+    success = true;
+    return success;
   }
 
   bool BaseDatabaseIO::open_group_nl(const std::string &group_name)
@@ -2811,6 +2848,38 @@ namespace Ioex {
     // Write coordinate frame data...
     write_coordinate_frames(get_file_pointer(), get_region()->get_coordinate_frames());
   }
+
+
+  bool BaseDatabaseIO::groups_describe_nl(Ioss::NameList& names, Ioss::NameList *full_names)
+  {
+    Ioss::SerializeIO serializeIO_(this);
+
+    int group_root = ex_inquire_int(get_file_pointer(), EX_INQ_GROUP_ROOT);
+    return add_groups(group_root, names, full_names);
+  }
+
+  void BaseDatabaseIO::release_memory_nl()
+  {
+    Ioss::DatabaseIO::release_memory_nl();
+
+    ids_.clear();
+    m_groupCount.clear();
+
+    nodeCmapIds.clear();
+    nodeCmapNodeCnts.clear();
+    elemCmapIds.clear();
+    elemCmapElemCnts.clear();
+
+    m_truthTable.clear();
+    m_variables.clear();
+    m_reductionVariables.clear();
+
+    m_reductionValues.clear();
+
+    nodeConnectivityStatus.clear();
+
+    activeNodeSetNodesIndex.clear();
+  }
 } // namespace Ioex
 
 namespace {
@@ -3111,5 +3180,44 @@ namespace {
       throw x;
     }
 #endif
+  }
+
+  bool add_groups(int exoid, Ioss::NameList& names, Ioss::NameList *full_names)
+  {
+    int   idum;
+    float rdum;
+
+    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length+1, '\0');
+
+    // Get name of this group...
+    int ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
+    if (ierr < 0) {
+      return false;
+    }
+    names.push_back(std::string(group_name.data()));
+
+    if(nullptr != full_names) {
+      std::fill(group_name.begin(), group_name.end(), '\0');
+      ierr = ex_inquire(exoid, EX_INQ_FULL_GROUP_NAME, &idum, &rdum, group_name.data());
+      if (ierr < 0) {
+        return false;
+      }
+      full_names->push_back(std::string(group_name.data()));
+    }
+
+    int              num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+    std::vector<int> children(num_children);
+    ierr = ex_get_group_ids(exoid, nullptr, Data(children));
+    if (ierr < 0) {
+      return false;
+    }
+
+    bool  rtn = true;
+    for (int i = 0; i < num_children; i++) {
+      rtn |= add_groups(children[i], names, full_names);
+    }
+
+    return rtn;
   }
 } // namespace
