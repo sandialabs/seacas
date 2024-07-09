@@ -427,7 +427,7 @@ then
 	elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
 	else
-            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V110, V112, or V114. exiting.${txtrst}
             exit 1
 	fi
 	

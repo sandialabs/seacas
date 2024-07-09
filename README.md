@@ -79,7 +79,7 @@ manually as detailed in
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
 | CATCH2          | YES, NO | YES | Should Catch2 be built (used for testing). |
-| H5VERSION       | V114, V110, V18 | V114 | Use HDF5-1.14.X, HDF5-1.10.X or HDF5-1.8.X |
+| H5VERSION       | V114, V110 | V114 | Use HDF5-1.14.X or HDF5-1.10.X |
 | H5CPP           | YES, NO | NO  | Should the HDF5 C++ library be built/installed |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
