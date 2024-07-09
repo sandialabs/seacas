@@ -682,6 +682,24 @@ namespace Ioex {
       {
         Ioss::SerializeIO serializeIO_(this);
         timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+	// Need to sync timestep count across ranks if parallel...
+	if (isParallel) {
+	  auto min_timestep_count = util().global_minmax(timestep_count, Ioss::ParallelUtils::DO_MIN);
+	  if (min_timestep_count == 0) {
+	    auto max_timestep_count = util().global_minmax(timestep_count, Ioss::ParallelUtils::DO_MAX);
+	    if (max_timestep_count != 0) {
+	      if (myProcessor == 0) {
+		// NOTE: Don't want to warn on all processors if the
+		// timestep count is zero on some, but not all ranks.
+		fmt::print(Ioss::WarnOut(),
+			   "At least one database has no timesteps.  No times will be read on ANY"
+			   " database for consistency.\n");
+	      }
+	    }
+	  }
+	  timestep_count = min_timestep_count;
+	}
+	
         if (timestep_count <= 0) {
           return;
         }
@@ -1125,12 +1143,11 @@ namespace Ioex {
     Ioss::Int64Vector counts(m_groupCount[entity_type] * 4);
     Ioss::Int64Vector local_X_count(m_groupCount[entity_type]);
     Ioss::Int64Vector global_X_count(m_groupCount[entity_type]);
-    int               iblk;
 
     {
       Ioss::SerializeIO serializeIO_(this);
 
-      for (iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
+      for (int iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
         int     index = 4 * iblk;
         int64_t id    = X_block_ids[iblk];
 
@@ -1184,7 +1201,7 @@ namespace Ioex {
                                                 // querying if none.
     int nmap = std::numeric_limits<int>::max(); // Number of 'block' vars on database. Used to skip
                                                 // querying if none.
-    for (iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
+    for (int iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
       int     index       = 4 * iblk;
       int64_t nodes_per_X = counts[index + 0];
       int64_t edges_per_X = counts[index + 1];
