@@ -1623,9 +1623,7 @@ namespace Ioex {
   // common
   int64_t BaseDatabaseIO::add_results_fields(Ioss::GroupingEntity *entity, int64_t position)
   {
-    auto timestep_count = get_region()->get_optional_property("state_count", 0);
-    if (timestep_count == 0) return 0;
-    
+    if (m_timestepCount == 0) return 0;
     ex_entity_type type = Ioex::map_exodus_type(entity->type());
     return internal_add_results_fields(type, entity, position, m_groupCount[type],
                                        m_truthTable[type], m_variables[type]);

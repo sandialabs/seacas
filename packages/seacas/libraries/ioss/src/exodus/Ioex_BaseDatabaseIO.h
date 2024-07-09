@@ -324,6 +324,7 @@ namespace Ioex {
 
     time_t timeLastFlush{0};
     int    flushInterval{-1};
+    int    m_timestepCount{0};
 
     mutable bool fileExists{false}; // False if file has never been opened/created
     mutable bool minimizeOpenFiles{false};
