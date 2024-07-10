@@ -28,7 +28,7 @@ jobs:
     - run: |
        spack external find
        spack compiler find
-       spack spec seacasd@${{ github.sha }}~mpi
+       spack spec seacas@${{ github.sha }}~mpi
        spack install seacas@${{ github.sha }}~mpi
        spack find
        # spack spec seacas+mpi
