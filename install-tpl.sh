@@ -549,13 +549,18 @@ then
 #   net_version="v4.9.1"
     net_version="v4.9.2"
 #   net_version="v4.8.1"
-#   net_version="master"
+#   net_version="main"
+
+    if [ net_version == "main" ]
+    then
+	PREFIX="NETCDF_"
+    fi
 
     if [ "$BUILD" == "YES" ]
     then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c || exit
-        if [ "$net_version" != "master" ]
+        if [ "$net_version" != "main" ]
            then
                git checkout $net_version
         fi
@@ -566,7 +571,7 @@ then
 	then
            export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
 	fi
-        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
+        PREFIX=${PREFIX} CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
@@ -766,7 +771,8 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.2.1"
+#        fmt_version="10.2.1"
+        fmt_version="11.0.1"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
