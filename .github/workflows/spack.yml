@@ -6,6 +6,9 @@ on:
   push:
     branches:
     - master
+  pull_request:
+    branches:
+    - master
 
 concurrency:  
   group: ${{ github.workflow}}-${{ github.head_ref }}  
@@ -25,8 +28,8 @@ jobs:
     - run: |
        spack external find
        spack compiler find
-       spack spec seacas@develop~mpi
-       spack install seacas@develop~mpi
+       spack spec seacasd@${{ github.sha }}~mpi
+       spack install seacas@${{ github.sha }}~mpi
        spack find
        # spack spec seacas+mpi
        # spack install seacas+mpi
