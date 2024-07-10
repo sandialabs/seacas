@@ -810,10 +810,9 @@ namespace Ioex {
     Ioex::read_exodus_basis(exoid);
     Ioex::read_exodus_quadrature(exoid);
 
-    get_elemblocks();
-
     get_step_times_nl();
 
+    get_elemblocks();
     get_nodeblocks();
     get_edgeblocks();
     get_faceblocks();
@@ -939,6 +938,7 @@ namespace Ioex {
 
     {
       timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+      m_timestepCount = timestep_count;
       if (timestep_count <= 0) {
         return;
       }
