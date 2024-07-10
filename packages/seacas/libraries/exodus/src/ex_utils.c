@@ -1727,9 +1727,12 @@ void exi_set_compact_storage(int exoid, int varid)
   \internal
   \undoc
 */
+#include <H5PLpublic.h>
+
 void exi_compress_variable(int exoid, int varid, int type)
 {
 #if NC_HAS_HDF5
+  H5PLprepend("/Users/gdsjaar/src/seacas/lib/hdf5/lib/plugin");
   struct exi_file_item *file = exi_find_file_item(exoid);
 
   if (!file) {

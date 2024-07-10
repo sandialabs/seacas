@@ -89,15 +89,24 @@ namespace {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
     }
 
-    if (interFace.compressionLevel_ > 0 || interFace.shuffle_ || interFace.szip_) {
+    if (interFace.compressionLevel_ > 0 || interFace.shuffle_ || interFace.szip_ ||
+        interFace.zlib_ || interFace.zstd_) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compressionLevel_));
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle_)));
-      if (interFace.szip_) {
+
+      if (interFace.zlib_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
+      else if (interFace.szip_) {
         properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
       }
-      else if (interFace.zlib_) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      else if (interFace.zstd_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
+      }
+
+      if (interFace.quantizeNSD_ > 0) {
+        properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantizeNSD_));
       }
     }
 

@@ -462,20 +462,24 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     zstd = false;
   }
 
-  {
-    const char *temp = options_.retrieve("quantize_nsd");
-    if (temp != nullptr) {
-      quant        = true;
-      quantize_nsd = std::strtol(temp, nullptr, 10);
-    }
-  }
-
   if (szip + zlib + zstd > 1) {
     if (my_processor == 0) {
       fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' or 'zstd' can be specified.\n");
     }
     return false;
   }
+
+  {
+    const char *temp = options_.retrieve("quantize_nsd");
+    if (temp != nullptr) {
+      quant        = true;
+      quantize_nsd = std::strtol(temp, nullptr, 10);
+      if (szip + zlib + zstd == 0) {
+        zlib = true;
+      }
+    }
+  }
+
   compare         = (options_.retrieve("compare") != nullptr);
   ignore_qa_info  = (options_.retrieve("ignore_qa_info") != nullptr);
   ignore_node_map = (options_.retrieve("ignore_node_map") != nullptr);
@@ -514,7 +518,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
           if (my_processor == 0) {
             fmt::print(stderr,
                        "ERROR: Bad compression level {}, valid value is between 0 and 9 inclusive "
-                       "for gzip compression.\n",
+                       "for gzip/zlib compression.\n",
                        compression_level);
           }
           return false;

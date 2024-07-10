@@ -120,9 +120,6 @@ namespace {
     }
   }
 
-} // namespace
-
-namespace {
   void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region,
                              bool create_assemblies, bool debug);
   void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -138,6 +135,25 @@ namespace {
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                                     const std::string &field_name);
+
+  // Used when combining two or more input set into a single output set (WIP)
+  // May reequire other operations to completly combine the entities...
+  // This only handles the entity count.
+  void add_to_entity_count(Ioss::GroupingEntity *ge, int64_t entity_count_increment)
+  {
+    auto ec_property = ge->get_property("entity_count");
+    auto old_count   = ec_property.get_int();
+
+    auto origin = ec_property.get_origin();
+    ge->property_erase("entity_count");
+    ge->property_add(Ioss::Property("entity_count", entity_count_increment + old_count, origin));
+
+    auto field_names = ge->field_describe();
+    for (const auto &field_name : field_names) {
+      const auto &field_ref = ge->get_fieldref(field_name);
+      const_cast<Ioss::Field &>(field_ref).reset_count(entity_count_increment + old_count);
+    }
+  }
 } // namespace
 
 std::string tsFormat = "[%H:%M:%S] ";
@@ -292,15 +308,24 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
   }
 
-  if (interFace.compression_level() > 0 || interFace.szip()) {
+  if (interFace.compression_level() > 0 || interFace.szip() || interFace.quantize() ||
+      interFace.zlib() || interFace.zstd()) {
     properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
     properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level()));
-    properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
-    if (interFace.szip()) {
+    properties.add(Ioss::Property("COMPRESSION_SHUFFLE", 1));
+
+    if (interFace.zlib()) {
+      properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+    }
+    else if (interFace.szip()) {
       properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
     }
-    else if (interFace.zlib()) {
-      properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+    else if (interFace.zstd()) {
+      properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
+    }
+
+    if (interFace.quantize()) {
+      properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantize_nsd()));
     }
   }
 
@@ -801,17 +826,27 @@ namespace {
 
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    const std::string &prefix = region.name();
+    bool               combine_similar = true;
+    const std::string &prefix          = region.name();
 
     const Ioss::NodeSetContainer &nss = region.get_nodesets();
     for (const auto &ns : nss) {
       if (!entity_is_omitted(ns)) {
         std::string name = ns->name();
-        if (output_region.get_nodeset(name) != nullptr) {
-          name = prefix + "_" + ns->name();
-          if (output_region.get_nodeset(name) != nullptr) {
-            fmt::print(stderr, "ERROR: Duplicate node sets named '{}'\n", name);
-            exit(EXIT_FAILURE);
+        auto       *ons  = output_region.get_nodeset(name);
+        if (ons != nullptr) {
+          if (combine_similar) {
+            // Combine nodesets with similar names...
+            size_t count = ns->entity_count();
+            add_to_entity_count(ons, count);
+            continue;
+          }
+          else {
+            name = prefix + "_" + ns->name();
+            if (output_region.get_nodeset(name) != nullptr) {
+              fmt::print(stderr, "ERROR: Duplicate node sets named '{}'\n", name);
+              exit(EXIT_FAILURE);
+            }
           }
         }
         ns->property_add(Ioss::Property("name_in_output", name));
