@@ -227,6 +227,13 @@ namespace Ioex {
           "IOEX: Setting EX_VERBOSE|EX_DEBUG because EX_DEBUG environment variable is set.\n");
       ex_opts(EX_VERBOSE | EX_DEBUG);
     }
+    // This is also done down in the exodus library, but helps logic to do it here...
+    if (util().get_environment("EXODUS_VERBOSE", isParallel)) {
+      fmt::print(
+          Ioss::DebugOut(),
+          "IOEX: Exodus error reporting set to VERBOSE because EXODUS_VERBOSE environment variable is set.\n");
+      ex_opts(EX_VERBOSE);
+    }
 
     if (!is_input()) {
       if (util().get_environment("EX_MODE", exodusMode, isParallel)) {

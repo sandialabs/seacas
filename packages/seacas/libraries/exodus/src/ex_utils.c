@@ -2137,9 +2137,15 @@ int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
    * unless specified differently via environment.
    */
   {
-    char *option = getenv("EXODUS_VERBOSE");
-    if (option != NULL) {
-      exoptval = EX_VERBOSE;
+    if (exoptval != EX_VERBOSE) {
+      /* Avoid getenv call if already in verbose mode */
+      char *option = getenv("EXODUS_VERBOSE");
+      if (option != NULL) {
+	exoptval = EX_VERBOSE;
+        if (option[0] != 'q') {
+          fprintf(stderr, "EXODUS: Setting EX_VERBOSE mode since EXODUS_VERBOSE environment variable is set.\n");
+        }
+      }
     }
     ex_opts(exoptval); /* call required to set ncopts first time through */
   }
