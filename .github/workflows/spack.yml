@@ -26,7 +26,7 @@ jobs:
        spack external find
        spack compiler find
        spack spec seacas@master~mpi
-       spack install seacas@$master~mpi
+       spack install seacas@master~mpi
        spack find
        # spack spec seacas+mpi
        # spack install seacas+mpi
