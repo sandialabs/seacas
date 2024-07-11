@@ -205,6 +205,9 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si)
     else if (si.zstd()) {
       ex_set_option(outputId_, EX_OPT_COMPRESSION_TYPE, EX_COMPRESS_ZSTD);
     }
+    else if (si.bz2()) {
+      ex_set_option(outputId_, EX_OPT_COMPRESSION_TYPE, EX_COMPRESS_BZ2);
+    }
 
     if (si.quantize()) {
       ex_set_option(outputId_, EX_OPT_QUANTIZE_NSD, si.quantize_nsd());

@@ -99,6 +99,7 @@ public:
   bool        zlib_{false};
   bool        szip_{false};
   bool        zstd_{false};
+  bool        bz2_{false};
   bool        outputDecompMap_{false};
   bool        outputDecompField_{false};
   bool        ignore_x_{false};

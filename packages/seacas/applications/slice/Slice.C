@@ -104,6 +104,9 @@ namespace {
       else if (interFace.zstd_) {
         properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
       }
+      else if (interFace.bz2_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "bzip2"));
+      }
 
       if (interFace.quantizeNSD_ > 0) {
         properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantizeNSD_));

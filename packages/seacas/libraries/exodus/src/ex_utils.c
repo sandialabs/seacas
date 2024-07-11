@@ -1786,6 +1786,17 @@ void exi_compress_variable(int exoid, int varid, int type)
         ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
 #endif
       }
+      else if (file->compression_algorithm == EX_COMPRESS_BZ2) {
+#if NC_HAS_BZ2 == 1
+        status = nc_def_var_bzip2(exoid, varid, file->compression_level);
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Compression algorithm BZIP2 / BZ2 is not supported in this version of the "
+                 "netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
       if (status != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
         snprintf(errmsg, MAX_ERR_LENGTH,
@@ -2141,9 +2152,10 @@ int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
       /* Avoid getenv call if already in verbose mode */
       char *option = getenv("EXODUS_VERBOSE");
       if (option != NULL) {
-	exoptval = EX_VERBOSE;
+        exoptval = EX_VERBOSE;
         if (option[0] != 'q') {
-          fprintf(stderr, "EXODUS: Setting EX_VERBOSE mode since EXODUS_VERBOSE environment variable is set.\n");
+          fprintf(stderr, "EXODUS: Setting EX_VERBOSE mode since EXODUS_VERBOSE environment "
+                          "variable is set.\n");
         }
       }
     }

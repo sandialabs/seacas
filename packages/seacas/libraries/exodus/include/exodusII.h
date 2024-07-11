@@ -258,6 +258,7 @@ enum ex_compression_type {
   EX_COMPRESS_GZIP = 1, /**< Same as ZLIB, but typical alias used */
   EX_COMPRESS_SZIP,     /**< Use SZIP-based compression (if available) */
   EX_COMPRESS_ZSTD,     /**< Use ZStandard compression (if available) */
+  EX_COMPRESS_BZ2,      /**< Use BZ2 / Bzip2 compression (if available) */
 };
 typedef enum ex_compression_type ex_compression_type;
 /** @}*/

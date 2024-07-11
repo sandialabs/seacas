@@ -1,4 +1,4 @@
-// Copyright(C) 1999-, 20232023, , ,  National Technology & Engineering Solutions
+// Copyright(C) 1999-, 20232023, , , ,  National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -42,6 +42,7 @@ public:
   bool zlib() const { return zlib_; }
   bool szip() const { return szip_; }
   bool zstd() const { return zstd_; }
+  bool bz2() const { return bz2_; }
 
   int step_min() const { return stepMin_; }
   int step_max() const { return stepMax_; }
@@ -96,6 +97,7 @@ private:
   bool zlib_{false};
   bool szip_{false};
   bool zstd_{false};
+  bool bz2_{false};
 
   bool omitNodesets_{false};
   bool omitSidesets_{false};

@@ -707,7 +707,7 @@ struct exi_file_item
   unsigned int assembly_count;
   unsigned int blob_count;
   unsigned int
-      compression_algorithm : 2; /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
+      compression_algorithm : 4; /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
   unsigned int quantize_nsd : 4; /**< 0 (disabled) to 15 (maximum) number of significant digits
                                     retained for lossy quanitzation compression */
   unsigned int user_compute_wordsize : 1; /**< 0 for 4 byte or 1 for 8 byte reals */
@@ -811,8 +811,8 @@ extern struct exi_obj_stats *exoII_fam;
 extern struct exi_obj_stats *exoII_nm;
 
 EXODUS_EXPORT struct exi_file_item *exi_find_file_item(int exoid);
-struct exi_file_item *exi_add_file_item(int exoid);
-struct exi_obj_stats *exi_get_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
+struct exi_file_item               *exi_add_file_item(int exoid);
+struct exi_obj_stats               *exi_get_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
 
 EXODUS_EXPORT void exi_rm_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
 

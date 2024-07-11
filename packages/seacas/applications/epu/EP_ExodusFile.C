@@ -363,6 +363,9 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
     else if (si.zstd()) {
       ex_set_option(outputId_, EX_OPT_COMPRESSION_TYPE, EX_COMPRESS_ZSTD);
     }
+    else if (si.bz2()) {
+      ex_set_option(outputId_, EX_OPT_COMPRESSION_TYPE, EX_COMPRESS_BZ2);
+    }
     ex_set_option(outputId_, EX_OPT_COMPRESSION_LEVEL, si.compress_data());
     ex_set_option(outputId_, EX_OPT_COMPRESSION_SHUFFLE, 1);
 

@@ -74,10 +74,12 @@ void Excn::SystemInterface::enroll_options()
                   "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
   options_.enroll("zstd", GetLongOption::NoValue,
                   "Use Zstd compression. [exodus only, enables netcdf-4, experimental]", nullptr);
+  options_.enroll("bzip2", GetLongOption::NoValue,
+                  "Use Bzip2 compression. [exodus only, enables netcdf-4, experimental]", nullptr);
 
   options_.enroll("compress", GetLongOption::MandatoryValue,
                   "Specify the compression level to be used.  Values depend on algorithm:\n"
-                  "\t\tzlib:  0..9\t\tszip:  even, 4..32\t\tzstd:  -131072..22",
+                  "\t\tzlib/bzip2:  0..9\t\tszip:  even, 4..32\t\tzstd:  -131072..22",
                   nullptr);
 
   options_.enroll("quantize_nsd", GetLongOption::MandatoryValue,
@@ -252,24 +254,26 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   zlib_ = (options_.retrieve("zlib") != nullptr);
   szip_ = (options_.retrieve("szip") != nullptr);
   zstd_ = (options_.retrieve("zstd") != nullptr);
+  bz2_  = (options_.retrieve("bzip2") != nullptr);
 
-  if ((szip_ ? 1 : 0) + (zlib_ ? 1 : 0) + (zstd_ ? 1 : 0) > 1) {
-    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' or 'zstd' can be specified.\n");
+  if (szip_ + zlib_ + zstd_ + bz2_ > 1) {
+    fmt::print(stderr,
+               "ERROR: Only one of 'szip' or 'zlib' or 'zstd' or 'bzip2' can be specified.\n");
   }
 
   {
     const char *temp = options_.retrieve("compress");
     if (temp != nullptr) {
       compressionLevel_ = std::strtol(temp, nullptr, 10);
-      if (!szip_ && !zlib_ && !zstd_) {
+      if (!szip_ && !zlib_ && !zstd_ && !bz2_) {
         zlib_ = true;
       }
 
-      if (zlib_) {
+      if (zlib_ || bz2_) {
         if (compressionLevel_ < 0 || compressionLevel_ > 9) {
           fmt::print(stderr,
                      "ERROR: Bad compression level {}, valid value is between 0 and 9 inclusive "
-                     "for gzip/zlib compression.\n",
+                     "for gzip/zlib/bzip2 compression.\n",
                      compressionLevel_);
           return false;
         }
@@ -297,7 +301,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("quantize_nsd");
     if (temp != nullptr) {
       quantizeNSD_ = std::strtol(temp, nullptr, 10);
-      if (!szip_ && !zlib_ && !zstd_) {
+      if (!szip_ && !zlib_ && !zstd_ && !bz2_) {
         zlib_ = true;
       }
     }

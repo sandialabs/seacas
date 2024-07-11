@@ -725,6 +725,17 @@ namespace Ioex {
           }
 #endif
         }
+        else if (method == "bzip2") {
+#if NC_HAS_BZ2 == 1
+          exo_method = EX_COMPRESS_BZ2;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have Bzip2 / BZ2 compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
         else {
           if (myProcessor == 0) {
             fmt::print(Ioss::WarnOut(),
@@ -937,7 +948,7 @@ namespace Ioex {
     std::vector<double> tsteps(0);
 
     {
-      timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+      timestep_count  = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
       m_timestepCount = timestep_count;
       if (timestep_count <= 0) {
         return;

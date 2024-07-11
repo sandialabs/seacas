@@ -405,6 +405,17 @@ namespace Ioex {
           }
 #endif
         }
+        else if (method == "bzip2") {
+#if NC_HAS_BZ2 == 1
+          exo_method = EX_COMPRESS_BZ2;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have Bzip2 / BZ2 compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
         else {
           if (myProcessor == 0) {
             fmt::print(Ioss::WarnOut(),
@@ -660,8 +671,8 @@ namespace Ioex {
 
   void DatabaseIO::get_step_times_nl()
   {
-    bool                exists         = false;
-    double              last_time      = DBL_MAX;
+    bool                exists    = false;
+    double              last_time = DBL_MAX;
     std::vector<double> tsteps(0);
 
     if (dbUsage == Ioss::WRITE_HISTORY) {
@@ -701,24 +712,26 @@ namespace Ioex {
       {
         Ioss::SerializeIO serializeIO_(this);
         m_timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
-	// Need to sync timestep count across ranks if parallel...
-	if (isParallel) {
-	  auto min_timestep_count = util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MIN);
-	  if (min_timestep_count == 0) {
-	    auto max_timestep_count = util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MAX);
-	    if (max_timestep_count != 0) {
-	      if (myProcessor == 0) {
-		// NOTE: Don't want to warn on all processors if the
-		// timestep count is zero on some, but not all ranks.
-		fmt::print(Ioss::WarnOut(),
-			   "At least one database has no timesteps.  No times will be read on ANY"
-			   " database for consistency.\n");
-	      }
-	    }
-	  }
-	  m_timestepCount = min_timestep_count;
-	}
-	
+        // Need to sync timestep count across ranks if parallel...
+        if (isParallel) {
+          auto min_timestep_count =
+              util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MIN);
+          if (min_timestep_count == 0) {
+            auto max_timestep_count =
+                util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MAX);
+            if (max_timestep_count != 0) {
+              if (myProcessor == 0) {
+                // NOTE: Don't want to warn on all processors if the
+                // timestep count is zero on some, but not all ranks.
+                fmt::print(Ioss::WarnOut(),
+                           "At least one database has no timesteps.  No times will be read on ANY"
+                           " database for consistency.\n");
+              }
+            }
+          }
+          m_timestepCount = min_timestep_count;
+        }
+
         if (m_timestepCount <= 0) {
           return;
         }

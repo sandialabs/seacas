@@ -74,6 +74,7 @@ namespace Excn {
     bool zlib() const { return zlib_; }
     bool szip() const { return szip_; }
     bool zstd() const { return zstd_; }
+    bool bz2() const { return bz2_; }
     int  quantize_nsd() const { return quantizeNSD_; }
     bool quantize() const { return quantizeNSD_ > 0; }
     bool subcycle_join() const { return subcycleJoin_; }
@@ -146,6 +147,7 @@ namespace Excn {
     bool         zlib_{false};
     bool         szip_{false};
     bool         zstd_{false};
+    bool         bz2_{false};
     bool         sumSharedNodes_{false};
     bool         addProcessorIdField_{false};
     bool         addProcessorIdMap_{false};
