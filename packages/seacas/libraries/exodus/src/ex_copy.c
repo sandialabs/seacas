@@ -108,7 +108,7 @@ static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
   }
 
   /* put output file into define mode */
-  EXCHECK(nc_redef(out_exoid));
+  EXCHECK(exi_redef(out_exoid));
 
   /* copy global attributes */
   EXCHECK(cpy_global_att(in_exoid, out_exoid));

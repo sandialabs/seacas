@@ -32,6 +32,27 @@ static int exi_print_attribute_error(int status, const char *name, const char *a
   return EX_FATAL;
 }
 
+int ex_put_multi_field_metadata(int exoid, const ex_field field[], const int count)
+{
+  exi_persist_redef(exoid);
+  for (int i = 0; i < count; i++) {
+    if (field[i].type[0] != EX_SCALAR) {
+      int status = ex_put_field_metadata(exoid, field[i]);
+      if (status != EX_NOERR) {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to store field metadata for field '%s' on %s with id %" PRId64
+                 " in file id %d",
+                 field[i].name, ex_name_of_object(field[i].entity_type), field[i].entity_id, exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        return EX_FATAL;
+      }
+    }
+  }
+  exi_persist_leavedef(exoid, __func__);
+  return EX_NOERR;
+}
+
 int ex_put_field_metadata(int exoid, const ex_field field)
 {
   /*
@@ -53,6 +74,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
           field.entity_id);
 #endif
 
+  exi_persist_redef(exoid);
   int          status         = 0;
   static char *field_template = "Field@%s@%s";
   char         attribute_name[NC_MAX_NAME + 1];
@@ -94,6 +116,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
     }
   }
 
+  exi_persist_leavedef(exoid, __func__);
   return EX_NOERR;
 }
 
@@ -145,6 +168,7 @@ int ex_put_basis(int exoid, const ex_basis basis)
    *  } ex_basis;
    */
 
+  exi_persist_redef(exoid);
   int status;
   if ((status = exi_put_basis_attribute(exoid, basis.name, "cardinality", EX_INTEGER, 1,
                                         &basis.cardinality)) != EX_NOERR) {
@@ -185,6 +209,7 @@ int ex_put_basis(int exoid, const ex_basis basis)
                                         basis.zeta)) != EX_NOERR) {
     return exi_print_type_error(status, basis.name, "basis", "zeta", exoid, __func__);
   }
+  exi_persist_leavedef(exoid, __func__);
   return EX_NOERR;
 }
 
@@ -204,6 +229,7 @@ int ex_put_quadrature(int exoid, const ex_quadrature quad)
    *  } ex_quad;
    */
 
+  exi_persist_redef(exoid);
   int status;
   if ((status = exi_put_quad_attribute(exoid, quad.name, "cardinality", EX_INTEGER, 1,
                                        &quad.cardinality)) != EX_NOERR) {
@@ -229,6 +255,7 @@ int ex_put_quadrature(int exoid, const ex_quadrature quad)
                                        quad.weight)) != EX_NOERR) {
     return exi_print_type_error(status, quad.name, "quad", "weight", exoid, __func__);
   }
+  exi_persist_leavedef(exoid, __func__);
   return EX_NOERR;
 }
 

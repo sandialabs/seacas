@@ -1045,6 +1045,8 @@ EXODUS_EXPORT int ex_get_blob(int exoid, struct ex_blob *blob);
 EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs);
 EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blobs);
 
+EXODUS_EXPORT int ex_put_multi_field_metadata(int exoid, const ex_field *field,
+                                              const int field_count);
 EXODUS_EXPORT int ex_put_field_metadata(int exoid, const ex_field field);
 EXODUS_EXPORT int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices);
 EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_field *field);

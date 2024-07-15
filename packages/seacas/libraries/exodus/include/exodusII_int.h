@@ -700,14 +700,17 @@ struct exi_file_item
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int
       file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
-  unsigned int          is_write : 1;    /**< for output or append */
-  unsigned int          is_parallel : 1; /**< 1 true, 0 false */
-  unsigned int          is_hdf5 : 1;     /**< 1 true, 0 false */
-  unsigned int          is_pnetcdf : 1;  /**< 1 true, 0 false */
-  unsigned int          has_nodes : 1;   /**< for input only at this time */
-  unsigned int          has_edges : 1;   /**< for input only at this time */
-  unsigned int          has_faces : 1;   /**< for input only at this time */
-  unsigned int          has_elems : 1;   /**< for input only at this time */
+  unsigned int is_write : 1;            /**< for output or append */
+  unsigned int is_parallel : 1;         /**< 1 true, 0 false */
+  unsigned int is_hdf5 : 1;             /**< 1 true, 0 false */
+  unsigned int is_pnetcdf : 1;          /**< 1 true, 0 false */
+  unsigned int has_nodes : 1;           /**< for input only at this time */
+  unsigned int has_edges : 1;           /**< for input only at this time */
+  unsigned int has_faces : 1;           /**< for input only at this time */
+  unsigned int has_elems : 1;           /**< for input only at this time */
+  unsigned int in_define_mode : 1;      /**< Is the file in nc define mode... */
+  unsigned int persist_define_mode : 3; /**< Stay in define mode until exi_persist_leavedef is
+                                           called. Set by exi_persist_redef... */
   struct exi_file_item *next;
 };
 
@@ -797,8 +800,8 @@ extern struct exi_obj_stats *exoII_fam;
 extern struct exi_obj_stats *exoII_nm;
 
 EXODUS_EXPORT struct exi_file_item *exi_find_file_item(int exoid);
-struct exi_file_item *exi_add_file_item(int exoid);
-struct exi_obj_stats *exi_get_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
+struct exi_file_item               *exi_add_file_item(int exoid);
+struct exi_obj_stats               *exi_get_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
 
 EXODUS_EXPORT void exi_rm_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr);
 
@@ -854,8 +857,13 @@ EXODUS_EXPORT int  exi_put_names(int exoid, int varid, size_t num_entity, char *
                                  ex_entity_type obj_type, const char *subtype, const char *routine);
 EXODUS_EXPORT void exi_trim(char *name);
 EXODUS_EXPORT void exi_update_max_name_length(int exoid, int length);
+EXODUS_EXPORT int  exi_redef(int exoid);
+EXODUS_EXPORT int  exi_persist_redef(int exoid);
 EXODUS_EXPORT int  exi_leavedef(int         exoid,    /* NemesisI file ID         */
                                 const char *call_rout /* Name of calling function */
+ );
+EXODUS_EXPORT int  exi_persist_leavedef(int         exoid,    /* NemesisI file ID         */
+                                        const char *call_rout /* Name of calling function */
  );
 
 EXODUS_EXPORT int exi_check_version(int run_version);

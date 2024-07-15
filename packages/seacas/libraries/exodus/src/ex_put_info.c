@@ -95,7 +95,7 @@ int ex_put_info(int exoid, int num_info, char *const info[])
     if (status != NC_NOERR) {
 
       /* put file into define mode  */
-      if ((status = nc_redef(rootid)) != NC_NOERR) {
+      if ((status = exi_redef(rootid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed put file id %d into define mode", rootid);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);

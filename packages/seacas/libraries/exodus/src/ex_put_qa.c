@@ -86,7 +86,7 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
     if (status != NC_NOERR) {
 
       /*   put file into define mode  */
-      if ((status = nc_redef(rootid)) != NC_NOERR) {
+      if ((status = exi_redef(rootid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode",
                  rootid);
         ex_err_fn(exoid, __func__, errmsg, status);

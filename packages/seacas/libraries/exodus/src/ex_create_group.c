@@ -26,7 +26,7 @@ int ex_create_group(int parent_id, const char *group_name)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if ((status = nc_redef(parent_id)) != NC_NOERR) {
+  if ((status = exi_redef(parent_id)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", parent_id);
     ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
