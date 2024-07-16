@@ -85,18 +85,24 @@ int ex_put_field_metadata(int exoid, const ex_field field)
                                      exoid, __func__);
   }
 
-  sprintf(attribute_name, field_template, field.name, "type_name");
-  if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
-                                      field.type_name)) != EX_NOERR) {
-    return exi_print_attribute_error(status, field.name, "type_name", field.entity_type,
-                                     field.entity_id, exoid, __func__);
+  /* Do not write if empty... */
+  if (field.type_name[0] != '\0') {
+    sprintf(attribute_name, field_template, field.name, "type_name");
+    if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
+                                        field.type_name)) != EX_NOERR) {
+      return exi_print_attribute_error(status, field.name, "type_name", field.entity_type,
+                                       field.entity_id, exoid, __func__);
+    }
   }
 
-  sprintf(attribute_name, field_template, field.name, "separator");
-  if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
-                                      field.component_separator)) != EX_NOERR) {
-    return exi_print_attribute_error(status, field.name, "separator", field.entity_type,
-                                     field.entity_id, exoid, __func__);
+  /* Default component_separator is '_'.  Avoid writing if that is what it is... */
+  if (field.component_separator[0] != '_' || field.nesting > 1) {
+    sprintf(attribute_name, field_template, field.name, "separator");
+    if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
+                                        field.component_separator)) != EX_NOERR) {
+      return exi_print_attribute_error(status, field.name, "separator", field.entity_type,
+                                       field.entity_id, exoid, __func__);
+    }
   }
 
   bool needs_cardinality = false;

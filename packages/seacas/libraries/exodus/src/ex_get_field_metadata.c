@@ -131,6 +131,10 @@ int ex_get_field_metadata(int exoid, ex_field *field)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  /* Set default separator type... */
+  field->component_separator[0] = '_';
+  field->component_separator[1] = '\0';
+
   /* Iterate through each Field metadata field and populate `field` */
   int count = 0;
   for (int i = 0; i < att_count; i++) {
