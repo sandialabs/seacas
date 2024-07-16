@@ -1797,7 +1797,7 @@ int exi_leavedef(int exoid, const char *call_rout)
   return (EX_NOERR);
 }
 
-int exi_redef(int exoid)
+int exi_redef(int exoid, const char *call_func)
 {
   int status;
 
@@ -1805,8 +1805,8 @@ int exi_redef(int exoid)
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for exi_compress_variable().",
-             exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for exi_redef called from %s.",
+             exoid, call_func);
     ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
   }
 
@@ -1814,7 +1814,9 @@ int exi_redef(int exoid)
     fprintf(stderr, "Calling redef\n");
     if ((status = nc_redef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file %d into definition mode", exoid);
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to put file %d into definition mode in exi_redef called from %s",
+               exoid, call_func);
       ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
@@ -1823,7 +1825,7 @@ int exi_redef(int exoid)
   return (EX_NOERR);
 }
 
-int exi_persist_redef(int exoid)
+int exi_persist_redef(int exoid, const char *call_func)
 {
   int status;
 
@@ -1831,8 +1833,8 @@ int exi_persist_redef(int exoid)
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for exi_compress_variable().",
-             exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for exi_redef called from %s.",
+             exoid, call_func);
     ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
   }
 
@@ -1840,7 +1842,10 @@ int exi_persist_redef(int exoid)
     fprintf(stderr, "Calling persist redef\n");
     if ((status = nc_redef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file %d into definition mode", exoid);
+      snprintf(
+          errmsg, MAX_ERR_LENGTH,
+          "ERROR: failed to put file %d into definition mode in exi_persist_redef called from %s",
+          exoid, call_func);
       ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
