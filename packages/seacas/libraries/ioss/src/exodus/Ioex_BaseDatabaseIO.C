@@ -2196,7 +2196,7 @@ namespace Ioex {
   {
     Ioss::SerializeIO serializeIO_(this);
     // Output the 'basis' and 'quadrature' type metadata...
-    exi_persist_redef(get_file_pointer());
+    exi_persist_redef(get_file_pointer(), __func__);
     output_type_metadata(get_file_pointer());
 
     const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
