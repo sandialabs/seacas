@@ -1783,7 +1783,6 @@ int exi_leavedef(int exoid, const char *call_rout)
 
   struct exi_file_item *file = exi_find_file_item(exoid);
   if (!file->persist_define_mode && file->in_define_mode) {
-    fprintf(stderr, "Calling leavedef: %s\n", call_rout);
     if ((status = nc_enddef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
@@ -1811,7 +1810,6 @@ int exi_redef(int exoid, const char *call_func)
   }
 
   if (!file->in_define_mode) {
-    fprintf(stderr, "Calling redef\n");
     if ((status = nc_redef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -1839,7 +1837,6 @@ int exi_persist_redef(int exoid, const char *call_func)
   }
 
   if ((++file->persist_define_mode == 1) && !file->in_define_mode) {
-    fprintf(stderr, "Calling persist redef\n");
     if ((status = nc_redef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(
@@ -1860,7 +1857,6 @@ int exi_persist_leavedef(int exoid, const char *call_rout)
 
   struct exi_file_item *file = exi_find_file_item(exoid);
   if ((file->persist_define_mode-- == 1) && file->in_define_mode) {
-    fprintf(stderr, "Calling persist leavedef: %s\n", call_rout);
     if ((status = nc_enddef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
