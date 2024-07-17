@@ -45,6 +45,7 @@ int ex_put_multi_field_metadata(int exoid, const ex_field field[], const int cou
                  " in file id %d",
                  field[i].name, ex_name_of_object(field[i].entity_type), field[i].entity_id, exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
+        exi_persist_leavedef(exoid, __func__);
         return EX_FATAL;
       }
     }
@@ -81,6 +82,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   sprintf(attribute_name, field_template, field.name, "type");
   if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                          field.nesting, field.type)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_attribute_error(status, field.name, "type", field.entity_type, field.entity_id,
                                      exoid, __func__);
   }
@@ -90,6 +92,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
     sprintf(attribute_name, field_template, field.name, "type_name");
     if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                         field.type_name)) != EX_NOERR) {
+      exi_persist_leavedef(exoid, __func__);
       return exi_print_attribute_error(status, field.name, "type_name", field.entity_type,
                                        field.entity_id, exoid, __func__);
     }
@@ -100,6 +103,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
     sprintf(attribute_name, field_template, field.name, "separator");
     if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                         field.component_separator)) != EX_NOERR) {
+      exi_persist_leavedef(exoid, __func__);
       return exi_print_attribute_error(status, field.name, "separator", field.entity_type,
                                        field.entity_id, exoid, __func__);
     }
@@ -117,6 +121,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
     if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id,
                                            attribute_name, field.nesting, field.cardinality)) !=
         EX_NOERR) {
+      exi_persist_leavedef(exoid, __func__);
       return exi_print_attribute_error(status, field.name, "cardinality", field.entity_type,
                                        field.entity_id, exoid, __func__);
     }
@@ -178,41 +183,49 @@ int ex_put_basis(int exoid, const ex_basis basis)
   int status;
   if ((status = exi_put_basis_attribute(exoid, basis.name, "cardinality", EX_INTEGER, 1,
                                         &basis.cardinality)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "cardinality", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_dim", EX_INTEGER,
                                         basis.cardinality, basis.subc_dim)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "subc_dim", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_ordinal", EX_INTEGER,
                                         basis.cardinality, basis.subc_ordinal)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "subc_ordinal", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_dof_ordinal", EX_INTEGER,
                                         basis.cardinality, basis.subc_dof_ordinal)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "subc_dof_ordinal", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "subc_num_dof", EX_INTEGER,
                                         basis.cardinality, basis.subc_num_dof)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "subc_num_dof", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "xi", EX_DOUBLE, basis.cardinality,
                                         basis.xi)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "xi", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "eta", EX_DOUBLE, basis.cardinality,
                                         basis.eta)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "eta", exoid, __func__);
   }
 
   if ((status = exi_put_basis_attribute(exoid, basis.name, "zeta", EX_DOUBLE, basis.cardinality,
                                         basis.zeta)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, basis.name, "basis", "zeta", exoid, __func__);
   }
   exi_persist_leavedef(exoid, __func__);
@@ -239,26 +252,31 @@ int ex_put_quadrature(int exoid, const ex_quadrature quad)
   int status;
   if ((status = exi_put_quad_attribute(exoid, quad.name, "cardinality", EX_INTEGER, 1,
                                        &quad.cardinality)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, quad.name, "quad", "cardinality", exoid, __func__);
   }
 
   if ((status = exi_put_quad_attribute(exoid, quad.name, "xi", EX_DOUBLE, quad.cardinality,
                                        quad.xi)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, quad.name, "quad", "xi", exoid, __func__);
   }
 
   if ((status = exi_put_quad_attribute(exoid, quad.name, "eta", EX_DOUBLE, quad.cardinality,
                                        quad.eta)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, quad.name, "quad", "eta", exoid, __func__);
   }
 
   if ((status = exi_put_quad_attribute(exoid, quad.name, "zeta", EX_DOUBLE, quad.cardinality,
                                        quad.zeta)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, quad.name, "quad", "zeta", exoid, __func__);
   }
 
   if ((status = exi_put_quad_attribute(exoid, quad.name, "weight", EX_DOUBLE, quad.cardinality,
                                        quad.weight)) != EX_NOERR) {
+    exi_persist_leavedef(exoid, __func__);
     return exi_print_type_error(status, quad.name, "quad", "weight", exoid, __func__);
   }
   exi_persist_leavedef(exoid, __func__);
