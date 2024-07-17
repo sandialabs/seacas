@@ -123,6 +123,7 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  COMPRESSION_LEVEL     | [0]-9    | If zlib: In the range [0..9]. A value of 0 indicates no compression, will automatically set `file_type=netcdf4`, recommend <=4
  COMPRESSION_LEVEL     | 4-32 | If szip: An even number in the range 4-32, will automatically set `file_type=netcdf4`.
  COMPRESSION_SHUFFLE   | on/[off] |to enable/disable hdf5's shuffle compression algorithm.
+ COMPRESSION_QUANTIZE_NSD | {1..15} | Specify number of significant digits to retain; use with other compression algorithms for lossy compression.
  MAXIMUM_NAME_LENGTH   | [32]     | Maximum length of names that will be returned/passed via api call.
  APPEND_OUTPUT         | on/[off] | Append output to end of existing output database
  APPEND_OUTPUT_AFTER_STEP | {step}| Max step to read from an input db or a db being appended to (typically used with APPEND_OUTPUT)

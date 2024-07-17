@@ -298,7 +298,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     int    dim_str_name = 0;
     int    stat_dim     = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
     if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
-      if ((status = nc_redef(exoid)) != NC_NOERR) {
+      if ((status = exi_redef(exoid, __func__)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to place file id %d named %s into define mode", exoid, canon_path);
         ex_err_fn(exoid, __func__, errmsg, status);
