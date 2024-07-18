@@ -379,11 +379,6 @@ namespace Ioss {
 
   DatabaseIO::~DatabaseIO() = default;
 
-  Ioss::DataSize DatabaseIO::int_byte_size_data_size() const
-  {
-    return dbIntSizeAPI;
-  }
-
   int DatabaseIO::int_byte_size_api() const
   {
     if (dbIntSizeAPI == USE_INT32_API) {
