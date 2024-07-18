@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -8,31 +8,19 @@
 
 #include "Ioss_DatabaseIO.h"      // for DatabaseIO
 #include "Ioss_DBUsage.h"
-#include "Ioss_EntityType.h"      // for EntityType, etc
-#include "Ioss_Field.h"
-#include "Ioss_GroupingEntity.h" // for GroupingEntity
-#include "Ioss_MeshType.h"
 #include "Ioss_ParallelUtils.h"   // for ParallelUtils
-#include "Ioss_Property.h" // for Property
-#include "Ioss_State.h"    // for State
+#include "Ioss_PropertyManager.h" // for PropertyManager
 #include <assert.h>
 #include <cstddef> // for size_t, nullptr
 #include <cstdint> // for int64_t
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_Utils.h"
-#include "Ioss_VariableType.h"
 #include "ioss_export.h"
-#if !defined BUILT_IN_SIERRA
-#include <fmt/ostream.h>
-#endif
-#include <functional> // for less
+
 #include <iosfwd>     // for ostream
-#include <map>        // for map, map<>::value_compare
 #include <sstream>
 #include <string>  // for string, operator<
-#include <utility> // for pair
-#include <vector>  // for vector
 
 namespace Ioss {
   class Region;

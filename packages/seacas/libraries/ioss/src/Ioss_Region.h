@@ -331,7 +331,7 @@ namespace Ioss {
     bool end_mode_nl(State current_state);
 
     void delete_database() override;
-    void release_memory();
+    void reset_region();
 
     mutable std::map<EntityType, AliasMap> aliases_; ///< Stores alias mappings
 

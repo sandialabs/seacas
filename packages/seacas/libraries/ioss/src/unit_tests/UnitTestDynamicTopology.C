@@ -361,9 +361,8 @@ void run_single_file_simple_topology_change(const std::string &elemFieldName, co
 
   run_simple_topology_change(i_region, o_region, observer, elemFieldName);
 
-  Ioss::NameList names;
-  Ioss::NameList full_names;
-  o_database->groups_describe(names, &full_names);
+  Ioss::NameList names = o_database->groups_describe(false);
+  Ioss::NameList full_names = o_database->groups_describe(true);
 
   std::vector<std::string> gold_names{"/", "STEP-1", "STEP-2"};
   std::vector<std::string> gold_full_names{"/", "/STEP-1", "/STEP-2"};
@@ -471,9 +470,8 @@ TEST(TestDynamicWrite, create_subgroup_with_file_reopen)
     // Group pointer is still at root level
     o_database->create_subgroup("GROUP_2");
 
-    Ioss::NameList names;
-    Ioss::NameList full_names;
-    o_database->groups_describe(names, &full_names);
+    Ioss::NameList names = o_database->groups_describe(false);
+    Ioss::NameList full_names = o_database->groups_describe(true);
 
     std::vector<std::string> gold_names{"/", "GROUP_1", "GROUP_2"};
     std::vector<std::string> gold_full_names{"/", "/GROUP_1", "/GROUP_2"};
@@ -526,9 +524,8 @@ TEST(TestDynamicWrite, create_subgroup_with_file_persistence_and_child_group)
     // Group pointer is at "GROUP_1" ... "GROUP_2" is a child
     o_database->create_subgroup("GROUP_2");
 
-    Ioss::NameList names;
-    Ioss::NameList full_names;
-    o_database->groups_describe(names, &full_names);
+    Ioss::NameList names = o_database->groups_describe(false);
+    Ioss::NameList full_names = o_database->groups_describe(true);
 
     std::vector<std::string> gold_names{"/", "GROUP_1", "GROUP_2"};
     std::vector<std::string> gold_full_names{"/", "/GROUP_1", "/GROUP_1/GROUP_2"};
@@ -582,9 +579,8 @@ TEST(TestDynamicWrite, create_subgroup_with_file_persistence_and_no_child_group)
     EXPECT_TRUE(o_database->open_root_group());
     o_database->create_subgroup("GROUP_2");
 
-    Ioss::NameList names;
-    Ioss::NameList full_names;
-    o_database->groups_describe(names, &full_names);
+    Ioss::NameList names = o_database->groups_describe(false);
+    Ioss::NameList full_names = o_database->groups_describe(true);
 
     std::vector<std::string> gold_names{"/", "GROUP_1", "GROUP_2"};
     std::vector<std::string> gold_full_names{"/", "/GROUP_1", "/GROUP_2"};
@@ -624,9 +620,8 @@ void read_and_test_single_file_simple_topology_change(const std::string& elemFie
                                                          Ioss::ParallelUtils::comm_world(),
                                                          propertyManager);
 
-  Ioss::NameList names;
-  Ioss::NameList full_names;
-  i_database->groups_describe(names, &full_names);
+  Ioss::NameList names = i_database->groups_describe(false);
+  Ioss::NameList full_names = i_database->groups_describe(true);
 
   std::vector<std::string> gold_names{"/", "STEP-1", "STEP-2"};
   std::vector<std::string> gold_full_names{"/", "/STEP-1", "/STEP-2"};

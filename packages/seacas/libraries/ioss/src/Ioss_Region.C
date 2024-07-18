@@ -378,7 +378,7 @@ namespace Ioss {
     // Region owns all sub-grouping entities it contains...
     try {
       IOSS_FUNC_ENTER(m_);
-      release_memory();
+      reset_region();
 
       // Region owns the database pointer even though other entities use it.
       GroupingEntity::really_delete_database();
@@ -387,7 +387,7 @@ namespace Ioss {
     }
   }
 
-  void Region::release_memory()
+  void Region::reset_region()
   {
     for (const auto &nb : nodeBlocks) {
       delete (nb);
@@ -2855,11 +2855,25 @@ namespace Ioss {
     if (get_database()->is_input())
       return;
 
-    if(!topologyObserver)
-      return;
+    const Ioss::PropertyManager &properties = get_database()->get_property_manager();
+    if(!properties.exists("ENABLE_FILE_GROUPS")) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: File groups are not enabled in the database file '{}'.\n",
+                 get_database()->get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    if(topologyObserver && (topologyObserver->get_control_option() == FileControlOption::CONTROL_AUTO_MULTI_FILE)) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: TopologyObserver for database file '{}' does not support file groups.\n",
+                 get_database()->get_filename());
+      IOSS_ERROR(errmsg);
+    }
 
     int state = steps;
-    if (topologyObserver->is_topology_modified() || force_addition) {
+    if ((topologyObserver && topologyObserver->is_topology_modified()) || force_addition) {
       // Determine how many steps have been written already...
       state = get_property("state_count").get_int();
 
@@ -2872,7 +2886,7 @@ namespace Ioss {
 
       state++; // For the state we are going to write.
 
-      release_memory();
+      reset_region();
       DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists, dbChangeCount);
       fileControl.add_output_database_group(state);
     }
@@ -2910,7 +2924,7 @@ namespace Ioss {
 
       state++; // For the state we are going to write.
 
-      release_memory();
+      reset_region();
       DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists, dbChangeCount);
       fileControl.clone_and_replace_output_database(state);
     }
@@ -2938,7 +2952,7 @@ namespace Ioss {
     if(!iodatabase->open_group(group_name))
       return false;
 
-    release_memory();
+    reset_region();
     iodatabase->release_memory();
 
     Region::set_state(STATE_CLOSED);

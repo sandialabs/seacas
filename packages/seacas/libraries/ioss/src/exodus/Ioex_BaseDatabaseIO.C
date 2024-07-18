@@ -88,7 +88,7 @@ namespace {
   template <typename T>
   void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities);
 
-  bool add_groups(int exoid, Ioss::NameList& names, Ioss::NameList *full_names = nullptr);
+  void query_groups(int exoid, Ioss::NameList& names, bool return_full_names);
 
   class AssemblyTreeFilter
   {
@@ -3219,12 +3219,15 @@ namespace Ioex {
   }
 
 
-  bool BaseDatabaseIO::groups_describe_nl(Ioss::NameList& names, Ioss::NameList *full_names)
+  Ioss::NameList BaseDatabaseIO::groups_describe_nl(bool return_full_names)
   {
     Ioss::SerializeIO serializeIO_(this);
 
+    Ioss::NameList names;
     int group_root = ex_inquire_int(get_file_pointer(), EX_INQ_GROUP_ROOT);
-    return add_groups(group_root, names, full_names);
+    query_groups(group_root, names, return_full_names);
+
+    return names;
   }
 
   void BaseDatabaseIO::release_memory_nl()
@@ -3551,7 +3554,7 @@ namespace {
 #endif
   }
 
-  bool add_groups(int exoid, Ioss::NameList& names, Ioss::NameList *full_names)
+  void query_groups(int exoid, Ioss::NameList& names, bool return_full_names)
   {
     int   idum;
     float rdum;
@@ -3562,31 +3565,29 @@ namespace {
     // Get name of this group...
     int ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
     if (ierr < 0) {
-      return false;
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
-    names.push_back(std::string(group_name.data()));
 
-    if(nullptr != full_names) {
+    if(return_full_names) {
       std::fill(group_name.begin(), group_name.end(), '\0');
       ierr = ex_inquire(exoid, EX_INQ_FULL_GROUP_NAME, &idum, &rdum, group_name.data());
       if (ierr < 0) {
-        return false;
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
-      full_names->push_back(std::string(group_name.data()));
+      names.push_back(std::string(group_name.data()));
+    } else {
+      names.push_back(std::string(group_name.data()));
     }
 
     int              num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     std::vector<int> children(num_children);
     ierr = ex_get_group_ids(exoid, nullptr, Data(children));
     if (ierr < 0) {
-      return false;
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
 
-    bool  rtn = true;
     for (int i = 0; i < num_children; i++) {
-      rtn |= add_groups(children[i], names, full_names);
+      query_groups(children[i], names, return_full_names);
     }
-
-    return rtn;
   }
 } // namespace

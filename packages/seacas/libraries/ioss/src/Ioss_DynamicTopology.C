@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -8,7 +8,6 @@
 #include "Ioss_Blob.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_CommSet.h"
-#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_DynamicTopology.h"
@@ -26,32 +25,23 @@
 #include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
-#include "Ioss_Property.h"
-#include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
-#include "Ioss_SmartAssert.h"
-#include "Ioss_Sort.h"
-#include "Ioss_State.h"
 #include "Ioss_StructuredBlock.h"
-#include <array>
+
 #include <climits>
 #include <cstddef>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <map>
 #include <string>
-#include <tuple>
-#include <vector>
 
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <assert.h>
 
-#include "Ioss_MeshType.h"
 #include "Ioss_ParallelUtils.h"
 
 namespace Ioss {
@@ -162,17 +152,17 @@ int DynamicTopologyObserver::get_cumulative_topology_modification_field()
   return ivalue;
 }
 
-void DynamicTopologyObserver::define_model(Region& region)
+void DynamicTopologyObserver::define_model(IOSS_MAYBE_UNUSED Region& region)
 {
 
 }
 
-void DynamicTopologyObserver::write_model(Region& region)
+void DynamicTopologyObserver::write_model(IOSS_MAYBE_UNUSED Region& region)
 {
 
 }
 
-void DynamicTopologyObserver::define_transient(Region& region)
+void DynamicTopologyObserver::define_transient(IOSS_MAYBE_UNUSED Region& region)
 {
 
 }
@@ -259,13 +249,13 @@ std::string DynamicTopologyFileControl::construct_database_filename(int& step, I
   // number.  Assume maximum of 9999 steps (will do more, but won't have
   // good lineup of step numbers.
   // Check database for validity (filename and a type)
-  if(m_ioDB == "" || m_dbType == "")
+  if(m_ioDB.empty() || m_dbType.empty())
   {
     std::string error_message;
-    if(m_dbType == "")
+    if(m_dbType.empty())
       error_message += "The database TYPE has not been defined\n";
 
-    if(m_ioDB == "")
+    if(m_ioDB.empty())
     {
       error_message += "The database FILENAME has not been defined\n";
     }
@@ -273,8 +263,8 @@ std::string DynamicTopologyFileControl::construct_database_filename(int& step, I
     fmt::print(errmsg, error_message);
     IOSS_ERROR(errmsg);
   }
-  assert(m_ioDB != "");
-  assert(m_dbType != "");
+  assert(!m_ioDB.empty());
+  assert(!m_dbType.empty());
   std::string filename = m_ioDB;
   if(m_fileCyclicCount > 0)
   {
@@ -513,7 +503,6 @@ bool DynamicTopologyFileControl::replace_output_database(Ioss::DatabaseIO *db)
     return false;
 
   current_db->finalize_database();
-  current_db->flush_database();
   current_db->closeDatabase();
   delete current_db;
 
