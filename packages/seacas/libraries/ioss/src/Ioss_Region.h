@@ -8,6 +8,8 @@
 
 #include "Ioss_CoordinateFrame.h" // for CoordinateFrame
 #include "Ioss_DatabaseIO.h"      // for DatabaseIO
+#include "Ioss_DBUsage.h"
+#include "Ioss_DynamicTopology.h"
 #include "Ioss_EntityType.h"      // for EntityType, etc
 #include "Ioss_Field.h"
 #include "Ioss_GroupingEntity.h" // for GroupingEntity
@@ -28,6 +30,7 @@
 #include <functional> // for less
 #include <iosfwd>     // for ostream
 #include <map>        // for map, map<>::value_compare
+#include <memory>
 #include <sstream>
 #include <string>  // for string, operator<
 #include <utility> // for pair
@@ -55,6 +58,7 @@ namespace Ioss {
 namespace Ioss {
 
   class CoordinateFrame;
+
   enum class MeshType;
 
   using AssemblyContainer = std::vector<Ioss::Assembly *>;
@@ -280,7 +284,28 @@ namespace Ioss {
                                               const std::vector<T *> &entity_container,
                                               std::vector<U>         &field_data) const;
 
+    void register_mesh_modification_observer(std::shared_ptr<DynamicTopologyObserver> observer);
+    std::shared_ptr<DynamicTopologyObserver> get_mesh_modification_observer() const { return topologyObserver; }
+
+    void start_new_output_database_entry(int steps=0);
+
+    void set_topology_change_count(unsigned int new_count) {dbChangeCount = new_count;}
+    unsigned int get_topology_change_count() {return dbChangeCount;}
+
+    void set_file_cyclic_count(unsigned int new_count) {fileCyclicCount = new_count;}
+    unsigned int get_file_cyclic_count() {return fileCyclicCount;}
+
+    void set_if_database_exists_behavior(IfDatabaseExistsBehavior if_exists) {ifDatabaseExists = if_exists;}
+
+    bool model_is_written() const { return modelWritten; }
+    bool transient_is_written() const { return transientWritten; }
+
+    bool load_group_mesh(const std::string &group_name);
+
   protected:
+    void clone_and_replace_output_database(int steps=0);
+    void add_output_database_group(int steps=0, bool force_addition=false);
+
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;
 
@@ -306,6 +331,7 @@ namespace Ioss {
     bool end_mode_nl(State current_state);
 
     void delete_database() override;
+    void reset_region();
 
     mutable std::map<EntityType, AliasMap> aliases_; ///< Stores alias mappings
 
@@ -332,6 +358,15 @@ namespace Ioss {
     mutable int stateCount{0};
     bool        modelDefined{false};
     bool        transientDefined{false};
+
+    std::shared_ptr<DynamicTopologyObserver> topologyObserver;
+
+    unsigned int  dbChangeCount{1}; //!< Used to track number of topology changes.
+    unsigned int  fileCyclicCount{0}; //!< For cycling file-A, file-B, file-C, ..., File-A, typically restart only.
+    IfDatabaseExistsBehavior ifDatabaseExists{DB_OVERWRITE};
+
+    bool modelWritten{false};
+    bool transientWritten{false};
   };
 } // namespace Ioss
 
