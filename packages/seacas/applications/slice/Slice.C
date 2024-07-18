@@ -1304,9 +1304,10 @@ namespace {
         offset += element_count;
       }
     }
+    size_t spatial_dimension = region.get_property("spatial_dimension").get_int();
     for (size_t p = 0; p < proc_count; p++) {
-      auto *nb =
-          new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1", on_proc_count[p], 3);
+      auto *nb = new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1",
+                                     on_proc_count[p], spatial_dimension);
       proc_region[p]->add(nb);
       if (debug_level & 2) {
         fmt::print(stderr, "\tProcessor {} has {} nodes.\n", fmt::group_digits(p),
