@@ -1777,17 +1777,25 @@ void exi_compress_variable(int exoid, int varid, int type)
   \internal
   \undoc
 */
-int exi_leavedef(int exoid, const char *call_rout)
+int exi_leavedef(int exoid, const char *call_func)
 {
   int status;
 
   struct exi_file_item *file = exi_find_file_item(exoid);
+  if (!file) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for %s called from %s.", exoid,
+             __func__, call_func);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
+    return EX_FATAL;
+  }
+
   if (!file->persist_define_mode && file->in_define_mode) {
     if ((status = nc_enddef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
                exoid);
-      ex_err_fn(exoid, call_rout, errmsg, status);
+      ex_err_fn(exoid, call_func, errmsg, status);
 
       return (EX_FATAL);
     }
@@ -1804,9 +1812,10 @@ int exi_redef(int exoid, const char *call_func)
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for exi_redef called from %s.",
-             exoid, call_func);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for %s called from %s.", exoid,
+             __func__, call_func);
     ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
+    return EX_FATAL;
   }
 
   if (!file->in_define_mode) {
@@ -1816,11 +1825,11 @@ int exi_redef(int exoid, const char *call_func)
                "ERROR: failed to put file %d into definition mode in exi_redef called from %s",
                exoid, call_func);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
     file->in_define_mode = 1;
   }
-  return (EX_NOERR);
+  return EX_NOERR;
 }
 
 int exi_persist_redef(int exoid, const char *call_func)
@@ -1831,9 +1840,10 @@ int exi_persist_redef(int exoid, const char *call_func)
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for exi_redef called from %s.",
-             exoid, call_func);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for %s called from %s.", exoid,
+             __func__, call_func);
     ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
+    return EX_FATAL;
   }
 
   if ((++file->persist_define_mode == 1) && !file->in_define_mode) {
@@ -1844,24 +1854,32 @@ int exi_persist_redef(int exoid, const char *call_func)
           "ERROR: failed to put file %d into definition mode in exi_persist_redef called from %s",
           exoid, call_func);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
     file->in_define_mode = 1;
   }
-  return (EX_NOERR);
+  return EX_NOERR;
 }
 
-int exi_persist_leavedef(int exoid, const char *call_rout)
+int exi_persist_leavedef(int exoid, const char *call_func)
 {
   int status;
 
   struct exi_file_item *file = exi_find_file_item(exoid);
+  if (!file) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for %s called from %s.", exoid,
+             __func__, call_func);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
+    return EX_FATAL;
+  }
+
   if ((file->persist_define_mode-- == 1) && file->in_define_mode) {
     if ((status = nc_enddef(exoid)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
                exoid);
-      ex_err_fn(exoid, call_rout, errmsg, status);
+      ex_err_fn(exoid, call_func, errmsg, status);
 
       return (EX_FATAL);
     }
