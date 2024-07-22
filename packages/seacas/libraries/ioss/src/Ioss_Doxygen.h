@@ -123,7 +123,6 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  COMPRESSION_LEVEL     | [0]-9    | If zlib: In the range [0..9]. A value of 0 indicates no compression, will automatically set `file_type=netcdf4`, recommend <=4
  COMPRESSION_LEVEL     | 4-32 | If szip: An even number in the range 4-32, will automatically set `file_type=netcdf4`.
  COMPRESSION_SHUFFLE   | on/[off] |to enable/disable hdf5's shuffle compression algorithm.
- COMPRESSION_QUANTIZE_NSD | {1..15} | Specify number of significant digits to retain; use with other compression algorithms for lossy compression.
  MAXIMUM_NAME_LENGTH   | [32]     | Maximum length of names that will be returned/passed via api call.
  APPEND_OUTPUT         | on/[off] | Append output to end of existing output database
  APPEND_OUTPUT_AFTER_STEP | {step}| Max step to read from an input db or a db being appended to (typically used with APPEND_OUTPUT)
@@ -199,9 +198,9 @@ file. Then, the first file will be reopened and steps 0.7, 0.8, and
 
  Property              | Value  | Description
 -----------------------|:------:|-----------------------------------------------------------
-MEMORY_READ        | on/[off]   | experimental
-MEMORY_WRITE       | on/[off]   | experimental
-ENABLE_FILE_GROUPS | on/[off]   | experimental
+MEMORY_READ        | on/[off]   | experimental. Read a file into memory at open time, operate on it without disk accesses.
+MEMORY_WRITE       | on/[off]   | experimental. Open and read a file into memory or create and optionally write it back out to disk when nc_close() is called.
+ENABLE_FILE_GROUPS | on/[off]   | experimental.  Opens database in netcdf-4 non-classic mode which is what is required to support groups at netCDF level.
 MINIMAL_NEMESIS_INFO | on/[off] | special case, omit all nemesis data except for nodal communication map
 OMIT_EXODUS_NUM_MAPS | on/[off] | special case, do not output the node and element numbering map.
 EXODUS_CALL_GET_ALL_TIMES| [on] / off | special case -- should the `ex_get_all_times()` function be called.  See below.
