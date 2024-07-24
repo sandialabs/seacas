@@ -1535,6 +1535,43 @@ namespace {
     /* Find the internal and border elements */
     double time1 = get_time();
 
+    int mesh_dim = mesh->num_dims;
+    if (mesh_dim == 1) {
+      
+      // Handle the two bars at each end...
+      int proc = lb->vertex2proc[0];
+      lb->int_elems[proc].push_back(0);
+      proc = lb->vertex2proc[mesh->num_elems-1];
+      lb->int_elems[proc].push_back(mesh->num_elems-1);
+
+      for (size_t ecnt = 1; ecnt < mesh->num_elems-1; ecnt++) {
+	int procl = lb->vertex2proc[ecnt-1];
+	int procc = lb->vertex2proc[ecnt];
+	int procr = lb->vertex2proc[ecnt+1];
+	bool   internal = procl == procc && procc == procr;
+	if (internal) {
+	  lb->int_elems[procc].push_back(ecnt);
+	}
+	else {
+	  lb->bor_elems[procc].push_back(ecnt);
+
+	  if (procl != procc) {
+	    lb->e_cmap_elems[procl].push_back(ecnt-1);
+	    lb->e_cmap_sides[procl].push_back(2);
+	    lb->e_cmap_procs[procl].push_back(procc);
+	    lb->e_cmap_neigh[procl].push_back(ecnt);
+	  }
+	  if (procc != procr) {
+	    lb->e_cmap_elems[procr].push_back(ecnt+1);
+	    lb->e_cmap_sides[procr].push_back(1);
+	    lb->e_cmap_procs[procr].push_back(procc);
+	    lb->e_cmap_neigh[procr].push_back(ecnt);
+	  }
+	}
+      }
+     
+    }
+    else {
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
       int proc = lb->vertex2proc[ecnt];
       assert(proc < machine->num_procs);
@@ -1561,6 +1598,7 @@ namespace {
          * now determine how many side set nodes are needed to
          * determine if there is an element connected to this side.
          *
+	 * 1-D - need one node (work in progress)
          * 2-D - need two nodes, so find one intersection
          * 3-D - need three nodes, so find two intersections
          * NOTE: must check to make sure that this number is not
@@ -1571,7 +1609,8 @@ namespace {
         if (side_cnt < nnodes) {
           nnodes = side_cnt;
         }
-        nnodes--; /* decrement to find the number of intersections needed */
+        if (nnodes > 1)
+	  nnodes--; /* decrement to find the number of intersections needed */
 
         nelem = 0; /* reset this in case no intersections are needed */
 
@@ -1582,9 +1621,29 @@ namespace {
 
         if (!hflag1) { /* Not a hex */
 
-          /* ignore degenerate bars */
+	  if (etype == BAR2 || etype == BAR3) {
+            size_t nhold = graph->sur_elem[side_nodes[0]].size();
+            for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
+              hold_elem[ncnt] = graph->sur_elem[side_nodes[0]][ncnt];
+            }
 
-          if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
+            for (int ncnt = 0; ncnt < nnodes; ncnt++) {
+              /* Find elements connected to both node '0' and node 'ncnt+1' */
+              nelem =
+                  find_inter(Data(hold_elem), Data(graph->sur_elem[side_nodes[(ncnt + 1)]]), nhold,
+                             graph->sur_elem[side_nodes[(ncnt + 1)]].size(), Data(pt_list));
+
+              if (nelem < 2) {
+                break;
+              }
+
+              nhold = nelem;
+              for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
+                hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
+              }
+            }
+	  }
+          else if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
 
             size_t nhold = graph->sur_elem[side_nodes[0]].size();
             for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
@@ -1887,6 +1946,7 @@ namespace {
         lb->int_elems[proc].push_back(ecnt);
       }
     } /* End "for(ecnt=0; ecnt < mesh->num_elems; ecnt++)" */
+    }
 
     time2 = get_time();
     fmt::print("Time for elemental categorization: {}s\n", time2 - time1);
