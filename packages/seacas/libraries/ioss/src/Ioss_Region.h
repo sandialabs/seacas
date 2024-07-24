@@ -287,6 +287,10 @@ namespace Ioss {
     void register_mesh_modification_observer(std::shared_ptr<DynamicTopologyObserver> observer);
     std::shared_ptr<DynamicTopologyObserver> get_mesh_modification_observer() const { return topologyObserver; }
 
+    void reset_topology_modification();
+    void set_topology_modification(unsigned int type);
+    unsigned int get_topology_modification() const;
+
     void start_new_output_database_entry(int steps=0);
 
     void set_topology_change_count(unsigned int new_count) {dbChangeCount = new_count;}

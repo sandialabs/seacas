@@ -385,6 +385,10 @@ namespace Ioss {
     }
     catch (...) {
     }
+
+    if(topologyObserver) {
+      topologyObserver->register_region(nullptr);
+    }
   }
 
   void Region::reset_region()
@@ -710,9 +714,9 @@ namespace Ioss {
           int steps = get_property("state_count").get_int();
           start_new_output_database_entry(steps);
 
-          topologyObserver->define_model(*this);
-          topologyObserver->write_model(*this);
-          topologyObserver->define_transient(*this);
+          topologyObserver->define_model();
+          topologyObserver->write_model();
+          topologyObserver->define_transient();
           topologyObserver->reset_topology_modification();
         }
       }
@@ -2928,6 +2932,29 @@ namespace Ioss {
       DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists, dbChangeCount);
       fileControl.clone_and_replace_output_database(state);
     }
+  }
+
+  void Region::reset_topology_modification()
+  {
+    if(topologyObserver) {
+      topologyObserver->reset_topology_modification();
+    }
+  }
+
+  void Region::set_topology_modification(unsigned int type)
+  {
+    if(topologyObserver) {
+      topologyObserver->set_topology_modification(type);
+    }
+  }
+
+  unsigned int Region::get_topology_modification() const
+  {
+    if(topologyObserver) {
+      return topologyObserver->get_topology_modification();
+    }
+
+    return TOPOLOGY_SAME;
   }
 
   bool Region::load_group_mesh(const std::string &group_name)

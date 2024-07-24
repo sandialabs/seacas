@@ -285,6 +285,18 @@ namespace Ioss {
       return open_root_group_nl();
     }
 
+    int num_child_group()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return num_child_group_nl();
+    }
+
+    bool open_child_group(int index)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return open_child_group_nl(index);
+    }
+
     Ioss::NameList groups_describe(bool return_full_names = false)
     {
       IOSS_FUNC_ENTER(m_);
@@ -778,6 +790,8 @@ namespace Ioss {
       return elemMap.global_to_local(global);
     }
 
+    virtual int  num_child_group_nl() { return 0; }
+    virtual bool open_child_group_nl(int /* index */) { return false; }
     virtual bool open_root_group_nl() { return false; }
     virtual bool open_group_nl(const std::string & /* group_name */) { return false; }
     virtual bool create_subgroup_nl(const std::string & /* group_name */) { return false; }
