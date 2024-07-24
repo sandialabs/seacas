@@ -1556,12 +1556,18 @@ namespace {
 	  lb->bor_elems[procc].push_back(ecnt);
 
 	  if (procl != procc) {
+	    if (ecnt == 1) { // At left end...
+	      lb->bor_elems[procl].push_back(ecnt-1);
+	    }
 	    lb->e_cmap_elems[procl].push_back(ecnt-1);
 	    lb->e_cmap_sides[procl].push_back(2);
 	    lb->e_cmap_procs[procl].push_back(procc);
 	    lb->e_cmap_neigh[procl].push_back(ecnt);
 	  }
 	  if (procc != procr) {
+	    if (ecnt == mesh->num_elems-2) { // At right end...
+	      lb->bor_elems[procr].push_back(ecnt+1);
+	    }
 	    lb->e_cmap_elems[procr].push_back(ecnt+1);
 	    lb->e_cmap_sides[procr].push_back(1);
 	    lb->e_cmap_procs[procr].push_back(procc);
