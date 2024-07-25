@@ -2819,8 +2819,8 @@ namespace Ioss {
   {
     if (observer) {
       if (observer->get_control_option() == FileControlOption::CONTROL_AUTO_SINGLE_FILE) {
-        const Ioss::PropertyManager &properties = get_database()->get_property_manager();
-        if (!properties.exists("ENABLE_FILE_GROUPS")) {
+        const Ioss::PropertyManager &db_properties = get_database()->get_property_manager();
+        if (!db_properties.exists("ENABLE_FILE_GROUPS")) {
           std::ostringstream errmsg;
           fmt::print(errmsg, "ERROR: File groups are not enabled in the database file '{}'.\n",
                      get_database()->get_filename());
@@ -2856,8 +2856,8 @@ namespace Ioss {
     if (get_database()->is_input())
       return;
 
-    const Ioss::PropertyManager &properties = get_database()->get_property_manager();
-    if (!properties.exists("ENABLE_FILE_GROUPS")) {
+    const Ioss::PropertyManager &db_properties = get_database()->get_property_manager();
+    if (!db_properties.exists("ENABLE_FILE_GROUPS")) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: File groups are not enabled in the database file '{}'.\n",
                  get_database()->get_filename());
