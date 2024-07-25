@@ -1537,45 +1537,59 @@ namespace {
 
     int mesh_dim = mesh->num_dims;
     if (mesh_dim == 1) {
-      
-      // Handle the two bars at each end...
-      int proc = lb->vertex2proc[0];
-      lb->int_elems[proc].push_back(0);
-      proc = lb->vertex2proc[mesh->num_elems-1];
-      lb->int_elems[proc].push_back(mesh->num_elems-1);
+      std::vector<int> categorized(mesh->num_elems);
+      for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
+	int proce    = lb->vertex2proc[ecnt];
+	auto etype    = mesh->elem_type[ecnt];
+	int nsides   = get_elem_info(NSIDES, etype);
+	assert(nsides == 2);
 
-      for (size_t ecnt = 1; ecnt < mesh->num_elems-1; ecnt++) {
-	int procl = lb->vertex2proc[ecnt-1];
-	int procc = lb->vertex2proc[ecnt];
-	int procr = lb->vertex2proc[ecnt+1];
-	bool   internal = procl == procc && procc == procr;
-	if (internal) {
-	  lb->int_elems[procc].push_back(ecnt);
-	}
-	else {
-	  lb->bor_elems[procc].push_back(ecnt);
+	/* check each side of this element */
+	for (int nscnt = 0; nscnt < nsides; nscnt++) {
 
-	  if (procl != procc) {
-	    if (ecnt == 1) { // At left end...
-	      lb->bor_elems[procl].push_back(ecnt-1);
+	  /* get the node on this element side (should only be one)*/
+	  side_cnt = ss_to_node_list(etype, mesh->connect[ecnt], (nscnt + 1), side_nodes);
+	  assert(side_cnt == 1);
+
+	  size_t nhold = graph->sur_elem[side_nodes[0]].size();
+	  assert(nhold == 1 || nhold == 2);
+	  if (nhold == 1) {
+	    // Only a single element connected to this node -- at boundary of 1D domain
+	    if (!categorized[ecnt]) {
+	      lb->bor_elems[proce].push_back(ecnt);
+	      categorized[ecnt] = 1;
 	    }
-	    lb->e_cmap_elems[procl].push_back(ecnt-1);
-	    lb->e_cmap_sides[procl].push_back(2);
-	    lb->e_cmap_procs[procl].push_back(procc);
-	    lb->e_cmap_neigh[procl].push_back(ecnt);
 	  }
-	  if (procc != procr) {
-	    if (ecnt == mesh->num_elems-2) { // At right end...
-	      lb->bor_elems[procr].push_back(ecnt+1);
+	  else {
+	    // 2 elements connected to this node -- `ecnt` and the other one...
+	    for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
+	      size_t elem = graph->sur_elem[side_nodes[0]][ncnt];
+	      if (elem == ecnt) {
+		continue;
+	      }
+	      int proc2 = lb->vertex2proc[elem];
+	      if (proce == proc2) {
+		if (!categorized[ecnt]) {
+		  lb->int_elems[proce].push_back(ecnt);
+		  categorized[ecnt] = 1;
+		}
+	      }
+	      else {
+		// Processors of the two elements are different, so we are 
+		// at a processor boundary...
+		if (!categorized[ecnt]) {
+		  lb->bor_elems[proce].push_back(ecnt);
+		  categorized[ecnt] = 1;
+		}
+		lb->e_cmap_elems[proc2].push_back(elem);
+		lb->e_cmap_sides[proc2].push_back(ncnt+1);
+		lb->e_cmap_procs[proc2].push_back(proce);
+		lb->e_cmap_neigh[proc2].push_back(ecnt);
+	      }
 	    }
-	    lb->e_cmap_elems[procr].push_back(ecnt+1);
-	    lb->e_cmap_sides[procr].push_back(1);
-	    lb->e_cmap_procs[procr].push_back(procc);
-	    lb->e_cmap_neigh[procr].push_back(ecnt);
 	  }
 	}
       }
-     
     }
     else {
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
@@ -1583,13 +1597,13 @@ namespace {
       assert(proc < machine->num_procs);
       bool   internal = true;
       int    flag     = 0;
-      E_Type etype    = mesh->elem_type[ecnt];
+      auto   etype    = mesh->elem_type[ecnt];
       int    dim1     = get_elem_info(NDIM, etype);
 
       /* need to check for hex's or tet's */
       hflag1 = is_hex(etype);
 
-      /* a TET10 cannot connect to a HEX */
+      /* a tet10 cannot connect to a hex */
       tflag1 = is_tet(etype);
 
       int nsides = get_elem_info(NSIDES, etype);
@@ -1604,11 +1618,11 @@ namespace {
          * now determine how many side set nodes are needed to
          * determine if there is an element connected to this side.
          *
-	 * 1-D - need one node (work in progress)
-         * 2-D - need two nodes, so find one intersection
-         * 3-D - need three nodes, so find two intersections
-         * NOTE: must check to make sure that this number is not
-         *       larger than the number of nodes on the sides (ie - SHELL).
+	 * 1-d - need one node (work in progress)
+         * 2-d - need two nodes, so find one intersection
+         * 3-d - need three nodes, so find two intersections
+         * note: must check to make sure that this number is not
+         *       larger than the number of nodes on the sides (ie - shell).
          */
 
         int nnodes = mesh->num_dims;
@@ -1625,7 +1639,7 @@ namespace {
          * the tet/hex combination
          */
 
-        if (!hflag1) { /* Not a hex */
+        if (!hflag1) { /* not a hex */
 
 	  if (etype == BAR2 || etype == BAR3) {
             size_t nhold = graph->sur_elem[side_nodes[0]].size();
