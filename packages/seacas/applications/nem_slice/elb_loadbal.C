@@ -1539,72 +1539,72 @@ namespace {
     if (mesh_dim == 1) {
       std::vector<int> categorized(mesh->num_elems);
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-	int proce    = lb->vertex2proc[ecnt];
-	auto etype    = mesh->elem_type[ecnt];
-	int nsides   = get_elem_info(NSIDES, etype);
-	assert(nsides == 2);
+        int  proce  = lb->vertex2proc[ecnt];
+        auto etype  = mesh->elem_type[ecnt];
+        int  nsides = get_elem_info(NSIDES, etype);
+        assert(nsides == 2);
 
-	/* check each side of this element */
-	for (int nscnt = 0; nscnt < nsides; nscnt++) {
+        /* check each side of this element */
+        for (int nscnt = 0; nscnt < nsides; nscnt++) {
 
-	  /* get the node on this element side (should only be one)*/
-	  side_cnt = ss_to_node_list(etype, mesh->connect[ecnt], (nscnt + 1), side_nodes);
-	  assert(side_cnt == 1);
+          /* get the node on this element side (should only be one)*/
+          side_cnt = ss_to_node_list(etype, mesh->connect[ecnt], (nscnt + 1), side_nodes);
+          assert(side_cnt == 1);
 
-	  size_t nhold = graph->sur_elem[side_nodes[0]].size();
-	  assert(nhold == 1 || nhold == 2);
-	  if (nhold == 1) {
-	    // Only a single element connected to this node -- at boundary of 1D domain
-	    if (!categorized[ecnt]) {
-	      lb->bor_elems[proce].push_back(ecnt);
-	      categorized[ecnt] = 1;
-	    }
-	  }
-	  else {
-	    // 2 elements connected to this node -- `ecnt` and the other one...
-	    for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
-	      size_t elem = graph->sur_elem[side_nodes[0]][ncnt];
-	      if (elem == ecnt) {
-		continue;
-	      }
-	      int proc2 = lb->vertex2proc[elem];
-	      if (proce == proc2) {
-		if (!categorized[ecnt]) {
-		  lb->int_elems[proce].push_back(ecnt);
-		  categorized[ecnt] = 1;
-		}
-	      }
-	      else {
-		// Processors of the two elements are different, so we are 
-		// at a processor boundary...
-		if (!categorized[ecnt]) {
-		  lb->bor_elems[proce].push_back(ecnt);
-		  categorized[ecnt] = 1;
-		}
-		lb->e_cmap_elems[proc2].push_back(elem);
-		lb->e_cmap_sides[proc2].push_back(ncnt+1);
-		lb->e_cmap_procs[proc2].push_back(proce);
-		lb->e_cmap_neigh[proc2].push_back(ecnt);
-	      }
-	    }
-	  }
-	}
+          size_t nhold = graph->sur_elem[side_nodes[0]].size();
+          assert(nhold == 1 || nhold == 2);
+          if (nhold == 1) {
+            // Only a single element connected to this node -- at boundary of 1D domain
+            if (!categorized[ecnt]) {
+              lb->bor_elems[proce].push_back(ecnt);
+              categorized[ecnt] = 1;
+            }
+          }
+          else {
+            // 2 elements connected to this node -- `ecnt` and the other one...
+            for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
+              size_t elem = graph->sur_elem[side_nodes[0]][ncnt];
+              if (elem == ecnt) {
+                continue;
+              }
+              int proc2 = lb->vertex2proc[elem];
+              if (proce == proc2) {
+                if (!categorized[ecnt]) {
+                  lb->int_elems[proce].push_back(ecnt);
+                  categorized[ecnt] = 1;
+                }
+              }
+              else {
+                // Processors of the two elements are different, so we are
+                // at a processor boundary...
+                if (!categorized[ecnt]) {
+                  lb->bor_elems[proce].push_back(ecnt);
+                  categorized[ecnt] = 1;
+                }
+                lb->e_cmap_elems[proc2].push_back(elem);
+                lb->e_cmap_sides[proc2].push_back(ncnt + 1);
+                lb->e_cmap_procs[proc2].push_back(proce);
+                lb->e_cmap_neigh[proc2].push_back(ecnt);
+              }
+            }
+          }
+        }
       }
     }
     else {
-    for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-      int proc = lb->vertex2proc[ecnt];
-      assert(proc < machine->num_procs);
-      bool   internal = true;
-      int    flag     = 0;
-      auto   etype    = mesh->elem_type[ecnt];
-      int    dim1     = get_elem_info(NDIM, etype);
+      for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
+        int proc = lb->vertex2proc[ecnt];
+        assert(proc < machine->num_procs);
+        bool internal = true;
+        int  flag     = 0;
+        auto etype    = mesh->elem_type[ecnt];
+        int  dim1     = get_elem_info(NDIM, etype);
 
         /* need to check for hex's or tet's */
         hflag1 = is_hex(etype);
 
-      /* a tet10 cannot connect to a hex */
-      tflag1 = is_tet(etype);
+        /* a tet10 cannot connect to a hex */
+        tflag1 = is_tet(etype);
 
         int nsides = get_elem_info(NSIDES, etype);
 
@@ -1614,16 +1614,16 @@ namespace {
           /* get the list of nodes on this element side */
           side_cnt = ss_to_node_list(etype, mesh->connect[ecnt], (nscnt + 1), side_nodes);
 
-        /*
-         * now determine how many side set nodes are needed to
-         * determine if there is an element connected to this side.
-         *
-	 * 1-d - need one node (work in progress)
-         * 2-d - need two nodes, so find one intersection
-         * 3-d - need three nodes, so find two intersections
-         * note: must check to make sure that this number is not
-         *       larger than the number of nodes on the sides (ie - shell).
-         */
+          /*
+           * now determine how many side set nodes are needed to
+           * determine if there is an element connected to this side.
+           *
+           * 1-d - need one node
+           * 2-d - need two nodes, so find one intersection
+           * 3-d - need three nodes, so find two intersections
+           * note: must check to make sure that this number is not
+           *       larger than the number of nodes on the sides (ie - shell).
+           */
 
           int nnodes = mesh->num_dims;
           if (side_cnt < nnodes) {
@@ -1639,7 +1639,7 @@ namespace {
            * the tet/hex combination
            */
 
-        if (!hflag1) { /* not a hex */
+          if (!hflag1) { /* not a hex */
 
             if (etype == BAR2 || etype == BAR3) {
               size_t nhold = graph->sur_elem[side_nodes[0]].size();
