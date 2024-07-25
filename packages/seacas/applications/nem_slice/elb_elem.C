@@ -1671,7 +1671,7 @@ int ss_to_node_list(const E_Type etype,    /* The element type */
   };
 
   static int shell_bar_table[1][3] = {{1, 2, 3}};
-  static int bar_table[2][1] = {{1},{2}};
+  static int bar_table[2][1]       = {{1}, {2}};
 
   /* Locally decrement side_num */
   side_num--;
