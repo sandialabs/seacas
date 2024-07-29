@@ -1553,14 +1553,7 @@ namespace {
 
           size_t nhold = graph->sur_elem[side_nodes[0]].size();
           assert(nhold == 1 || nhold == 2);
-          if (nhold == 1) {
-            // Only a single element connected to this node -- at boundary of 1D domain
-            if (!categorized[ecnt]) {
-              lb->bor_elems[proce].push_back(ecnt);
-              categorized[ecnt] = 1;
-            }
-          }
-          else {
+          if (nhold == 2) {
             // 2 elements connected to this node -- `ecnt` and the other one...
             for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
               size_t elem = graph->sur_elem[side_nodes[0]][ncnt];
@@ -1569,10 +1562,7 @@ namespace {
               }
               int proc2 = lb->vertex2proc[elem];
               if (proce == proc2) {
-                if (!categorized[ecnt]) {
-                  lb->int_elems[proce].push_back(ecnt);
-                  categorized[ecnt] = 1;
-                }
+                continue;
               }
               else {
                 // Processors of the two elements are different, so we are
@@ -1588,6 +1578,10 @@ namespace {
               }
             }
           }
+        }
+        if (!categorized[ecnt]) {
+          lb->int_elems[proce].push_back(ecnt);
+          categorized[ecnt] = 1;
         }
       }
     }
