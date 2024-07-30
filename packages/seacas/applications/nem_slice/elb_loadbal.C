@@ -1572,7 +1572,7 @@ namespace {
                   categorized[ecnt] = 1;
                 }
                 lb->e_cmap_elems[proc2].push_back(elem);
-                lb->e_cmap_sides[proc2].push_back(ncnt + 1);
+                lb->e_cmap_sides[proc2].push_back(2 - ncnt);
                 lb->e_cmap_procs[proc2].push_back(proce);
                 lb->e_cmap_neigh[proc2].push_back(ecnt);
               }
