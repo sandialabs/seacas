@@ -27,7 +27,7 @@ namespace Ioss {
 
   /*! The TopologyModified enumeration is used as an argument to the
    *  topology_modified() functions in io to
-   *  specify the type of topology modification that has ocurred.  The
+   *  specify the type of topology modification that has occurred.  The
    *  calls to topology_modified() are cumulative between
    *  output steps, so a call with TOPOLOGY_REORDER followed by a call
    *  with TOPOLOGY_SHUFFLE will do the right thing.  Typical examples

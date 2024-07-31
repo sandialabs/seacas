@@ -2920,7 +2920,7 @@ namespace Ioss {
       if (state == 0)
         state = steps;
 
-      // See if this is a continutation database...
+      // See if this is a continuation database...
       if (property_exists("state_offset"))
         state += get_property("state_offset").get_int();
 
