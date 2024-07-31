@@ -706,22 +706,26 @@ struct exi_file_item
                                 gzip, 4..32 and even for szip; -131072..22 for zstd, NetCDF-4 only */
   unsigned int assembly_count;
   unsigned int blob_count;
+
+  unsigned int persist_define_mode : 10; /**< Stay in define mode until exi_persist_leavedef is
+                                            called. Set by exi_persist_redef... */
   unsigned int
       compression_algorithm : 4; /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
   unsigned int quantize_nsd : 4; /**< 0 (disabled) to 15 (maximum) number of significant digits
                                     retained for lossy quanitzation compression */
+  unsigned int shuffle : 1;      /**< 1 true, 0 false */
   unsigned int user_compute_wordsize : 1; /**< 0 for 4 byte or 1 for 8 byte reals */
-  unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int
       file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
-  unsigned int          is_write : 1;    /**< for output or append */
-  unsigned int          is_parallel : 1; /**< 1 true, 0 false */
-  unsigned int          is_hdf5 : 1;     /**< 1 true, 0 false */
-  unsigned int          is_pnetcdf : 1;  /**< 1 true, 0 false */
-  unsigned int          has_nodes : 1;   /**< for input only at this time */
-  unsigned int          has_edges : 1;   /**< for input only at this time */
-  unsigned int          has_faces : 1;   /**< for input only at this time */
-  unsigned int          has_elems : 1;   /**< for input only at this time */
+  unsigned int          is_write : 1;       /**< for output or append */
+  unsigned int          is_parallel : 1;    /**< 1 true, 0 false */
+  unsigned int          is_hdf5 : 1;        /**< 1 true, 0 false */
+  unsigned int          is_pnetcdf : 1;     /**< 1 true, 0 false */
+  unsigned int          has_nodes : 1;      /**< for input only at this time */
+  unsigned int          has_edges : 1;      /**< for input only at this time */
+  unsigned int          has_faces : 1;      /**< for input only at this time */
+  unsigned int          has_elems : 1;      /**< for input only at this time */
+  unsigned int          in_define_mode : 1; /**< Is the file in nc define mode... */
   struct exi_file_item *next;
 };
 
@@ -868,8 +872,13 @@ EXODUS_EXPORT int  exi_put_names(int exoid, int varid, size_t num_entity, char *
                                  ex_entity_type obj_type, const char *subtype, const char *routine);
 EXODUS_EXPORT void exi_trim(char *name);
 EXODUS_EXPORT void exi_update_max_name_length(int exoid, int length);
+EXODUS_EXPORT int  exi_redef(int exoid, const char *call_func);
+EXODUS_EXPORT int  exi_persist_redef(int exoid, const char *call_func);
 EXODUS_EXPORT int  exi_leavedef(int         exoid,    /* NemesisI file ID         */
                                 const char *call_rout /* Name of calling function */
+ );
+EXODUS_EXPORT int  exi_persist_leavedef(int         exoid,    /* NemesisI file ID         */
+                                        const char *call_rout /* Name of calling function */
  );
 
 EXODUS_EXPORT int exi_check_version(int run_version);

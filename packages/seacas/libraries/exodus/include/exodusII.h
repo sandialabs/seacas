@@ -58,7 +58,7 @@
 #define EXODUS_VERSION       "9.01"
 #define EXODUS_VERSION_MAJOR 9
 #define EXODUS_VERSION_MINOR 1
-#define EXODUS_RELEASE_DATE  "June 19, 2024"
+#define EXODUS_RELEASE_DATE  "July 17, 2024"
 
 #define EX_API_VERS       9.01f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
@@ -1049,6 +1049,8 @@ EXODUS_EXPORT int ex_get_blob(int exoid, struct ex_blob *blob);
 EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs);
 EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blobs);
 
+EXODUS_EXPORT int ex_put_multi_field_metadata(int exoid, const ex_field *field,
+                                              const int field_count);
 EXODUS_EXPORT int ex_put_field_metadata(int exoid, const ex_field field);
 EXODUS_EXPORT int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices);
 EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_field *field);
