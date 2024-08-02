@@ -960,8 +960,8 @@ namespace {
         continue;
       }
       if (property == "base_filename") {
-        // IGNORE the base_filename.  This is generally the base portion of the filename; we don't care whether
-        // the filenames match.
+        // IGNORE the base_filename.  This is generally the base portion of the filename; we don't
+        // care whether the filenames match.
         continue;
       }
 

@@ -45,10 +45,10 @@
 #include <tuple>
 #include <vector>
 
+#include <assert.h>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
-#include <assert.h>
 
 #include "Ioss_MeshType.h"
 #include "Ioss_ParallelUtils.h"
@@ -367,7 +367,8 @@ namespace Ioss {
     properties.add(Property(this, "database_name", Property::STRING));
 
     property_add(Property("base_filename", iodatabase->get_filename()));
-    property_add(Property("database_type", iodatabase->get_property_manager().get_optional("database_type", "")));
+    property_add(Property("database_type",
+                          iodatabase->get_property_manager().get_optional("database_type", "")));
   }
 
   Region::~Region()
@@ -461,7 +462,7 @@ namespace Ioss {
     stateTimes.clear();
 
     currentState = -1;
-    stateCount = 0;
+    stateCount   = 0;
   }
 
   void Region::delete_database() { GroupingEntity::really_delete_database(); }
@@ -701,16 +702,18 @@ namespace Ioss {
     else {
       bool has_output_observer = topologyObserver && !get_database()->is_input();
 
-      if(new_state == STATE_DEFINE_MODEL) {
-        if(has_output_observer && (topologyObserver->get_control_option() == FileControlOption::CONTROL_AUTO_SINGLE_FILE)) {
-          if(!modelWritten) {
-            int steps = get_property("state_count").get_int();
+      if (new_state == STATE_DEFINE_MODEL) {
+        if (has_output_observer && (topologyObserver->get_control_option() ==
+                                    FileControlOption::CONTROL_AUTO_SINGLE_FILE)) {
+          if (!modelWritten) {
+            int  steps          = get_property("state_count").get_int();
             bool force_addition = true;
             add_output_database_group(steps, force_addition);
           }
         }
-      } else if(new_state == STATE_TRANSIENT) {
-        if(has_output_observer && topologyObserver->is_topology_modified()) {
+      }
+      else if (new_state == STATE_TRANSIENT) {
+        if (has_output_observer && topologyObserver->is_topology_modified()) {
           int steps = get_property("state_count").get_int();
           start_new_output_database_entry(steps);
 
@@ -2815,21 +2818,23 @@ namespace Ioss {
     }
   }
 
-  void Region::register_mesh_modification_observer(std::shared_ptr<DynamicTopologyObserver> observer)
+  void
+  Region::register_mesh_modification_observer(std::shared_ptr<DynamicTopologyObserver> observer)
   {
-    if(observer && observer->get_control_option() == FileControlOption::CONTROL_AUTO_SINGLE_FILE) {
-      const Ioss::PropertyManager &properties = get_database()->get_property_manager();
-      if(!properties.exists("ENABLE_FILE_GROUPS")) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "ERROR: File groups are not enabled in the database file '{}'.\n",
-                   get_database()->get_filename());
-        IOSS_ERROR(errmsg);
+    if (observer) {
+      if (observer->get_control_option() == FileControlOption::CONTROL_AUTO_SINGLE_FILE) {
+        const Ioss::PropertyManager &db_properties = get_database()->get_property_manager();
+        if (!db_properties.exists("ENABLE_FILE_GROUPS")) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "ERROR: File groups are not enabled in the database file '{}'.\n",
+                     get_database()->get_filename());
+          IOSS_ERROR(errmsg);
+        }
       }
-    }
 
-    topologyObserver = observer;
-    topologyObserver->register_region(this);
+      topologyObserver = observer;
+      topologyObserver->register_region(this);
+    }
   }
 
   void Region::start_new_output_database_entry(int steps)
@@ -2837,20 +2842,16 @@ namespace Ioss {
     if (get_database()->is_input())
       return;
 
-    if(!topologyObserver)
+    if (!topologyObserver)
       return;
 
-    switch(topologyObserver->get_control_option()) {
+    switch (topologyObserver->get_control_option()) {
     case FileControlOption::CONTROL_AUTO_MULTI_FILE:
       clone_and_replace_output_database(steps);
       break;
-    case FileControlOption::CONTROL_AUTO_SINGLE_FILE:
-      add_output_database_group(steps);
-      break;
+    case FileControlOption::CONTROL_AUTO_SINGLE_FILE: add_output_database_group(steps); break;
     case FileControlOption::CONTROL_NONE:
-    default:
-      return;
-      break;
+    default: return; break;
     }
   }
 
@@ -2859,16 +2860,16 @@ namespace Ioss {
     if (get_database()->is_input())
       return;
 
-    const Ioss::PropertyManager &properties = get_database()->get_property_manager();
-    if(!properties.exists("ENABLE_FILE_GROUPS")) {
+    const Ioss::PropertyManager &db_properties = get_database()->get_property_manager();
+    if (!db_properties.exists("ENABLE_FILE_GROUPS")) {
       std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: File groups are not enabled in the database file '{}'.\n",
+      fmt::print(errmsg, "ERROR: File groups are not enabled in the database file '{}'.\n",
                  get_database()->get_filename());
       IOSS_ERROR(errmsg);
     }
 
-    if(topologyObserver && (topologyObserver->get_control_option() == FileControlOption::CONTROL_AUTO_MULTI_FILE)) {
+    if (topologyObserver &&
+        (topologyObserver->get_control_option() == FileControlOption::CONTROL_AUTO_MULTI_FILE)) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
                  "ERROR: TopologyObserver for database file '{}' does not support file groups.\n",
@@ -2891,7 +2892,8 @@ namespace Ioss {
       state++; // For the state we are going to write.
 
       reset_region();
-      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists, dbChangeCount);
+      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
+                                             dbChangeCount);
       fileControl.add_output_database_group(state);
     }
   }
@@ -2901,7 +2903,7 @@ namespace Ioss {
     if (get_database()->is_input())
       return;
 
-    if(!topologyObserver)
+    if (!topologyObserver)
       return;
 
     int state = steps;
@@ -2922,14 +2924,15 @@ namespace Ioss {
       if (state == 0)
         state = steps;
 
-      // See if this is a continutation database...
+      // See if this is a continuation database...
       if (property_exists("state_offset"))
         state += get_property("state_offset").get_int();
 
       state++; // For the state we are going to write.
 
       reset_region();
-      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists, dbChangeCount);
+      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
+                                             dbChangeCount);
       fileControl.clone_and_replace_output_database(state);
     }
   }
@@ -2973,10 +2976,10 @@ namespace Ioss {
     if (!iodatabase->is_input())
       return false;
 
-    if(!iodatabase->open_root_group())
+    if (!iodatabase->open_root_group())
       return false;
 
-    if(!iodatabase->open_group(group_name))
+    if (!iodatabase->open_group(group_name))
       return false;
 
     reset_region();

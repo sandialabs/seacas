@@ -41,20 +41,17 @@ namespace Ioss {
     {
       assert(element_id != 0);
       if (element[0] == 0) {
-	element[0] = element_id;
+        element[0] = element_id;
       }
       else if (element[1] == 0) {
-	element[1] = element_id;
+        element[1] = element_id;
       }
       else {
         face_element_error(element_id);
       }
     }
 
-    int element_count() const 
-    {
-      return (element[0] != 0) + (element[1] != 0);
-    }
+    int element_count() const { return (element[0] != 0) + (element[1] != 0); }
 
     void add_element(size_t element_id, size_t face_ordinal) const
     {
@@ -116,7 +113,7 @@ namespace Ioss {
 #if defined FG_USE_STD
   using FaceUnorderedSet = std::unordered_set<Face, FaceHash, FaceEqual>;
 #elif defined FG_USE_HOPSCOTCH
-  //using FaceUnorderedSet = tsl::hopscotch_set<Face, FaceHash, FaceEqual>;
+  // using FaceUnorderedSet = tsl::hopscotch_set<Face, FaceHash, FaceEqual>;
   using FaceUnorderedSet = tsl::hopscotch_pg_set<Face, FaceHash, FaceEqual>;
 #elif defined FG_USE_ROBIN
   //  using FaceUnorderedSet = tsl::robin_set<Face, FaceHash, FaceEqual>;
@@ -138,7 +135,7 @@ namespace Ioss {
     FaceUnorderedSet &faces(const std::string &name = "ALL") { return faces_[name]; }
     FaceUnorderedSet &faces(const ElementBlock *block);
 
-    void clear(const std::string &name)  {faces_[name].clear();}
+    void clear(const std::string &name) { faces_[name].clear(); }
     void clear(const ElementBlock *block);
 
     //! Given a local node id (0-based), return the hashed value.
@@ -148,7 +145,7 @@ namespace Ioss {
 
   private:
     template <typename INT> void hash_node_ids(const std::vector<INT> &node_ids);
-    void hash_local_node_ids(size_t count);
+    void                         hash_local_node_ids(size_t count);
     template <typename INT> void generate_model_faces(INT /*dummy*/, bool local_ids);
 
     Ioss::Region                           &region_;

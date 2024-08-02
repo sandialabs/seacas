@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "Ioss_DatabaseIO.h"      // for DatabaseIO
 #include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"      // for DatabaseIO
 #include "Ioss_ParallelUtils.h"   // for ParallelUtils
 #include "Ioss_PropertyManager.h" // for PropertyManager
 #include <assert.h>
@@ -18,7 +18,7 @@
 #include "Ioss_Utils.h"
 #include "ioss_export.h"
 
-#include <iosfwd>     // for ostream
+#include <iosfwd> // for ostream
 #include <sstream>
 #include <string>  // for string, operator<
 #include <strings.h>
@@ -29,7 +29,7 @@ namespace Ioss {
 
   /*! The TopologyModified enumeration is used as an argument to the
    *  topology_modified() functions in io to
-   *  specify the type of topology modification that has ocurred.  The
+   *  specify the type of topology modification that has occurred.  The
    *  calls to topology_modified() are cumulative between
    *  output steps, so a call with TOPOLOGY_REORDER followed by a call
    *  with TOPOLOGY_SHUFFLE will do the right thing.  Typical examples
@@ -56,20 +56,13 @@ namespace Ioss {
     TOPOLOGY_UNKNOWN        = (1U <<  8), //!< Unknown change, recreate from scratch.
   };
 
-  enum class FileControlOption {
-    CONTROL_NONE,
-    CONTROL_AUTO_MULTI_FILE,
-    CONTROL_AUTO_SINGLE_FILE
-  };
+  enum class FileControlOption { CONTROL_NONE, CONTROL_AUTO_MULTI_FILE, CONTROL_AUTO_SINGLE_FILE };
 
   class IOSS_EXPORT DynamicTopologyObserver
   {
   public:
     DynamicTopologyObserver(Region *region)
-    : m_region(region)
-    {
-      register_region(region);
-    }
+    : m_region(region) {}
 
     virtual ~DynamicTopologyObserver() {}
 
@@ -79,7 +72,7 @@ namespace Ioss {
     virtual unsigned int get_topology_modification() const;
 
     virtual unsigned int get_cumulative_topology_modification() const;
-    virtual void set_cumulative_topology_modification(unsigned int type);
+    virtual void         set_cumulative_topology_modification(unsigned int type);
 
     int get_cumulative_topology_modification_field();
 
@@ -87,10 +80,13 @@ namespace Ioss {
     virtual bool is_automatic_restart() const { return false; }
     virtual bool is_restart_requested() const { return false; }
 
-    static const std::string topology_modification_change_name() {return std::string("CUMULATIVE_TOPOLOGY_MODIFICATION");}
+    static const std::string topology_modification_change_name()
+    {
+      return std::string("CUMULATIVE_TOPOLOGY_MODIFICATION");
+    }
 
-    void register_region(Region *region);
-    Region* get_region() const { return m_region; }
+    void    register_region(Region *region);
+    Region *get_region() const { return m_region; }
 
     void register_notifier(DynamicTopologyNotifier *notifier);
     DynamicTopologyNotifier* get_notifier() const { return m_notifier; }
@@ -102,7 +98,7 @@ namespace Ioss {
     virtual FileControlOption get_control_option() const { return FileControlOption::CONTROL_NONE; }
 
   protected:
-    Region *m_region{nullptr};
+    Region      *m_region{nullptr};
     unsigned int m_topologyModification{TOPOLOGY_SAME};
     unsigned int m_cumulativeTopologyModification{TOPOLOGY_SAME};
 
@@ -208,34 +204,35 @@ namespace Ioss {
   public:
     DynamicTopologyFileControl(Region *region, unsigned int fileCyclicCount,
                                IfDatabaseExistsBehavior &ifDatabaseExists,
-                               unsigned int &dbChangeCount);
+                               unsigned int             &dbChangeCount);
 
-    void clone_and_replace_output_database(int steps=0);
-    void add_output_database_group(int steps=0);
+    void clone_and_replace_output_database(int steps = 0);
+    void add_output_database_group(int steps = 0);
 
     static std::string group_prefix() { return "IO_FILE_GROUP-"; }
 
   private:
-    Region *m_region{nullptr};
+    Region     *m_region{nullptr};
     std::string m_ioDB;
     std::string m_dbType;
 
     PropertyManager m_properties;
 
-    unsigned int  m_fileCyclicCount;
+    unsigned int              m_fileCyclicCount;
     IfDatabaseExistsBehavior &m_ifDatabaseExists;
-    unsigned int &m_dbChangeCount;
+    unsigned int             &m_dbChangeCount;
 
     IOSS_NODISCARD const ParallelUtils &util() const;
 
     std::string get_unique_filename(DatabaseUsage db_usage);
-    std::string construct_database_filename(int& step, DatabaseUsage db_usage);
-    bool file_exists(const std::string &filename, const std::string &db_type, DatabaseUsage db_usage);
-    bool abort_if_exists(const std::string &filename, const std::string &db_type,
-                         DatabaseUsage db_usage);
+    std::string construct_database_filename(int &step, DatabaseUsage db_usage);
+    bool        file_exists(const std::string &filename, const std::string &db_type,
+                            DatabaseUsage db_usage);
+    bool        abort_if_exists(const std::string &filename, const std::string &db_type,
+                                DatabaseUsage db_usage);
 
-    DatabaseIO * clone_output_database(int steps);
-    bool replace_output_database(DatabaseIO *db);
+    DatabaseIO *clone_output_database(int steps);
+    bool        replace_output_database(DatabaseIO *db);
   };
 
 } // namespace Ioss

@@ -795,7 +795,10 @@ namespace Ioss {
     virtual bool open_root_group_nl() { return false; }
     virtual bool open_group_nl(const std::string & /* group_name */) { return false; }
     virtual bool create_subgroup_nl(const std::string & /* group_name */) { return false; }
-    virtual Ioss::NameList groups_describe_nl(bool /* return_full_names */) { return Ioss::NameList(); }
+    virtual Ioss::NameList groups_describe_nl(bool /* return_full_names */)
+    {
+      return Ioss::NameList();
+    }
 
     virtual bool begin_nl(Ioss::State state) = 0;
     virtual bool end_nl(Ioss::State state)   = 0;
