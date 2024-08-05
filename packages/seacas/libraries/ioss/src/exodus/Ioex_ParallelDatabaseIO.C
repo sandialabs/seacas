@@ -714,6 +714,28 @@ namespace Ioex {
           }
 #endif
         }
+        else if (method == "zstd") {
+#if NC_HAS_ZSTD == 1
+          exo_method = EX_COMPRESS_ZSTD;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have ZStandard compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
+        else if (method == "bzip2") {
+#if NC_HAS_BZ2 == 1
+          exo_method = EX_COMPRESS_BZ2;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have Bzip2 / BZ2 compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
         else {
           if (myProcessor == 0) {
             fmt::print(Ioss::WarnOut(),
@@ -724,6 +746,12 @@ namespace Ioex {
         }
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
       }
+
+      if (properties.exists("COMPRESSION_QUANTIZE_NSD")) {
+        int quant_level = properties.get("COMPRESSION_QUANTIZE_NSD").get_int();
+        ex_set_option(m_exodusFilePtr, EX_OPT_QUANTIZE_NSD, quant_level);
+      }
+
       if (properties.exists("COMPRESSION_LEVEL")) {
         int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
@@ -920,7 +948,7 @@ namespace Ioex {
     std::vector<double> tsteps(0);
 
     {
-      timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+      timestep_count  = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
       m_timestepCount = timestep_count;
       if (timestep_count <= 0) {
         return;
@@ -4809,7 +4837,7 @@ namespace Ioex {
   void ParallelDatabaseIO::output_processor_id_map(Ioss::Region *region, INT /*dummy*/)
   {
     std::vector<INT> proc_id(elementCount, myProcessor);
-    const auto &blocks = region->get_element_blocks();
+    const auto      &blocks = region->get_element_blocks();
     for (const auto &block : blocks) {
       put_field_internal(block, block->get_field("proc_id"), Data(proc_id), -1);
     }
@@ -4870,10 +4898,10 @@ namespace Ioex {
       add_processor_id_map(region);
       output_other_metadata();
       if (int_byte_size_api() == 8) {
-	output_processor_id_map(region, int64_t(0));
+        output_processor_id_map(region, int64_t(0));
       }
       else {
-	output_processor_id_map(region, int(0));
+        output_processor_id_map(region, int(0));
       }
     }
   }

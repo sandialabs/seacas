@@ -631,16 +631,27 @@ namespace {
       properties.add(Ioss::Property("IGNORE_INFO_RECORDS", "YES"));
     }
 
-    if (interFace.compression_level > 0 || interFace.shuffle || interFace.szip) {
+    if (interFace.compression_level > 0 || interFace.shuffle || interFace.szip || interFace.quant ||
+        interFace.zlib || interFace.zstd || interFace.bz2) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level));
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle)));
 
-      if (interFace.szip) {
+      if (interFace.zlib) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
+      else if (interFace.szip) {
         properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
       }
-      else if (interFace.zlib) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      else if (interFace.zstd) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
+      }
+      else if (interFace.bz2) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "bzip2"));
+      }
+
+      if (interFace.quant) {
+        properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantize_nsd));
       }
     }
 
