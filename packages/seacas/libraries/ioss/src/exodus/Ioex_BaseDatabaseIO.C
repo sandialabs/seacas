@@ -507,6 +507,7 @@ namespace Ioex {
     // Get existing file pointer...
     bool success = false;
 
+    Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
 
     int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
@@ -541,6 +542,7 @@ namespace Ioex {
     // Get existing file pointer...
     bool success = false;
 
+    Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
 
     m_groupName = group_name;
@@ -561,6 +563,7 @@ namespace Ioex {
     bool success = false;
     if (!is_input()) {
       // Get existing file pointer...
+      Ioss::SerializeIO serializeIO_(this);
       int exoid = get_file_pointer();
 
       // Check name for '/' which is not allowed since it is the
@@ -3255,6 +3258,7 @@ namespace Ioex {
 
   int BaseDatabaseIO::num_child_group_nl()
   {
+    Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
     exoid = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
     int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
@@ -3264,7 +3268,7 @@ namespace Ioex {
   bool BaseDatabaseIO::open_child_group_nl(int index)
   {
     if(index < 0) return false;
-
+    Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
     int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     if(num_children == 0) return true;
