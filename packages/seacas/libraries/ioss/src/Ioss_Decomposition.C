@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cassert>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <numeric>
 
 #if !defined(NO_ZOLTAN_SUPPORT)
