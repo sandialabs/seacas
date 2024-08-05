@@ -101,6 +101,8 @@ namespace Ioex {
 
     void release_memory_nl() override;
 
+    int  num_child_group_nl() override;
+    bool open_child_group_nl(int index) override;
     bool open_root_group_nl() override;
     bool open_group_nl(const std::string &group_name) override;
     bool create_subgroup_nl(const std::string &group_name) override;

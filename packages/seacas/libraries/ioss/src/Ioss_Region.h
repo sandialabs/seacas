@@ -290,6 +290,10 @@ namespace Ioss {
       return topologyObserver;
     }
 
+    void reset_topology_modification();
+    void set_topology_modification(unsigned int type);
+    unsigned int get_topology_modification() const;
+
     void start_new_output_database_entry(int steps = 0);
 
     void         set_topology_change_count(unsigned int new_count) { dbChangeCount = new_count; }
