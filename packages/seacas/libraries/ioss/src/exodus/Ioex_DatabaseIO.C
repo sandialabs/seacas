@@ -172,8 +172,8 @@ namespace Ioex {
       }
     }
 
-    open_root_group();
-    open_child_group(0);
+    open_root_group_nl();
+    open_child_group_nl(0);
   }
 
   bool DatabaseIO::check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,

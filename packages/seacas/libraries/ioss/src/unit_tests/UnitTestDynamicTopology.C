@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -21,18 +21,16 @@
 #include <unistd.h> // for unlink
 
 #include "Ionit_Initializer.h"
-#include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
-#include "Ioss_Field.h"      // for Field, etc
-#include "Ioss_IOFactory.h"
-#include "Ioss_ParallelUtils.h"
-#include "Ioss_Property.h"
-#include "Ioss_FileInfo.h"
+#include "Ioss_DBUsage.h"
 #include "Ioss_ElementBlock.h"
+#include "Ioss_Field.h"      // for Field, etc
+#include "Ioss_FileInfo.h"
+#include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
 #include "Ioss_Region.h"
-
 #include "Ioss_Utils.h"
 
 #include "exodus/Ioex_DatabaseIO.h"
