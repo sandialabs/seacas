@@ -10,7 +10,7 @@
 
 #if defined(SEACAS_HAVE_EXODUS)
 #include "exodus/Ioex_IOFactory.h"
-#if defined(SECAS_HAVE_EXONULL)
+#if defined(SEACAS_HAVE_EXONULL)
 #include "exonull/Ioexnl_IOFactory.h"
 #endif
 #endif
@@ -76,7 +76,7 @@ namespace Ioss::Init {
 
 #if defined(SEACAS_HAVE_EXODUS)
     Ioex::IOFactory::factory(); // Exodus
-#if defined(SECAS_HAVE_EXONULL)
+#if defined(SEACAS_HAVE_EXONULL)
     Ioexnl::IOFactory::factory();
 #endif
 #endif
