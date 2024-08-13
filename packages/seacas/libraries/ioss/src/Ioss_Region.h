@@ -310,9 +310,11 @@ namespace Ioss {
     bool model_is_written() const { return modelWritten; }
     bool transient_is_written() const { return transientWritten; }
 
-    bool load_group_mesh(const std::string &group_name);
+    bool load_group_mesh(const std::string &child_group_name);
+    bool load_group_mesh(const int child_group_index);
 
   protected:
+    void update_dynamic_topology();
     void clone_and_replace_output_database(int steps = 0);
     void add_output_database_group(int steps = 0, bool force_addition = false);
 
@@ -378,6 +380,8 @@ namespace Ioss {
 
     bool modelWritten{false};
     bool transientWritten{false};
+    bool fileGroupsStarted{false};
+
   };
 } // namespace Ioss
 

@@ -548,7 +548,7 @@ void run_single_file_simple_topology_change(const OutputParams& params)
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
 
-  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_SINGLE_FILE;
+  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer = std::make_shared<Observer>(i_region, params.elemFieldName, fileControlOption);
   o_region.register_mesh_modification_observer(observer);
 
@@ -609,7 +609,7 @@ TEST(TestDynamicWrite, single_file_groups_not_enabled)
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
 
-  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_SINGLE_FILE;
+  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
   EXPECT_THROW(o_region.register_mesh_modification_observer(observer), std::runtime_error);
   cleanup_single_file(outFile);
@@ -871,7 +871,7 @@ void run_single_file_simple_topology_change_with_multiple_output(const std::stri
   EXPECT_TRUE(o_database1 != nullptr);
   EXPECT_TRUE(o_database1->ok(true));
 
-  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_SINGLE_FILE;
+  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer1 = std::make_shared<Observer>(i_region, params1.elemFieldName, fileControlOption);
   broker->register_observer(model, observer1, o_region1);
 
@@ -967,7 +967,7 @@ TEST(TestDynamicWrite, same_model_triggers_same_modification_for_all_observers)
     EXPECT_TRUE(o_database1 != nullptr);
     EXPECT_TRUE(o_database1->ok(true));
 
-    auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_SINGLE_FILE;
+    auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
     auto observer1 = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
     broker->register_observer(model, observer1, o_region1);
 
