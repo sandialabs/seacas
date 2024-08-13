@@ -56,7 +56,7 @@ namespace Ioss {
     TOPOLOGY_UNKNOWN        = (1U <<  8), //!< Unknown change, recreate from scratch.
   };
 
-  enum class FileControlOption { CONTROL_NONE, CONTROL_AUTO_MULTI_FILE, CONTROL_AUTO_SINGLE_FILE };
+  enum class FileControlOption { CONTROL_NONE, CONTROL_AUTO_MULTI_FILE, CONTROL_AUTO_GROUP_FILE };
 
   class IOSS_EXPORT DynamicTopologyObserver
   {
@@ -209,7 +209,7 @@ namespace Ioss {
     void clone_and_replace_output_database(int steps = 0);
     void add_output_database_group(int steps = 0);
 
-    static std::string group_prefix() { return "IO_FILE_GROUP-"; }
+    static std::string group_prefix() { return "IOSS_FILE_GROUP-"; }
 
   private:
     Region     *m_region{nullptr};
