@@ -866,7 +866,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2 || exit
-	    git checkout v2.10.1
+	    git am ../0001-Fix-ordering-in-flex_target-command.patch
             rm -rf build
             mkdir build
             cd build || exit
