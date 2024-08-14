@@ -1,0 +1,26 @@
+From b2457b17259535a935d8b9d25454bc9d335697cc Mon Sep 17 00:00:00 2001
+From: Greg Sjaardema <gdsjaar@sandia.gov>
+Date: Wed, 14 Aug 2024 09:04:05 -0600
+Subject: [PATCH] Fix ordering in flex_target command
+
+---
+ source/adios2/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/adios2/CMakeLists.txt b/source/adios2/CMakeLists.txt
+index cbc59f5..1bebf6c 100644
+--- a/source/adios2/CMakeLists.txt
++++ b/source/adios2/CMakeLists.txt
+@@ -150,8 +150,8 @@ if (ADIOS2_HAVE_Derived_Variable)
+       DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.h)
+     FLEX_TARGET(MyScanner
+       toolkit/derived/parser/lexer.l
+-      COMPILE_FLAGS "-o lexer.cpp --header-file=lexer.h" 
+       ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
++      COMPILE_FLAGS "--header-file=lexer.h"
+       DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/lexer.h)
+     ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
+   endif()
+-- 
+2.39.3 (Apple Git-146)
+

@@ -48,6 +48,9 @@ void IOShell::Interface::enroll_options()
                   "Database type for output file:"
 #if defined(SEACAS_HAVE_EXODUS)
                   " exodus"
+#if defined(SEACAS_HAVE_EXONULL)
+                  " exonull"
+#endif
 #endif
 #if defined(SEACAS_HAVE_CGNS)
                   " cgns"
@@ -55,7 +58,7 @@ void IOShell::Interface::enroll_options()
 #if defined(SEACAS_HAVE_FAODEL)
                   " faodel"
 #endif
-                  ".\n\t\tIf not specified, guess from extension or exodus is the default.",
+                  " null.\n\t\tIf not specified, guess from extension or exodus is the default.",
                   "unknown");
   options_.enroll("compare", Ioss::GetLongOption::NoValue,
                   "Compare the contents of the INPUT and OUTPUT files.", nullptr);

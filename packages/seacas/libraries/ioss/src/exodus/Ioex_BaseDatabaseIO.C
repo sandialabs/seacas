@@ -514,6 +514,7 @@ namespace Ioex {
     // Get existing file pointer...
     bool success = false;
 
+    Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
 
     int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
@@ -548,6 +549,7 @@ namespace Ioex {
     // Get existing file pointer...
     bool success = false;
 
+    Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
 
     m_groupName = group_name;
@@ -568,6 +570,7 @@ namespace Ioex {
     bool success = false;
     if (!is_input()) {
       // Get existing file pointer...
+      Ioss::SerializeIO serializeIO_(this);
       int exoid = get_file_pointer();
 
       // Check name for '/' which is not allowed since it is the
@@ -3259,6 +3262,52 @@ namespace Ioex {
 
     activeNodeSetNodesIndex.clear();
   }
+
+  int BaseDatabaseIO::num_child_group_nl()
+  {
+    Ioss::SerializeIO serializeIO_(this);
+    int exoid = get_file_pointer();
+    exoid = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
+    int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+    return num_children;
+  }
+
+  bool BaseDatabaseIO::open_child_group_nl(int index)
+  {
+    if(index < 0) return false;
+    Ioss::SerializeIO serializeIO_(this);
+    int exoid = get_file_pointer();
+    int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+    if(num_children == 0) return true;
+
+    if(index >= num_children) return false;
+
+    std::vector<int> children(num_children);
+
+    int ierr = ex_get_group_ids(exoid, nullptr, Data(children));
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    exoid = children[index];
+
+    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length+1, '\0');
+
+    // Get name of this group...
+    int   idum;
+    float rdum;
+    ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    m_exodusFilePtr = exoid;
+    m_groupName = std::string(group_name.data());
+
+    return true;
+  }
+
 } // namespace Ioex
 
 namespace {
