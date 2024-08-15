@@ -74,7 +74,7 @@ SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
   Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
-  ADIOS2          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLADIOS2.cmake"    EX
+  ADIOS2          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  EX
   Catalyst2       "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLCatalyst2.cmake" EX
   # TPLs defined in Zoltan/cmake/Dependencies.cmake that are never enabled
   PaToH           "cmake/TPLs/"    EX
