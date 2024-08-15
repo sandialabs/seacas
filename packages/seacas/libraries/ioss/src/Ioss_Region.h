@@ -33,6 +33,7 @@
 #include <memory>
 #include <sstream>
 #include <string>  // for string, operator<
+#include <tuple>
 #include <utility> // for pair
 #include <vector>  // for vector
 
@@ -312,6 +313,10 @@ namespace Ioss {
 
     bool load_group_mesh(const std::string &child_group_name);
     bool load_group_mesh(const int child_group_index);
+
+    std::string get_group_name() const;
+
+    IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(const double targetTime);
 
   protected:
     void update_dynamic_topology();

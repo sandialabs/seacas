@@ -308,6 +308,56 @@ namespace {
       entity->field_erase(role);
     }
   }
+
+  struct NearestGroupState
+  {
+    std::string group{"/"};
+    int nearestState{-1};
+    double nearestTime{-std::numeric_limits<double>::max()};
+  };
+
+  void get_state_time_round_down(Ioss::DatabaseIO *db, const double targetTime, NearestGroupState& loc)
+  {
+    std::vector<double> timesteps = db->get_db_step_times();
+    int stepCount = timesteps.size();
+
+    double minTimeDiff = loc.nearestState < 0 ? std::numeric_limits<double>::max() : std::abs(loc.nearestTime - targetTime);
+
+    for(int istep = 1; istep <= stepCount; istep++) {
+      double stateTime = timesteps[istep-1];
+      double stepTimeDiff = std::abs(stateTime - targetTime);
+      if(stepTimeDiff <= minTimeDiff) {
+        minTimeDiff = stepTimeDiff;
+        loc.nearestTime = stateTime;
+        loc.nearestState = istep;
+        loc.group = db->get_group_name();
+      }
+    }
+  }
+
+  void locate_state(Ioss::DatabaseIO *db, const double targetTime, NearestGroupState& loc)
+  {
+    // Get state count and all states...
+    std::vector<double> timesteps = db->get_db_step_times();
+    int stepCount = timesteps.size();
+
+    if(targetTime < 0.0) {
+      get_state_time_round_down(db, targetTime, loc);
+    }
+    else {
+      double minTimeDiff = loc.nearestState < 0 ? std::numeric_limits<double>::max() : std::fabs(targetTime - loc.nearestTime);
+      for(int istep = 1; istep <= stepCount; istep++) {
+        double stateTime = timesteps[istep-1];
+        double stepTimeDiff = std::fabs(targetTime - stateTime);
+        if(stepTimeDiff < minTimeDiff) {
+          minTimeDiff = stepTimeDiff;
+          loc.nearestTime = stateTime;
+          loc.nearestState = istep;
+          loc.group = db->get_group_name();
+        }
+      }
+    }
+  }
 } // namespace
 
 namespace Ioss {
@@ -3054,5 +3104,29 @@ namespace Ioss {
       }
       topologyObserver->reset_topology_modification();
     }
+  }
+
+  std::string Region::get_group_name() const
+  {
+    return get_database()->get_group_name();
+  }
+
+  std::tuple<std::string, int, double> Region::locate_db_state(const double targetTime)
+  {
+    NearestGroupState loc;
+
+    auto db = get_database();
+    std::string currentGroup = db->get_group_name();
+
+    for(int i=0; i<db->num_child_group(); i++) {
+      db->open_root_group();
+      db->open_child_group(i);
+      locate_state(db, targetTime, loc);
+    }
+
+    db->open_root_group();
+    db->open_group(currentGroup);
+
+    return std::make_tuple(loc.group, loc.nearestState, loc.nearestTime);
   }
 } // namespace Ioss

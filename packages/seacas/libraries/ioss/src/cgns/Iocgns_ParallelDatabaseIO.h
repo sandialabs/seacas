@@ -113,6 +113,7 @@ namespace Iocgns {
     int64_t handle_node_ids(void *ids, int64_t num_to_get) const;
     void    finalize_database() const override;
     void    get_step_times_nl() override;
+    std::vector<double> get_db_step_times_nl() override;
     void    write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,

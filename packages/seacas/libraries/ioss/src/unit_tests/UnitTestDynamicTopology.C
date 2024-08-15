@@ -17,12 +17,14 @@
 #include <functional>
 #include <iostream>
 #include <random>
+#include <cctype>    // std::tolower
 
 #include <unistd.h> // for unlink
 
 #include "Ionit_Initializer.h"
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_DBUsage.h"
+#include "Ioss_DynamicTopology.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_Field.h"      // for Field, etc
 #include "Ioss_FileInfo.h"
@@ -1103,6 +1105,57 @@ TEST(TestDynamicRead, single_file_simple_topology_modification)
   cleanup_single_file(outFile);
   run_single_file_simple_topology_change(params);
   read_and_test_single_file_simple_topology_change(params);
+  cleanup_single_file(outFile);
+}
+
+std::tuple<std::string, int, double> read_and_locate_db_state(const OutputParams& params, const double targetTime)
+{
+  Ioss::PropertyManager propertyManager;
+
+  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", params.outFile, Ioss::READ_RESTART,
+                                                 Ioss::ParallelUtils::comm_world(),
+                                                 propertyManager);
+
+  Ioss::Region region(db, "input_model");
+  EXPECT_TRUE(db != nullptr);
+  EXPECT_TRUE(db->ok(true));
+
+  return region.locate_db_state(targetTime);
+}
+
+TEST(TestDynamicRead, single_file_locate_db_time_state)
+{
+  std::string outFile("singleFileManyBlocks2.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(0.0, true, false)
+        .add(1.0, true, true)
+        .add(2.0, true, false)
+        .add(3.0, true, true)
+        .add(4.0, true, true)
+        .add(5.0, true, false);
+
+  cleanup_single_file(outFile);
+  run_single_file_simple_topology_change(params);
+
+  double targetTime = 3.2;
+
+  std::string group;
+  int nearestState;
+  double nearestTime;
+
+  std::tie(group, nearestState, nearestTime) = read_and_locate_db_state(params, targetTime);
+
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix()+"3";
+  int goldState = 1;
+  double goldTime = 3.0;
+
+  EXPECT_EQ(goldGroup, group);
+  EXPECT_EQ(goldState, nearestState);
+  EXPECT_EQ(goldTime, nearestTime);
+
   cleanup_single_file(outFile);
 }
 

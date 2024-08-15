@@ -303,6 +303,8 @@ namespace Ioss {
       return groups_describe_nl(return_full_names);
     }
 
+    IOSS_NODISCARD virtual std::string get_group_name() const { return "/"; }
+
     /** \brief Set the database to the given State.
      *
      *  All transitions must begin from the 'STATE_CLOSED' state or be to
@@ -356,7 +358,13 @@ namespace Ioss {
     void get_step_times()
     {
       IOSS_FUNC_ENTER(m_);
-      return get_step_times_nl();
+      get_step_times_nl();
+    }
+
+    std::vector<double> get_db_step_times()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return get_db_step_times_nl();
     }
 
     IOSS_NODISCARD virtual bool internal_edges_available() const { return false; }
@@ -805,6 +813,7 @@ namespace Ioss {
 
     virtual void read_meta_data_nl() = 0;
     virtual void get_step_times_nl() {}
+    virtual std::vector<double> get_db_step_times_nl() { return std::vector<double>(); }
 
     virtual bool begin_state_nl(int state, double time);
     virtual bool end_state_nl(int state, double time);

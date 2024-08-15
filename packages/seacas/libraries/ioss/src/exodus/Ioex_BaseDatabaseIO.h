@@ -90,6 +90,8 @@ namespace Ioex {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     IOSS_NODISCARD unsigned entity_field_support() const override;
 
+    IOSS_NODISCARD std::string get_group_name() const override { return m_groupName; }
+
   protected:
     // Check to see if database state is ok...
     // If 'write_message' true, then output a warning message indicating the problem.

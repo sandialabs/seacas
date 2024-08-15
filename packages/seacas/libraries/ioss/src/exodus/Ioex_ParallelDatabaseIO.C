@@ -913,17 +913,20 @@ namespace Ioex {
     }
   }
 
-  void ParallelDatabaseIO::get_step_times_nl()
+  std::vector<double> ParallelDatabaseIO::internal_get_step_times_nl(bool setRegionTimeSteps)
   {
     double              last_time      = DBL_MAX;
+    int                 tstepCount     = 0;
     int                 timestep_count = 0;
     std::vector<double> tsteps(0);
 
+    int& l_timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
+
     {
       timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
-      m_timestepCount = timestep_count;
+      l_timestepCount = timestep_count;
       if (timestep_count <= 0) {
-        return;
+        return tsteps;
       }
 
       // For an exodusII file, timesteps are global and are stored in the region.
@@ -959,9 +962,15 @@ namespace Ioex {
     last_time = std::min(last_time, max_time);
 
     Ioss::Region *this_region = get_region();
+    int numSteps = 0;
     for (int i = 0; i < max_step; i++) {
       if (tsteps[i] <= last_time) {
-        this_region->add_state(tsteps[i] * timeScaleFactor);
+        if(setRegionTimeSteps) {
+          this_region->add_state(tsteps[i] * timeScaleFactor);
+        }
+
+        tsteps[i] *= timeScaleFactor;
+        numSteps++;
       }
       else {
         if (myProcessor == 0 && max_time == std::numeric_limits<double>::max()) {
@@ -977,6 +986,19 @@ namespace Ioex {
         }
       }
     }
+
+    tsteps.resize(numSteps);
+    return tsteps;
+  }
+
+  std::vector<double> ParallelDatabaseIO::get_db_step_times_nl()
+  {
+    return internal_get_step_times_nl(false);
+  }
+
+  void ParallelDatabaseIO::get_step_times_nl()
+  {
+    internal_get_step_times_nl(true);
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(ex_entity_type type) const

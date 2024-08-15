@@ -69,6 +69,8 @@ namespace Ioex {
 
   private:
     void get_step_times_nl() override;
+    std::vector<double> get_db_step_times_nl() override;
+    std::vector<double> internal_get_step_times_nl(bool setRegionTimeSteps);
 
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                          bool abort_if_error) const override;

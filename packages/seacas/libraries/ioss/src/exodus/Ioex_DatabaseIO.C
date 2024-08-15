@@ -641,17 +641,20 @@ namespace Ioex {
     }
   }
 
-  void DatabaseIO::get_step_times_nl()
+  std::vector<double> DatabaseIO::internal_get_step_times_nl(bool setRegionTimeSteps)
   {
     bool                exists         = false;
     double              last_time      = DBL_MAX;
+    int                 tstepCount     = 0;
     std::vector<double> tsteps(0);
+
+    int& timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
 
     if (dbUsage == Ioss::WRITE_HISTORY) {
       if (myProcessor == 0) {
-        m_timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
-        if (m_timestepCount <= 0) {
-          return;
+        timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+        if (timestepCount <= 0) {
+          return tsteps;
         }
 
         // For an exodus file, timesteps are global and are stored in the region.
@@ -659,56 +662,64 @@ namespace Ioex {
         // Read the timesteps and add them to the region.
         // Since we can't access the Region's stateCount directly, we just add
         // all of the steps and assume the Region is dealing with them directly...
-        tsteps.resize(m_timestepCount);
+        tsteps.resize(timestepCount);
 
         int error = ex_get_all_times(get_file_pointer(), Data(tsteps));
         if (error < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
 
-        int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", m_timestepCount);
-        max_step     = std::min(max_step, m_timestepCount);
+        int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestepCount);
+        max_step     = std::min(max_step, timestepCount);
 
         double max_time =
             properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
 
         Ioss::Region *this_region = get_region();
+        int numSteps = 0;
         for (int i = 0; i < max_step; i++) {
           if (tsteps[i] <= max_time) {
-            this_region->add_state_nl(tsteps[i] * timeScaleFactor);
+            if(setRegionTimeSteps) {
+              this_region->add_state_nl(tsteps[i] * timeScaleFactor);
+            }
+
+            tsteps[i] *= timeScaleFactor;
+            numSteps++;
           }
         }
+
+        tsteps.resize(numSteps);
       }
     }
     else {
       {
         Ioss::SerializeIO serializeIO_(this);
-        m_timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
-	// Need to sync timestep count across ranks if parallel...
-	if (isParallel) {
-	  auto min_timestep_count = util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MIN);
-	  if (min_timestep_count == 0) {
-	    auto max_timestep_count = util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MAX);
-	    if (max_timestep_count != 0) {
-	      if (myProcessor == 0) {
-		// NOTE: Don't want to warn on all processors if the
-		// timestep count is zero on some, but not all ranks.
-		fmt::print(Ioss::WarnOut(),
-			   "At least one database has no timesteps.  No times will be read on ANY"
-			   " database for consistency.\n");
-	      }
-	    }
-	  }
-	  m_timestepCount = min_timestep_count;
-	}
-	
-        if (m_timestepCount <= 0) {
-          return;
+        timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+        // Need to sync timestep count across ranks if parallel...
+        if (isParallel) {
+          auto min_timestep_count = util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MIN);
+          if (min_timestep_count == 0) {
+            auto max_timestep_count = util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MAX);
+            if (max_timestep_count != 0) {
+              if (myProcessor == 0) {
+                // NOTE: Don't want to warn on all processors if the
+                // timestep count is zero on some, but not all ranks.
+                fmt::print(Ioss::WarnOut(),
+                    "At least one database has no timesteps.  No times will be read on ANY"
+                    " database for consistency.\n");
+              }
+            }
+          }
+          timestepCount = min_timestep_count;
+        }
+
+        if (timestepCount <= 0) {
+          return tsteps;
         }
 
         // For an exodus file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
-        tsteps.resize(m_timestepCount, -std::numeric_limits<double>::max());
+        tsteps.resize(timestepCount, -std::numeric_limits<double>::max());
 
         // The `EXODUS_CALL_GET_ALL_TIMES=NO` is typically only used in
         // isSerialParallel mode and the client is responsible for
@@ -723,7 +734,7 @@ namespace Ioex {
         // involves lseeks throughout the file.
         bool call_ex_get_all_times = true;
         Ioss::Utils::check_set_bool_property(properties, "EXODUS_CALL_GET_ALL_TIMES",
-                                             call_ex_get_all_times);
+            call_ex_get_all_times);
         if (call_ex_get_all_times) {
           int error = ex_get_all_times(get_file_pointer(), Data(tsteps));
           if (error < 0) {
@@ -754,17 +765,23 @@ namespace Ioex {
       // One use case is that job is restarting at a time prior to what has been
       // written to the results file, so want to start appending after
       // restart time instead of at end time on database.
-      int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", m_timestepCount);
-      max_step     = std::min(max_step, m_timestepCount);
+      int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestepCount);
+      max_step     = std::min(max_step, timestepCount);
 
       double max_time =
           properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
       last_time = std::min(last_time, max_time);
 
       Ioss::Region *this_region = get_region();
+      int numSteps = 0;
       for (int i = 0; i < max_step; i++) {
         if (tsteps[i] <= last_time) {
-          this_region->add_state_nl(tsteps[i] * timeScaleFactor);
+          if(setRegionTimeSteps) {
+            this_region->add_state_nl(tsteps[i] * timeScaleFactor);
+          }
+
+          tsteps[i] *= timeScaleFactor;
+          numSteps++;
         }
         else {
           if (myProcessor == 0 && max_time == std::numeric_limits<double>::max()) {
@@ -774,14 +791,28 @@ namespace Ioex {
             // 0... Need better warnings which won't overload in the
             // worst case...
             fmt::print(Ioss::WarnOut(),
-                       "Skipping step {} at time {} in database file\n\t{}.\n"
-                       "\tThe data for that step is possibly corrupt since the last time written "
-                       "successfully was {}.\n",
-                       fmt::group_digits(i + 1), tsteps[i], get_filename(), last_time);
+                "Skipping step {} at time {} in database file\n\t{}.\n"
+                "\tThe data for that step is possibly corrupt since the last time written "
+                "successfully was {}.\n",
+                fmt::group_digits(i + 1), tsteps[i], get_filename(), last_time);
           }
         }
       }
+
+      tsteps.resize(numSteps);
     }
+
+    return tsteps;
+  }
+
+  std::vector<double> DatabaseIO::get_db_step_times_nl()
+  {
+    return internal_get_step_times_nl(false);
+  }
+
+  void DatabaseIO::get_step_times_nl()
+  {
+    internal_get_step_times_nl(true);
   }
 
   void DatabaseIO::read_communication_metadata()
