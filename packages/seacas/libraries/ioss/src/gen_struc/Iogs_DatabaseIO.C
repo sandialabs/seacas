@@ -494,6 +494,8 @@ namespace Iogs {
     std::vector<double> timesteps;
 
     int time_step_count = m_generatedMesh->timestep_count();
+    timesteps.reserve(time_step_count);
+
     for (int i = 0; i < time_step_count; i++) {
       timesteps.push_back(i);
     }

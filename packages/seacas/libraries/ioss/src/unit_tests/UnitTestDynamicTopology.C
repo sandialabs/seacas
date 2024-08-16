@@ -549,6 +549,7 @@ void run_single_file_simple_topology_change(const OutputParams& params)
   Ioss::Region o_region(o_database, "output_model");
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
+  EXPECT_TRUE(o_database->supports_group());
 
   auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer = std::make_shared<Observer>(i_region, params.elemFieldName, fileControlOption);
@@ -610,6 +611,7 @@ TEST(TestDynamicWrite, single_file_groups_not_enabled)
   Ioss::Region o_region(o_database, "output_model");
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
+  EXPECT_FALSE(o_database->supports_group());
 
   auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
@@ -651,6 +653,7 @@ TEST(TestDynamicWrite, create_subgroup_with_file_reopen)
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
+    EXPECT_TRUE(o_database->supports_group());
     o_database->create_subgroup("GROUP_1");
   }
 
@@ -662,6 +665,7 @@ TEST(TestDynamicWrite, create_subgroup_with_file_reopen)
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
+    EXPECT_TRUE(o_database->supports_group());
 
     // Group pointer is automatically at first child
     o_database->create_subgroup("GROUP_2");
@@ -714,6 +718,7 @@ TEST(TestDynamicWrite, create_subgroup_with_file_persistence_and_child_group)
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
+    EXPECT_TRUE(o_database->supports_group());
 
     o_database->create_subgroup("GROUP_1");
 
@@ -768,6 +773,7 @@ TEST(TestDynamicWrite, create_subgroup_with_file_persistence_and_no_child_group)
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
+    EXPECT_TRUE(o_database->supports_group());
 
     o_database->create_subgroup("GROUP_1");
 
@@ -872,6 +878,7 @@ void run_single_file_simple_topology_change_with_multiple_output(const std::stri
   Ioss::Region o_region1(o_database1, "region1");
   EXPECT_TRUE(o_database1 != nullptr);
   EXPECT_TRUE(o_database1->ok(true));
+  EXPECT_TRUE(o_database1->supports_group());
 
   auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer1 = std::make_shared<Observer>(i_region, params1.elemFieldName, fileControlOption);
@@ -883,6 +890,7 @@ void run_single_file_simple_topology_change_with_multiple_output(const std::stri
   Ioss::Region o_region2(o_database2, "region2");
   EXPECT_TRUE(o_database2 != nullptr);
   EXPECT_TRUE(o_database2->ok(true));
+  EXPECT_TRUE(o_database2->supports_group());
 
   auto observer2 = std::make_shared<Observer>(i_region, params2.elemFieldName, fileControlOption);
   broker->register_observer(model, observer2, o_region2);
@@ -968,6 +976,7 @@ TEST(TestDynamicWrite, same_model_triggers_same_modification_for_all_observers)
     Ioss::Region o_region1(o_database1, "region1");
     EXPECT_TRUE(o_database1 != nullptr);
     EXPECT_TRUE(o_database1->ok(true));
+    EXPECT_TRUE(o_database1->supports_group());
 
     auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
     auto observer1 = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
@@ -979,6 +988,7 @@ TEST(TestDynamicWrite, same_model_triggers_same_modification_for_all_observers)
     Ioss::Region o_region2(o_database2, "region2");
     EXPECT_TRUE(o_database2 != nullptr);
     EXPECT_TRUE(o_database2->ok(true));
+    EXPECT_TRUE(o_database2->supports_group());
 
     auto observer2 = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
     broker->register_observer(model, observer2, o_region2);
@@ -1029,6 +1039,7 @@ void read_and_test_single_file_simple_topology_change(const OutputParams& params
   Ioss::Region i_region(i_database, "input_model");
   EXPECT_TRUE(i_database != nullptr);
   EXPECT_TRUE(i_database->ok(true));
+  EXPECT_TRUE(i_database->supports_group());
 
   auto numSteps = params.output_steps.size();
 
@@ -1119,13 +1130,100 @@ std::tuple<std::string, int, double> read_and_locate_db_state(const OutputParams
   Ioss::Region region(db, "input_model");
   EXPECT_TRUE(db != nullptr);
   EXPECT_TRUE(db->ok(true));
+  EXPECT_TRUE(db->supports_group());
 
   return region.locate_db_state(targetTime);
 }
 
+void run_single_file_locate_db_time_state(const std::string& outFile,
+                                          const std::string& elemFieldName,
+                                          const OutputParams& params,
+                                          double targetTime,
+                                          const std::string& goldGroup,
+                                          int goldState,
+                                          double goldTime)
+{
+  cleanup_single_file(outFile);
+  run_single_file_simple_topology_change(params);
+
+  std::string group;
+  int nearestState;
+  double nearestTime;
+
+  std::tie(group, nearestState, nearestTime) = read_and_locate_db_state(params, targetTime);
+
+  EXPECT_EQ(goldGroup, group);
+  EXPECT_EQ(goldState, nearestState);
+  EXPECT_EQ(goldTime, nearestTime);
+
+  cleanup_single_file(outFile);
+}
+
 TEST(TestDynamicRead, single_file_locate_db_time_state)
 {
-  std::string outFile("singleFileManyBlocks2.g");
+  std::string outFile("singleFileManyBlocksPositiveTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(0.0, true, false)
+        .add(1.0, true, true)
+        .add(2.0, true, false)
+        .add(3.0, true, true)
+        .add(4.0, true, true)
+        .add(5.0, true, false);
+
+  double targetTime = 3.5;
+
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix()+"3";
+  int goldState = 1;
+  double goldTime = 3.0;
+
+  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldGroup, goldState, goldTime);
+}
+
+TEST(TestDynamicRead, single_file_locate_db_time_state_all_negative_time)
+{
+  std::string outFile("singleFileManyBlocksNegativeTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(-5.0, true, false)
+        .add(-4.0, true, true)
+        .add(-3.0, true, false)
+        .add(-2.0, true, true)
+        .add(-1.0, true, true)
+        .add(-0.0, true, false);
+
+  double targetTime = -1.5;
+
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix()+"4";
+  int goldState = 1;
+  double goldTime = -1.0;
+
+  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldGroup, goldState, goldTime);
+}
+
+std::tuple<std::string, int, double> read_and_locate_db_max_time(const OutputParams& params)
+{
+  Ioss::PropertyManager propertyManager;
+
+  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", params.outFile, Ioss::READ_RESTART,
+                                                 Ioss::ParallelUtils::comm_world(),
+                                                 propertyManager);
+
+  Ioss::Region region(db, "input_model");
+  EXPECT_TRUE(db != nullptr);
+  EXPECT_TRUE(db->ok(true));
+  EXPECT_TRUE(db->supports_group());
+
+  return region.get_db_max_time();
+}
+
+TEST(TestDynamicRead, single_file_locate_db_max_time)
+{
+  std::string outFile("singleFileManyBlocksMaxTime.g");
   std::string elemFieldName = "elem_field";
 
   OutputParams params(outFile, elemFieldName);
@@ -1140,25 +1238,72 @@ TEST(TestDynamicRead, single_file_locate_db_time_state)
   cleanup_single_file(outFile);
   run_single_file_simple_topology_change(params);
 
-  double targetTime = 3.2;
+  std::string maxGroup;
+  int maxState;
+  double maxTime;
 
-  std::string group;
-  int nearestState;
-  double nearestTime;
+  std::tie(maxGroup, maxState, maxTime) = read_and_locate_db_max_time(params);
 
-  std::tie(group, nearestState, nearestTime) = read_and_locate_db_state(params, targetTime);
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix() + "4";
+  int goldState = 2;
+  double goldTime = 5.0;
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix()+"3";
-  int goldState = 1;
-  double goldTime = 3.0;
-
-  EXPECT_EQ(goldGroup, group);
-  EXPECT_EQ(goldState, nearestState);
-  EXPECT_EQ(goldTime, nearestTime);
+  EXPECT_EQ(goldGroup, maxGroup);
+  EXPECT_EQ(goldState, maxState);
+  EXPECT_EQ(goldTime, maxTime);
 
   cleanup_single_file(outFile);
 }
 
+std::tuple<std::string, int, double> read_and_locate_db_min_time(const OutputParams& params)
+{
+  Ioss::PropertyManager propertyManager;
+
+  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", params.outFile, Ioss::READ_RESTART,
+                                                 Ioss::ParallelUtils::comm_world(),
+                                                 propertyManager);
+
+  Ioss::Region region(db, "input_model");
+  EXPECT_TRUE(db != nullptr);
+  EXPECT_TRUE(db->ok(true));
+  EXPECT_TRUE(db->supports_group());
+
+  return region.get_db_min_time();
+}
+
+TEST(TestDynamicRead, single_file_locate_db_min_time)
+{
+  std::string outFile("singleFileManyBlocksMinTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(0.0, true, false)
+        .add(1.0, true, true)
+        .add(2.0, true, false)
+        .add(3.0, true, true)
+        .add(4.0, true, true)
+        .add(5.0, true, false);
+
+  cleanup_single_file(outFile);
+  run_single_file_simple_topology_change(params);
+
+  std::string minGroup;
+  int minState;
+  double minTime;
+
+  std::tie(minGroup, minState, minTime) = read_and_locate_db_min_time(params);
+
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix() + "1";
+  int goldState = 1;
+  double goldTime = 0.0;
+
+  EXPECT_EQ(goldGroup, minGroup);
+  EXPECT_EQ(goldState, minState);
+  EXPECT_EQ(goldTime, minTime);
+
+  cleanup_single_file(outFile);
+}
 }
 
 

@@ -156,11 +156,21 @@ namespace Ioss {
     // on the database if cycle and overlay are being used.
     IOSS_NODISCARD std::pair<int, double> get_max_time() const;
 
+    // Return a tuple consisting of the step (1-based) corresponding to
+    // the maximum time across all groups on the database, the corresponding
+    // maximum time value and the corresponding group.
+    IOSS_NODISCARD std::tuple<std::string, int, double> get_db_max_time() const;
+
     // Return a pair consisting of the step (1-based) corresponding to
     // the minimum time on the database and the corresponding minimum
     // time value. Note that this may not necessarily be the first step
     // on the database if cycle and overlay are being used.
     IOSS_NODISCARD std::pair<int, double> get_min_time() const;
+
+    // Return a tuple consisting of the step (1-based) corresponding to
+    // the minimum time across all groups on the database, the corresponding
+    // minimum time value and the corresponding group.
+    IOSS_NODISCARD std::tuple<std::string, int, double> get_db_min_time() const;
 
     // Functions for an output region...
     bool add(NodeBlock *node_block);
@@ -314,11 +324,10 @@ namespace Ioss {
     bool load_group_mesh(const std::string &child_group_name);
     bool load_group_mesh(const int child_group_index);
 
-    std::string get_group_name() const;
-
-    IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(const double targetTime);
+    IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime);
 
   protected:
+    std::string get_group_name() const;
     void update_dynamic_topology();
     void clone_and_replace_output_database(int steps = 0);
     void add_output_database_group(int steps = 0, bool force_addition = false);

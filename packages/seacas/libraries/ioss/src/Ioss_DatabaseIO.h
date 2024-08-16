@@ -246,6 +246,12 @@ namespace Ioss {
       flush_database_nl();
     }
 
+    bool supports_group()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return supports_group_nl();
+    }
+
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
      *
@@ -279,24 +285,43 @@ namespace Ioss {
       return create_subgroup_nl(group_name);
     }
 
+    /** \brief If a database type supports groups, and if the database
+     *         contains groups, open the root group for the current group.
+     */
     bool open_root_group()
     {
       IOSS_FUNC_ENTER(m_);
       return open_root_group_nl();
     }
 
+    /** \brief If a database type supports groups, and if the database
+     *         contains groups, return the number of child groups for
+     *         the current group.
+     */
     int num_child_group()
     {
       IOSS_FUNC_ENTER(m_);
       return num_child_group_nl();
     }
 
-    bool open_child_group(int index)
+    /** \brief If a database type supports groups, open the child group
+     *         of the current group at the specified [zero-based] index
+     *
+     *  \param[in] child_index The [zero-based] index of the subgroup to open.
+     *  \returns True if successful.
+     */
+    bool open_child_group(int child_index)
     {
       IOSS_FUNC_ENTER(m_);
-      return open_child_group_nl(index);
+      return open_child_group_nl(child_index);
     }
 
+    /** \brief If a database type supports groups, return a list of group names
+     *
+     *  \param[in] return_full_names Flag to control return of relative
+     *             or full group name paths.
+     *  \returns True if successful.
+     */
     Ioss::NameList groups_describe(bool return_full_names = false)
     {
       IOSS_FUNC_ENTER(m_);
@@ -361,6 +386,16 @@ namespace Ioss {
       get_step_times_nl();
     }
 
+    /** \brief Return the list of timesteps in the database contingent on ceetain
+     *         controlling properties.
+     *
+     *  This is different from get_step_times() in that it does not set timestep
+     *  data on the region. If the database supports groups, it will return the
+     *  timestep data for the current group
+     *
+     *  \returns timesteps.
+     *
+     */
     std::vector<double> get_db_step_times()
     {
       IOSS_FUNC_ENTER(m_);
@@ -801,6 +836,7 @@ namespace Ioss {
     virtual int  num_child_group_nl() { return 0; }
     virtual bool open_child_group_nl(int /* index */) { return false; }
     virtual bool open_root_group_nl() { return false; }
+    virtual bool supports_group_nl() { return false; }
     virtual bool open_group_nl(const std::string & /* group_name */) { return false; }
     virtual bool create_subgroup_nl(const std::string & /* group_name */) { return false; }
     virtual Ioss::NameList groups_describe_nl(bool /* return_full_names */)

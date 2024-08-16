@@ -44,6 +44,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <functional>
 
 #include <assert.h>
 #include <iomanip>
@@ -309,53 +310,50 @@ namespace {
     }
   }
 
-  struct NearestGroupState
+  struct GroupState
   {
     std::string group{"/"};
-    int nearestState{-1};
-    double nearestTime{-std::numeric_limits<double>::max()};
+    int state{-1};
+    double time{-std::numeric_limits<double>::max()};
   };
 
-  void get_state_time_round_down(Ioss::DatabaseIO *db, const double targetTime, NearestGroupState& loc)
+  using StateLocatorCompare = std::function<bool(double, double)>;
+
+  void locate_state_impl(Ioss::DatabaseIO *db, double targetTime,
+                         StateLocatorCompare comparator, GroupState& loc)
   {
     std::vector<double> timesteps = db->get_db_step_times();
     int stepCount = timesteps.size();
 
-    double minTimeDiff = loc.nearestState < 0 ? std::numeric_limits<double>::max() : std::abs(loc.nearestTime - targetTime);
+    double minTimeDiff = loc.state < 0 ? std::numeric_limits<double>::max() : std::fabs(loc.time - targetTime);
 
     for(int istep = 1; istep <= stepCount; istep++) {
       double stateTime = timesteps[istep-1];
-      double stepTimeDiff = std::abs(stateTime - targetTime);
-      if(stepTimeDiff <= minTimeDiff) {
+      double stepTimeDiff = std::fabs(stateTime - targetTime);
+      if(comparator(stepTimeDiff, minTimeDiff)) {
         minTimeDiff = stepTimeDiff;
-        loc.nearestTime = stateTime;
-        loc.nearestState = istep;
+        loc.time = stateTime;
+        loc.state = istep;
         loc.group = db->get_group_name();
       }
     }
   }
 
-  void locate_state(Ioss::DatabaseIO *db, const double targetTime, NearestGroupState& loc)
+  void locate_state(Ioss::DatabaseIO *db, double targetTime, GroupState& loc)
   {
     // Get state count and all states...
     std::vector<double> timesteps = db->get_db_step_times();
     int stepCount = timesteps.size();
 
     if(targetTime < 0.0) {
-      get_state_time_round_down(db, targetTime, loc);
+      // Round down towards 0
+      StateLocatorCompare compare = [](double a, double b) { return (a <= b); };
+      locate_state_impl(db, targetTime, compare, loc);
     }
     else {
-      double minTimeDiff = loc.nearestState < 0 ? std::numeric_limits<double>::max() : std::fabs(targetTime - loc.nearestTime);
-      for(int istep = 1; istep <= stepCount; istep++) {
-        double stateTime = timesteps[istep-1];
-        double stepTimeDiff = std::fabs(targetTime - stateTime);
-        if(stepTimeDiff < minTimeDiff) {
-          minTimeDiff = stepTimeDiff;
-          loc.nearestTime = stateTime;
-          loc.nearestState = istep;
-          loc.group = db->get_group_name();
-        }
-      }
+      // Round down towards 0
+      StateLocatorCompare compare = [](double a, double b) { return (a < b); };
+      locate_state_impl(db, targetTime, compare, loc);
     }
   }
 } // namespace
@@ -3111,9 +3109,9 @@ namespace Ioss {
     return get_database()->get_group_name();
   }
 
-  std::tuple<std::string, int, double> Region::locate_db_state(const double targetTime)
+  std::tuple<std::string, int, double> Region::locate_db_state(double targetTime)
   {
-    NearestGroupState loc;
+    GroupState loc;
 
     auto db = get_database();
     std::string currentGroup = db->get_group_name();
@@ -3127,6 +3125,82 @@ namespace Ioss {
     db->open_root_group();
     db->open_group(currentGroup);
 
-    return std::make_tuple(loc.group, loc.nearestState, loc.nearestTime);
+    return std::make_tuple(loc.group, loc.state, loc.time);
+  }
+
+  std::tuple<std::string, int, double> Region::get_db_max_time() const
+  {
+    IOSS_FUNC_ENTER(m_);
+    if (!get_database()->is_input() && get_database()->usage() != WRITE_RESULTS &&
+        get_database()->usage() != WRITE_RESTART) {
+      return std::make_tuple(get_group_name(), currentState, stateTimes[0]);
+    }
+
+    GroupState loc;
+
+    auto db = get_database();
+    std::string currentGroup = db->get_group_name();
+
+    double max_time = -std::numeric_limits<double>::max();
+
+    for(int i=0; i<db->num_child_group(); i++) {
+      db->open_root_group();
+      db->open_child_group(i);
+
+      std::vector<double> timesteps = db->get_db_step_times();
+      int stepCount = static_cast<int>(timesteps.size());
+
+      for (int i = 1; i <= stepCount; i++) {
+        if (timesteps[i-1] > max_time) {
+          loc.time  = timesteps[i-1];
+          loc.state = i;
+          loc.group = db->get_group_name();
+          max_time  = timesteps[i-1];
+        }
+      }
+    }
+
+    db->open_root_group();
+    db->open_group(currentGroup);
+
+    return std::make_tuple(loc.group, loc.state, loc.time);
+  }
+
+  std::tuple<std::string, int, double> Region::get_db_min_time() const
+  {
+    IOSS_FUNC_ENTER(m_);
+    if (!get_database()->is_input() && get_database()->usage() != WRITE_RESULTS &&
+        get_database()->usage() != WRITE_RESTART) {
+      return std::make_tuple(get_group_name(), currentState, stateTimes[0]);
+    }
+
+    GroupState loc;
+
+    auto db = get_database();
+    std::string currentGroup = db->get_group_name();
+
+    double min_time = std::numeric_limits<double>::max();
+
+    for(int i=0; i<db->num_child_group(); i++) {
+      db->open_root_group();
+      db->open_child_group(i);
+
+      std::vector<double> timesteps = db->get_db_step_times();
+      int stepCount = static_cast<int>(timesteps.size());
+
+      for (int i = 1; i <= stepCount; i++) {
+        if (timesteps[i-1] < min_time) {
+          loc.time  = timesteps[i-1];
+          loc.state = i;
+          loc.group = db->get_group_name();
+          min_time  = timesteps[i-1];
+        }
+      }
+    }
+
+    db->open_root_group();
+    db->open_group(currentGroup);
+
+    return std::make_tuple(loc.group, loc.state, loc.time);
   }
 } // namespace Ioss

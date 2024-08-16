@@ -648,6 +648,7 @@ namespace Ioex {
     int                 tstepCount     = 0;
     std::vector<double> tsteps(0);
 
+    // Use reference to make sure that no Region modifications occur based on the input flag
     int& timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
 
     if (dbUsage == Ioss::WRITE_HISTORY) {

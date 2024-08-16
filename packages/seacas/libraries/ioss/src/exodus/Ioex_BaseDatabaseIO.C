@@ -502,6 +502,24 @@ namespace Ioex {
     ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
   }
 
+  bool BaseDatabaseIO::supports_group_nl()
+  {
+    Ioss::SerializeIO serializeIO_(this);
+    int exoid = get_file_pointer();
+
+    int   idum;
+    float rdum;
+    char *cdum = NULL;
+    int ierr = ex_inquire(exoid, EX_INQ_FILE_FORMAT, &idum, &rdum, cdum);
+    if (ierr < 0) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Could not query file format for file '{}'.\n", get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    return (NC_FORMAT_NETCDF4 == idum);
+  }
+
   bool BaseDatabaseIO::open_root_group_nl()
   {
     // Get existing file pointer...

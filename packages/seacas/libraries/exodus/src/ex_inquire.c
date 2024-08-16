@@ -975,6 +975,18 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 #endif
     break;
 
+  case EX_INQ_FILE_FORMAT:
+    /* return netCDF file format.
+     */
+
+    *ret_int = 0;
+#if NC_HAS_HDF5
+    int nc_format = 0;
+    nc_inq_format(exoid, &nc_format);
+    *ret_int = (int)nc_format;
+#endif
+    break;
+
   case EX_INQ_THREADSAFE:
 /* Return 1 if the library was compiled in thread-safe mode.
  * Return 0 otherwise
