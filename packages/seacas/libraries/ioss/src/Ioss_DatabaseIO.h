@@ -246,6 +246,10 @@ namespace Ioss {
       flush_database_nl();
     }
 
+    /** \brief Checks if a database type supports groups
+     *
+     *  \returns True if successful.
+     */
     bool supports_group()
     {
       IOSS_FUNC_ENTER(m_);

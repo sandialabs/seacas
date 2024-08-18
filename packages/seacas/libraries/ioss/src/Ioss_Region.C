@@ -44,7 +44,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include <functional>
 
 #include <assert.h>
 #include <iomanip>
@@ -310,52 +309,6 @@ namespace {
     }
   }
 
-  struct GroupState
-  {
-    std::string group{"/"};
-    int state{-1};
-    double time{-std::numeric_limits<double>::max()};
-  };
-
-  using StateLocatorCompare = std::function<bool(double, double)>;
-
-  void locate_state_impl(Ioss::DatabaseIO *db, double targetTime,
-                         StateLocatorCompare comparator, GroupState& loc)
-  {
-    std::vector<double> timesteps = db->get_db_step_times();
-    int stepCount = timesteps.size();
-
-    double minTimeDiff = loc.state < 0 ? std::numeric_limits<double>::max() : std::fabs(loc.time - targetTime);
-
-    for(int istep = 1; istep <= stepCount; istep++) {
-      double stateTime = timesteps[istep-1];
-      double stepTimeDiff = std::fabs(stateTime - targetTime);
-      if(comparator(stepTimeDiff, minTimeDiff)) {
-        minTimeDiff = stepTimeDiff;
-        loc.time = stateTime;
-        loc.state = istep;
-        loc.group = db->get_group_name();
-      }
-    }
-  }
-
-  void locate_state(Ioss::DatabaseIO *db, double targetTime, GroupState& loc)
-  {
-    // Get state count and all states...
-    std::vector<double> timesteps = db->get_db_step_times();
-    int stepCount = timesteps.size();
-
-    if(targetTime < 0.0) {
-      // Round down towards 0
-      StateLocatorCompare compare = [](double a, double b) { return (a <= b); };
-      locate_state_impl(db, targetTime, compare, loc);
-    }
-    else {
-      // Round down towards 0
-      StateLocatorCompare compare = [](double a, double b) { return (a < b); };
-      locate_state_impl(db, targetTime, compare, loc);
-    }
-  }
 } // namespace
 
 namespace Ioss {
@@ -414,7 +367,8 @@ namespace Ioss {
     properties.add(Property(this, "current_state", Property::INTEGER));
     properties.add(Property(this, "database_name", Property::STRING));
 
-    property_add(Property("base_filename", iodatabase->get_filename()));
+    property_add(Property("base_filename",
+                          iodatabase->get_property_manager().get_optional("base_filename", iodatabase->get_filename())));
     property_add(Property("database_type",
                           iodatabase->get_property_manager().get_optional("database_type", "")));
   }
@@ -3109,98 +3063,49 @@ namespace Ioss {
     return get_database()->get_group_name();
   }
 
-  std::tuple<std::string, int, double> Region::locate_db_state(double targetTime)
+  std::tuple<std::string, int, double> Region::locate_db_state(double targetTime) const
   {
-    GroupState loc;
+    IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
+    unsigned int              dbChangeCount{1};
 
-    auto db = get_database();
-    std::string currentGroup = db->get_group_name();
+    DynamicTopologyFileControl fileControl(const_cast<Region*>(this), get_file_cyclic_count(),
+                                           ifDatabaseExists, dbChangeCount);
 
-    for(int i=0; i<db->num_child_group(); i++) {
-      db->open_root_group();
-      db->open_child_group(i);
-      locate_state(db, targetTime, loc);
-    }
-
-    db->open_root_group();
-    db->open_group(currentGroup);
-
-    return std::make_tuple(loc.group, loc.state, loc.time);
+    return fileControl.locate_db_state(targetTime);
   }
 
   std::tuple<std::string, int, double> Region::get_db_max_time() const
   {
     IOSS_FUNC_ENTER(m_);
-    if (!get_database()->is_input() && get_database()->usage() != WRITE_RESULTS &&
-        get_database()->usage() != WRITE_RESTART) {
+    auto db = get_database();
+    if (!db->is_input() && db->usage() != WRITE_RESULTS && db->usage() != WRITE_RESTART) {
       return std::make_tuple(get_group_name(), currentState, stateTimes[0]);
     }
 
-    GroupState loc;
+    IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
+    unsigned int              dbChangeCount{1};
 
-    auto db = get_database();
-    std::string currentGroup = db->get_group_name();
+    DynamicTopologyFileControl fileControl(const_cast<Region*>(this), get_file_cyclic_count(),
+                                           ifDatabaseExists, dbChangeCount);
 
-    double max_time = -std::numeric_limits<double>::max();
-
-    for(int i=0; i<db->num_child_group(); i++) {
-      db->open_root_group();
-      db->open_child_group(i);
-
-      std::vector<double> timesteps = db->get_db_step_times();
-      int stepCount = static_cast<int>(timesteps.size());
-
-      for (int i = 1; i <= stepCount; i++) {
-        if (timesteps[i-1] > max_time) {
-          loc.time  = timesteps[i-1];
-          loc.state = i;
-          loc.group = db->get_group_name();
-          max_time  = timesteps[i-1];
-        }
-      }
-    }
-
-    db->open_root_group();
-    db->open_group(currentGroup);
-
-    return std::make_tuple(loc.group, loc.state, loc.time);
+    return fileControl.get_db_max_time();
   }
 
   std::tuple<std::string, int, double> Region::get_db_min_time() const
   {
     IOSS_FUNC_ENTER(m_);
-    if (!get_database()->is_input() && get_database()->usage() != WRITE_RESULTS &&
-        get_database()->usage() != WRITE_RESTART) {
+    auto db = get_database();
+    if (!db->is_input() && db->usage() != WRITE_RESULTS && db->usage() != WRITE_RESTART) {
       return std::make_tuple(get_group_name(), currentState, stateTimes[0]);
     }
 
-    GroupState loc;
+    IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
+    unsigned int              dbChangeCount{1};
 
-    auto db = get_database();
-    std::string currentGroup = db->get_group_name();
+    DynamicTopologyFileControl fileControl(const_cast<Region*>(this), get_file_cyclic_count(),
+                                           ifDatabaseExists, dbChangeCount);
 
-    double min_time = std::numeric_limits<double>::max();
-
-    for(int i=0; i<db->num_child_group(); i++) {
-      db->open_root_group();
-      db->open_child_group(i);
-
-      std::vector<double> timesteps = db->get_db_step_times();
-      int stepCount = static_cast<int>(timesteps.size());
-
-      for (int i = 1; i <= stepCount; i++) {
-        if (timesteps[i-1] < min_time) {
-          loc.time  = timesteps[i-1];
-          loc.state = i;
-          loc.group = db->get_group_name();
-          min_time  = timesteps[i-1];
-        }
-      }
-    }
-
-    db->open_root_group();
-    db->open_group(currentGroup);
-
-    return std::make_tuple(loc.group, loc.state, loc.time);
+    return fileControl.get_db_min_time();
   }
+
 } // namespace Ioss

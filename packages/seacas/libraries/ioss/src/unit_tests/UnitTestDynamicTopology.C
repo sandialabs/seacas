@@ -281,6 +281,12 @@ struct OutputParams {
     modification_steps.clear();
   }
 
+  void set_cyclic_count(unsigned cyclicCount_)
+  {
+    cyclicCount = cyclicCount_;
+  }
+
+  unsigned    cyclicCount{0};
   std::string outFile{"file.g"};
   std::string elemFieldName{"elem_field"};
   std::vector<double> output_times;
@@ -347,24 +353,18 @@ void run_topology_change(const Ioss::Region& i_region,
   }
 }
 
-void cleanup_simple_multi_files(const std::string &outFile)
+void cleanup_linear_multi_files(const std::string &outFile, int numOutputs = 1)
 {
   Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
 
-  std::string file1 = Ioss::Utils::decode_filename(outFile, util.parallel_rank(), util.parallel_size());
-  unlink(file1.c_str());
-
-  std::string file2 = Ioss::Utils::decode_filename(outFile + "-s0002", util.parallel_rank(), util.parallel_size());
-  unlink(file2.c_str());
-
-  std::string file3 = Ioss::Utils::decode_filename(outFile + "-s0003", util.parallel_rank(), util.parallel_size());
-  unlink(file3.c_str());
-
-  std::string file4 = Ioss::Utils::decode_filename(outFile + "-s0004", util.parallel_rank(), util.parallel_size());
-  unlink(file4.c_str());
+  for(int i=1; i<=numOutputs; i++) {
+    std::string baseFile = Ioss::DynamicTopologyFileControl::get_linear_database_filename(outFile, i);
+    std::string parallelFile = Ioss::Utils::decode_filename(baseFile, util.parallel_rank(), util.parallel_size());
+    unlink(parallelFile.c_str());
+  }
 }
 
-void run_multi_file_simple_topology_change(const OutputParams& params)
+void run_multi_file_topology_change(const OutputParams& params)
 {
   Ioss::Init::Initializer io;
   Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
@@ -382,10 +382,17 @@ void run_multi_file_simple_topology_change(const OutputParams& params)
   EXPECT_TRUE(i_database != nullptr);
   EXPECT_TRUE(i_database->ok(true));
 
-  Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", params.outFile, Ioss::WRITE_RESULTS,
+  std::string outFile = params.outFile;
+  if(params.cyclicCount > 0) {
+    outFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(params.outFile,
+                                                                             params.cyclicCount, 0);
+  }
+  propertyManager.add(Ioss::Property("base_filename", params.outFile));
+  Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS,
                                                          Ioss::ParallelUtils::comm_world(),
                                                          propertyManager);
   Ioss::Region o_region(o_database, "output_model");
+  o_region.set_file_cyclic_count(params.cyclicCount);
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
 
@@ -408,59 +415,20 @@ TEST(TestDynamicWrite, multi_file_simple_topology_modification)
 
   params.set_data(output_steps, modification_steps);
 
-  cleanup_simple_multi_files(outFile);
-  run_multi_file_simple_topology_change(params);
-  cleanup_simple_multi_files(outFile);
+  cleanup_linear_multi_files(outFile, params.output_times.size());
+  run_multi_file_topology_change(params);
+  cleanup_linear_multi_files(outFile, params.output_times.size());
 }
 
-void cleanup_cyclic_multi_files(const std::string &outFile)
+void cleanup_cyclic_multi_files(const std::string &outFile, unsigned cyclicCount = 3)
 {
   Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
 
-  std::string file1 = Ioss::Utils::decode_filename(outFile, util.parallel_rank(), util.parallel_size());
-  unlink(file1.c_str());
-
-  std::string file2 = Ioss::Utils::decode_filename(outFile + "-A", util.parallel_rank(), util.parallel_size());
-  unlink(file2.c_str());
-
-  std::string file3 = Ioss::Utils::decode_filename(outFile + "-B", util.parallel_rank(), util.parallel_size());
-  unlink(file3.c_str());
-
-  std::string file4 = Ioss::Utils::decode_filename(outFile + "-C", util.parallel_rank(), util.parallel_size());
-  unlink(file4.c_str());
-}
-
-void run_multi_file_cyclic_topology_change(const OutputParams& params)
-{
-  Ioss::Init::Initializer io;
-  Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
-
-  int numBlocks = util.parallel_size();
-
-  std::string meshDesc = get_many_block_mesh_desc(numBlocks);
-
-  Ioss::PropertyManager propertyManager;
-
-  Ioss::DatabaseIO *i_database = Ioss::IOFactory::create("textmesh", meshDesc, Ioss::READ_MODEL,
-                                                         Ioss::ParallelUtils::comm_world(),
-                                                         propertyManager);
-  Ioss::Region i_region(i_database, "input_model");
-  EXPECT_TRUE(i_database != nullptr);
-  EXPECT_TRUE(i_database->ok(true));
-
-  Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", params.outFile, Ioss::WRITE_RESULTS,
-                                                         Ioss::ParallelUtils::comm_world(),
-                                                         propertyManager);
-  Ioss::Region o_region(o_database, "output_model");
-  EXPECT_TRUE(o_database != nullptr);
-  EXPECT_TRUE(o_database->ok(true));
-
-  auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_MULTI_FILE;
-  auto observer = std::make_shared<Observer>(i_region, params.elemFieldName, fileControlOption);
-  o_region.register_mesh_modification_observer(observer);
-
-  o_region.set_file_cyclic_count(3);
-  run_topology_change(i_region, o_region, params);
+  for(int i=1; i<=cyclicCount; i++) {
+    std::string baseFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(outFile, cyclicCount, i);
+    std::string parallelFile = Ioss::Utils::decode_filename(baseFile, util.parallel_rank(), util.parallel_size());
+    unlink(parallelFile.c_str());
+  }
 }
 
 TEST(TestDynamicWrite, multi_file_cyclic_topology_modification)
@@ -475,10 +443,11 @@ TEST(TestDynamicWrite, multi_file_cyclic_topology_modification)
   std::vector<bool>    modification_steps{false, true, false, true, true, false};
 
   params.set_data(output_times, output_steps, modification_steps);
+  params.set_cyclic_count(3);
 
-  cleanup_cyclic_multi_files(outFile);
-  run_multi_file_cyclic_topology_change(params);
-  cleanup_cyclic_multi_files(outFile);
+  cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+  run_multi_file_topology_change(params);
+  cleanup_cyclic_multi_files(outFile, params.cyclicCount);
 }
 
 void fill_group_gold_names(const int numFileGroups,
@@ -492,12 +461,10 @@ void fill_group_gold_names(const int numFileGroups,
   gold_full_names.push_back("/");
 
   for(int i=1; i<=numFileGroups; i++) {
-    std::ostringstream oss;
-    oss << Ioss::DynamicTopologyFileControl::group_prefix();
-    oss << i;
+    std::string group = Ioss::DynamicTopologyFileControl::get_group_name(i);
 
-    gold_names.push_back(oss.str());
-    gold_full_names.push_back("/" + oss.str());
+    gold_names.push_back(group);
+    gold_full_names.push_back("/" + group);
   }
 }
 
@@ -1123,14 +1090,22 @@ std::tuple<std::string, int, double> read_and_locate_db_state(const OutputParams
 {
   Ioss::PropertyManager propertyManager;
 
-  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", params.outFile, Ioss::READ_RESTART,
+  std::string outFile = params.outFile;
+
+  if(params.cyclicCount > 0) {
+    outFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(params.outFile,
+                                                                             params.cyclicCount, 0);
+    propertyManager.add(Ioss::Property("base_filename", params.outFile));
+  }
+
+  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", outFile, Ioss::READ_RESTART,
                                                  Ioss::ParallelUtils::comm_world(),
                                                  propertyManager);
 
   Ioss::Region region(db, "input_model");
+  region.set_file_cyclic_count(params.cyclicCount);
   EXPECT_TRUE(db != nullptr);
   EXPECT_TRUE(db->ok(true));
-  EXPECT_TRUE(db->supports_group());
 
   return region.locate_db_state(targetTime);
 }
@@ -1175,7 +1150,7 @@ TEST(TestDynamicRead, single_file_locate_db_time_state)
 
   double targetTime = 3.5;
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix()+"3";
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(3);
   int goldState = 1;
   double goldTime = 3.0;
 
@@ -1198,25 +1173,114 @@ TEST(TestDynamicRead, single_file_locate_db_time_state_all_negative_time)
 
   double targetTime = -1.5;
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix()+"4";
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(4);
   int goldState = 1;
   double goldTime = -1.0;
 
   run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldGroup, goldState, goldTime);
 }
 
+void run_multi_file_locate_db_time_state(const std::string& outFile,
+                                         const std::string& elemFieldName,
+                                         const OutputParams& params,
+                                         double targetTime,
+                                         const std::string& goldFile,
+                                         int goldState,
+                                         double goldTime)
+{
+  if(params.cyclicCount > 0) {
+    cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+  } else {
+    cleanup_linear_multi_files(outFile, params.output_times.size());
+  }
+
+  run_multi_file_topology_change(params);
+
+  std::string file;
+  int nearestState;
+  double nearestTime;
+
+  std::tie(file, nearestState, nearestTime) = read_and_locate_db_state(params, targetTime);
+
+  EXPECT_EQ(goldFile, file);
+  EXPECT_EQ(goldState, nearestState);
+  EXPECT_EQ(goldTime, nearestTime);
+
+  if(params.cyclicCount > 0) {
+    cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+  } else {
+    cleanup_linear_multi_files(outFile, params.output_times.size());
+  }
+}
+
+TEST(TestDynamicRead, linear_multi_file_locate_db_time_state)
+{
+  std::string outFile("linearMultiFileManyBlocksPositiveTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(0.0, true, false)
+        .add(1.0, true, true)
+        .add(2.0, true, false)
+        .add(3.0, true, true)
+        .add(4.0, true, true)
+        .add(5.0, true, false);
+
+  double targetTime = 3.5;
+
+  std::string goldFile = Ioss::DynamicTopologyFileControl::get_linear_database_filename(outFile, 3);
+  int goldState = 1;
+  double goldTime = 3.0;
+
+  run_multi_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldFile, goldState, goldTime);
+}
+
+TEST(TestDynamicRead, cyclic_multi_file_locate_db_time_state)
+{
+  std::string outFile("cyclicMultiFileManyBlocksPositiveTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  std::vector<double>        output_times{0.0  , 0.5 , 1.5  , 1.75, 2.0 ,   3.0};
+  std::vector<bool>          output_steps{true , true, true , true, true, true };
+  std::vector<bool>    modification_steps{false, true, false, true, true, false};
+  //                                      -A     -B    -B     -C    -B    -B
+
+  params.set_data(output_times, output_steps, modification_steps);
+  params.set_cyclic_count(3);
+
+  double targetTime = 1.95;
+
+  std::string goldFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(outFile, params.cyclicCount, 2);
+  int goldState = 1;
+  double goldTime = 2.0;
+
+  run_multi_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldFile, goldState, goldTime);
+}
+
 std::tuple<std::string, int, double> read_and_locate_db_max_time(const OutputParams& params)
 {
   Ioss::PropertyManager propertyManager;
 
-  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", params.outFile, Ioss::READ_RESTART,
+  std::string outFile = params.outFile;
+
+  if(params.cyclicCount > 0) {
+    outFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(params.outFile,
+                                                                             params.cyclicCount, 0);
+    propertyManager.add(Ioss::Property("base_filename", params.outFile));
+  }
+
+  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", outFile, Ioss::READ_RESTART,
                                                  Ioss::ParallelUtils::comm_world(),
                                                  propertyManager);
 
   Ioss::Region region(db, "input_model");
+  region.set_file_cyclic_count(params.cyclicCount);
+
   EXPECT_TRUE(db != nullptr);
   EXPECT_TRUE(db->ok(true));
-  EXPECT_TRUE(db->supports_group());
 
   return region.get_db_max_time();
 }
@@ -1244,7 +1308,7 @@ TEST(TestDynamicRead, single_file_locate_db_max_time)
 
   std::tie(maxGroup, maxState, maxTime) = read_and_locate_db_max_time(params);
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix() + "4";
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(4);
   int goldState = 2;
   double goldTime = 5.0;
 
@@ -1255,18 +1319,96 @@ TEST(TestDynamicRead, single_file_locate_db_max_time)
   cleanup_single_file(outFile);
 }
 
+TEST(TestDynamicRead, linear_multi_file_locate_db_max_time)
+{
+  std::string outFile("linearMultiFileManyBlocksMaxTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(0.0, true, false)
+        .add(1.0, true, true)
+        .add(2.0, true, false)
+        .add(3.0, true, true)
+        .add(4.0, true, true)
+        .add(5.0, true, false);
+
+  cleanup_linear_multi_files(outFile, params.output_times.size());
+  run_multi_file_topology_change(params);
+
+  std::string maxFile;
+  int maxState;
+  double maxTime;
+
+  std::tie(maxFile, maxState, maxTime) = read_and_locate_db_max_time(params);
+
+  std::string goldFile = Ioss::DynamicTopologyFileControl::get_linear_database_filename(outFile, 4);
+  int goldState = 2;
+  double goldTime = 5.0;
+
+  EXPECT_EQ(goldFile, maxFile);
+  EXPECT_EQ(goldState, maxState);
+  EXPECT_EQ(goldTime, maxTime);
+
+  cleanup_linear_multi_files(outFile, params.output_times.size());
+}
+
+TEST(TestDynamicRead, cyclic_multi_file_locate_db_max_time)
+{
+  std::string outFile("cyclicMultiFileManyBlocksMaxTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  std::vector<double>        output_times{0.0  , 0.5 , 1.5  , 1.75, 2.0 ,   3.0};
+  std::vector<bool>          output_steps{true , true, true , true, true, true };
+  std::vector<bool>    modification_steps{false, true, false, true, true, false};
+  //                                      -A     -B    -B     -C    -B    -B
+
+  params.set_data(output_times, output_steps, modification_steps);
+  params.set_cyclic_count(3);
+
+  cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+  run_multi_file_topology_change(params);
+
+  std::string maxFile;
+  int maxState;
+  double maxTime;
+
+  std::tie(maxFile, maxState, maxTime) = read_and_locate_db_max_time(params);
+
+  std::string goldFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(outFile, params.cyclicCount, 2); // -B
+  int goldState = 2;
+  double goldTime = 3.0;
+
+  EXPECT_EQ(goldFile, maxFile);
+  EXPECT_EQ(goldState, maxState);
+  EXPECT_EQ(goldTime, maxTime);
+
+  cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+}
+
 std::tuple<std::string, int, double> read_and_locate_db_min_time(const OutputParams& params)
 {
   Ioss::PropertyManager propertyManager;
 
-  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", params.outFile, Ioss::READ_RESTART,
+  std::string outFile = params.outFile;
+
+  if(params.cyclicCount > 0) {
+    outFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(params.outFile,
+                                                                             params.cyclicCount, 0);
+    propertyManager.add(Ioss::Property("base_filename", params.outFile));
+  }
+
+  Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", outFile, Ioss::READ_RESTART,
                                                  Ioss::ParallelUtils::comm_world(),
                                                  propertyManager);
 
   Ioss::Region region(db, "input_model");
+  region.set_file_cyclic_count(params.cyclicCount);
+
   EXPECT_TRUE(db != nullptr);
   EXPECT_TRUE(db->ok(true));
-  EXPECT_TRUE(db->supports_group());
 
   return region.get_db_min_time();
 }
@@ -1294,7 +1436,7 @@ TEST(TestDynamicRead, single_file_locate_db_min_time)
 
   std::tie(minGroup, minState, minTime) = read_and_locate_db_min_time(params);
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::group_prefix() + "1";
+  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(1);
   int goldState = 1;
   double goldTime = 0.0;
 
@@ -1304,6 +1446,76 @@ TEST(TestDynamicRead, single_file_locate_db_min_time)
 
   cleanup_single_file(outFile);
 }
+
+TEST(TestDynamicRead, linear_multi_file_locate_db_min_time)
+{
+  std::string outFile("linearMultiFileManyBlocksMinTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  params.add(0.0, true, false)
+        .add(1.0, true, true)
+        .add(2.0, true, false)
+        .add(3.0, true, true)
+        .add(4.0, true, true)
+        .add(5.0, true, false);
+
+  cleanup_linear_multi_files(outFile, params.output_times.size());
+  run_multi_file_topology_change(params);
+
+  std::string minFile;
+  int minState;
+  double minTime;
+
+  std::tie(minFile, minState, minTime) = read_and_locate_db_min_time(params);
+
+  std::string goldFile = Ioss::DynamicTopologyFileControl::get_linear_database_filename(outFile, 1);
+  int goldState = 1;
+  double goldTime = 0.0;
+
+  EXPECT_EQ(goldFile, minFile);
+  EXPECT_EQ(goldState, minState);
+  EXPECT_EQ(goldTime, minTime);
+
+  cleanup_linear_multi_files(outFile, params.output_times.size());
+}
+
+TEST(TestDynamicRead, cyclic_multi_file_locate_db_min_time)
+{
+  std::string outFile("cyclicMultiFileManyBlocksMinTime.g");
+  std::string elemFieldName = "elem_field";
+
+  OutputParams params(outFile, elemFieldName);
+
+  std::vector<double>        output_times{0.0  , 0.5 , 1.5  , 1.75, 2.0 ,   3.0};
+  std::vector<bool>          output_steps{true , true, true , true, true, true };
+  std::vector<bool>    modification_steps{false, true, false, true, true, false};
+  //                                      -A     -B    -B     -C    -B    -B
+
+  params.set_data(output_times, output_steps, modification_steps);
+  params.set_cyclic_count(3);
+
+  cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+  run_multi_file_topology_change(params);
+
+  std::string minFile;
+  int minState;
+  double minTime;
+
+  std::tie(minFile, minState, minTime) = read_and_locate_db_min_time(params);
+
+  std::string goldFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(outFile, params.cyclicCount, 1);
+  int goldState = 1;
+  double goldTime = 0.0;
+
+  EXPECT_EQ(goldFile, minFile);
+  EXPECT_EQ(goldState, minState);
+  EXPECT_EQ(goldTime, minTime);
+
+  cleanup_cyclic_multi_files(outFile, params.cyclicCount);
+}
+
 }
 
 

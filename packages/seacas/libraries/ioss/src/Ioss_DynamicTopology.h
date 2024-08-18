@@ -211,6 +211,21 @@ namespace Ioss {
 
     static std::string group_prefix() { return "IOSS_FILE_GROUP-"; }
 
+    DatabaseIO* get_database() const;
+
+    std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
+    std::tuple<std::string, int, double> get_db_min_time() const;
+    std::tuple<std::string, int, double> get_db_max_time() const;
+
+    static std::string get_cyclic_database_filename(const std::string& baseFileName,
+                                                    unsigned int fileCyclicCount,
+                                                    unsigned int step);
+
+    static std::string get_linear_database_filename(const std::string& baseFileName,
+                                                    unsigned int step);
+
+    static std::string get_group_name(unsigned int step);
+
   private:
     Region     *m_region{nullptr};
     std::string m_ioDB;
@@ -224,7 +239,7 @@ namespace Ioss {
 
     IOSS_NODISCARD const ParallelUtils &util() const;
 
-    std::string get_unique_filename(DatabaseUsage db_usage);
+    std::string get_unique_linear_filename(DatabaseUsage db_usage);
     std::string construct_database_filename(int &step, DatabaseUsage db_usage);
     bool        file_exists(const std::string &filename, const std::string &db_type,
                             DatabaseUsage db_usage);

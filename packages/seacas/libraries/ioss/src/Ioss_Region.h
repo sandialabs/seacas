@@ -308,15 +308,16 @@ namespace Ioss {
     void start_new_output_database_entry(int steps = 0);
 
     void         set_topology_change_count(unsigned int new_count) { dbChangeCount = new_count; }
-    unsigned int get_topology_change_count() { return dbChangeCount; }
+    unsigned int get_topology_change_count() const { return dbChangeCount; }
 
     void         set_file_cyclic_count(unsigned int new_count) { fileCyclicCount = new_count; }
-    unsigned int get_file_cyclic_count() { return fileCyclicCount; }
+    unsigned int get_file_cyclic_count() const { return fileCyclicCount; }
 
     void set_if_database_exists_behavior(IfDatabaseExistsBehavior if_exists)
     {
       ifDatabaseExists = if_exists;
     }
+    IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return ifDatabaseExists; }
 
     bool model_is_written() const { return modelWritten; }
     bool transient_is_written() const { return transientWritten; }
@@ -324,7 +325,7 @@ namespace Ioss {
     bool load_group_mesh(const std::string &child_group_name);
     bool load_group_mesh(const int child_group_index);
 
-    IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime);
+    IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 
   protected:
     std::string get_group_name() const;
