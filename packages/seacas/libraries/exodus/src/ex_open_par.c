@@ -291,9 +291,9 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     }
 
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to open %s for read/write.\n\tEither the file "
-             "does not exist,\n\tor there is a permission or file format "
-             "issue.",
+             "ERROR: failed to open %s of type %d for reading.\n\t\tThe "
+             "file does not exist, or there is a permission or file "
+             "format issue.",
              canon_path);
     ex_err(__func__, errmsg, status);
     free(canon_path);
