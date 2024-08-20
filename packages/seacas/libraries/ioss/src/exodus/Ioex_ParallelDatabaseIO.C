@@ -399,6 +399,9 @@ namespace Ioex {
         }
       }
     }
+
+    open_root_group_nl();
+    open_child_group_nl(0);
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO() = default;

@@ -207,9 +207,9 @@ namespace Ioss {
                                unsigned int             &dbChangeCount);
 
     void clone_and_replace_output_database(int steps = 0);
-    void add_output_database_group(int steps = 0);
+    void add_output_database_change_set(int steps = 0);
 
-    static std::string group_prefix() { return "IOSS_FILE_GROUP-"; }
+    static std::string change_set_prefix() { return "IOSS_FILE_GROUP-"; }
 
     DatabaseIO* get_database() const;
 
@@ -224,7 +224,7 @@ namespace Ioss {
     static std::string get_linear_database_filename(const std::string& baseFileName,
                                                     unsigned int step);
 
-    static std::string get_group_name(unsigned int step);
+    static std::string get_change_set_name(unsigned int step);
 
   private:
     Region     *m_region{nullptr};

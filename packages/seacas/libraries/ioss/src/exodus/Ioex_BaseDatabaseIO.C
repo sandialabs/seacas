@@ -502,6 +502,11 @@ namespace Ioex {
     ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
   }
 
+  bool BaseDatabaseIO::supports_change_set_nl()
+  {
+    return supports_group_nl();
+  }
+
   bool BaseDatabaseIO::supports_group_nl()
   {
     Ioss::SerializeIO serializeIO_(this);
@@ -555,6 +560,23 @@ namespace Ioex {
     return success;
   }
 
+  bool BaseDatabaseIO::open_change_set_nl(const std::string &set_name)
+  {
+    // Check name for '/' which is not allowed since it is the
+    // separator character in a full group path
+    if (set_name.find('/') != std::string::npos) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
+                 set_name);
+      IOSS_ERROR(errmsg);
+    }
+
+    if (!open_root_group_nl())
+      return false;
+
+    return open_group_nl(set_name);
+  }
+
   bool BaseDatabaseIO::open_group_nl(const std::string &group_name)
   {
     // Get existing file pointer...
@@ -574,6 +596,14 @@ namespace Ioex {
     }
     success = true;
     return success;
+  }
+
+  bool BaseDatabaseIO::create_change_set_nl(const std::string &set_name)
+  {
+    if (!open_root_group_nl())
+      return false;
+
+    return create_subgroup_nl(set_name);
   }
 
   bool BaseDatabaseIO::create_subgroup_nl(const std::string &group_name)
@@ -3240,6 +3270,23 @@ namespace Ioex {
   }
 
 
+  Ioss::NameList BaseDatabaseIO::change_set_describe_nl(bool return_full_names)
+  {
+    Ioss::NameList names = groups_describe_nl(return_full_names);
+
+    // Downshift by 1 since the first is the root group "/"
+    int numNames = static_cast<int>(names.size());
+    for(int i=0; i<numNames-1; i++) {
+      names[i] = names[i+1];
+    }
+
+    if(numNames > 0) {
+      names.resize(numNames-1);
+    }
+
+    return names;
+  }
+
   Ioss::NameList BaseDatabaseIO::groups_describe_nl(bool return_full_names)
   {
     Ioss::SerializeIO serializeIO_(this);
@@ -3274,6 +3321,27 @@ namespace Ioex {
     activeNodeSetNodesIndex.clear();
   }
 
+  int BaseDatabaseIO::num_change_set_nl()
+  {
+    // Save and reset state
+    int currentExodusFilePtr = m_exodusFilePtr;
+    std::string currentGroupName = m_groupName;
+
+    if (!open_root_group_nl()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Could not open root group.\n",
+          m_groupName);
+      IOSS_ERROR(errmsg);
+    }
+
+    int numChildGroup = num_child_group_nl();
+
+    m_exodusFilePtr = currentExodusFilePtr;
+    m_groupName = currentGroupName;
+
+    return numChildGroup;
+  }
+
   int BaseDatabaseIO::num_child_group_nl()
   {
     Ioss::SerializeIO serializeIO_(this);
@@ -3281,6 +3349,18 @@ namespace Ioex {
     exoid = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
     int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     return num_children;
+  }
+
+  bool BaseDatabaseIO::open_change_set_nl(int index)
+  {
+    if (!open_root_group_nl()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Could not open root group.\n",
+          m_groupName);
+      IOSS_ERROR(errmsg);
+    }
+
+    return open_child_group_nl(index);
   }
 
   bool BaseDatabaseIO::open_child_group_nl(int index)

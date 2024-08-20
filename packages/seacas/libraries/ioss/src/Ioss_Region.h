@@ -157,8 +157,8 @@ namespace Ioss {
     IOSS_NODISCARD std::pair<int, double> get_max_time() const;
 
     // Return a tuple consisting of the step (1-based) corresponding to
-    // the maximum time across all groups on the database, the corresponding
-    // maximum time value and the corresponding group.
+    // the maximum time across all change sets on the database, the corresponding
+    // maximum time value and the corresponding set.
     IOSS_NODISCARD std::tuple<std::string, int, double> get_db_max_time() const;
 
     // Return a pair consisting of the step (1-based) corresponding to
@@ -168,8 +168,8 @@ namespace Ioss {
     IOSS_NODISCARD std::pair<int, double> get_min_time() const;
 
     // Return a tuple consisting of the step (1-based) corresponding to
-    // the minimum time across all groups on the database, the corresponding
-    // minimum time value and the corresponding group.
+    // the minimum time across all change sets on the database, the corresponding
+    // minimum time value and the corresponding set.
     IOSS_NODISCARD std::tuple<std::string, int, double> get_db_min_time() const;
 
     // Functions for an output region...
@@ -322,16 +322,16 @@ namespace Ioss {
     bool model_is_written() const { return modelWritten; }
     bool transient_is_written() const { return transientWritten; }
 
-    bool load_group_mesh(const std::string &child_group_name);
-    bool load_group_mesh(const int child_group_index);
+    bool load_change_set_mesh(const std::string &set_name);
+    bool load_change_set_mesh(const int set_index);
 
     IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 
   protected:
-    std::string get_group_name() const;
+    std::string get_change_set_name() const;
     void update_dynamic_topology();
     void clone_and_replace_output_database(int steps = 0);
-    void add_output_database_group(int steps = 0, bool force_addition = false);
+    void add_output_database_change_set(int steps = 0, bool force_addition = false);
 
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;

@@ -246,93 +246,74 @@ namespace Ioss {
       flush_database_nl();
     }
 
-    /** \brief Checks if a database type supports groups
+    /** \brief If a database type supports change sets and if the database
+     *         contains change sets, open the specified set.
      *
+     *  \param[in] set_name The name of the set to open.
      *  \returns True if successful.
      */
-    bool supports_group()
+    bool open_change_set(const std::string &set_name)
     {
       IOSS_FUNC_ENTER(m_);
-      return supports_group_nl();
+      return open_change_set_nl(set_name);
     }
 
-    /** \brief If a database type supports groups and if the database
-     *         contains groups, open the specified group.
+    /** \brief If a database type supports change sets, create the
+     *         specified set.
      *
-     *  If the group_name begins with '/', it specifies the absolute path
-     *  name from the root with '/' separating groups.  Otherwise, the
-     *  group_name specifies a child group of the currently active group.
-     *  If group_name == "/" then the root group is opened.
-     *
-     *  \param[in] group_name The name of the group to open.
+     *  \param[in] set_name The name of the set to create.
      *  \returns True if successful.
      */
-    bool open_group(const std::string &group_name)
+    bool create_change_set(const std::string &set_name)
     {
       IOSS_FUNC_ENTER(m_);
-      return open_group_nl(group_name);
+      return create_change_set_nl(set_name);
     }
 
-    /** \brief If a database type supports groups, create the specified
-     *        group as a child of the current group.
+    /** \brief If a database type supports change sets, and if the database
+     *         contains change sets, return the number of change sets.
+     */
+    int num_change_set()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return num_change_set_nl();
+    }
+
+    /** \brief If a database type supports change sets, open the change set
+     *         specified [zero-based] index
      *
-     *  The name of the group must not contain a '/' character.
-     *  If the command is successful, then the group will be the
-     *  active group for all subsequent writes to the database.
-     *
-     *  \param[in] group_name The name of the subgroup to create.
+     *  \param[in] child_index The [zero-based] index of the change set to open.
      *  \returns True if successful.
      */
-    bool create_subgroup(const std::string &group_name)
+    bool open_change_set(int set_index)
     {
       IOSS_FUNC_ENTER(m_);
-      return create_subgroup_nl(group_name);
+      return open_change_set_nl(set_index);
     }
 
-    /** \brief If a database type supports groups, and if the database
-     *         contains groups, open the root group for the current group.
-     */
-    bool open_root_group()
-    {
-      IOSS_FUNC_ENTER(m_);
-      return open_root_group_nl();
-    }
-
-    /** \brief If a database type supports groups, and if the database
-     *         contains groups, return the number of child groups for
-     *         the current group.
-     */
-    int num_child_group()
-    {
-      IOSS_FUNC_ENTER(m_);
-      return num_child_group_nl();
-    }
-
-    /** \brief If a database type supports groups, open the child group
-     *         of the current group at the specified [zero-based] index
-     *
-     *  \param[in] child_index The [zero-based] index of the subgroup to open.
-     *  \returns True if successful.
-     */
-    bool open_child_group(int child_index)
-    {
-      IOSS_FUNC_ENTER(m_);
-      return open_child_group_nl(child_index);
-    }
-
-    /** \brief If a database type supports groups, return a list of group names
+    /** \brief If a database type supports change sets, return a list of set names
      *
      *  \param[in] return_full_names Flag to control return of relative
-     *             or full group name paths.
+     *             or full set name paths.
      *  \returns True if successful.
      */
-    Ioss::NameList groups_describe(bool return_full_names = false)
+    Ioss::NameList change_set_describe(bool return_full_names = false)
     {
       IOSS_FUNC_ENTER(m_);
-      return groups_describe_nl(return_full_names);
+      return change_set_describe_nl(return_full_names);
     }
 
-    IOSS_NODISCARD virtual std::string get_group_name() const { return "/"; }
+    /** \brief Checks if a database type supports changes sets
+     *
+     *  \returns True if successful.
+     */
+    bool supports_change_set()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return supports_change_set_nl();
+    }
+
+    IOSS_NODISCARD virtual std::string get_change_set_name() const { return ""; }
 
     /** \brief Set the database to the given State.
      *
@@ -837,13 +818,12 @@ namespace Ioss {
       return elemMap.global_to_local(global);
     }
 
-    virtual int  num_child_group_nl() { return 0; }
-    virtual bool open_child_group_nl(int /* index */) { return false; }
-    virtual bool open_root_group_nl() { return false; }
-    virtual bool supports_group_nl() { return false; }
-    virtual bool open_group_nl(const std::string & /* group_name */) { return false; }
-    virtual bool create_subgroup_nl(const std::string & /* group_name */) { return false; }
-    virtual Ioss::NameList groups_describe_nl(bool /* return_full_names */)
+    virtual bool supports_change_set_nl() { return false; }
+    virtual bool open_change_set_nl(const std::string & /* set_name */) { return false; }
+    virtual bool open_change_set_nl(int /* index */) { return false; }
+    virtual bool create_change_set_nl(const std::string & /* set_name */) { return false; }
+    virtual int  num_change_set_nl() { return 0; }
+    virtual Ioss::NameList change_set_describe_nl(bool /* return_full_names */)
     {
       return Ioss::NameList();
     }

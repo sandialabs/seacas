@@ -450,33 +450,30 @@ TEST(TestDynamicWrite, multi_file_cyclic_topology_modification)
   cleanup_cyclic_multi_files(outFile, params.cyclicCount);
 }
 
-void fill_group_gold_names(const int numFileGroups,
-                           std::vector<std::string>& gold_names,
-                           std::vector<std::string>& gold_full_names)
+void fill_change_set_gold_names(const int numChangeSets,
+                                std::vector<std::string>& gold_names,
+                                std::vector<std::string>& gold_full_names)
 {
   gold_names.clear();
   gold_full_names.clear();
 
-  gold_names.push_back("/");
-  gold_full_names.push_back("/");
+  for(int i=1; i<=numChangeSets; i++) {
+    std::string setName = Ioss::DynamicTopologyFileControl::get_change_set_name(i);
 
-  for(int i=1; i<=numFileGroups; i++) {
-    std::string group = Ioss::DynamicTopologyFileControl::get_group_name(i);
-
-    gold_names.push_back(group);
-    gold_full_names.push_back("/" + group);
+    gold_names.push_back(setName);
+    gold_full_names.push_back("/" + setName);
   }
 }
 
-void test_group_names(Ioss::DatabaseIO *database)
+void test_change_set_names(Ioss::DatabaseIO *database)
 {
-  Ioss::NameList names = database->groups_describe(false);
-  Ioss::NameList full_names = database->groups_describe(true);
+  Ioss::NameList names = database->change_set_describe(false);
+  Ioss::NameList full_names = database->change_set_describe(true);
 
   std::vector<std::string> gold_names;
   std::vector<std::string> gold_full_names;
 
-  fill_group_gold_names(database->num_child_group(), gold_names, gold_full_names);
+  fill_change_set_gold_names(database->num_change_set(), gold_names, gold_full_names);
 
   EXPECT_EQ(gold_names, names);
   EXPECT_EQ(gold_full_names, full_names);
@@ -486,8 +483,8 @@ void cleanup_single_file(const std::string &outFile)
 {
   Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
 
-  std::string file1 = Ioss::Utils::decode_filename(outFile, util.parallel_rank(), util.parallel_size());
-  unlink(file1.c_str());
+  std::string file = Ioss::Utils::decode_filename(outFile, util.parallel_rank(), util.parallel_size());
+  unlink(file.c_str());
 }
 
 void run_single_file_simple_topology_change(const OutputParams& params)
@@ -516,14 +513,14 @@ void run_single_file_simple_topology_change(const OutputParams& params)
   Ioss::Region o_region(o_database, "output_model");
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
-  EXPECT_TRUE(o_database->supports_group());
+  EXPECT_TRUE(o_database->supports_change_set());
 
   auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer = std::make_shared<Observer>(i_region, params.elemFieldName, fileControlOption);
   o_region.register_mesh_modification_observer(observer);
 
   run_topology_change(i_region, o_region, params);
-  test_group_names(o_database);
+  test_change_set_names(o_database);
 }
 
 TEST(TestDynamicWrite, single_file_simple_topology_modification)
@@ -578,7 +575,7 @@ TEST(TestDynamicWrite, single_file_groups_not_enabled)
   Ioss::Region o_region(o_database, "output_model");
   EXPECT_TRUE(o_database != nullptr);
   EXPECT_TRUE(o_database->ok(true));
-  EXPECT_FALSE(o_database->supports_group());
+  EXPECT_FALSE(o_database->supports_change_set());
 
   auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
@@ -617,11 +614,16 @@ TEST(TestDynamicWrite, create_subgroup_with_file_reopen)
     Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS,
                                                            Ioss::ParallelUtils::comm_world(),
                                                            propertyManager);
+
+    Ioex::BaseDatabaseIO *ex_database = dynamic_cast<Ioex::BaseDatabaseIO *>(o_database);
+    EXPECT_TRUE(nullptr != ex_database);
+
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
-    EXPECT_TRUE(o_database->supports_group());
-    o_database->create_subgroup("GROUP_1");
+    EXPECT_TRUE(o_database->supports_change_set());
+
+    ex_database->create_subgroup("GROUP_1");
   }
 
   {
@@ -629,16 +631,20 @@ TEST(TestDynamicWrite, create_subgroup_with_file_reopen)
     Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS,
                                                            Ioss::ParallelUtils::comm_world(),
                                                            propertyManager);
+
+    Ioex::BaseDatabaseIO *ex_database = dynamic_cast<Ioex::BaseDatabaseIO *>(o_database);
+    EXPECT_TRUE(nullptr != ex_database);
+
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
-    EXPECT_TRUE(o_database->supports_group());
+    EXPECT_TRUE(o_database->supports_change_set());
 
     // Group pointer is automatically at first child
-    o_database->create_subgroup("GROUP_2");
+    ex_database->create_subgroup("GROUP_2");
 
-    Ioss::NameList names = o_database->groups_describe(false);
-    Ioss::NameList full_names = o_database->groups_describe(true);
+    Ioss::NameList names = ex_database->groups_describe(false);
+    Ioss::NameList full_names = ex_database->groups_describe(true);
 
     std::vector<std::string> gold_names{"/", "GROUP_1", "GROUP_2"};
     std::vector<std::string> gold_full_names{"/", "/GROUP_1", "/GROUP_1/GROUP_2"};
@@ -682,18 +688,22 @@ TEST(TestDynamicWrite, create_subgroup_with_file_persistence_and_child_group)
     Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS,
                                                            Ioss::ParallelUtils::comm_world(),
                                                            propertyManager);
+
+    Ioex::BaseDatabaseIO *ex_database = dynamic_cast<Ioex::BaseDatabaseIO *>(o_database);
+    EXPECT_TRUE(nullptr != ex_database);
+
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
-    EXPECT_TRUE(o_database->supports_group());
+    EXPECT_TRUE(o_database->supports_change_set());
 
-    o_database->create_subgroup("GROUP_1");
+    ex_database->create_subgroup("GROUP_1");
 
     // Group pointer is at "GROUP_1" ... "GROUP_2" is a child
-    o_database->create_subgroup("GROUP_2");
+    ex_database->create_subgroup("GROUP_2");
 
-    Ioss::NameList names = o_database->groups_describe(false);
-    Ioss::NameList full_names = o_database->groups_describe(true);
+    Ioss::NameList names = ex_database->groups_describe(false);
+    Ioss::NameList full_names = ex_database->groups_describe(true);
 
     std::vector<std::string> gold_names{"/", "GROUP_1", "GROUP_2"};
     std::vector<std::string> gold_full_names{"/", "/GROUP_1", "/GROUP_1/GROUP_2"};
@@ -737,19 +747,23 @@ TEST(TestDynamicWrite, create_subgroup_with_file_persistence_and_no_child_group)
     Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS,
                                                            Ioss::ParallelUtils::comm_world(),
                                                            propertyManager);
+
+    Ioex::BaseDatabaseIO *ex_database = dynamic_cast<Ioex::BaseDatabaseIO *>(o_database);
+    EXPECT_TRUE(nullptr != ex_database);
+
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
-    EXPECT_TRUE(o_database->supports_group());
+    EXPECT_TRUE(o_database->supports_change_set());
 
-    o_database->create_subgroup("GROUP_1");
+    ex_database->create_subgroup("GROUP_1");
 
     // Group pointer is reset to root group
-    EXPECT_TRUE(o_database->open_root_group());
-    o_database->create_subgroup("GROUP_2");
+    EXPECT_TRUE(ex_database->open_root_group());
+    ex_database->create_subgroup("GROUP_2");
 
-    Ioss::NameList names = o_database->groups_describe(false);
-    Ioss::NameList full_names = o_database->groups_describe(true);
+    Ioss::NameList names = ex_database->groups_describe(false);
+    Ioss::NameList full_names = ex_database->groups_describe(true);
 
     std::vector<std::string> gold_names{"/", "GROUP_1", "GROUP_2"};
     std::vector<std::string> gold_full_names{"/", "/GROUP_1", "/GROUP_2"};
@@ -845,7 +859,7 @@ void run_single_file_simple_topology_change_with_multiple_output(const std::stri
   Ioss::Region o_region1(o_database1, "region1");
   EXPECT_TRUE(o_database1 != nullptr);
   EXPECT_TRUE(o_database1->ok(true));
-  EXPECT_TRUE(o_database1->supports_group());
+  EXPECT_TRUE(o_database1->supports_change_set());
 
   auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
   auto observer1 = std::make_shared<Observer>(i_region, params1.elemFieldName, fileControlOption);
@@ -857,15 +871,15 @@ void run_single_file_simple_topology_change_with_multiple_output(const std::stri
   Ioss::Region o_region2(o_database2, "region2");
   EXPECT_TRUE(o_database2 != nullptr);
   EXPECT_TRUE(o_database2->ok(true));
-  EXPECT_TRUE(o_database2->supports_group());
+  EXPECT_TRUE(o_database2->supports_change_set());
 
   auto observer2 = std::make_shared<Observer>(i_region, params2.elemFieldName, fileControlOption);
   broker->register_observer(model, observer2, o_region2);
 
   run_topology_change_with_multiple_output(i_region, o_region1, o_region2, params1, params2);
 
-  test_group_names(o_database1);
-  test_group_names(o_database2);
+  test_change_set_names(o_database1);
+  test_change_set_names(o_database2);
 }
 
 TEST(TestDynamicWrite, single_file_simple_topology_modification_with_multiple_output)
@@ -943,7 +957,7 @@ TEST(TestDynamicWrite, same_model_triggers_same_modification_for_all_observers)
     Ioss::Region o_region1(o_database1, "region1");
     EXPECT_TRUE(o_database1 != nullptr);
     EXPECT_TRUE(o_database1->ok(true));
-    EXPECT_TRUE(o_database1->supports_group());
+    EXPECT_TRUE(o_database1->supports_change_set());
 
     auto fileControlOption = Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
     auto observer1 = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
@@ -955,7 +969,7 @@ TEST(TestDynamicWrite, same_model_triggers_same_modification_for_all_observers)
     Ioss::Region o_region2(o_database2, "region2");
     EXPECT_TRUE(o_database2 != nullptr);
     EXPECT_TRUE(o_database2->ok(true));
-    EXPECT_TRUE(o_database2->supports_group());
+    EXPECT_TRUE(o_database2->supports_change_set());
 
     auto observer2 = std::make_shared<Observer>(i_region, elemFieldName, fileControlOption);
     broker->register_observer(model, observer2, o_region2);
@@ -1001,12 +1015,12 @@ void read_and_test_single_file_simple_topology_change(const OutputParams& params
                                                          Ioss::ParallelUtils::comm_world(),
                                                          propertyManager);
 
-  test_group_names(i_database);
+  test_change_set_names(i_database);
 
   Ioss::Region i_region(i_database, "input_model");
   EXPECT_TRUE(i_database != nullptr);
   EXPECT_TRUE(i_database->ok(true));
-  EXPECT_TRUE(i_database->supports_group());
+  EXPECT_TRUE(i_database->supports_change_set());
 
   auto numSteps = params.output_steps.size();
 
@@ -1019,7 +1033,7 @@ void read_and_test_single_file_simple_topology_change(const OutputParams& params
 
   bool doneOutputAfterModification = true;
 
-  Ioss::NameList names = i_database->groups_describe(false);
+  Ioss::NameList names = i_database->change_set_describe(false);
 
   for(size_t i=0; i<numSteps; i++)
   {
@@ -1038,7 +1052,7 @@ void read_and_test_single_file_simple_topology_change(const OutputParams& params
       numMods++;
       maxStep = 1;
 
-      EXPECT_TRUE(i_region.load_group_mesh(names[numMods+1]));
+      EXPECT_TRUE(i_region.load_change_set_mesh(names[numMods]));
 
       doneOutputAfterModification = false;
     }
@@ -1114,20 +1128,20 @@ void run_single_file_locate_db_time_state(const std::string& outFile,
                                           const std::string& elemFieldName,
                                           const OutputParams& params,
                                           double targetTime,
-                                          const std::string& goldGroup,
+                                          const std::string& goldSet,
                                           int goldState,
                                           double goldTime)
 {
   cleanup_single_file(outFile);
   run_single_file_simple_topology_change(params);
 
-  std::string group;
+  std::string changeSet;
   int nearestState;
   double nearestTime;
 
-  std::tie(group, nearestState, nearestTime) = read_and_locate_db_state(params, targetTime);
+  std::tie(changeSet, nearestState, nearestTime) = read_and_locate_db_state(params, targetTime);
 
-  EXPECT_EQ(goldGroup, group);
+  EXPECT_EQ(goldSet, changeSet);
   EXPECT_EQ(goldState, nearestState);
   EXPECT_EQ(goldTime, nearestTime);
 
@@ -1150,11 +1164,11 @@ TEST(TestDynamicRead, single_file_locate_db_time_state)
 
   double targetTime = 3.5;
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(3);
+  std::string goldSet = Ioss::DynamicTopologyFileControl::get_change_set_name(3);
   int goldState = 1;
   double goldTime = 3.0;
 
-  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldGroup, goldState, goldTime);
+  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldSet, goldState, goldTime);
 }
 
 TEST(TestDynamicRead, single_file_locate_db_time_state_all_negative_time)
@@ -1173,11 +1187,11 @@ TEST(TestDynamicRead, single_file_locate_db_time_state_all_negative_time)
 
   double targetTime = -1.5;
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(4);
+  std::string goldSet = Ioss::DynamicTopologyFileControl::get_change_set_name(4);
   int goldState = 1;
   double goldTime = -1.0;
 
-  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldGroup, goldState, goldTime);
+  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldSet, goldState, goldTime);
 }
 
 void run_multi_file_locate_db_time_state(const std::string& outFile,
@@ -1302,17 +1316,17 @@ TEST(TestDynamicRead, single_file_locate_db_max_time)
   cleanup_single_file(outFile);
   run_single_file_simple_topology_change(params);
 
-  std::string maxGroup;
+  std::string maxSet;
   int maxState;
   double maxTime;
 
-  std::tie(maxGroup, maxState, maxTime) = read_and_locate_db_max_time(params);
+  std::tie(maxSet, maxState, maxTime) = read_and_locate_db_max_time(params);
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(4);
+  std::string goldSet = Ioss::DynamicTopologyFileControl::get_change_set_name(4);
   int goldState = 2;
   double goldTime = 5.0;
 
-  EXPECT_EQ(goldGroup, maxGroup);
+  EXPECT_EQ(goldSet, maxSet);
   EXPECT_EQ(goldState, maxState);
   EXPECT_EQ(goldTime, maxTime);
 
@@ -1430,17 +1444,17 @@ TEST(TestDynamicRead, single_file_locate_db_min_time)
   cleanup_single_file(outFile);
   run_single_file_simple_topology_change(params);
 
-  std::string minGroup;
+  std::string minSet;
   int minState;
   double minTime;
 
-  std::tie(minGroup, minState, minTime) = read_and_locate_db_min_time(params);
+  std::tie(minSet, minState, minTime) = read_and_locate_db_min_time(params);
 
-  std::string goldGroup = Ioss::DynamicTopologyFileControl::get_group_name(1);
+  std::string goldSet = Ioss::DynamicTopologyFileControl::get_change_set_name(1);
   int goldState = 1;
   double goldTime = 0.0;
 
-  EXPECT_EQ(goldGroup, minGroup);
+  EXPECT_EQ(goldSet, minSet);
   EXPECT_EQ(goldState, minState);
   EXPECT_EQ(goldTime, minTime);
 

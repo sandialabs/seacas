@@ -50,12 +50,12 @@ struct DatabaseState
 {
   DatabaseState(Ioss::DatabaseIO* db)
   {
-    if(!db->supports_group()) {
-      group = db->get_filename();
+    if(!db->supports_change_set()) {
+      changeSet = db->get_filename();
     }
   }
 
-  std::string group{"/"};
+  std::string changeSet{"/"};
   int state{-1};
   double time{-std::numeric_limits<double>::max()};
 };
@@ -77,7 +77,7 @@ void locate_state_impl(Ioss::DatabaseIO *db, double targetTime,
       minTimeDiff = stepTimeDiff;
       loc.time  = stateTime;
       loc.state = istep;
-      loc.group = db->supports_group() ? db->get_group_name() : db->get_filename();
+      loc.changeSet = db->supports_change_set() ? db->get_change_set_name() : db->get_filename();
     }
   }
 }
@@ -103,16 +103,14 @@ void locate_state(Ioss::DatabaseIO *db, double targetTime, DatabaseState& loc)
 DatabaseState locate_group_db_state(Ioss::DatabaseIO *db, double targetTime)
 {
   DatabaseState loc(db);
-  std::string currentGroup = db->get_group_name();
+  std::string currentChangeSet = db->get_change_set_name();
 
-  for(int i=0; i<db->num_child_group(); i++) {
-    db->open_root_group();
-    db->open_child_group(i);
+  for(int i=0; i<db->num_change_set(); i++) {
+    db->open_change_set(i);
     locate_state(db, targetTime, loc);
   }
 
-  db->open_root_group();
-  db->open_group(currentGroup);
+  db->open_change_set(currentChangeSet);
 
   return loc;
 }
@@ -354,7 +352,7 @@ void get_cyclic_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
         if (comparator(timesteps[i-1], best_time)) {
           loc.time  = timesteps[i-1];
           loc.state = i;
-          loc.group = expandedDB->get_filename();
+          loc.changeSet = expandedDB->get_filename();
           best_time  = timesteps[i-1];
         }
       }
@@ -403,7 +401,7 @@ void get_linear_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
         if (comparator(timesteps[i-1], best_time)) {
           loc.time  = timesteps[i-1];
           loc.state = i;
-          loc.group = expandedDB->get_filename();
+          loc.changeSet = expandedDB->get_filename();
           best_time  = timesteps[i-1];
         }
       }
@@ -435,17 +433,16 @@ DatabaseState get_multi_db_time_impl(Ioss::DatabaseIO *db, double init_time,
 }
 
 DatabaseState get_group_db_time_impl(Ioss::DatabaseIO *db, double init_time,
-                                                            StateLocatorCompare comparator)
+                                     StateLocatorCompare comparator)
 {
   DatabaseState loc(db);
 
-  std::string currentGroup = db->get_group_name();
+  std::string currentChangeSet = db->get_change_set_name();
 
   double best_time = init_time;
 
-  for(int i=0; i<db->num_child_group(); i++) {
-    db->open_root_group();
-    db->open_child_group(i);
+  for(int i=0; i<db->num_change_set(); i++) {
+    db->open_change_set(i);
 
     std::vector<double> timesteps = db->get_db_step_times();
     int stepCount = static_cast<int>(timesteps.size());
@@ -454,14 +451,13 @@ DatabaseState get_group_db_time_impl(Ioss::DatabaseIO *db, double init_time,
       if (comparator(timesteps[i-1], best_time)) {
         loc.time  = timesteps[i-1];
         loc.state = i;
-        loc.group = db->get_group_name();
+        loc.changeSet = db->get_change_set_name();
         best_time  = timesteps[i-1];
       }
     }
   }
 
-  db->open_root_group();
-  db->open_group(currentGroup);
+  db->open_change_set(currentChangeSet);
 
   return loc;
 }
@@ -846,12 +842,12 @@ std::string DynamicTopologyFileControl::get_unique_linear_filename(Ioss::Databas
   return filename;
 }
 
-std::string DynamicTopologyFileControl::get_group_name(unsigned int step)
+std::string DynamicTopologyFileControl::get_change_set_name(unsigned int step)
 {
-  std::ostringstream groupname;
-  groupname << group_prefix();
-  groupname << step;
-  return groupname.str();
+  std::ostringstream change_setname;
+  change_setname << change_set_prefix();
+  change_setname << step;
+  return change_setname.str();
 }
 
 std::string DynamicTopologyFileControl::get_cyclic_database_filename(const std::string& baseFileName,
@@ -1178,17 +1174,16 @@ void DynamicTopologyFileControl::clone_and_replace_output_database(int steps)
     replace_output_database(db);
 }
 
-void DynamicTopologyFileControl::add_output_database_group(int steps)
+void DynamicTopologyFileControl::add_output_database_change_set(int steps)
 {
   auto current_db = get_database();
 
   std::ostringstream oss;
-  oss << group_prefix();
+  oss << change_set_prefix();
   oss << m_dbChangeCount;
 
   current_db->release_memory();
-  current_db->open_root_group();
-  current_db->create_subgroup(oss.str());
+  current_db->create_change_set(oss.str());
 
   m_dbChangeCount++;
 }
@@ -1198,13 +1193,13 @@ std::tuple<std::string, int, double> DynamicTopologyFileControl::locate_db_state
   auto db = get_database();
   DatabaseState loc(db);
 
-  if(db->supports_group()) {
+  if(db->supports_change_set()) {
     loc = locate_group_db_state(db, targetTime);
   } else {
     loc = locate_multi_db_state(db, targetTime);
   }
 
-  return std::make_tuple(loc.group, loc.state, loc.time);
+  return std::make_tuple(loc.changeSet, loc.state, loc.time);
 }
 
 std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_max_time() const
@@ -1212,13 +1207,13 @@ std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_max_time
   auto db = get_database();
   DatabaseState loc(db);
 
-  if(db->supports_group()) {
+  if(db->supports_change_set()) {
     loc = get_group_db_max_time(db);
   } else {
     loc = get_multi_db_max_time(db);
   }
 
-  return std::make_tuple(loc.group, loc.state, loc.time);
+  return std::make_tuple(loc.changeSet, loc.state, loc.time);
 }
 
 std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_min_time() const
@@ -1226,13 +1221,13 @@ std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_min_time
   auto db = get_database();
   DatabaseState loc(db);
 
-  if(db->supports_group()) {
+  if(db->supports_change_set()) {
     loc = get_group_db_min_time(db);
   } else {
     loc = get_multi_db_min_time(db);
   }
 
-  return std::make_tuple(loc.group, loc.state, loc.time);
+  return std::make_tuple(loc.changeSet, loc.state, loc.time);
 }
 
 DatabaseIO* DynamicTopologyFileControl::get_database() const
