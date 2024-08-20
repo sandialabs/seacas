@@ -73,6 +73,7 @@ module load sems-fmt/10.2.1
 module load sems-cmake/3.24.2
 module load sems-doxygen
 module load sems-zlib
++module load sems-python/3.9.0
 
 if [ "$MPI" == "YES" ]
 then
