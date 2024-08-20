@@ -67,40 +67,39 @@ INSTALL_PATH=${ACCESS}
 ### Using SEMS (Software Engineering Maintenance & Support) provided libraries...
 ### https://sems.sandia.gov/
 module purge
-source /projects/sems/modulefiles/utils/sems-modules-init.sh  
-module load sems-gcc/10.1.0
-module load sems-fmt/9.1.0
-module load sems-cmake/3.24.3
+source /projects/sems/modulefiles/utils/sems-modules-init.sh
+module load sems-gcc/13.2.0
+module load sems-fmt/10.2.1
+module load sems-cmake/3.24.2
 module load sems-doxygen
 module load sems-zlib
 
 if [ "$MPI" == "YES" ]
 then
   module load sems-openmpi
-  module load sems-hdf5/1.12.2_parallel
-  module load sems-netcdf-c/4.8.1_parallel
-  module load sems-parallel-netcdf/1.12.1
-  module load sems-parmetis-int64/4.0.3
-  module load sems-cgns/4.3.0_parallel
+  module load sems-hdf5/1.10.7
+  module load sems-netcdf-c/4.7.3
+  module load sems-parallel-netcdf/1.12.3
+  module load sems-parmetis/4.0.3
+  module load sems-cgns/4.4.0
 else
-  module load sems-hdf5/1.12.2_serial
-  module load sems-netcdf-c/4.8.1_serial
-  module load sems-cgns/4.3.0_serial
-  module load sems-metis-int64/5.1.0
+  module load sems-hdf5-serial/1.14.3
+  module load sems-netcdf-c-serial/4.9.2
+  module load sems-cgns-serial/4.4.0
+  module load sems-metis/5.1.0 
 fi
 
 HAVE_NETCDF=YES
 HAVE_CGNS=YES
 
-# NOTE: CGNS, MATIO, PNETCDF, and are currently not supported by SEMS.
-#       To use them you will need to install them following the directions in
+# NOTE: MATIO, is currently not supported by SEMS.
+#       To use it you will need to install them following the directions in
 #       README.md, enable them below, and add the appropriate defines below:
 #
 # -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
 # -D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
 
 HAVE_MATIO=NO
-HAVE_CGNS=NO
 
 NETCDF_PATH=${SEMS_NETCDF_ROOT}
 HDF5_PATH=${SEMS_HDF5_ROOT}
@@ -174,6 +173,7 @@ cmake  \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D Seacas_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D Seacas_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
+-D ENABLE_ExoNull:BOOL=YES \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
