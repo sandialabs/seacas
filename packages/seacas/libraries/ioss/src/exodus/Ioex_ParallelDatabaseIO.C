@@ -556,7 +556,7 @@ namespace Ioex {
 
 #if !defined(__IOSS_WINDOWS__)
     if (!path.empty()) {
-      chdir(current_cwd);
+      (void)chdir(current_cwd);
     }
     std::free(current_cwd);
 #endif
@@ -632,7 +632,7 @@ namespace Ioex {
     std::string path  = file.pathname();
     filename          = file.tailname();
     char *current_cwd = getcwd(nullptr, 0);
-    chdir(path.c_str());
+    (void)chdir(path.c_str());
 #endif
 
     bool do_timer = false;
@@ -687,7 +687,7 @@ namespace Ioex {
     }
 
 #if !defined(__IOSS_WINDOWS__)
-    chdir(current_cwd);
+    (void)chdir(current_cwd);
     std::free(current_cwd);
 #endif
 

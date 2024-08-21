@@ -89,9 +89,6 @@ namespace Iocatalyst {
     IOSS_NODISCARD bool split_type_changed() const { return split_type_c; }
 
   private:
-    bool open_group_nl(const std::string & /* group_name */) override { return false; }
-    bool create_subgroup_nl(const std::string & /* group_name */) override { return false; }
-
     bool begin_nl(Ioss::State state) override;
     bool end_nl(Ioss::State state) override;
 
