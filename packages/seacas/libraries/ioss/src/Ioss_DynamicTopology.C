@@ -46,6 +46,18 @@
 
 namespace {
 
+//class ChangeSet {
+//public:
+//  ChangeSet(Ioss::DatabaseIO *db)
+//  : m_database(db) {}
+//
+//private:
+//  ChangeSet();
+//  ChangeSet(const ChangeSet&);
+//
+//  Ioss::DatabaseIO *m_database;
+//};
+
 struct DatabaseState
 {
   DatabaseState(Ioss::DatabaseIO* db)
@@ -234,18 +246,13 @@ expand_topology_files(FileNameGenerator generator,
   return std::make_pair(std::string(), db);
 }
 
-void locate_cyclic_multi_db_state(Ioss::DatabaseIO* db, double targetTime,
-                                  const std::string& ioDB, const std::string& dbType,
-                                  DatabaseState& loc)
+
+void locate_multi_db_state_impl(Ioss::DatabaseIO* db, double targetTime,
+                                const std::string& ioDB, const std::string& dbType,
+                                FileNameGenerator generator, DatabaseState& loc)
 {
   auto util = db->util();
-  FileNameGenerator generator = [](const std::string& baseFileName, unsigned step) {
-                                     static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                                     std::string filename = baseFileName;
-                                     if(step == 0) step++;
-                                     filename += "-" + suffix.substr((step-1)%26, 1);
-                                     return filename;
-                                  };
+
   bool found = true;
   int step = 0;
   while(found) {
@@ -257,7 +264,6 @@ void locate_cyclic_multi_db_state(Ioss::DatabaseIO* db, double targetTime,
     std::tie(expanded, expandedDB) = expand_topology_files(generator, util, ioDB, dbType,
                                                            db->get_property_manager(), step);
     if(!expanded.empty()) {
-      std::cout << "Found file: " << expanded << std::endl;
       locate_state(expandedDB, targetTime, loc);
       delete expandedDB;
     }
@@ -267,11 +273,25 @@ void locate_cyclic_multi_db_state(Ioss::DatabaseIO* db, double targetTime,
   }
 }
 
+void locate_cyclic_multi_db_state(Ioss::DatabaseIO* db, double targetTime,
+                                  const std::string& ioDB, const std::string& dbType,
+                                  DatabaseState& loc)
+{
+  FileNameGenerator generator = [](const std::string& baseFileName, unsigned step) {
+                                     static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                                     std::string filename = (step > 26) ? "" : baseFileName;
+                                     if(step == 0) step++;
+                                     filename += "-" + suffix.substr((step-1)%26, 1);
+                                     return filename;
+                                  };
+
+  locate_multi_db_state_impl(db, targetTime, ioDB, dbType, generator, loc);
+}
+
 void locate_linear_multi_db_state(Ioss::DatabaseIO* db, double targetTime,
                                   const std::string& ioDB, const std::string& dbType,
                                   DatabaseState& loc)
 {
-  auto util = db->util();
   FileNameGenerator generator = [](const std::string& baseFileName, unsigned step) {
                                      std::ostringstream filename;
                                      filename << baseFileName;
@@ -280,24 +300,8 @@ void locate_linear_multi_db_state(Ioss::DatabaseIO* db, double targetTime,
                                      }
                                      return filename.str();
                                   };
-  bool found = true;
-  int step = 0;
-  while(found) {
-    ++step;
 
-    std::string expanded;
-    Ioss::DatabaseIO* expandedDB{nullptr};
-
-    std::tie(expanded, expandedDB) = expand_topology_files(generator, util, ioDB, dbType,
-                                                           db->get_property_manager(), step);
-    if(!expanded.empty()) {
-      locate_state(expandedDB, targetTime, loc);
-      delete expandedDB;
-    }
-    else {
-      found = false;
-    }
-  }
+  locate_multi_db_state_impl(db, targetTime, ioDB, dbType, generator, loc);
 }
 
 DatabaseState locate_multi_db_state(Ioss::DatabaseIO* db, double targetTime)
@@ -317,19 +321,12 @@ DatabaseState locate_multi_db_state(Ioss::DatabaseIO* db, double targetTime)
   return loc;
 }
 
-void get_cyclic_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
-                                   StateLocatorCompare comparator,
-                                   const std::string& ioDB, const std::string& dbType,
-                                   DatabaseState& loc)
+void get_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
+                            StateLocatorCompare comparator,
+                            const std::string& ioDB, const std::string& dbType,
+                            FileNameGenerator generator, DatabaseState& loc)
 {
   auto util = db->util();
-  FileNameGenerator generator = [](const std::string& baseFileName, unsigned step) {
-                                     static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                                     std::string filename = baseFileName;
-                                     if(step == 0) step++;
-                                     filename += "-" + suffix.substr((step-1)%26, 1);
-                                     return filename;
-                                  };
 
   bool found = true;
   int step = 0;
@@ -365,12 +362,27 @@ void get_cyclic_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
   }
 }
 
-void get_linear_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
-                                   StateLocatorCompare comparator,
-                                   const std::string& ioDB, const std::string& dbType,
-                                   DatabaseState& loc)
+void get_cyclic_multi_db_time(Ioss::DatabaseIO* db, double init_time,
+                              StateLocatorCompare comparator,
+                              const std::string& ioDB, const std::string& dbType,
+                              DatabaseState& loc)
 {
-  auto util = db->util();
+  FileNameGenerator generator = [](const std::string& baseFileName, unsigned step) {
+                                     static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                                     std::string filename = (step > 26) ? "" : baseFileName;
+                                     if(step == 0) step++;
+                                     filename += "-" + suffix.substr((step-1)%26, 1);
+                                     return filename;
+                                  };
+
+  get_multi_db_time_impl(db, init_time, comparator, ioDB, dbType, generator, loc);
+}
+
+void get_linear_multi_db_time(Ioss::DatabaseIO* db, double init_time,
+                              StateLocatorCompare comparator,
+                              const std::string& ioDB, const std::string& dbType,
+                              DatabaseState& loc)
+{
   FileNameGenerator generator = [](const std::string& baseFileName, unsigned step) {
                                      std::ostringstream filename;
                                      filename << baseFileName;
@@ -380,42 +392,11 @@ void get_linear_multi_db_time_impl(Ioss::DatabaseIO* db, double init_time,
                                      return filename.str();
                                   };
 
-  bool found = true;
-  int step = 0;
-  double best_time = init_time;
-
-  while(found) {
-    ++step;
-
-    std::string expanded;
-    Ioss::DatabaseIO* expandedDB{nullptr};
-
-    std::tie(expanded, expandedDB) = expand_topology_files(generator, util, ioDB, dbType,
-                                                           db->get_property_manager(), step);
-    if(!expanded.empty()) {
-
-      std::vector<double> timesteps = expandedDB->get_db_step_times();
-      int stepCount = static_cast<int>(timesteps.size());
-
-      for (int i = 1; i <= stepCount; i++) {
-        if (comparator(timesteps[i-1], best_time)) {
-          loc.time  = timesteps[i-1];
-          loc.state = i;
-          loc.changeSet = expandedDB->get_filename();
-          best_time  = timesteps[i-1];
-        }
-      }
-
-      delete expandedDB;
-    }
-    else {
-      found = false;
-    }
-  }
+  get_multi_db_time_impl(db, init_time, comparator, ioDB, dbType, generator, loc);
 }
 
-DatabaseState get_multi_db_time_impl(Ioss::DatabaseIO *db, double init_time,
-                                     StateLocatorCompare comparator)
+DatabaseState get_multi_db_time(Ioss::DatabaseIO *db, double init_time,
+                                StateLocatorCompare comparator)
 {
   auto region = db->get_region();
   DatabaseState loc(db);
@@ -424,15 +405,15 @@ DatabaseState get_multi_db_time_impl(Ioss::DatabaseIO *db, double init_time,
   std::string dbType = region->get_property("database_type").get_string();
 
   if(region->get_file_cyclic_count() > 0) {
-    get_cyclic_multi_db_time_impl(db, init_time, comparator, ioDB, dbType, loc);
+    get_cyclic_multi_db_time(db, init_time, comparator, ioDB, dbType, loc);
   } else {
-    get_linear_multi_db_time_impl(db, init_time, comparator, ioDB, dbType, loc);
+    get_linear_multi_db_time(db, init_time, comparator, ioDB, dbType, loc);
   }
 
   return loc;
 }
 
-DatabaseState get_group_db_time_impl(Ioss::DatabaseIO *db, double init_time,
+DatabaseState get_group_db_time(Ioss::DatabaseIO *db, double init_time,
                                      StateLocatorCompare comparator)
 {
   DatabaseState loc(db);
@@ -466,28 +447,28 @@ DatabaseState get_group_db_max_time(Ioss::DatabaseIO *db)
 {
   double max_time = -std::numeric_limits<double>::max();
   StateLocatorCompare compare = [](double a, double b) { return (a > b); };
-  return get_group_db_time_impl(db, max_time, compare);
+  return get_group_db_time(db, max_time, compare);
 }
 
 DatabaseState get_group_db_min_time(Ioss::DatabaseIO *db)
 {
   double min_time = std::numeric_limits<double>::max();
   StateLocatorCompare compare = [](double a, double b) { return (a < b); };
-  return get_group_db_time_impl(db, min_time, compare);
+  return get_group_db_time(db, min_time, compare);
 }
 
 DatabaseState get_multi_db_max_time(Ioss::DatabaseIO *db)
 {
   double max_time = -std::numeric_limits<double>::max();
   StateLocatorCompare compare = [](double a, double b) { return (a > b); };
-  return get_multi_db_time_impl(db, max_time, compare);
+  return get_multi_db_time(db, max_time, compare);
 }
 
 DatabaseState get_multi_db_min_time(Ioss::DatabaseIO *db)
 {
   double min_time = std::numeric_limits<double>::max();
   StateLocatorCompare compare = [](double a, double b) { return (a < b); };
-  return get_multi_db_time_impl(db, min_time, compare);
+  return get_multi_db_time(db, min_time, compare);
 }
 
 }

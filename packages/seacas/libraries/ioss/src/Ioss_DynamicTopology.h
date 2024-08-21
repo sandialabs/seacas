@@ -48,12 +48,16 @@ namespace Ioss {
     TOPOLOGY_REORDER        = (1U <<  0), //!< Data structures reordered on processor, no change between procs.
     TOPOLOGY_SHUFFLE        = (1U <<  1), //!< Globally the same, data moved among processors.
     TOPOLOGY_HADAPT         = (1U <<  2), //!< Elements split/combined; not moved cross-proc
-    TOPOLOGY_GEOMETRY       = (1U <<  3), //!< Geometry (mesh coordinates) modified. Restart needs to know this.
-    TOPOLOGY_CREATEFACE     = (1U <<  4), //!< Face/Edge are created/deleted.
-    TOPOLOGY_CREATEELEM     = (1U <<  5), //!< Elements are created/deleted.
-    TOPOLOGY_CREATENODE     = (1U <<  6), //!< Nodes are created/deleted.
-    TOPOLOGY_CREATEASSEMBLY = (1U <<  7), //!< Assemblies are created/deleted.
-    TOPOLOGY_UNKNOWN        = (1U <<  8), //!< Unknown change, recreate from scratch.
+    TOPOLOGY_GHOST          = (1U <<  3), //!< Ghost entities created/destroyed
+    TOPOLOGY_GEOMETRY       = (1U <<  4), //!< Geometry (mesh coordinates) modified. Restart needs to know this.
+    TOPOLOGY_CREATEFACE     = (1U <<  5), //!< Face/Edge are created/deleted.
+    TOPOLOGY_CREATEELEM     = (1U <<  6), //!< Elements are created/deleted.
+    TOPOLOGY_CREATENODE     = (1U <<  7), //!< Nodes are created/deleted.
+    TOPOLOGY_CREATEASSEMBLY = (1U <<  8), //!< Assemblies are created/deleted.
+    TOPOLOGY_UNKNOWN        = (1U <<  9), //!< Unknown change, recreate from scratch.
+    TOPOLOGY_AUXILIARY      = (1U << 10), //!< An AUXILIARY relation was created/modified.
+    TOPOLOGY_CONSTRAINT     = (1U << 11) //!< Contact constraints
+
   };
 
   enum class FileControlOption { CONTROL_NONE, CONTROL_AUTO_MULTI_FILE, CONTROL_AUTO_GROUP_FILE };

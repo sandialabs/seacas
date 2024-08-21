@@ -649,6 +649,9 @@ namespace Ioex {
     std::vector<double> tsteps(0);
 
     // Use reference to make sure that no Region modifications occur based on the input flag
+    // setRegionTimeSteps flag determines whether we are actually populating the region
+    // timesteps or just querying the timesteps that are on a specific database without
+    // populating the regions timesteps data and setting the number of timesteps on the region
     int& timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
 
     if (dbUsage == Ioss::WRITE_HISTORY) {
