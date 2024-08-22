@@ -10,6 +10,8 @@
 /* Define element types */
 enum E_Type {
   SPHERE,
+  BAR1D2,
+  BAR1D3,
   BAR2,
   BAR3,
   QUAD4,
