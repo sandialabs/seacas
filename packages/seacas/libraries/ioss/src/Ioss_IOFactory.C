@@ -93,7 +93,7 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
     }
   }
   else {
-    auto                my_props(properties);
+    auto my_props(properties);
     my_props.add(Property("database_type", type));
 
     Ioss::ParallelUtils pu(communicator);

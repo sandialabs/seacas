@@ -59,7 +59,7 @@ void DynamicTopologyObserver::check_region() const
 
 void DynamicTopologyObserver::register_region(Region *region)
 {
-  if(nullptr != m_region && region != m_region) {
+  if(nullptr != region && nullptr != m_region && region != m_region) {
     std::ostringstream errmsg;
     fmt::print(errmsg,
                "ERROR: Attempt to re-register different region on "
@@ -68,6 +68,19 @@ void DynamicTopologyObserver::register_region(Region *region)
   }
 
   m_region = region;
+}
+
+void DynamicTopologyObserver::register_notifier(DynamicTopologyNotifier *notifier)
+{
+  if(nullptr != notifier && nullptr != m_notifier && notifier != m_notifier) {
+    std::ostringstream errmsg;
+    fmt::print(errmsg,
+               "ERROR: Attempt to re-register different notifier on "
+               "Dynamic Topology Observer.\n\n");
+    IOSS_ERROR(errmsg);
+  }
+
+  m_notifier = notifier;
 }
 
 void DynamicTopologyObserver::set_cumulative_topology_modification(unsigned int type)
@@ -79,10 +92,23 @@ unsigned int DynamicTopologyObserver::get_cumulative_topology_modification() con
 unsigned int DynamicTopologyObserver::get_topology_modification() const
 { return m_topologyModification; }
 
-void DynamicTopologyObserver::set_topology_modification(unsigned int type)
+void DynamicTopologyObserver::set_topology_modification_nl(unsigned int type)
 {
   m_topologyModification |= type;
   m_cumulativeTopologyModification |= type;
+}
+
+void DynamicTopologyObserver::set_topology_modification(unsigned int type)
+{
+  if(!(m_topologyModification & type)) {
+    set_topology_modification_nl(type);
+
+    if(nullptr != m_notifier) {
+      for(auto observer : m_notifier->get_observers()) {
+        observer->set_topology_modification_nl(type);
+      }
+    }
+  }
 }
 
 void DynamicTopologyObserver::reset_topology_modification()
@@ -90,8 +116,21 @@ void DynamicTopologyObserver::reset_topology_modification()
   m_topologyModification = TOPOLOGY_SAME;
 }
 
+void DynamicTopologyObserver::reset_topology_modification_all()
+{
+  if(m_topologyModification != TOPOLOGY_SAME) {
+    reset_topology_modification();
+
+    if(nullptr != m_notifier) {
+      for(auto observer : m_notifier->get_observers()) {
+        observer->reset_topology_modification();
+      }
+    }
+  }
+}
+
 bool DynamicTopologyObserver::is_topology_modified() const
-{ return m_topologyModification != 0; }
+{ return m_topologyModification != TOPOLOGY_SAME; }
 
 const ParallelUtils &DynamicTopologyObserver::util() const
 {
@@ -152,20 +191,153 @@ int DynamicTopologyObserver::get_cumulative_topology_modification_field()
   return ivalue;
 }
 
-void DynamicTopologyObserver::define_model(IOSS_MAYBE_UNUSED Region& region)
+void DynamicTopologyObserver::define_model()
 {
 
 }
 
-void DynamicTopologyObserver::write_model(IOSS_MAYBE_UNUSED Region& region)
+void DynamicTopologyObserver::write_model()
 {
 
 }
 
-void DynamicTopologyObserver::define_transient(IOSS_MAYBE_UNUSED Region& region)
+void DynamicTopologyObserver::define_transient()
 {
 
 }
+
+
+DynamicTopologyBroker* DynamicTopologyBroker::broker()
+{
+  static DynamicTopologyBroker broker_;
+  return &broker_;
+}
+
+void DynamicTopologyBroker::register_model(const std::string& model_name)
+{
+  auto iter = m_notifiers.find(model_name);
+  if(iter != m_notifiers.end()) {
+    return;
+  }
+
+  m_notifiers[model_name] = std::make_shared<DynamicTopologyNotifier>(model_name);
+}
+
+std::shared_ptr<DynamicTopologyNotifier> DynamicTopologyBroker::get_notifier(const std::string& model_name) const
+{
+  auto iter = m_notifiers.find(model_name);
+  if(iter != m_notifiers.end()) {
+    return iter->second;
+  }
+
+  return {};
+}
+
+std::vector<std::shared_ptr<DynamicTopologyObserver>> DynamicTopologyBroker::get_observers(const std::string& model_name) const
+{
+  std::vector<std::shared_ptr<DynamicTopologyObserver>> observers;
+
+  auto notifier = get_notifier(model_name);
+
+  if(notifier) {
+    return notifier->get_observers();
+  }
+
+  return observers;
+}
+
+void DynamicTopologyBroker::remove_model(const std::string& model_name)
+{
+  auto iter = m_notifiers.find(model_name);
+  if(iter != m_notifiers.end()) {
+    m_notifiers.erase(iter);
+  }
+}
+
+void DynamicTopologyBroker::clear_models()
+{
+  m_notifiers.clear();
+}
+
+void DynamicTopologyBroker::register_observer(const std::string& model_name,
+                                              std::shared_ptr<DynamicTopologyObserver> observer)
+{
+  auto notifier = get_notifier(model_name);
+
+  if(!notifier) {
+    register_model(model_name);
+    notifier = get_notifier(model_name);
+  }
+
+  notifier->register_observer(observer);
+}
+
+void DynamicTopologyBroker::register_observer(const std::string& model_name,
+                                              std::shared_ptr<DynamicTopologyObserver> observer,
+                                              Region& region)
+{
+  region.register_mesh_modification_observer(observer);
+  register_observer(model_name, observer);
+}
+
+void DynamicTopologyBroker::reset_topology_modification(const std::string& model_name)
+{
+  auto notifier = get_notifier(model_name);
+
+  if(!notifier) return;
+
+  notifier->reset_topology_modification();
+}
+
+void DynamicTopologyBroker::set_topology_modification(const std::string& model_name, unsigned int type)
+{
+  auto notifier = get_notifier(model_name);
+
+  if(!notifier) return;
+
+  notifier->set_topology_modification(type);
+}
+
+
+struct DynamicTopologyObserverCompare {
+  bool operator()(const std::shared_ptr<DynamicTopologyObserver> & lhs,
+                  const std::shared_ptr<DynamicTopologyObserver> & rhs) const {
+    assert(lhs && (lhs->get_region() != nullptr));
+    assert(rhs && (rhs->get_region() != nullptr));
+    return (lhs->get_region() < rhs->get_region());
+  }
+};
+
+void DynamicTopologyNotifier::register_observer(std::shared_ptr<DynamicTopologyObserver> observer)
+{
+  observer->register_notifier(this);
+  m_observers.push_back(observer);
+  std::sort(m_observers.begin(), m_observers.end(), DynamicTopologyObserverCompare());
+}
+
+void DynamicTopologyNotifier::unregister_observer(std::shared_ptr<DynamicTopologyObserver> observer)
+{
+  auto iter = std::find(m_observers.begin(), m_observers.end(), observer);
+  if (iter != m_observers.end()) {
+    (*iter)->register_notifier(nullptr);
+    m_observers.erase(iter);
+  }
+}
+
+void DynamicTopologyNotifier::reset_topology_modification()
+{
+  for(std::shared_ptr<DynamicTopologyObserver>& observer : m_observers) {
+    observer->reset_topology_modification();
+  }
+}
+
+void DynamicTopologyNotifier::set_topology_modification(unsigned int type)
+{
+  for(std::shared_ptr<DynamicTopologyObserver>& observer : m_observers) {
+    observer->set_topology_modification(type);
+  }
+}
+
 
 DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region, unsigned int fileCyclicCount,
                                                        IfDatabaseExistsBehavior &ifDatabaseExists,
@@ -539,12 +711,14 @@ void DynamicTopologyFileControl::add_output_database_group(int steps)
   auto current_db = m_region->get_database();
 
   std::ostringstream oss;
-  oss << "STEP-";
-  oss << steps;
+  oss << group_prefix();
+  oss << m_dbChangeCount;
 
   current_db->release_memory();
   current_db->open_root_group();
   current_db->create_subgroup(oss.str());
+
+  m_dbChangeCount++;
 }
 
 }

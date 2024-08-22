@@ -335,7 +335,7 @@ then
     then
         if [ "$USE_ZLIB_NG" == "YES" ]
         then
-            echo "${txtgrn}+++ ZLIB-NG${txtrst}"
+            echo "${txtgrn}+++ ZLIB-NG ${zlib_ng_version}${txtrst}"
             zlib_ng_version="develop"
 
             cd $ACCESS || exit
@@ -344,14 +344,13 @@ then
             then
                 echo "${txtgrn}+++ Downloading...${txtrst}"
                 rm -rf zlib-ng
-                git clone https://github.com/zlib-ng/zlib-ng
+                git clone --depth 1 --branch ${zlib_ng_version} https://github.com/zlib-ng/zlib-ng
             fi
 
             if [ "$BUILD" == "YES" ]
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
                 cd zlib-ng || exit
-                git checkout ${zlib_ng_version}
                 rm -rf build
                 mkdir build
                 cmake -Bbuild -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DZLIB_COMPAT=YES .
@@ -416,7 +415,6 @@ if [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
     then
-	echo "${txtgrn}+++ HDF5${txtrst}"
 	hdf_suffix=""
 	if [ "${H5VERSION}" == "V110" ]; then
 	    hdf_version="hdf5-1_10_11"
@@ -430,6 +428,8 @@ then
             echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V110, V112, or V114. exiting.${txtrst}
             exit 1
 	fi
+
+	echo "${txtgrn}+++ HDF5 ${hdf_version}${txtrst}"
 	
 	cd $ACCESS || exit
 	cd TPL/hdf5 || exit
@@ -536,29 +536,25 @@ if [ "$NETCDF" == "YES" ]
 then
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
-    echo "${txtgrn}+++ NetCDF${txtrst}"
+#   net_version="v4.9.1"
+    net_version="v4.9.2"
+#   net_version="v4.8.1"
+#   net_version="master"
+
+    echo "${txtgrn}+++ NetCDF ${net_version} ${txtrst}"
     cd $ACCESS || exit
     cd TPL/netcdf || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
         echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf netcdf-c
-        git clone https://github.com/Unidata/netcdf-c netcdf-c
+        git clone --depth 1 --branch ${net_version} https://github.com/Unidata/netcdf-c netcdf-c
     fi
-
-#   net_version="v4.9.1"
-    net_version="v4.9.2"
-#   net_version="v4.8.1"
-#   net_version="master"
 
     if [ "$BUILD" == "YES" ]
     then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c || exit
-        if [ "$net_version" != "master" ]
-           then
-               git checkout $net_version
-        fi
         rm -rf build
         mkdir build
         cd build || exit
@@ -589,21 +585,21 @@ if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ CGNS${txtrst}"
+	cgns_version="v4.4.0"
+        echo "${txtgrn}+++ CGNS ${cgns_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/cgns || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
-            git clone https://github.com/cgns/CGNS
+            git clone --depth 1 --branch ${cgns_version} https://github.com/cgns/CGNS
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
-            git checkout v4.4.0
 	    git am ../CGNS-Allow-more-liberal-version-matching.patch
             rm -rf build
             mkdir build
@@ -722,21 +718,20 @@ then
     matio_version="v1.5.26"
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ MatIO${txtrst}"
+        echo "${txtgrn}+++ MatIO ${matio_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/matio || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf matio
-            git clone https://github.com/tbeu/matio.git
+            git clone --depth 1 --branch ${matio_version} https://github.com/tbeu/matio.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio || exit
-            git checkout ${matio_version}
             rm -rf build
             mkdir build
             cd build || exit
@@ -763,23 +758,22 @@ if [ "$FMT" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
     then
-        echo "${txtgrn}+++ FMT${txtrst}"
+        fmt_version="11.0.2"
+        echo "${txtgrn}+++ FMT ${fmt_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.2.1"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf fmt
-            git clone https://github.com/fmtlib/fmt
+            git clone --depth 1 --branch ${fmt_version} https://github.com/fmtlib/fmt
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd fmt || exit
-            git checkout ${fmt_version}
             rm -rf build
             mkdir build
             cd build || exit
@@ -852,14 +846,15 @@ if [ "$ADIOS2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ ADIOS2${txtrst}"
+	adios2_version="v2.10.1"
+        echo "${txtgrn}+++ ADIOS2 ${adios2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/adios2 || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf ADIOS2
-            git clone --depth=1 https://github.com/ornladios/ADIOS2.git
+	    git clone --depth 1 --branch ${adios2_version} https://github.com/ornladios/ADIOS2.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -894,21 +889,20 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
     then
         catalyst2_version="v2.0.0"
-        echo "${txtgrn}+++ Catalyst2${txtrst}"
+        echo "${txtgrn}+++ Catalyst2 ${catalyst2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/catalyst2 || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf catalyst
-            git clone https://gitlab.kitware.com/paraview/catalyst.git
+            git clone --depth 1 --branch ${catalyst2_version} https://gitlab.kitware.com/paraview/catalyst.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd catalyst || exit
-            git checkout ${catalyst2_version}
             rm -rf build
             mkdir build
             cd build || exit
@@ -936,21 +930,21 @@ if [ "$GTEST" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ gtest${txtrst}"
+        gtest_version="release-1.11.0"
+        echo "${txtgrn}+++ gtest ${gtest_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/gtest || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf googletest
-            git clone https://github.com/google/googletest.git
+            git clone --branch ${gtest_version} --depth 1 https://github.com/google/googletest.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd googletest || exit
-            git checkout release-1.11.0
             rm -rf build
             mkdir build
             cd build || exit
@@ -978,21 +972,21 @@ if [ "$CATCH2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
     then
-        echo "${txtgrn}+++ Catch2${txtrst}"
+        catch2_version="v3.5.3"
+        echo "${txtgrn}+++ Catch2 ${catch2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/catch2 || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf Catch2
-            git clone https://github.com/catchorg/Catch2.git
+            git clone --branch ${catch2_version} --depth 1 https://github.com/catchorg/Catch2.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd Catch2 || exit
-            git checkout v3.5.3
             rm -rf build
             mkdir build
             cd build || exit
