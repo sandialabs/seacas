@@ -135,7 +135,7 @@ if (TPL_ENABLE_MPI)
        TEST_1 EXEC io_shell ARGS ${JOIN_ARG} ${SERIALIZE_ARG} 8-block32-ser.g 8-block-32-serj.g
           NOEXEPREFIX NOEXESUFFIX
           NUM_MPI_PROCS ${NPROCS}
-       TEST_2 EXEC exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-32-serj.g
+       TEST_2 EXEC exodiff ARGS -map -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-32-serj.g
           DIRECTORY ../../../../applications/exodiff
           NOEXEPREFIX NOEXESUFFIX
           NUM_MPI_PROCS 1
@@ -356,13 +356,15 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus
 TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_file_per_state_to_exodus
    TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --file_per_state ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-link.cgns
      NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
    TEST_1 EXEC io_shell ARGS ${JOIN_ARG} 8-block-link.cgns 8-block-rt.g
      NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
    TEST_2 EXEC exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-rt.g
      DIRECTORY ../../../../applications/exodiff
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
-  COMM serial
+  COMM mpi serial
   XHOSTTYPE Windows
   )
 
@@ -478,18 +480,19 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
      DIRECTORY ../../../../applications/exodiff
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
-  COMM mpi
+  COMM mpi serial
   XHOSTTYPE Windows
   )
 ELSE()
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
    TEST_0 EXEC struc_to_unstruc ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns exodus_struc.e
      NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
    TEST_1 EXEC exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
      DIRECTORY ../../../../applications/exodiff
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
-  COMM serial
+  COMM mpi serial
   XHOSTTYPE Windows
   )
 ENDIF()
@@ -673,7 +676,7 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_assembly_copy
      NOEXEPREFIX NOEXESUFFIX
    TEST_1 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/assemblies.cgns assemblies-out.cgns
      NUM_MPI_PROCS 1
-  COMM mpi
+  COMM mpi serial
   )
 
 if (TPL_ENABLE_MPI)
