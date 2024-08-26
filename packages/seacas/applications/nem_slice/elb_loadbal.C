@@ -1589,15 +1589,15 @@ namespace {
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
         int proc = lb->vertex2proc[ecnt];
         assert(proc < machine->num_procs);
-        bool internal = true;
-        int  flag     = 0;
-        auto etype    = mesh->elem_type[ecnt];
-        int  dim1     = get_elem_info(NDIM, etype);
+        bool   internal = true;
+        int    flag     = 0;
+        E_Type etype    = mesh->elem_type[ecnt];
+        int    dim1     = get_elem_info(NDIM, etype);
 
         /* need to check for hex's or tet's */
         hflag1 = is_hex(etype);
 
-        /* a tet10 cannot connect to a hex */
+        /* a TET10 cannot connect to a HEX */
         tflag1 = is_tet(etype);
 
         int nsides = get_elem_info(NSIDES, etype);
@@ -1612,19 +1612,17 @@ namespace {
            * now determine how many side set nodes are needed to
            * determine if there is an element connected to this side.
            *
-           * 1-d - need one node
-           * 2-d - need two nodes, so find one intersection
-           * 3-d - need three nodes, so find two intersections
-           * note: must check to make sure that this number is not
-           *       larger than the number of nodes on the sides (ie - shell).
+           * 2-D - need two nodes, so find one intersection
+           * 3-D - need three nodes, so find two intersections
+           * NOTE: must check to make sure that this number is not
+           *       larger than the number of nodes on the sides (ie - SHELL).
            */
 
           int nnodes = mesh->num_dims;
           if (side_cnt < nnodes) {
             nnodes = side_cnt;
           }
-          if (nnodes > 1)
-            nnodes--; /* decrement to find the number of intersections needed */
+          nnodes--; /* decrement to find the number of intersections needed */
 
           nelem = 0; /* reset this in case no intersections are needed */
 
@@ -1633,33 +1631,11 @@ namespace {
            * the tet/hex combination
            */
 
-          if (!hflag1) { /* not a hex */
+          if (!hflag1) { /* Not a hex */
 
-            if (etype == BAR2 || etype == BAR3) {
-              size_t nhold = graph->sur_elem[side_nodes[0]].size();
-              if (nhold > 1) {
-                for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
-                  hold_elem[ncnt] = graph->sur_elem[side_nodes[0]][ncnt];
-                }
+            /* ignore degenerate bars */
 
-                for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-                  /* Find elements connected to both node '0' and node 'ncnt+1' */
-                  nelem = find_inter(Data(hold_elem), Data(graph->sur_elem[side_nodes[(ncnt + 1)]]),
-                                     nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(),
-                                     Data(pt_list));
-
-                  if (nelem < 2) {
-                    break;
-                  }
-
-                  nhold = nelem;
-                  for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
-                    hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
-                  }
-                }
-              }
-            }
-            else if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
+            if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
 
               size_t nhold = graph->sur_elem[side_nodes[0]].size();
               for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
@@ -1964,7 +1940,6 @@ namespace {
         }
       } /* End "for(ecnt=0; ecnt < mesh->num_elems; ecnt++)" */
     }
-
     time2 = get_time();
     fmt::print("Time for elemental categorization: {}s\n", time2 - time1);
 

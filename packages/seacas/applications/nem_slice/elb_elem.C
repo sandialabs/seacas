@@ -46,7 +46,7 @@ const char *elem_name_from_enum(const E_Type elem_type)
       "TSHELL4",   "TSHELL6",   "TSHELL7",   "HEX8",    "HEX16",   "HEX20",    "HEX27",
       "HEXSHELL",  "TET4",      "TET10",     "TET8",    "TET14",   "TET15",    "WEDGE6",
       "WEDGE12",   "WEDGE15",   "WEDGE16",   "WEDGE20", "WEDGE21", "PYRAMID5", "PYRAMID13",
-      "PYRAMID14", "PYRAMID18", "PYRAMID19", "SHELL2",  "SHELL3"};
+      "PYRAMID14", "PYRAMID18", "PYRAMID19", "SHELL2",  "SHELL3",  "BAR1D2",   "BAR1D3"};
   return elem_names[elem_type];
 }
 
@@ -126,8 +126,8 @@ E_Type get_elem_type(const char *elem_name, const int num_nodes, const int num_d
     if (strncasecmp(elem_name, "BEAM", 4) == 0 || strncasecmp(elem_name, "TRUSS", 5) == 0 ||
         strncasecmp(elem_name, "ROD", 3) == 0 || strncasecmp(elem_name, "BAR", 3) == 0) {
       switch (num_nodes) {
-      case 2: answer = BAR2; break;
-      case 3: answer = BAR3; break;
+      case 2: answer = num_dim == 1 ? BAR1D2 : BAR2; break;
+      case 3: answer = num_dim == 1 ? BAR1D3 : BAR3; break;
       default:
         Gen_Error(0, "fatal: unsupported BAR/BEAM/TRUSS element");
         error_report();
@@ -323,11 +323,24 @@ int get_elem_info(const int req, const E_Type etype)
 
   switch (etype) /* Switch over the element type */
   {
-  case BAR2:
+  case BAR1D2:
     switch (req) {
     case NNODES: answer = 2; break;
     case NSIDE_NODES: answer = 1; break;
     case NSIDES: answer = 2; break;
+    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    default:
+      Gen_Error(0, "fatal: unknown quantity");
+      error_report();
+      exit(1);
+    }
+    break;
+
+  case BAR2:
+    switch (req) {
+    case NNODES: answer = 2; break;
+    case NSIDE_NODES: answer = 2; break;
+    case NSIDES: answer = 1; break;
     case NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
@@ -362,11 +375,24 @@ int get_elem_info(const int req, const E_Type etype)
     }
     break;
 
-  case BAR3:
+  case BAR1D3:
     switch (req) {
     case NNODES: answer = 3; break;
     case NSIDE_NODES: answer = 1; break;
     case NSIDES: answer = 2; break;
+    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    default:
+      Gen_Error(0, "fatal: unknown quantity");
+      error_report();
+      exit(1);
+    }
+    break;
+
+  case BAR3:
+    switch (req) {
+    case NNODES: answer = 3; break;
+    case NSIDE_NODES: answer = 2; break;
+    case NSIDES: answer = 1; break;
     case NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
@@ -943,8 +969,8 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
 
   /* Find the side ID */
   switch (etype) {
-  case BAR2:
-  case BAR3:
+  case BAR1D2:
+  case BAR1D3:
     /* SIDE 1 */
     if (side_nodes[0] == connect[0]) {
       return 1;
@@ -954,6 +980,8 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
     }
     break;
 
+  case BAR2:
+  case BAR3:
   case SHELL2:
   case SHELL3:
     /* SIDE 1 */
@@ -1670,33 +1698,32 @@ int ss_to_node_list(const E_Type etype,    /* The element type */
       {1, 4, 3, 2, 9, 8, 7, 6, 14}    // side 5 (quad)
   };
 
-  static int shell_bar_table[1][3] = {{1, 2, 3}};
-  static int bar_table[2][1]       = {{1}, {2}};
+  static int bar_table[1][3] = {{1, 2, 3}};
 
   /* Locally decrement side_num */
   side_num--;
 
   /* Switch over the element type. */
   switch (etype) {
-  case BAR3:
+  case BAR1D2:
+  case BAR1D3:
+    ss_node_list[0] = connect[side_num];
+    i               = 1;
+    break;
+
   case BAR2:
-    /* Bar1 has 2 sides, each is a single node */
-    for (i = 0; i < 1; i++) {
+  case SHELL2:
+    /* Bar1 has 1 side */
+    for (i = 0; i < 2; i++) {
       ss_node_list[i] = connect[(bar_table[side_num][i] - 1)];
     }
     break;
 
-  case SHELL2:
-    /* Bar1 has 1 side */
-    for (i = 0; i < 2; i++) {
-      ss_node_list[i] = connect[(shell_bar_table[side_num][i] - 1)];
-    }
-    break;
-
+  case BAR3:
   case SHELL3:
     /* Bar has 1 side */
     for (i = 0; i < 3; i++) {
-      ss_node_list[i] = connect[(shell_bar_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[(bar_table[side_num][i] - 1)];
     }
     break;
 
@@ -2105,6 +2132,13 @@ int get_ss_mirror(const E_Type etype,             /* The element type */
 
   /* Switch over the element type. */
   switch (etype) {
+  case BAR1D2:
+  case BAR1D3:
+    // Side is a single node...
+    mirror_node_list[0] = ss_node_list[0];
+    i                   = 1;
+    break;
+
   case BAR2:
   case SHELL2:
     for (i = 0; i < 2; i++) {
