@@ -294,7 +294,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
              "ERROR: failed to open %s of type %d for reading.\n\t\tThe "
              "file does not exist, or there is a permission or file "
              "format issue.",
-             canon_path);
+             canon_path, type);
     ex_err(__func__, errmsg, status);
     free(canon_path);
     EX_FUNC_LEAVE(EX_FATAL);
