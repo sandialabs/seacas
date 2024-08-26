@@ -280,33 +280,31 @@ E_Type get_elem_type(const char *elem_name, const int num_nodes, const int num_d
 /*****************************************************************************/
 /* Convenience functions for code readability
  *****************************************************************************/
-int is_hex(E_Type etype)
+bool is_hex(E_Type etype)
 {
-  return static_cast<int>(etype == HEX8 || etype == HEX27 || etype == HEX20 || etype == HEXSHELL);
+  return etype == HEX8 || etype == HEX27 || etype == HEX20 || etype == HEXSHELL;
 }
 
-int is_tet(E_Type etype)
+bool is_tet(E_Type etype)
 {
-  return static_cast<int>(etype == TET4 || etype == TET10 || etype == TET8 || etype == TET14 ||
-                          etype == TET15);
+  return etype == TET4 || etype == TET10 || etype == TET8 || etype == TET14 || etype == TET15;
 }
 
-int is_wedge(E_Type etype)
+bool is_wedge(E_Type etype)
 {
-  return static_cast<int>(etype == WEDGE6 || etype == WEDGE15 || etype == WEDGE16 ||
-                          etype == WEDGE20 || etype == WEDGE21);
+  return etype == WEDGE6 || etype == WEDGE15 || etype == WEDGE16 || etype == WEDGE20 ||
+         etype == WEDGE21;
 }
 
-int is_pyramid(E_Type etype)
+bool is_pyramid(E_Type etype)
 {
-  return static_cast<int>(etype == PYRAMID5 || etype == PYRAMID13 || etype == PYRAMID14 ||
-                          etype == PYRAMID18 || etype == PYRAMID19);
+  return etype == PYRAMID5 || etype == PYRAMID13 || etype == PYRAMID14 || etype == PYRAMID18 ||
+         etype == PYRAMID19;
 }
 
-int is_3d_element(E_Type etype)
+bool is_3d_element(E_Type etype)
 {
-  return static_cast<int>((is_hex(etype) != 0) || (is_tet(etype) != 0) || (is_wedge(etype) != 0) ||
-                          (is_pyramid(etype) != 0));
+  return is_hex(etype) || is_tet(etype) || is_wedge(etype) || is_pyramid(etype);
 }
 
 /*****************************************************************************/
@@ -901,9 +899,7 @@ template <typename INT>
 int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT side_nodes[],
                 const int skip_check, const int partial_adj)
 {
-  int dup;
-  int location[9];
-  int count;
+  int count = 0;
   /*  min_match for hex elements means that min_match+1 nodes
       on a face of a hex must match to return the side of the
       hex on which the nodes exist, i.e., if 3/4 nodes of a hex
@@ -917,7 +913,8 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
   /* const int min_match = 2; */
 
   /* check if this is a degenerate face */
-  dup = 0;
+  int                dup = 0;
+  std::array<int, 9> location{};
   for (int i = 0; i < (nsnodes - 1); i++) {
     for (int j = (i + 1); j < nsnodes; j++) {
       if (side_nodes[i] == side_nodes[j]) {
@@ -1449,18 +1446,14 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
                         int          nsnodes,   /* The number of side nodes */
                         const INT    side_nodes[]) /* The list of side node IDs */
 {
-  int              nnodes;
-  int              lcnt;
-  int              i1;
-  int              i2;
-  std::vector<int> loc_node_ids(MAX_SIDE_NODES);
+  std::array<int, MAX_SIDE_NODES> loc_node_ids{};
 
-  nnodes = get_elem_info(NNODES, etype);
+  int nnodes = get_elem_info(NNODES, etype);
 
   /* Find the local node numbers for nodes forming the side */
-  lcnt = 0;
-  for (i1 = 0; i1 < nnodes; i1++) {
-    for (i2 = 0; i2 < nsnodes; i2++) {
+  int lcnt = 0;
+  for (int i1 = 0; i1 < nnodes; i1++) {
+    for (int i2 = 0; i2 < nsnodes; i2++) {
       if (connect[i1] == side_nodes[i2]) {
         loc_node_ids[lcnt++] = i1 + 1;
         break;
