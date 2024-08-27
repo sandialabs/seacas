@@ -137,7 +137,7 @@ namespace SEAMS {
 
   std::string Aprepro::long_version() const
   {
-    auto comment = getsym("_C_")->value.svar;
+    const auto &comment = getsym("_C_")->value.svar;
     return comment + " Algebraic Preprocessor (Aprepro) version " + version();
   }
 

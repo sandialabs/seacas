@@ -293,10 +293,18 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     ex_err_fn(exoid, __func__, errmsg, status);
     goto error_ret;
   }
+
   {
     struct exi_file_item *file = exi_find_file_item(exoid);
-    file->time_varid           = temp;
+    if (!file) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d.", exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
+      goto error_ret;
+    }
+    file->time_varid = temp;
   }
+
   exi_compress_variable(exoid, temp, -2); /* Don't compress, but do set collective io */
 
   if (model->num_dim > 0) {

@@ -176,7 +176,9 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
   }
 
   /* Update the maximum_name_length attribute on the file. */
-  exi_update_max_name_length(exoid, max_name_len - 1);
+  if (max_name_len > 0) {
+    exi_update_max_name_length(exoid, max_name_len - 1);
+  }
 
   /* Assembly are now all defined; see if any set data needs to be output... */
   for (size_t i = 0; i < count; i++) {

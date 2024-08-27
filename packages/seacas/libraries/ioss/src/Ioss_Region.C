@@ -383,12 +383,12 @@ namespace Ioss {
 
       // Region owns the database pointer even though other entities use it.
       GroupingEntity::really_delete_database();
+
+      if (topologyObserver) {
+        topologyObserver->register_region(nullptr);
+      }
     }
     catch (...) {
-    }
-
-    if (topologyObserver) {
-      topologyObserver->register_region(nullptr);
     }
   }
 

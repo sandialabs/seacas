@@ -49,8 +49,6 @@
 
 #include "Ioss_IOFactory.h"
 
-#include "Ioss_DynamicTopology.h"
-
 namespace {
 #if defined(IOSS_THREADSAFE)
   std::mutex m_;
@@ -100,7 +98,6 @@ namespace Ioss::Init {
     Iogs::IOFactory::factory(); // Structured Mesh Generator
     Ionull::IOFactory::factory();
     Ioss::StorageInitializer();
-    Ioss::DynamicTopologyBroker::broker();
     Ioss::Initializer();
     Iotr::Initializer();
 #ifdef HAVE_SEACASIOSS_ADIOS2
