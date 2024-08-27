@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -375,7 +375,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
       start[1] = 0;
       count[1] = strlen(text) + 1;
 
-      for (size_t j = 0; j < blocks[i].num_attribute; j++) {
+      for (int64_t j = 0; j < blocks[i].num_attribute; j++) {
         start[0] = j;
         nc_put_vara_text(exoid, att_name_varid, start, count, text);
       }
