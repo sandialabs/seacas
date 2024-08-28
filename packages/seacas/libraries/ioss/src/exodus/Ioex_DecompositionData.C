@@ -296,7 +296,8 @@ namespace Ioex {
             element_to_proc_global, INT(0));
 
 	if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
-	  Ioss::DecompUtils::output_decomposition_statistics(element_to_proc_global, m_processorCount);
+	  auto work_per_rank = Ioss::DecompUtils::get_work_per_rank(element_to_proc_global, m_processorCount);
+	  Ioss::DecompUtils::output_decomposition_statistics(work_per_rank);
 	}
       }
       // Now broadcast the parts of the `element_to_proc_global`
