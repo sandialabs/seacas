@@ -49,6 +49,8 @@ enum E_Type {
   PYRAMID19,
   SHELL2,
   SHELL3,
+  BAR1D2,
+  BAR1D3,
   NULL_EL
 };
 
@@ -102,8 +104,8 @@ int get_ss_mirror(E_Type     etype,             /* The element type */
  */
 #define MAX_ELEM_SIDES 6
 
-int is_hex(E_Type etype);
-int is_tet(E_Type etype);
-int is_wedge(E_Type etype);
-int is_pyramid(E_Type etype);
-int is_3d_element(E_Type etype);
+bool is_hex(E_Type etype);
+bool is_tet(E_Type etype);
+bool is_wedge(E_Type etype);
+bool is_pyramid(E_Type etype);
+bool is_3d_element(E_Type etype);

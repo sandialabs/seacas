@@ -51,6 +51,7 @@
 #include "Ioss_SurfaceSplit.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
+#include "Ioss_use_fmt.h"
 #if defined(SEACAS_HAVE_EXODUS)
 #include "exodusII.h"
 #endif

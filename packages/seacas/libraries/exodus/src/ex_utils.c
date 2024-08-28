@@ -347,7 +347,7 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
       found_name = 1;
       ex_copy_string(&int_names[idx], names[i], name_length);
       size_t length = strlen(names[i]) + 1;
-      if (length > name_length) {
+      if (length > (size_t)name_length) {
         fprintf(stderr,
                 "Warning: The %s %s name '%s' is too long.\n\tIt will "
                 "be truncated from %d to %d characters. [Called from %s]\n",
@@ -356,7 +356,7 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
         length = name_length;
       }
 
-      if (length > max_name_len) {
+      if (length > (size_t)max_name_len) {
         max_name_len = length;
       }
     }
@@ -929,8 +929,8 @@ int exi_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       }
       status = nc_get_var_int(exoid, varid, id_vals_int);
       if (status == NC_NOERR) {
-        for (i = 0; i < dim_len; i++) {
-          id_vals[i] = (int64_t)id_vals_int[i];
+        for (size_t iii = 0; iii < dim_len; iii++) {
+          id_vals[iii] = (int64_t)id_vals_int[iii];
         }
       }
       free(id_vals_int);
@@ -947,11 +947,11 @@ int exi_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     /* check if values in stored arrays are filled with non-zeroes */
     bool filled = true;
     sequential  = true;
-    for (i = 0; i < dim_len; i++) {
-      if (id_vals[i] != i + 1) {
+    for (size_t iii = 0; iii < dim_len; iii++) {
+      if (id_vals[iii] != (int64_t)iii + 1) {
         sequential = false;
       }
-      if (id_vals[i] == EX_INVALID_ID || id_vals[i] == NC_FILL_INT) {
+      if (id_vals[iii] == EX_INVALID_ID || id_vals[iii] == NC_FILL_INT) {
         filled     = false;
         sequential = false;
         break; /* id array hasn't been completely filled with valid ids yet */
@@ -971,19 +971,19 @@ int exi_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     sequential = tmp_stats->sequential;
   }
 
-  if (sequential && num < dim_len) {
+  if (sequential && (size_t)num < dim_len) {
     i = num - 1;
   }
   else {
     /* Do a linear search through the id array to find the array value
        corresponding to the passed index number */
-    for (i = 0; i < dim_len; i++) {
+    for (i = 0; i < (int64_t)dim_len; i++) {
       if (id_vals[i] == num) {
         break; /* found the id requested */
       }
     }
   }
-  if (i >= dim_len) /* failed to find id number */
+  if (i >= (int64_t)dim_len) /* failed to find id number */
   {
     if (!(tmp_stats->valid_ids)) {
       free(id_vals);

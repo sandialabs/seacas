@@ -715,26 +715,25 @@ namespace Ioex {
       {
         Ioss::SerializeIO serializeIO_(this);
         m_timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
-        // Need to sync timestep count across ranks if parallel...
-        if (isParallel) {
-          auto min_timestep_count =
-              util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MIN);
-          if (min_timestep_count == 0) {
-            auto max_timestep_count =
-                util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MAX);
-            if (max_timestep_count != 0) {
-              if (myProcessor == 0) {
-                // NOTE: Don't want to warn on all processors if the
-                // timestep count is zero on some, but not all ranks.
-                fmt::print(Ioss::WarnOut(),
-                           "At least one database has no timesteps.  No times will be read on ANY"
-                           " database for consistency.\n");
-              }
-            }
-          }
-          m_timestepCount = min_timestep_count;
-        }
-
+      }
+	// Need to sync timestep count across ranks if parallel...
+	if (isParallel) {
+	  auto min_timestep_count = util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MIN);
+	  if (min_timestep_count == 0) {
+	    auto max_timestep_count = util().global_minmax(m_timestepCount, Ioss::ParallelUtils::DO_MAX);
+	    if (max_timestep_count != 0) {
+	      if (myProcessor == 0) {
+		// NOTE: Don't want to warn on all processors if the
+		// timestep count is zero on some, but not all ranks.
+		fmt::print(Ioss::WarnOut(),
+			   "At least one database has no timesteps.  No times will be read on ANY"
+			   " database for consistency.\n");
+	      }
+	    }
+	  }
+	  m_timestepCount = min_timestep_count;
+	}
+	
         if (m_timestepCount <= 0) {
           return;
         }
@@ -758,6 +757,7 @@ namespace Ioex {
         Ioss::Utils::check_set_bool_property(properties, "EXODUS_CALL_GET_ALL_TIMES",
                                              call_ex_get_all_times);
         if (call_ex_get_all_times) {
+	  Ioss::SerializeIO serializeIO_(this);
           int error = ex_get_all_times(get_file_pointer(), Data(tsteps));
           if (error < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -766,8 +766,11 @@ namespace Ioex {
 
         // See if the "last_written_time" attribute exists and if it
         // does, check that it matches the largest time in 'tsteps'.
-        exists = Ioex::read_last_time_attribute(get_file_pointer(), &last_time);
-      }
+	{
+	  Ioss::SerializeIO serializeIO_(this);
+	  exists = Ioex::read_last_time_attribute(get_file_pointer(), &last_time);
+	}
+
       if (exists && isParallel) {
         // Assume that if it exists on 1 processor, it exists on
         // all... Sync value among processors since could have a

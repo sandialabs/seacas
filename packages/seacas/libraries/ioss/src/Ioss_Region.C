@@ -383,12 +383,12 @@ namespace Ioss {
 
       // Region owns the database pointer even though other entities use it.
       GroupingEntity::really_delete_database();
+
+      if (topologyObserver) {
+        topologyObserver->register_region(nullptr);
+      }
     }
     catch (...) {
-    }
-
-    if(topologyObserver) {
-      topologyObserver->register_region(nullptr);
     }
   }
 
@@ -709,8 +709,8 @@ namespace Ioss {
       bool has_output_observer = topologyObserver && !get_database()->is_input();
 
       if (new_state == STATE_DEFINE_MODEL) {
-        if (has_output_observer &&
-            (topologyObserver->get_control_option() == FileControlOption::CONTROL_AUTO_GROUP_FILE)) {
+        if (has_output_observer && (topologyObserver->get_control_option() ==
+                                    FileControlOption::CONTROL_AUTO_GROUP_FILE)) {
           if (!fileGroupsStarted) {
             int  steps          = get_property("state_count").get_int();
             bool force_addition = true;
@@ -2942,21 +2942,21 @@ namespace Ioss {
 
   void Region::reset_topology_modification()
   {
-    if(topologyObserver) {
+    if (topologyObserver) {
       topologyObserver->reset_topology_modification();
     }
   }
 
   void Region::set_topology_modification(unsigned int type)
   {
-    if(topologyObserver) {
+    if (topologyObserver) {
       topologyObserver->set_topology_modification(type);
     }
   }
 
   unsigned int Region::get_topology_modification() const
   {
-    if(topologyObserver) {
+    if (topologyObserver) {
       return topologyObserver->get_topology_modification();
     }
 
@@ -3040,11 +3040,9 @@ namespace Ioss {
 
   void Region::update_dynamic_topology()
   {
-    auto topologyObserver = get_mesh_modification_observer();
-
     bool has_output_observer = topologyObserver && !get_database()->is_input();
     if (has_output_observer && topologyObserver->is_topology_modified()) {
-      if(topologyObserver->get_control_option() != FileControlOption::CONTROL_NONE) {
+      if (topologyObserver->get_control_option() != FileControlOption::CONTROL_NONE) {
         int steps = get_property("state_count").get_int();
         start_new_output_database_entry(steps);
 

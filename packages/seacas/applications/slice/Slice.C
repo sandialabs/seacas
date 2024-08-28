@@ -1430,7 +1430,10 @@ namespace {
     }
 
     if (debug_level & 32) {
-      Ioss::DecompUtils::output_decomposition_statistics(elem_to_proc, interFace.processor_count());
+      auto work_per_rank =
+          Ioss::DecompUtils::get_work_per_rank(elem_to_proc, interFace.processor_count());
+      auto avg_median = Ioss::DecompUtils::output_decomposition_statistics(work_per_rank);
+      Ioss::DecompUtils::output_histogram(work_per_rank, avg_median.first, avg_median.second);
     }
 
     if (!create_split_files) {

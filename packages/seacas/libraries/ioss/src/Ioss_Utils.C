@@ -49,6 +49,7 @@
 #include "Ioss_State.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
+#include "Ioss_use_fmt.h"
 
 #if defined(__IOSS_WINDOWS__)
 #include <io.h>

@@ -23,6 +23,7 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Utils.h>
+#include <Ioss_use_fmt.h>
 
 #include <cgns/Iocgns_Utils.h>
 
@@ -374,7 +375,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
             }
 
             // Now transfer the fields on the embedded node block...
-            auto pnb = pblock->get_node_block();
+            const auto &pnb = pblock->get_node_block();
             fields.clear();
             pnb.field_describe(Ioss::Field::TRANSIENT, &fields);
             for (const auto &field_name : fields) {

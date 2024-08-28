@@ -205,7 +205,7 @@ public:
     ::define_transient(inputRegion, *get_region(), elemFieldName);
   }
 
-  Ioss::FileControlOption get_control_option() const
+  Ioss::FileControlOption get_control_option() const override
   {
     return fileControlOption;
   }

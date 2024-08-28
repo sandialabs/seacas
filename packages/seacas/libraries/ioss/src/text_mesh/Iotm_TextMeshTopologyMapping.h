@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -20,7 +20,6 @@
 #include <vector>  // for vector
 
 #include <assert.h>
-#include <fmt/ostream.h>
 
 #include "Ioss_ElementPermutation.h"
 #include "Ioss_ElementTopology.h"
@@ -904,15 +903,14 @@ namespace Iotm {
       for (int side = 1; side <= numSides; side++) {
         if (topology->boundary_type(side) != sideTopologies_[side - 1]->topology) {
           std::ostringstream errmsg;
-          fmt::print(errmsg,
-                     "ERROR: For element topology: {} on side: {}, expected topology: {} does not "
-                     "match topology: {}",
-                     topology->name(), side, topology->boundary_type(side)->name(),
-                     sideTopologies_[side - 1]->topology->name());
+          // Would be nice to use fmt:: here, but we need to avoid using fmt includes in public
+          // headers...
+          errmsg << "ERROR: For element topology: " << topology->name() << " on side: " << side
+                 << ", expected topology: " << topology->boundary_type(side)->name()
+                 << " does not match topology: " << sideTopologies_[side - 1]->topology->name();
           IOSS_ERROR(errmsg);
         }
       }
-
       sideTopologies = sideTopologies_;
     }
 
