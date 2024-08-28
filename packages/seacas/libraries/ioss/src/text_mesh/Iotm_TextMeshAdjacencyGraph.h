@@ -94,7 +94,7 @@ namespace Iotm {
       struct FaceConnection
       {
         FaceConnection()
-            : thisSide(INVALID_SIDE), thatElement(INVALID_INDEX), thatSide(INVALID_SIDE){};
+            : thisSide(INVALID_SIDE), thatElement(INVALID_INDEX), thatSide(INVALID_SIDE) {};
 
         FaceConnection(int thisSide_, IndexType otherElement_, int otherSide_)
             : thisSide(thisSide_), thatElement(otherElement_), thatSide(otherSide_)
