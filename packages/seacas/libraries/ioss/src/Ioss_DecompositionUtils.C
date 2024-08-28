@@ -502,27 +502,23 @@ namespace Ioss {
         int star_cnt =
             (double)(elem_per_rank[i] - min_work) / (max_work - min_work) * delta + min_star;
         std::string       stars(star_cnt, '*');
-        const std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
-        if (elem_per_rank[i] == max_work) {
-          fmt::print(
+	auto tmp = fmt::format(fmt::runtime("\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n"), 
+			       i, proc_width, fmt::group_digits(elem_per_rank[i]),
+			       work_width, elem_per_rank[i] / avg_work, stars);
+
 #if !defined __NVCC__
-              fg(fmt::color::red),
-#endif
-              fmt::runtime(format), i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
-              (double)elem_per_rank[i] / avg_work, stars);
+        if (elem_per_rank[i] == max_work) {
+          fmt::print("{}", fmt::styled(tmp, fmt::fg(fmt::color::red)));
         }
         else if (elem_per_rank[i] == min_work) {
-          fmt::print(
-#if !defined __NVCC__
-              fg(fmt::color::green),
-#endif
-              fmt::runtime(format), i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
-              elem_per_rank[i] / avg_work, stars);
+          fmt::print("{}", fmt::styled(tmp, fmt::fg(fmt::color::green)));
         }
         else {
-          fmt::print(fmt::runtime(format), i, proc_width, fmt::group_digits(elem_per_rank[i]),
-                     work_width, elem_per_rank[i] / avg_work, stars);
+          fmt::print("{}", tmp);
         }
+#else
+	fmt::print("{}", tmp);
+#endif
       }
 
       // Output Histogram...

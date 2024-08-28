@@ -633,27 +633,22 @@ namespace {
           int star_cnt =
               (double)(proc_work[i] - min_work) / (max_work - min_work) * delta + min_star;
           std::string stars(star_cnt, '*');
-          const std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
+	  auto tmp = fmt::format(fmt::runtime("\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n"), 
+				 i, proc_width, fmt::group_digits(proc_work[i]),
+				 work_width, proc_work[i] / avg_work, stars);
+#if !defined __NVCC__
           if (proc_work[i] == max_work) {
-            fmt::print(
-#if !defined __NVCC__
-                fg(fmt::color::red),
-#endif
-                fmt::runtime(format), i, proc_width, fmt::group_digits(proc_work[i]), work_width,
-                proc_work[i] / avg_work, stars);
-          }
+	    fmt::print("{}", fmt::styled(tmp, fmt::fg(fmt::color::red)));
+	  }	    
           else if (proc_work[i] == min_work) {
-            fmt::print(
-#if !defined __NVCC__
-                fg(fmt::color::green),
-#endif
-                fmt::runtime(format), i, proc_width, fmt::group_digits(proc_work[i]), work_width,
-                proc_work[i] / avg_work, stars);
-          }
+	    fmt::print("{}", fmt::styled(tmp, fmt::fg(fmt::color::green)));
+	  }
           else {
-            fmt::print(fmt::runtime(format), i, proc_width, fmt::group_digits(proc_work[i]), work_width,
-                       proc_work[i] / avg_work, stars);
+	    fmt::print("{}", tmp);
           }
+#else
+	  fmt::print("{}", tmp);
+#endif
           if (verbose) {
             for (const auto &zone : zones) {
               if ((size_t)zone->m_proc == i) {
