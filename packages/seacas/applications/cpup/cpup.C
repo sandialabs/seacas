@@ -23,6 +23,7 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Utils.h>
+#include <Ioss_use_fmt.h>
 
 #include <cgns/Iocgns_Utils.h>
 
