@@ -320,9 +320,26 @@ jobs:
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
-            name: "C++20 build serial",
+            name: "C++20 build serial clang",
             os: ubuntu-latest,
             compiler: "clang",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_faodel: "NO",
+            use_metis: "NO",
+            use_catalyst2: "NO",
+            gtest: "NO",
+            extra: "",
+            extra_args: "-DCMAKE_CXX_STANDARD:STRING=20",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "C++20 build serial gnu",
+            os: ubuntu-latest,
+            compiler: "gnu",
             debug: "NO",
             threadsafe: "NO",
             fortran: "YES",
