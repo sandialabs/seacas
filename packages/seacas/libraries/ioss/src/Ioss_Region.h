@@ -322,13 +322,13 @@ namespace Ioss {
     bool model_is_written() const { return modelWritten; }
     bool transient_is_written() const { return transientWritten; }
 
-    bool load_change_set_mesh(const std::string &set_name);
-    bool load_change_set_mesh(const int set_index);
+    bool load_internal_change_set_mesh(const std::string &set_name);
+    bool load_internal_change_set_mesh(const int set_index);
 
     IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 
   protected:
-    std::string get_change_set_name() const;
+    std::string get_internal_change_set_name() const;
     void update_dynamic_topology();
     void clone_and_replace_output_database(int steps = 0);
     void add_output_database_change_set(int steps = 0, bool force_addition = false);

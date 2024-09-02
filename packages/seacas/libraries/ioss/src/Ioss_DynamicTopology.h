@@ -228,7 +228,7 @@ namespace Ioss {
     static std::string get_linear_database_filename(const std::string& baseFileName,
                                                     unsigned int step);
 
-    static std::string get_change_set_name(unsigned int step);
+    static std::string get_internal_file_change_set_name(unsigned int step);
 
   private:
     Region     *m_region{nullptr};

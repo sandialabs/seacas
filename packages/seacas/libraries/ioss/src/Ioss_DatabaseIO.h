@@ -246,74 +246,74 @@ namespace Ioss {
       flush_database_nl();
     }
 
-    /** \brief If a database type supports change sets and if the database
-     *         contains change sets, open the specified set.
+    /** \brief If a database type supports internal change sets and if the database
+     *         contains internal change sets, open the specified set.
      *
      *  \param[in] set_name The name of the set to open.
      *  \returns True if successful.
      */
-    bool open_change_set(const std::string &set_name)
+    bool open_internal_change_set(const std::string &set_name)
     {
       IOSS_FUNC_ENTER(m_);
-      return open_change_set_nl(set_name);
+      return open_internal_change_set_nl(set_name);
     }
 
-    /** \brief If a database type supports change sets, create the
+    /** \brief If a database type supports internal change sets, create the
      *         specified set.
      *
      *  \param[in] set_name The name of the set to create.
      *  \returns True if successful.
      */
-    bool create_change_set(const std::string &set_name)
+    bool create_internal_change_set(const std::string &set_name)
     {
       IOSS_FUNC_ENTER(m_);
-      return create_change_set_nl(set_name);
+      return create_internal_change_set_nl(set_name);
     }
 
-    /** \brief If a database type supports change sets, and if the database
-     *         contains change sets, return the number of change sets.
+    /** \brief If a database type supports internal change sets, and if the database
+     *         contains internal change sets, return the number of change sets.
      */
-    int num_change_set()
+    int num_internal_change_set()
     {
       IOSS_FUNC_ENTER(m_);
-      return num_change_set_nl();
+      return num_internal_change_set_nl();
     }
 
-    /** \brief If a database type supports change sets, open the change set
+    /** \brief If a database type supports internal change sets, open the change set
      *         specified [zero-based] index
      *
-     *  \param[in] child_index The [zero-based] index of the change set to open.
+     *  \param[in] child_index The [zero-based] index of the internal change set to open.
      *  \returns True if successful.
      */
-    bool open_change_set(int set_index)
+    bool open_internal_change_set(int set_index)
     {
       IOSS_FUNC_ENTER(m_);
-      return open_change_set_nl(set_index);
+      return open_internal_change_set_nl(set_index);
     }
 
-    /** \brief If a database type supports change sets, return a list of set names
+    /** \brief If a database type supports internal change sets, return a list of set names
      *
      *  \param[in] return_full_names Flag to control return of relative
      *             or full set name paths.
      *  \returns True if successful.
      */
-    Ioss::NameList change_set_describe(bool return_full_names = false)
+    Ioss::NameList internal_change_set_describe(bool return_full_names = false)
     {
       IOSS_FUNC_ENTER(m_);
-      return change_set_describe_nl(return_full_names);
+      return internal_change_set_describe_nl(return_full_names);
     }
 
-    /** \brief Checks if a database type supports changes sets
+    /** \brief Checks if a database type supports internal change sets
      *
      *  \returns True if successful.
      */
-    bool supports_change_set()
+    bool supports_internal_change_set()
     {
       IOSS_FUNC_ENTER(m_);
-      return supports_change_set_nl();
+      return supports_internal_change_set_nl();
     }
 
-    IOSS_NODISCARD virtual std::string get_change_set_name() const { return ""; }
+    IOSS_NODISCARD virtual std::string get_internal_change_set_name() const { return ""; }
 
     /** \brief Set the database to the given State.
      *
@@ -371,12 +371,12 @@ namespace Ioss {
       get_step_times_nl();
     }
 
-    /** \brief Return the list of timesteps in the database contingent on ceetain
+    /** \brief Return the list of timesteps in the database contingent on certain
      *         controlling properties.
      *
      *  This is different from get_step_times() in that it does not set timestep
-     *  data on the region. If the database supports groups, it will return the
-     *  timestep data for the current group
+     *  data on the region. If the database supports change sets, it will return the
+     *  timestep data for the current change set
      *
      *  \returns timesteps.
      *
@@ -818,12 +818,12 @@ namespace Ioss {
       return elemMap.global_to_local(global);
     }
 
-    virtual bool supports_change_set_nl() { return false; }
-    virtual bool open_change_set_nl(const std::string & /* set_name */) { return false; }
-    virtual bool open_change_set_nl(int /* index */) { return false; }
-    virtual bool create_change_set_nl(const std::string & /* set_name */) { return false; }
-    virtual int  num_change_set_nl() { return 0; }
-    virtual Ioss::NameList change_set_describe_nl(bool /* return_full_names */)
+    virtual bool supports_internal_change_set_nl() { return false; }
+    virtual bool open_internal_change_set_nl(const std::string & /* set_name */) { return false; }
+    virtual bool open_internal_change_set_nl(int /* index */) { return false; }
+    virtual bool create_internal_change_set_nl(const std::string & /* set_name */) { return false; }
+    virtual int  num_internal_change_set_nl() { return 0; }
+    virtual Ioss::NameList internal_change_set_describe_nl(bool /* return_full_names */)
     {
       return Ioss::NameList();
     }

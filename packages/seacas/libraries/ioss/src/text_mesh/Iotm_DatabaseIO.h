@@ -48,7 +48,7 @@ namespace Ioss {
   class Map;
 } // namespace Ioss
 
-/** \brief A namespace for the generated database format.
+/** \brief A namespace for the textmesh database format.
  */
 namespace Iotm {
   class IOTM_EXPORT IOFactory : public Ioss::IOFactory

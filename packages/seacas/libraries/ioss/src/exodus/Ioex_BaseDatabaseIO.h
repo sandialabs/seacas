@@ -90,7 +90,7 @@ namespace Ioex {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     IOSS_NODISCARD unsigned entity_field_support() const override;
 
-    IOSS_NODISCARD std::string get_change_set_name() const override { return m_groupName; }
+    IOSS_NODISCARD std::string get_internal_change_set_name() const override { return m_groupName; }
 
     /** \brief Checks if a database type supports groups
      *
@@ -189,12 +189,12 @@ namespace Ioex {
 
     void release_memory_nl() override;
 
-    bool supports_change_set_nl() override;
-    bool open_change_set_nl(const std::string &set_name) override;
-    bool open_change_set_nl(int index) override;
-    bool create_change_set_nl(const std::string &set_name) override;
-    int  num_change_set_nl() override;
-    Ioss::NameList change_set_describe_nl(bool return_full_names) override;
+    bool supports_internal_change_set_nl() override;
+    bool open_internal_change_set_nl(const std::string &set_name) override;
+    bool open_internal_change_set_nl(int index) override;
+    bool create_internal_change_set_nl(const std::string &set_name) override;
+    int  num_internal_change_set_nl() override;
+    Ioss::NameList internal_change_set_describe_nl(bool return_full_names) override;
 
     virtual int  num_child_group_nl();
     virtual bool open_root_group_nl();

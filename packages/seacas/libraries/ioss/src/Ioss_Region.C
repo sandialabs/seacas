@@ -2965,14 +2965,14 @@ namespace Ioss {
     return TOPOLOGY_SAME;
   }
 
-  bool Region::load_change_set_mesh(const std::string &set_name)
+  bool Region::load_internal_change_set_mesh(const std::string &set_name)
   {
     DatabaseIO *iodatabase = get_database();
 
     if (!iodatabase->is_input())
       return false;
 
-    if (!iodatabase->open_change_set(set_name))
+    if (!iodatabase->open_internal_change_set(set_name))
       return false;
 
     reset_region();
@@ -2995,14 +2995,14 @@ namespace Ioss {
     return true;
   }
 
-  bool Region::load_change_set_mesh(const int child_group_index)
+  bool Region::load_internal_change_set_mesh(const int child_group_index)
   {
     DatabaseIO *iodatabase = get_database();
 
     if (!iodatabase->is_input())
       return false;
 
-    if (!iodatabase->open_change_set(child_group_index))
+    if (!iodatabase->open_internal_change_set(child_group_index))
       return false;
 
     reset_region();
@@ -3043,9 +3043,9 @@ namespace Ioss {
     }
   }
 
-  std::string Region::get_change_set_name() const
+  std::string Region::get_internal_change_set_name() const
   {
-    return get_database()->get_change_set_name();
+    return get_database()->get_internal_change_set_name();
   }
 
   std::tuple<std::string, int, double> Region::locate_db_state(double targetTime) const
@@ -3064,7 +3064,7 @@ namespace Ioss {
     IOSS_FUNC_ENTER(m_);
     auto db = get_database();
     if (!db->is_input() && db->usage() != WRITE_RESULTS && db->usage() != WRITE_RESTART) {
-      return std::make_tuple(get_change_set_name(), currentState, stateTimes[0]);
+      return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
     }
 
     IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
@@ -3081,7 +3081,7 @@ namespace Ioss {
     IOSS_FUNC_ENTER(m_);
     auto db = get_database();
     if (!db->is_input() && db->usage() != WRITE_RESULTS && db->usage() != WRITE_RESTART) {
-      return std::make_tuple(get_change_set_name(), currentState, stateTimes[0]);
+      return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
     }
 
     IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};

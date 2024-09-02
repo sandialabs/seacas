@@ -502,7 +502,7 @@ namespace Ioex {
     ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
   }
 
-  bool BaseDatabaseIO::supports_change_set_nl()
+  bool BaseDatabaseIO::supports_internal_change_set_nl()
   {
     return supports_group_nl();
   }
@@ -560,8 +560,12 @@ namespace Ioex {
     return success;
   }
 
-  bool BaseDatabaseIO::open_change_set_nl(const std::string &set_name)
+  bool BaseDatabaseIO::open_internal_change_set_nl(const std::string &set_name)
   {
+    if(set_name == m_groupName) {
+      return true;
+    }
+
     // Check name for '/' which is not allowed since it is the
     // separator character in a full group path
     if (set_name.find('/') != std::string::npos) {
@@ -598,7 +602,7 @@ namespace Ioex {
     return success;
   }
 
-  bool BaseDatabaseIO::create_change_set_nl(const std::string &set_name)
+  bool BaseDatabaseIO::create_internal_change_set_nl(const std::string &set_name)
   {
     if (!open_root_group_nl())
       return false;
@@ -3270,7 +3274,7 @@ namespace Ioex {
   }
 
 
-  Ioss::NameList BaseDatabaseIO::change_set_describe_nl(bool return_full_names)
+  Ioss::NameList BaseDatabaseIO::internal_change_set_describe_nl(bool return_full_names)
   {
     Ioss::NameList names = groups_describe_nl(return_full_names);
 
@@ -3321,7 +3325,7 @@ namespace Ioex {
     activeNodeSetNodesIndex.clear();
   }
 
-  int BaseDatabaseIO::num_change_set_nl()
+  int BaseDatabaseIO::num_internal_change_set_nl()
   {
     // Save and reset state
     int currentExodusFilePtr = m_exodusFilePtr;
@@ -3351,7 +3355,7 @@ namespace Ioex {
     return num_children;
   }
 
-  bool BaseDatabaseIO::open_change_set_nl(int index)
+  bool BaseDatabaseIO::open_internal_change_set_nl(int index)
   {
     if (!open_root_group_nl()) {
       std::ostringstream errmsg;
