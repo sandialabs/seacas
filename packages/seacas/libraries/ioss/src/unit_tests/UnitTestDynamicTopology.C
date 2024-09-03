@@ -382,7 +382,6 @@ std::shared_ptr<Ioss::Region> construct_region(const OutputParams& params,
                                                        propertyManager);
 
   auto region = std::make_shared<Ioss::Region>(database, name);
-  region->set_database(database);
   region->set_file_cyclic_count(params.cyclicCount);
   EXPECT_TRUE(database != nullptr);
   EXPECT_TRUE(database->ok(true));
