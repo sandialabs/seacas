@@ -691,7 +691,6 @@ namespace Ioex {
             numSteps++;
           }
         }
-
         tsteps.resize(numSteps);
       }
     }
@@ -716,7 +715,7 @@ namespace Ioex {
           }
           timestepCount = min_timestep_count;
         }
-
+	
         if (timestepCount <= 0) {
           return tsteps;
         }
@@ -738,7 +737,7 @@ namespace Ioex {
         // involves lseeks throughout the file.
         bool call_ex_get_all_times = true;
         Ioss::Utils::check_set_bool_property(properties, "EXODUS_CALL_GET_ALL_TIMES",
-            call_ex_get_all_times);
+                                             call_ex_get_all_times);
         if (call_ex_get_all_times) {
           int error = ex_get_all_times(get_file_pointer(), Data(tsteps));
           if (error < 0) {
@@ -795,10 +794,10 @@ namespace Ioex {
             // 0... Need better warnings which won't overload in the
             // worst case...
             fmt::print(Ioss::WarnOut(),
-                "Skipping step {} at time {} in database file\n\t{}.\n"
-                "\tThe data for that step is possibly corrupt since the last time written "
-                "successfully was {}.\n",
-                fmt::group_digits(i + 1), tsteps[i], get_filename(), last_time);
+                       "Skipping step {} at time {} in database file\n\t{}.\n"
+                       "\tThe data for that step is possibly corrupt since the last time written "
+                       "successfully was {}.\n",
+                       fmt::group_digits(i + 1), tsteps[i], get_filename(), last_time);
           }
         }
       }

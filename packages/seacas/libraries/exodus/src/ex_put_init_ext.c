@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -94,7 +94,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       return (status); /* exit define mode and return */
     }
 
-    int sixty_four_kb = 64 * 1024; // Compact storage can only be used for < 64KiByte data sizes
+    size_t sixty_four_kb = 64 * 1024; // Compact storage can only be used for < 64KiByte data sizes
     if (4 * count < sixty_four_kb) {
       exi_set_compact_storage(exoid, varid);
     }
@@ -293,10 +293,18 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     ex_err_fn(exoid, __func__, errmsg, status);
     goto error_ret;
   }
+
   {
     struct exi_file_item *file = exi_find_file_item(exoid);
-    file->time_varid           = temp;
+    if (!file) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d.", exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
+      goto error_ret;
+    }
+    file->time_varid = temp;
   }
+
   exi_compress_variable(exoid, temp, -2); /* Don't compress, but do set collective io */
 
   if (model->num_dim > 0) {
@@ -542,8 +550,8 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   /* Fill the id and status arrays with EX_INVALID_ID */
   {
-    int   *invalid_ids = NULL;
-    size_t maxset      = model->num_elem_blk;
+    int    *invalid_ids = NULL;
+    int64_t maxset      = model->num_elem_blk;
     if (maxset < model->num_edge_blk) {
       maxset = model->num_edge_blk;
     }

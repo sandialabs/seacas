@@ -540,7 +540,7 @@ void SystemInterface::show_version()
 {
   fmt::print("EJoin\n"
              "\t(A code for merging Exodus databases; with or without results data.)\n"
-             "\t(Version: {}) Modified: {}\n",
+             "\t(Version: {}) Modified: {}\n\n",
              qainfo[2], qainfo[1]);
 }
 

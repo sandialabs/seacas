@@ -1938,7 +1938,7 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
   std::vector<std::vector<std::pair<size_t, size_t>>> shared_nodes(blocks.size() + 1);
 
   for (auto &owner_block : blocks) {
-    int  owner_zone = owner_block->get_property("zone").get_int();
+    int owner_zone = owner_block->get_property("zone").get_int();
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
       assert(zgc.m_donorProcessor >= 0);
       assert(zgc.m_ownerProcessor >= 0);
@@ -1950,10 +1950,10 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
         // don't store or access any "bulk" data on it.
         auto donor_block = region.get_structured_block(zgc.m_donorName);
         assert(donor_block != nullptr);
-        int donor_zone = donor_block->get_property("zone").get_int();
-        std::vector<int> i_range = zgc.get_range(1);
-        std::vector<int> j_range = zgc.get_range(2);
-        std::vector<int> k_range = zgc.get_range(3);
+        int              donor_zone = donor_block->get_property("zone").get_int();
+        std::vector<int> i_range    = zgc.get_range(1);
+        std::vector<int> j_range    = zgc.get_range(2);
+        std::vector<int> k_range    = zgc.get_range(3);
         for (auto &k : k_range) {
           for (auto &j : j_range) {
             for (auto &i : i_range) {

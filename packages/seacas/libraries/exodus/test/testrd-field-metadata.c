@@ -60,7 +60,7 @@ static char *get_type_name(char *type_name, size_t which)
     char *string = my_strdup(type_name);
     char *tofree = string;
     char *token  = my_strsep(&string, ",");
-    for (int i = 0; i < which; i++) {
+    for (size_t i = 0; i < which; i++) {
       token = my_strsep(&string, ",");
     }
     if (token != NULL) {

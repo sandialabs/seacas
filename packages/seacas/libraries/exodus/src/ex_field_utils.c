@@ -60,7 +60,7 @@ static int number_width(size_t number)
 static void verify_valid_component(int component, size_t cardinality, size_t suffix_size)
 {
   assert(cardinality == suffix_size);
-  assert(component - 1 < suffix_size);
+  assert(component - 1 < (int)suffix_size);
 }
 
 const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_NESTING])

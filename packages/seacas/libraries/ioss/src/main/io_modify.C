@@ -29,7 +29,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#if !defined __NVCC__
 #include <fmt/color.h>
+#endif
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>

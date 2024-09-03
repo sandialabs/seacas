@@ -4834,7 +4834,7 @@ namespace Ioex {
   void ParallelDatabaseIO::output_processor_id_map(Ioss::Region *region, INT /*dummy*/)
   {
     std::vector<INT> proc_id(elementCount, myProcessor);
-    const auto &blocks = region->get_element_blocks();
+    const auto      &blocks = region->get_element_blocks();
     for (const auto &block : blocks) {
       put_field_internal(block, block->get_field("proc_id"), Data(proc_id), -1);
     }
@@ -4895,10 +4895,10 @@ namespace Ioex {
       add_processor_id_map(region);
       output_other_metadata();
       if (int_byte_size_api() == 8) {
-	output_processor_id_map(region, int64_t(0));
+        output_processor_id_map(region, int64_t(0));
       }
       else {
-	output_processor_id_map(region, int(0));
+        output_processor_id_map(region, int(0));
       }
     }
   }

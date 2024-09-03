@@ -22,9 +22,6 @@
 #include <fstream>
 
 #include <exodusII.h>
-#if !defined __NVCC__
-#include <fmt/color.h>
-#endif
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>

@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "5.04 (2024/08/19)"
+#define ELB_VERSION "5.02 (2024-08-22)"
 #define UTIL_NAME   "nem_slice"
 #define ELB_FALSE   0
 #define ELB_TRUE    1
