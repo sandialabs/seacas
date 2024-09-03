@@ -53,7 +53,6 @@ const Ioss::ChangeSetFactory *Ioss::ChangeSetFactory::factory()
 std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::Region *region)
 {
   IOSS_FUNC_ENTER(m_);
-  Ioss::DatabaseIO *db   = region->get_database();
   std::string dbType = region->get_property("database_type").get_string();
 
   auto              iter = registry()->find(dbType);

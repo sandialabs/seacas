@@ -86,10 +86,6 @@ void locate_state_impl(Ioss::DatabaseIO *db, double targetTime,
 
 void locate_state(Ioss::DatabaseIO *db, double targetTime, DatabaseState& loc)
 {
-  // Get state count and all states...
-  std::vector<double> timesteps = db->get_db_step_times();
-  int stepCount = timesteps.size();
-
   if(targetTime < 0.0) {
     // Round towards 0
     StateLocatorCompare compare = [](double a, double b) { return (a <= b); };
@@ -586,7 +582,7 @@ std::string DynamicTopologyFileControl::construct_database_filename(int& step, I
       error_message += "The database FILENAME has not been defined\n";
     }
     std::ostringstream errmsg;
-    fmt::print(errmsg, error_message);
+    errmsg << error_message;
     IOSS_ERROR(errmsg);
   }
   assert(!m_ioDB.empty());
@@ -860,7 +856,7 @@ void DynamicTopologyFileControl::clone_and_replace_output_database(int steps)
     replace_output_database(db);
 }
 
-void DynamicTopologyFileControl::add_output_database_change_set(int steps)
+void DynamicTopologyFileControl::add_output_database_change_set(IOSS_MAYBE_UNUSED int steps)
 {
   auto current_db = get_database();
 

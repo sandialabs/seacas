@@ -107,8 +107,9 @@ namespace Ioss {
 
     bool found = true;
     int step = 0;
+    int fileCyclicCount = m_fileCyclicCount;
 
-    while(found && (step < m_fileCyclicCount)) {
+    while(found && (step < fileCyclicCount)) {
       ++step;
 
       std::string expanded = Ioss::expand_topology_files(generator, util(), m_ioDB,
@@ -261,7 +262,6 @@ namespace Ioss {
     // If the file exists on some, but not all, throw an exception.
 
     std::string filename = generator(basename, step);
-    Ioss::DatabaseIO* db = nullptr;
 
     bool internalDecompSpecified = internal_decomp_specified(properties);
     std::string message;
