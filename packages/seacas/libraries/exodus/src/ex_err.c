@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -345,6 +345,7 @@ const char *ex_strerror(int err_num)
   case EX_INTERNAL: return "Internal logic error in exodus library.";
   case EX_NOTROOTID: return "File id is not the root id; it is a subgroup id.";
   case EX_NULLENTITY: return "Null entity found.";
+  case EX_NOTFOUND: return "Could not find requested variable on database.";
   case EX_INTSIZEMISMATCH: return "Integer sizes must match for input and output file in ex_copy.";
   case EX_MSG: return "Message printed; no error implied.";
   default: return nc_strerror(err_num);

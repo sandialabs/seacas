@@ -1956,9 +1956,9 @@ enum ex_error_return_code {
   EX_LASTERR       = -1003, /**< in ex_err, use existing err_num value */
   EX_NULLENTITY    = -1006, /**< null entity found                        */
   EX_NOENTITY      = -1007, /**< no entities of that type on database    */
+  EX_NOTFOUND      = -1008, /**< could not find requested variable on database */
   EX_INTSIZEMISMATCH =
-      -1008,           /**< integer sizes do not match on input/output databases in ex_copy  */
-  EX_NOTFOUND = -1008, /**< could not find requested variable on database */
+      -1009, /**< integer sizes do not match on input/output databases in ex_copy  */
 
   EX_FATAL = -1, /**< fatal error flag def                     */
   EX_NOERR = 0,  /**< no error flag def                        */
