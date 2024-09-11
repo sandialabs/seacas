@@ -7,5 +7,10 @@ jobs:
     name: Find Trailing Whitespace
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: harupy/find-trailing-whitespace@master
+      - name: Harden Runner
+        uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: harupy/find-trailing-whitespace@56310d70ae8fd21afec8d4307d2d9ab6c15e7c5d # master

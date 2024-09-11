@@ -131,7 +131,7 @@ int main(int argc, char **argv)
     int cardinality =
         field.cardinality[0] != 0 ? field.cardinality[0] : ex_field_cardinality(field.type[0]);
     for (int i = 0; i < cardinality; i++) {
-      const char *name = ex_component_field_name(&field, (int[]){i + 1});
+      const char *name = ex_component_field_name(&field, (int[]){i + 1, 0});
       assert(strcmp(var_names[vname++], name) == 0);
     }
   }
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
     int cardinality =
         field.cardinality[0] != 0 ? field.cardinality[0] : ex_field_cardinality(field.type[0]);
     for (int i = 0; i < cardinality; i++) {
-      const char *name = ex_component_field_name(&field, (int[]){i + 1});
+      const char *name = ex_component_field_name(&field, (int[]){i + 1, 0});
       assert(strcmp(var_names[vname++], name) == 0);
     }
   }

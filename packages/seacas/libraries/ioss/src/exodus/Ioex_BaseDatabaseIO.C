@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <cstdlib>
@@ -18,7 +19,6 @@
 #include <string>
 #include <tokenize.h>
 #include <vector>
-#include <algorithm>
 
 #include "Ioex_Utils.h"
 #include "Ioss_Assembly.h"
@@ -88,7 +88,7 @@ namespace {
   template <typename T>
   void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities);
 
-  void query_groups(int exoid, Ioss::NameList& names, bool return_full_names);
+  void query_groups(int exoid, Ioss::NameList &names, bool return_full_names);
 
   class AssemblyTreeFilter
   {
@@ -515,23 +515,23 @@ namespace Ioex {
     bool success = false;
 
     Ioss::SerializeIO serializeIO_(this);
-    int exoid = get_file_pointer();
+    int               exoid = get_file_pointer();
 
-    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
-    std::vector<char> group_name(group_name_length+1, '\0');
+    int               group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length + 1, '\0');
 
     // Get name of this group...
     int   idum;
     float rdum;
-    int ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
+    int   ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
     if (ierr < 0) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open root group of group named '{}' in file '{}'.\n", m_groupName,
-                 get_filename());
+      fmt::print(errmsg, "ERROR: Could not open root group of group named '{}' in file '{}'.\n",
+                 m_groupName, get_filename());
       IOSS_ERROR(errmsg);
     }
 
-    m_groupName = std::string(group_name.data());
+    m_groupName     = std::string(group_name.data());
     m_exodusFilePtr = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
 
     if (m_exodusFilePtr < 0) {
@@ -550,7 +550,7 @@ namespace Ioex {
     bool success = false;
 
     Ioss::SerializeIO serializeIO_(this);
-    int exoid = get_file_pointer();
+    int               exoid = get_file_pointer();
 
     m_groupName = group_name;
     ex_get_group_id(exoid, m_groupName.c_str(), &m_exodusFilePtr);
@@ -571,7 +571,7 @@ namespace Ioex {
     if (!is_input()) {
       // Get existing file pointer...
       Ioss::SerializeIO serializeIO_(this);
-      int exoid = get_file_pointer();
+      int               exoid = get_file_pointer();
 
       // Check name for '/' which is not allowed since it is the
       // separator character in a full group path
@@ -3228,13 +3228,12 @@ namespace Ioex {
     write_coordinate_frames(get_file_pointer(), get_region()->get_coordinate_frames());
   }
 
-
   Ioss::NameList BaseDatabaseIO::groups_describe_nl(bool return_full_names)
   {
     Ioss::SerializeIO serializeIO_(this);
 
     Ioss::NameList names;
-    int group_root = ex_inquire_int(get_file_pointer(), EX_INQ_GROUP_ROOT);
+    int            group_root = ex_inquire_int(get_file_pointer(), EX_INQ_GROUP_ROOT);
     query_groups(group_root, names, return_full_names);
 
     return names;
@@ -3266,21 +3265,24 @@ namespace Ioex {
   int BaseDatabaseIO::num_child_group_nl()
   {
     Ioss::SerializeIO serializeIO_(this);
-    int exoid = get_file_pointer();
-    exoid = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
-    int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+    int               exoid = get_file_pointer();
+    exoid                   = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
+    int num_children        = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     return num_children;
   }
 
   bool BaseDatabaseIO::open_child_group_nl(int index)
   {
-    if(index < 0) return false;
+    if (index < 0)
+      return false;
     Ioss::SerializeIO serializeIO_(this);
-    int exoid = get_file_pointer();
-    int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
-    if(num_children == 0) return true;
+    int               exoid        = get_file_pointer();
+    int               num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+    if (num_children == 0)
+      return true;
 
-    if(index >= num_children) return false;
+    if (index >= num_children)
+      return false;
 
     std::vector<int> children(num_children);
 
@@ -3291,8 +3293,8 @@ namespace Ioex {
 
     exoid = children[index];
 
-    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
-    std::vector<char> group_name(group_name_length+1, '\0');
+    int               group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length + 1, '\0');
 
     // Get name of this group...
     int   idum;
@@ -3303,7 +3305,7 @@ namespace Ioex {
     }
 
     m_exodusFilePtr = exoid;
-    m_groupName = std::string(group_name.data());
+    m_groupName     = std::string(group_name.data());
 
     return true;
   }
@@ -3610,13 +3612,13 @@ namespace {
 #endif
   }
 
-  void query_groups(int exoid, Ioss::NameList& names, bool return_full_names)
+  void query_groups(int exoid, Ioss::NameList &names, bool return_full_names)
   {
     int   idum;
     float rdum;
 
-    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
-    std::vector<char> group_name(group_name_length+1, '\0');
+    int               group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length + 1, '\0');
 
     // Get name of this group...
     int ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
@@ -3624,14 +3626,15 @@ namespace {
       Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
 
-    if(return_full_names) {
+    if (return_full_names) {
       std::fill(group_name.begin(), group_name.end(), '\0');
       ierr = ex_inquire(exoid, EX_INQ_FULL_GROUP_NAME, &idum, &rdum, group_name.data());
       if (ierr < 0) {
         Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
       names.push_back(std::string(group_name.data()));
-    } else {
+    }
+    else {
       names.push_back(std::string(group_name.data()));
     }
 

@@ -13,6 +13,9 @@ concurrency:
   group: ${{ github.workflow}}-${{ github.head_ref }}  
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
 
   build-deps:
@@ -24,7 +27,12 @@ jobs:
         compiler: [ gnu, clang ]
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Install System dependencies
         shell: bash -l {0}

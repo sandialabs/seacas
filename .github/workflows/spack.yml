@@ -15,8 +15,13 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+      with:
+        egress-policy: audit
+
     - name: Set up Spack
-      uses: spack/setup-spack@v2
+      uses: spack/setup-spack@5ab3c91bdefffffad9a7e45d1d156146afebb3a7 # v2.1.1
       with:
         ref: develop      # Spack version (examples: develop, releases/v0.21)
         buildcache: true  # Configure oci://ghcr.io/spack/github-actions-buildcache

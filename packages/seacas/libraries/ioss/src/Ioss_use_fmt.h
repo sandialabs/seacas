@@ -9,7 +9,7 @@
 // * ZoneConnectivity
 // * Field
 // * BoundaryCondition
-
+#pragma once
 #include <fmt/ostream.h>
 
 #if FMT_VERSION >= 90000

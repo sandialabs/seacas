@@ -357,9 +357,9 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_file_per_state_to_exodus
    TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --file_per_state ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-link.cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS ${NPROCS}
-   TEST_1 EXEC io_shell ARGS ${JOIN_ARG} 8-block-link.cgns 8-block-rt.g
+   TEST_1 EXEC io_shell ARGS 8-block-link.cgns 8-block-rt.g
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS ${NPROCS}
+     NUM_MPI_PROCS 1
    TEST_2 EXEC exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-rt.g
      DIRECTORY ../../../../applications/exodiff
      NOEXEPREFIX NOEXESUFFIX

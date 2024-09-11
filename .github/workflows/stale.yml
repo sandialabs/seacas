@@ -4,13 +4,24 @@ on:
   schedule:
   - cron: "30 1 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   stale:
 
+    permissions:
+      issues: write  # for actions/stale to close stale issues
+      pull-requests: write  # for actions/stale to close stale PRs
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v1
+    - name: Harden Runner
+      uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+      with:
+        egress-policy: audit
+
+    - uses: actions/stale@28ca1036281a5e5922ead5184a1bbf96e5fc984e # v9.0.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: 'Stale issue message'
