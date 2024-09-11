@@ -10,16 +10,13 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_Region.h"
 #include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
 
 #include <utility>
-#include <climits>
 #include <cstddef>
-#include <iostream>
 #include <sstream>
-#include <iomanip>
 #include <string>
 #include <functional>
-#include <map>
 
 namespace Ioss {
 
@@ -55,6 +52,8 @@ public:
   ChangeSet(Ioss::DatabaseIO* db, const std::string& dbName, const std::string& dbType, unsigned fileCyclicCount);
 
   virtual ~ChangeSet();
+  ChangeSet() = delete;
+  ChangeSet(const ChangeSet&) = delete;
 
   IOSS_NODISCARD unsigned supported_formats() const { return m_supportedFormats; }
   IOSS_NODISCARD unsigned database_format() const { return m_databaseFormat; }
@@ -71,9 +70,6 @@ public:
   IOSS_NODISCARD unsigned get_file_cyclic_count() const { return m_fileCyclicCount; }
 
 private:
-  ChangeSet() = delete;
-  ChangeSet(const ChangeSet&) = delete;
-
   std::vector<DatabaseIO*> m_changeSetDatabases;
 
 protected:

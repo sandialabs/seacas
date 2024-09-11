@@ -10,18 +10,15 @@
 #include "Ioss_DatabaseIO.h"      // for DatabaseIO
 #include "Ioss_ParallelUtils.h"   // for ParallelUtils
 #include "Ioss_PropertyManager.h" // for PropertyManager
-#include <assert.h>
-#include <cstddef> // for size_t, nullptr
-#include <cstdint> // for int64_t
-
 #include "Ioss_CodeTypes.h"
 #include "Ioss_Utils.h"
 #include "ioss_export.h"
 
-#include <iosfwd> // for ostream
+#include <cstddef> // for size_t, nullptr
+#include <cstdint> // for int64_t
+#include <iomanip>
 #include <sstream>
 #include <string>  // for string, operator<
-#include <strings.h>
 
 namespace Ioss {
   class Region;
@@ -111,7 +108,7 @@ namespace Ioss {
 
     DynamicTopologyNotifier *m_notifier{nullptr};
 
-    void check_region() const;
+    void verify_region_is_registered() const;
     IOSS_NODISCARD const ParallelUtils &util() const;
     void synchronize_topology_modified_flags();
 
@@ -230,6 +227,10 @@ namespace Ioss {
 
     static std::string get_internal_file_change_set_name(unsigned int step);
 
+    unsigned int get_topology_change_count() const { return m_dbChangeCount; }
+    unsigned int get_file_cyclic_count() const { return m_fileCyclicCount; }
+    IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return m_ifDatabaseExists; }
+
   private:
     Region     *m_region{nullptr};
     std::string m_ioDB;
@@ -238,8 +239,8 @@ namespace Ioss {
     PropertyManager m_properties;
 
     unsigned int              m_fileCyclicCount;
-    IfDatabaseExistsBehavior &m_ifDatabaseExists;
-    unsigned int             &m_dbChangeCount;
+    IfDatabaseExistsBehavior  m_ifDatabaseExists;
+    unsigned int              m_dbChangeCount;
 
     IOSS_NODISCARD const ParallelUtils &util() const;
 

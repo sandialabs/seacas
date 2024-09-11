@@ -2900,6 +2900,10 @@ namespace Ioss {
       DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
                                              dbChangeCount);
       fileControl.add_output_database_change_set(state);
+
+      // Reset based on fileControl values
+      dbChangeCount = fileControl.get_topology_change_count();
+      ifDatabaseExists = fileControl.get_if_database_exists_behavior();
     }
   }
 
@@ -2939,6 +2943,10 @@ namespace Ioss {
       DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
                                              dbChangeCount);
       fileControl.clone_and_replace_output_database(state);
+
+      // Reset based on fileControl values
+      dbChangeCount = fileControl.get_topology_change_count();
+      ifDatabaseExists = fileControl.get_if_database_exists_behavior();
     }
   }
 
@@ -3048,11 +3056,9 @@ namespace Ioss {
 
   std::tuple<std::string, int, double> Region::locate_db_state(double targetTime) const
   {
-    IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
-    unsigned int              dbChangeCount{1};
-
-    DynamicTopologyFileControl fileControl(const_cast<Region*>(this), get_file_cyclic_count(),
-                                           ifDatabaseExists, dbChangeCount);
+    auto *cregion = const_cast<Region*>(this);
+    DynamicTopologyFileControl fileControl(cregion, get_file_cyclic_count(),
+                                           cregion->ifDatabaseExists, cregion->dbChangeCount);
 
     return fileControl.locate_db_state(targetTime);
   }
@@ -3065,11 +3071,9 @@ namespace Ioss {
       return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
     }
 
-    IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
-    unsigned int              dbChangeCount{1};
-
-    DynamicTopologyFileControl fileControl(const_cast<Region*>(this), get_file_cyclic_count(),
-                                           ifDatabaseExists, dbChangeCount);
+    auto *cregion = const_cast<Region*>(this);
+    DynamicTopologyFileControl fileControl(cregion, get_file_cyclic_count(),
+                                           cregion->ifDatabaseExists, cregion->dbChangeCount);
 
     return fileControl.get_db_max_time();
   }
@@ -3082,11 +3086,9 @@ namespace Ioss {
       return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
     }
 
-    IfDatabaseExistsBehavior  ifDatabaseExists{Ioss::DB_OVERWRITE};
-    unsigned int              dbChangeCount{1};
-
-    DynamicTopologyFileControl fileControl(const_cast<Region*>(this), get_file_cyclic_count(),
-                                           ifDatabaseExists, dbChangeCount);
+    auto *cregion = const_cast<Region*>(this);
+    DynamicTopologyFileControl fileControl(cregion, get_file_cyclic_count(),
+                                           cregion->ifDatabaseExists, cregion->dbChangeCount);
 
     return fileControl.get_db_min_time();
   }

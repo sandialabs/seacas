@@ -35,7 +35,6 @@ public:
 
   static int                        describe(NameList *names);
   IOSS_NODISCARD static NameList    describe();
-  static void                       clean();
 
   static const ChangeSetFactory   * factory();
 

@@ -29,13 +29,13 @@ namespace {
 int file_exists( const Ioss::ParallelUtils &util,
                  const std::string& filename,
                  std::string& message,
-                 bool specifiedDecomp )
+                 bool filePerRank )
 {
   std::string filenameBase = filename;
   const int par_size = util.parallel_size();
   const int par_rank = util.parallel_rank();
 
-  if( par_size > 1 && !specifiedDecomp ) {
+  if( par_size > 1 && !filePerRank ) {
     filenameBase = Ioss::Utils::decode_filename(filenameBase, par_rank, par_size);
   }
 
@@ -168,8 +168,8 @@ namespace Ioss {
     if(index >= m_changeSetNames.size()) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-                 "Invalid change set index {} with a max range of {}\n",
-                 index, m_changeSetNames.size());
+                 "Invalid change set index {} with a max value of {}\n",
+                 index, m_changeSetNames.size()-1);
       IOSS_ERROR(errmsg);
     }
   }
@@ -216,9 +216,8 @@ namespace Ioss {
 
     db = Ioss::IOFactory::create(dbType, ioDB, usage, util().communicator(),
                                  get_database()->get_property_manager());
-    int bad_count = 0;
     std::string error_message;
-    bool is_valid_file = db != nullptr && db->ok(false, &error_message, &bad_count);
+    bool is_valid_file = db != nullptr && db->ok(false, &error_message, nullptr);
     if(!is_valid_file) {
       delete db;
       std::ostringstream errmsg;

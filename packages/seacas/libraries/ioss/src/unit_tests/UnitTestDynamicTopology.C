@@ -91,8 +91,6 @@ void define_model(const Ioss::Region &i_region, Ioss::Region &o_region)
 
   o_region.begin_mode(Ioss::STATE_DEFINE_MODEL);
 
-  auto& nodeblocks = o_region.get_node_blocks();
-
   Ioss::NodeBlock *i_nb        = i_region.get_node_blocks()[0];
   int64_t          spatial_dim = 3;
   int64_t          num_nodes   = i_nb->entity_count();
@@ -138,7 +136,7 @@ void write_model(const Ioss::Region &i_region, Ioss::Region &o_region)
   o_region.end_mode(Ioss::STATE_MODEL);
 }
 
-void define_transient(const Ioss::Region &i_region, Ioss::Region &o_region,
+void define_transient(Ioss::Region &o_region,
                       const std::string &elemFieldName)
 {
   o_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
@@ -206,7 +204,7 @@ public:
 
   void define_transient() override
   {
-    ::define_transient(inputRegion, *get_region(), elemFieldName);
+    ::define_transient(*get_region(), elemFieldName);
   }
 
   Ioss::FileControlOption get_control_option() const
@@ -238,7 +236,7 @@ struct OutputParams {
     ASSERT_EQ(output_times_.size(), modification_steps_.size());
 
     size_t numSteps = output_times_.size();
-    for(auto i=1; i<numSteps; i++) {
+    for(size_t i=1; i<numSteps; i++) {
       // Monotone increasing
       ASSERT_TRUE(output_times_[i] > output_times_[i-1]);
     }
@@ -332,14 +330,13 @@ void run_topology_change(const Ioss::Region& i_region,
   define_model(i_region, o_region);
   write_model(i_region, o_region);
 
-  define_transient(i_region, o_region, params.elemFieldName);
+  define_transient(o_region, params.elemFieldName);
 
   auto numSteps = params.output_steps.size();
 
   int maxStep = 1;
 
   double minTime = numSteps > 0 ? params.output_times[0] : 0.0;
-  double maxTime = numSteps > 0 ? params.output_times[0] : 0.0;
 
   bool doneOutputAfterModification = true;
 
@@ -437,7 +434,7 @@ void cleanup_cyclic_multi_files(const std::string &outFile, unsigned cyclicCount
 {
   Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
 
-  for(int i=1; i<=cyclicCount; i++) {
+  for(unsigned i=1; i<=cyclicCount; i++) {
     std::string baseFile = Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(outFile, cyclicCount, i);
     std::string parallelFile = Ioss::Utils::decode_filename(baseFile, util.parallel_rank(), util.parallel_size());
     unlink(parallelFile.c_str());
@@ -804,11 +801,11 @@ void run_topology_change_with_multiple_output(const Ioss::Region& i_region,
 
   define_model(i_region, o_region1);
   write_model(i_region, o_region1);
-  define_transient(i_region, o_region1, params1.elemFieldName);
+  define_transient(o_region1, params1.elemFieldName);
 
   define_model(i_region, o_region2);
   write_model(i_region, o_region2);
-  define_transient(i_region, o_region2, params2.elemFieldName);
+  define_transient(o_region2, params2.elemFieldName);
 
   auto numSteps = params1.output_steps.size();
 
@@ -1118,7 +1115,6 @@ std::tuple<std::string, int, double> read_and_locate_db_state(const OutputParams
 }
 
 void run_single_file_locate_db_time_state(const std::string& outFile,
-                                          const std::string& elemFieldName,
                                           const OutputParams& params,
                                           double targetTime,
                                           const std::string& goldSet,
@@ -1161,7 +1157,7 @@ TEST(TestDynamicRead, single_file_locate_db_time_state)
   int goldState = 1;
   double goldTime = 3.0;
 
-  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldSet, goldState, goldTime);
+  run_single_file_locate_db_time_state(outFile, params, targetTime, goldSet, goldState, goldTime);
 }
 
 TEST(TestDynamicRead, single_file_locate_db_time_state_all_negative_time)
@@ -1184,11 +1180,10 @@ TEST(TestDynamicRead, single_file_locate_db_time_state_all_negative_time)
   int goldState = 1;
   double goldTime = -1.0;
 
-  run_single_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldSet, goldState, goldTime);
+  run_single_file_locate_db_time_state(outFile, params, targetTime, goldSet, goldState, goldTime);
 }
 
 void run_multi_file_locate_db_time_state(const std::string& outFile,
-                                         const std::string& elemFieldName,
                                          const OutputParams& params,
                                          double targetTime,
                                          const std::string& goldFile,
@@ -1240,7 +1235,7 @@ TEST(TestDynamicRead, linear_multi_file_locate_db_time_state)
   int goldState = 1;
   double goldTime = 3.0;
 
-  run_multi_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldFile, goldState, goldTime);
+  run_multi_file_locate_db_time_state(outFile, params, targetTime, goldFile, goldState, goldTime);
 }
 
 TEST(TestDynamicRead, cyclic_multi_file_locate_db_time_state)
@@ -1264,7 +1259,7 @@ TEST(TestDynamicRead, cyclic_multi_file_locate_db_time_state)
   int goldState = 1;
   double goldTime = 2.0;
 
-  run_multi_file_locate_db_time_state(outFile, elemFieldName, params, targetTime, goldFile, goldState, goldTime);
+  run_multi_file_locate_db_time_state(outFile, params, targetTime, goldFile, goldState, goldTime);
 }
 
 std::tuple<std::string, int, double> read_and_locate_db_max_time(const OutputParams& params)
@@ -1506,11 +1501,11 @@ TEST(TestDynamicRead, cyclic_multi_file_locate_db_min_time)
   cleanup_cyclic_multi_files(outFile, params.cyclicCount);
 }
 
-int get_num_change_sets(const OutputParams& params)
+unsigned get_num_change_sets(const OutputParams& params)
 {
   auto numSteps = params.output_steps.size();
 
-  int numMods = 0;
+  unsigned numMods = 0;
   int numModInc = 0;
 
   int currentModStep = -1;
@@ -1545,7 +1540,7 @@ void read_and_test_single_file_topology_change_set(const OutputParams& params)
   std::vector<std::string> gold_names;
   std::vector<std::string> gold_full_names;
 
-  int numMods = get_num_change_sets(params);
+  unsigned numMods = get_num_change_sets(params);
 
   fill_internal_file_change_set_gold_names(numMods, gold_names, gold_full_names);
 
@@ -1586,12 +1581,12 @@ void read_and_test_cyclic_multi_file_topology_change_set(const OutputParams& par
 
   std::vector<std::string> gold_names;
 
-  int numMods = get_num_change_sets(params);
+  unsigned numMods = get_num_change_sets(params);
   if(numMods > params.cyclicCount) {
     numMods = params.cyclicCount;
   }
 
-  for(int i=1; i<=numMods; i++) {
+  for(unsigned i=1; i<=numMods; i++) {
     gold_names.push_back(Ioss::DynamicTopologyFileControl::get_cyclic_database_filename(params.outFile,
                                                                                         params.cyclicCount, i));
   }
@@ -1634,9 +1629,9 @@ void read_and_test_linear_multi_file_topology_change_set(const OutputParams& par
 
   std::vector<std::string> gold_names;
 
-  int numMods = get_num_change_sets(params);
+  unsigned numMods = get_num_change_sets(params);
 
-  for(int i=1; i<=numMods; i++) {
+  for(unsigned i=1; i<=numMods; i++) {
     gold_names.push_back(Ioss::DynamicTopologyFileControl::get_linear_database_filename(params.outFile, i));
   }
 

@@ -126,6 +126,3 @@ Ioss::ChangeSetFactoryMap *Ioss::ChangeSetFactory::registry()
   return &registry_;
 }
 
-/** \brief Empty method.
- */
-void Ioss::ChangeSetFactory::clean() {}

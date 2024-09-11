@@ -31,16 +31,14 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_StructuredBlock.h"
 
-#include <climits>
-#include <cstddef>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <string>
+
+#include <climits>
+#include <cstddef>
 #include <functional>
-#include <iostream>
 #include <sstream>
-#include <iomanip>
 #include <assert.h>
 
 #include "Ioss_ParallelUtils.h"
@@ -145,7 +143,6 @@ bool file_exists(const Ioss::ParallelUtils &util,
                  const std::string &db_type,
                  Ioss::DatabaseUsage db_usage)
 {
-  bool exists = false;
   int par_size = util.parallel_size();
   int par_rank = util.parallel_rank();
   bool is_parallel = par_size > 1;
@@ -156,20 +153,9 @@ bool file_exists(const Ioss::ParallelUtils &util,
     full_filename = Ioss::Utils::decode_filename(filename, par_rank, par_size);
   }
 
-  if (!is_parallel || par_rank == 0) {
-    // Now, see if this file exists...
-    // Don't want to do a system call on all processors since it can take minutes
-    // on some of the larger machines, filesystems, and processor counts...
-    Ioss::FileInfo file = Ioss::FileInfo(full_filename);
-    exists = file.exists();
-  }
-
-  if (is_parallel) {
-    int iexists = exists ? 1 : 0;
-    util.broadcast(iexists, 0);
-    exists = iexists == 1;
-  }
-  return exists;
+  std::string message;
+  Ioss::FileInfo file = Ioss::FileInfo(full_filename);
+  return file.parallel_exists(util.communicator(), message);
 }
 
 }
@@ -177,7 +163,7 @@ bool file_exists(const Ioss::ParallelUtils &util,
 
 namespace Ioss {
 
-void DynamicTopologyObserver::check_region() const
+void DynamicTopologyObserver::verify_region_is_registered() const
 {
   if(nullptr == m_region) {
     std::ostringstream errmsg;
@@ -265,13 +251,13 @@ bool DynamicTopologyObserver::is_topology_modified() const
 
 const ParallelUtils &DynamicTopologyObserver::util() const
 {
-  check_region();
+  verify_region_is_registered();
   return m_region->get_database()->util();
 }
 
 void DynamicTopologyObserver::synchronize_topology_modified_flags()
 {
-  check_region();
+  verify_region_is_registered();
   int num_processors = m_region->get_database()->parallel_size();
   // Synchronize the topology flags between all processors in case
   // it has not been set consistently.
@@ -289,7 +275,7 @@ void DynamicTopologyObserver::synchronize_topology_modified_flags()
 
 int DynamicTopologyObserver::get_cumulative_topology_modification_field()
 {
-  check_region();
+  verify_region_is_registered();
   const std::string variable_name = topology_modification_change_name();
 
   int ivalue = 0;
