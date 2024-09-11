@@ -391,17 +391,48 @@ namespace Ioex {
 #if NC_HAS_SZIP_WRITE
           exo_method = EX_COMPRESS_SZIP;
 #else
-          fmt::print(Ioss::WarnOut(), "The NetCDF library does not have SZip compression enabled."
-                                      " 'zlib' will be used instead.\n\n");
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(), "The NetCDF library does not have SZip compression enabled."
+                                        " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
+        else if (method == "zstd") {
+#if NC_HAS_ZSTD == 1
+          exo_method = EX_COMPRESS_ZSTD;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have ZStandard compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
+        else if (method == "bzip2") {
+#if NC_HAS_BZ2 == 1
+          exo_method = EX_COMPRESS_BZ2;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "The NetCDF library does not have Bzip2 / BZ2 compression enabled."
+                       " 'zlib' will be used instead.\n\n");
+          }
 #endif
         }
         else {
-          fmt::print(Ioss::WarnOut(),
-                     "Unrecognized compression method specified: '{}'."
-                     " 'zlib' will be used instead.\n\n",
-                     method);
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WarnOut(),
+                       "Unrecognized compression method specified: '{}'."
+                       " 'zlib' will be used instead.\n\n",
+                       method);
+          }
         }
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
+      }
+
+      if (properties.exists("COMPRESSION_QUANTIZE_NSD")) {
+        int quant_level = properties.get("COMPRESSION_QUANTIZE_NSD").get_int();
+        ex_set_option(m_exodusFilePtr, EX_OPT_QUANTIZE_NSD, quant_level);
       }
 
       if (properties.exists("COMPRESSION_LEVEL")) {

@@ -53,6 +53,7 @@ namespace IOShell {
     int                      surface_split_type{-1};
     int                      data_storage_type{0};
     int                      compression_level{0};
+    int                      quantize_nsd{0};
     int                      serialize_io_size{0};
     int                      flush_interval{0};
 
@@ -78,8 +79,11 @@ namespace IOShell {
     // -> file.A, t=7,8 -> file.B
     int  split_cyclic{0};
     bool shuffle{false};
-    bool zlib{true};
+    bool zlib{false};
     bool szip{false};
+    bool zstd{false};
+    bool bz2{false};
+    bool quant{false};
     bool debug{false};
     bool detect_nans{false};
     bool statistics{false};

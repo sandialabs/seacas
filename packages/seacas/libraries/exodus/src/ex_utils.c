@@ -110,6 +110,16 @@ const char *ex_config(void)
 #else
   j += snprintf(buffer + j, buffer_size - j, "\t\tSZip Compression (read/write) NOT enabled\n");
 #endif
+#if NC_HAS_ZSTD == 1
+  j += snprintf(buffer + j, buffer_size - j, "\t\tZstd Compression enabled\n");
+#else
+  j += snprintf(buffer + j, buffer_size - j, "\t\tZstd Compression NOT enabled\n");
+#endif
+#if NC_HAS_QUANTIZE == 1
+  j += snprintf(buffer + j, buffer_size - j, "\t\tQuanization support enabled\n");
+#else
+  j += snprintf(buffer + j, buffer_size - j, "\t\tQuanization support NOT enabled\n");
+#endif
 #endif
 #endif
 #if defined(PARALLEL_AWARE_EXODUS)
@@ -1718,6 +1728,7 @@ void exi_set_compact_storage(int exoid, int varid)
   \internal
   \undoc
 */
+
 void exi_compress_variable(int exoid, int varid, int type)
 {
 #if NC_HAS_HDF5
@@ -1731,13 +1742,14 @@ void exi_compress_variable(int exoid, int varid, int type)
   }
   else {
     /* Compression only supported on HDF5 (NetCDF-4) files; Do not try to compress character data */
+    int status = NC_NOERR;
     if ((type == 1 || type == 2) && file->is_hdf5) {
       if (file->compression_algorithm == EX_COMPRESS_GZIP) {
         int deflate_level = file->compression_level;
         if (deflate_level > 0) {
           int compress = 1;
           int shuffle  = file->shuffle;
-          nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
+          status       = nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
         }
       }
       else if (file->compression_algorithm == EX_COMPRESS_SZIP) {
@@ -1756,11 +1768,57 @@ void exi_compress_variable(int exoid, int varid, int type)
         /* Even and between 4 and 32; typical values are 8, 10, 16, 32 */
         const int SZIP_PIXELS_PER_BLOCK =
             file->compression_level == 0 ? 32 : file->compression_level;
-        nc_def_var_szip(exoid, varid, NC_SZIP_NN, SZIP_PIXELS_PER_BLOCK);
+        status = nc_def_var_szip(exoid, varid, NC_SZIP_NN, SZIP_PIXELS_PER_BLOCK);
 #else
         char errmsg[MAX_ERR_LENGTH];
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: Compression algorithm SZIP is not supported yet (EXPERIMENTAL).");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
+      else if (file->compression_algorithm == EX_COMPRESS_ZSTD) {
+#if NC_HAS_ZSTD == 1
+        status = nc_def_var_zstandard(exoid, varid, file->compression_level);
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Compression algorithm ZSTANDARD is not supported in this version of the "
+                 "netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
+      else if (file->compression_algorithm == EX_COMPRESS_BZ2) {
+#if NC_HAS_BZ2 == 1
+        status = nc_def_var_bzip2(exoid, varid, file->compression_level);
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Compression algorithm BZIP2 / BZ2 is not supported in this version of the "
+                 "netCDF library.");
+        ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+#endif
+      }
+      if (status != NC_NOERR) {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to set compression attribute on variable in file id %d", exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+      }
+
+      if (type == 2 && file->quantize_nsd > 0) {
+#if NC_HAS_QUANTIZE == 1
+        // Lossy compression using netCDF quantize methods.
+        if ((status = nc_def_var_quantize(exoid, varid, NC_QUANTIZE_GRANULARBR,
+                                          file->quantize_nsd)) != NC_NOERR) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: failed to set quanitzation method on variable in file id %d", exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+        }
+#else
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Quanitzation is not supported in this version of netCDF library.");
         ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
 #endif
       }
