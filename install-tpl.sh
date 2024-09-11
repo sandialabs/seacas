@@ -425,7 +425,7 @@ then
 	elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
 	else
-            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V110, V112, or V114. exiting.${txtrst}
+            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V110, V112, or V114 [default]. exiting.${txtrst}
             exit 1
 	fi
 
@@ -539,7 +539,7 @@ then
 #   net_version="v4.9.1"
     net_version="v4.9.2"
 #   net_version="v4.8.1"
-#   net_version="master"
+#   net_version="main"
 
     echo "${txtgrn}+++ NetCDF ${net_version} ${txtrst}"
     cd $ACCESS || exit
@@ -549,6 +549,11 @@ then
         echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf netcdf-c
         git clone --depth 1 --branch ${net_version} https://github.com/Unidata/netcdf-c netcdf-c
+    fi
+
+    if [ net_version == "main" ]
+    then
+	PREFIX="NETCDF_"
     fi
 
     if [ "$BUILD" == "YES" ]
@@ -562,7 +567,7 @@ then
 	then
            export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
 	fi
-        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
+        PREFIX=${PREFIX} CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
