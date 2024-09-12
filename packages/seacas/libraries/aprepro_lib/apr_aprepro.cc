@@ -33,7 +33,7 @@
 #endif
 
 namespace {
-  const std::string version_short{"6.33"};
+  const std::string version_short{"6.34"};
   const std::string version_date{"(2024/09/12)"};
   const std::string version_string = version_short + " " + version_date;
 
