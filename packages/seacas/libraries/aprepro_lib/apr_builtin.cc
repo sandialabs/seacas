@@ -832,7 +832,7 @@ namespace SEAMS {
 
   const char *do_format(double var, char *format)
   {
-    auto  tmpstr = fmt::sprintf(format, var);
+    auto  tmpstr = std::strlen(format) > 0 ? fmt::sprintf(format, var) : fmt::format("{}", var);
     char *tmp;
     new_string(tmpstr.c_str(), &tmp);
     return tmp;
