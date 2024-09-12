@@ -830,6 +830,14 @@ namespace SEAMS {
     return (tmp);
   }
 
+  const char *do_format(double var, char *format)
+  {
+    auto  tmpstr = fmt::sprintf(format, var);
+    char *tmp;
+    new_string(tmpstr.c_str(), &tmp);
+    return tmp;
+  }
+
   const char *do_execute(char *string)
   {
     aprepro->lexer->execute(string);
