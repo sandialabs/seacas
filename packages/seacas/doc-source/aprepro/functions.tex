@@ -111,6 +111,7 @@ the line that matches ``begin'' up to the line that matches ``end''. \\
 exodus\_meta(filename) & Open the \exo{} file and create several variables based on the metadata in the \exo{} file. \\
 extract(s, b, e)    &  Return substring \var{[b,e)}. \var{b} is included; \var{e} is not. If \var{b} not found, return empty; If \var{e} not found, return rest of string. If \var{b} empty, start at beginning; if \var{e} empty, return rest of string. \\
 file\_to\_string(fn)&  Opens the file specified by \var{fn} and returns the contents as a multi-line string. \\
+format(var, format) &  Returns a string representing the double value \var{var} printed using the format specified in \var{format}. \\
 get\_date()         &  Returns a string representing the current date in the form YYYY/MM/DD. \\
 get\_iso\_date()    &  Returns a string representing the current date in the form YYYYMMDD. \\
 get\_time()         &  Returns a string representing the current time in the form HH:MM:SS. \\
