@@ -68,7 +68,6 @@ template <typename INT> ExoII_Read<INT>::~ExoII_Read()
     delete[] global_vals2;
     delete[] node_map;
     delete[] elmt_map;
-    delete[] elmt_order;
   }
   catch (...) {
   }

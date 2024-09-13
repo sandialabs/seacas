@@ -114,9 +114,8 @@ public:
   std::string Load_Element_Map();
   std::string Free_Element_Map();
   const INT  *Get_Element_Map() { return elmt_map; }
-  inline INT  Node_Map(size_t node_num) const;      // numbers are global, 1-offset
-  inline INT  Element_Map(size_t elmt_num) const;   // numbers are global, 1-offset
-  inline INT  Element_Order(size_t elmt_num) const; // numbers are global, 1-offset
+  inline INT  Node_Map(size_t node_num) const;    // numbers are global, 1-offset
+  inline INT  Element_Map(size_t elmt_num) const; // numbers are global, 1-offset
 
   // Nodal data:
 
@@ -224,9 +223,8 @@ protected:
   double *nodes{nullptr}; // Matrix;  dimension by num_nodes (row major form).
                           //          I.e., all x's then all y's, etc.
 
-  INT *node_map{nullptr};   // Array; num_nodes long when filled.
-  INT *elmt_map{nullptr};   // Array; num_elmts long when filled.
-  INT *elmt_order{nullptr}; // Array; num_elmts long when filled.
+  INT *node_map{nullptr}; // Array; num_nodes long when filled.
+  INT *elmt_map{nullptr}; // Array; num_elmts long when filled.
 
   // RESULTS info:
 
@@ -273,17 +271,6 @@ template <typename INT> inline INT ExoII_Read<INT>::Element_Map(size_t elmt_num)
 
   if (elmt_map) {
     return elmt_map[elmt_num - 1];
-  }
-  return 0;
-}
-
-template <typename INT> inline INT ExoII_Read<INT>::Element_Order(size_t elmt_num) const
-{
-  SMART_ASSERT(Check_State());
-  SMART_ASSERT(elmt_num <= num_elmts);
-
-  if (elmt_order) {
-    return elmt_order[elmt_num - 1];
   }
   return 0;
 }
