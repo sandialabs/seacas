@@ -2,7 +2,7 @@
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021, 2024 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -380,7 +380,6 @@ namespace SEAMS {
     int yylen = 0;
 
     // Error handling.
-    int yynerrs_     = 0;
     int yyerrstatus_ = 0;
 
     /// The lookahead symbol.
@@ -1845,7 +1844,6 @@ namespace SEAMS {
     yyerrlab:
       // If not already recovering from an error, report this error.
       if (!yyerrstatus_) {
-        ++yynerrs_;
         context     yyctx(*this, yyla);
         std::string msg = yysyntax_error_(yyctx);
         error(YY_MOVE(msg));
