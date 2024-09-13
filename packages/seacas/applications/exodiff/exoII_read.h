@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -68,8 +68,7 @@ public:
   size_t             Num_Assembly() const { return num_assemblies; }
 
   // Times:
-
-  int    Num_Times() const { return num_times; }
+  int    Num_Times() const { return (int)times.size(); }
   double Time(int time_num) const;
 
   // Variables:
@@ -240,11 +239,10 @@ protected:
   std::vector<std::string> eb_vars{};
   std::vector<std::string> fb_vars{};
 
-  int    num_times{0};
   double time_scale{1.0};
   double time_offset{0.0};
 
-  double *times{nullptr};
+  std::vector<double> times{};
 
   int      cur_time{0};          // Current timestep number of the results (0 means none).
   double **results{nullptr};     // Array of pointers (to arrays of results data);

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -54,7 +54,6 @@ template <typename INT> ExoII_Read<INT>::~ExoII_Read()
     delete[] nsets;
     delete[] ssets;
     delete[] nodes;
-    delete[] times;
     delete[] edge_blocks;
     delete[] face_blocks;
     delete[] assemblies;
@@ -99,7 +98,7 @@ template <typename INT> std::string ExoII_Read<INT>::Close_File()
 template <typename INT> double ExoII_Read<INT>::Time(int time_num) const
 {
   SMART_ASSERT(Check_State());
-  SMART_ASSERT(time_num > 0 && time_num <= num_times)(time_num)(num_times);
+  SMART_ASSERT(time_num > 0 && time_num <= Num_Times())(time_num)(Num_Times());
   return times[time_num - 1];
 }
 
@@ -621,7 +620,7 @@ template <typename INT>
 std::string ExoII_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index)
 {
   SMART_ASSERT(Check_State());
-  SMART_ASSERT(time_step_num > 0 && time_step_num <= num_times);
+  SMART_ASSERT(time_step_num > 0 && time_step_num <= Num_Times());
   SMART_ASSERT(var_index >= 0 && (unsigned)var_index < nodal_vars.size());
 
   if (!Open()) {
@@ -667,8 +666,8 @@ const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proporti
   static std::vector<double> st_results2;
 
   SMART_ASSERT(Check_State());
-  SMART_ASSERT(t1 > 0 && t1 <= num_times);
-  SMART_ASSERT(t2 > 0 && t2 <= num_times);
+  SMART_ASSERT(t1 > 0 && t1 <= Num_Times());
+  SMART_ASSERT(t2 > 0 && t2 <= Num_Times());
   SMART_ASSERT(var_index >= 0 && (unsigned)var_index < nodal_vars.size());
 
   if (!Open()) {
@@ -740,7 +739,7 @@ template <typename INT> const double *ExoII_Read<INT>::Get_Nodal_Results(int var
 template <typename INT> std::string ExoII_Read<INT>::Load_Global_Results(int time_step_num)
 {
   SMART_ASSERT(Check_State());
-  SMART_ASSERT(time_step_num > 0 && time_step_num <= num_times);
+  SMART_ASSERT(time_step_num > 0 && time_step_num <= Num_Times());
 
   if (!Open()) {
     return "WARNING:  File not open!";
@@ -776,8 +775,8 @@ template <typename INT>
 std::string ExoII_Read<INT>::Load_Global_Results(int t1, int t2, double proportion)
 {
   SMART_ASSERT(Check_State());
-  SMART_ASSERT(t1 > 0 && t1 <= num_times);
-  SMART_ASSERT(t2 > 0 && t2 <= num_times);
+  SMART_ASSERT(t1 > 0 && t1 <= Num_Times());
+  SMART_ASSERT(t2 > 0 && t2 <= Num_Times());
 
   if (!Open()) {
     return "WARNING:  File not open!";
@@ -912,10 +911,9 @@ template <typename INT> int ExoII_Read<INT>::Check_State() const
 
   SMART_ASSERT(!(num_nodes == 0 && nodes));
 
-  SMART_ASSERT(num_times >= 0);
-  SMART_ASSERT(!(num_times > 0 && !times));
+  SMART_ASSERT(Num_Times() >= 0);
 
-  SMART_ASSERT(cur_time >= 0 && cur_time <= num_times);
+  SMART_ASSERT(cur_time >= 0 && cur_time <= Num_Times());
   SMART_ASSERT(!(!nodal_vars.empty() && !results));
   SMART_ASSERT(!(nodal_vars.empty() && results));
 
@@ -1306,7 +1304,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   read_vars(file_id, EX_FACE_BLOCK, "Faceblock", num_face_vars, fb_vars);
 
   // Times:
-  num_times = ex_inquire_int(file_id, EX_INQ_TIME);
+  int num_times = ex_inquire_int(file_id, EX_INQ_TIME);
   if (num_times < 0) {
     Error(fmt::format("Number of time steps came back negative ({})!  Aborting...\n", num_times));
   }
@@ -1319,9 +1317,8 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   }
 
   if (num_times) {
-    times = new double[num_times];
-    SMART_ASSERT(times != nullptr);
-    ex_get_all_times(file_id, times);
+    times.resize(num_times);
+    ex_get_all_times(file_id, times.data());
     if (time_scale != 1.0 || time_offset != 0.0) {
       for (int i = 0; i < num_times; i++) {
         times[i] = time_scale * times[i] + time_offset;
