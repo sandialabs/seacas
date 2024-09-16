@@ -82,14 +82,7 @@ namespace Iotm {
 
     int num_sides() const
     {
-      if (topology->is_shell()) {
-        // Only interested in face boundaries, not edges
-        if (topology->parametric_dimension() == 2) {
-          return topology->number_faces();
-        }
-      }
-
-      return topology->number_boundaries();
+      return sideTopologies.size();
     }
 
     // Side references are one-based
@@ -583,7 +576,7 @@ namespace Iotm {
 
       if (!entry.initialized) {
         entry.set_valid_spatial_dimensions({false, false, false, true});
-        entry.set_side_topologies({tri_3_factory(), tri_3_factory()});
+        entry.set_side_topologies({tri_3_factory(), tri_3_factory(), line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
 
@@ -596,7 +589,7 @@ namespace Iotm {
 
       if (!entry.initialized) {
         entry.set_valid_spatial_dimensions({false, false, false, true});
-        entry.set_side_topologies({tri_4_factory(), tri_4_factory()});
+        entry.set_side_topologies({tri_4_factory(), tri_4_factory(), line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
 
@@ -609,7 +602,7 @@ namespace Iotm {
 
       if (!entry.initialized) {
         entry.set_valid_spatial_dimensions({false, false, false, true});
-        entry.set_side_topologies({tri_6_factory(), tri_6_factory()});
+        entry.set_side_topologies({tri_6_factory(), tri_6_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
 
@@ -627,7 +620,7 @@ namespace Iotm {
 
       if (!entry.initialized) {
         entry.set_valid_spatial_dimensions({false, false, false, true});
-        entry.set_side_topologies({quad_4_factory(), quad_4_factory()});
+        entry.set_side_topologies({quad_4_factory(), quad_4_factory(), line_2_factory(), line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
 
@@ -640,7 +633,7 @@ namespace Iotm {
 
       if (!entry.initialized) {
         entry.set_valid_spatial_dimensions({false, false, false, true});
-        entry.set_side_topologies({quad_8_factory(), quad_8_factory()});
+        entry.set_side_topologies({quad_8_factory(), quad_8_factory(), line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
 
@@ -653,7 +646,7 @@ namespace Iotm {
 
       if (!entry.initialized) {
         entry.set_valid_spatial_dimensions({false, false, false, true});
-        entry.set_side_topologies({quad_9_factory(), quad_9_factory()});
+        entry.set_side_topologies({quad_9_factory(), quad_9_factory(), line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
 
