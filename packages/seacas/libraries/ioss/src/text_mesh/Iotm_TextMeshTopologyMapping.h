@@ -80,6 +80,18 @@ namespace Iotm {
 
     bool operator!=(const TopologyMapEntry &rhs) const { return !(*this == rhs); }
 
+    int num_face_sides() const
+    {
+      if (topology->is_shell()) {
+        // Only interested in face boundaries, not edges
+        if (topology->parametric_dimension() == 2) {
+          return topology->number_faces();
+        }
+      }
+
+      return topology->number_boundaries();
+    }
+
     int num_sides() const
     {
       return sideTopologies.size();
