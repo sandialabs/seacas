@@ -375,6 +375,12 @@ sexp:     QSTRING               { $$ = $1;                              }
           else
             $$ = (char*)"";
         }
+        | SFNCT LPAR exp COMMA sexp RPAR {
+          if (arg_check($1, $1->value.strfnct_dc == NULL))
+            $$ = (char*)(*($1->value.strfnct_dc))($3, $5);
+          else
+            $$ = (char*)"";
+        }
         | SFNCT LPAR sexp COMMA sexp COMMA sexp  RPAR {
           if (arg_check($1, $1->value.strfnct_ccc == NULL))
             $$ = (char*)(*($1->value.strfnct_ccc))($3, $5, $7);

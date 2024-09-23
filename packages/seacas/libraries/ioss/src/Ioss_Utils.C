@@ -940,11 +940,8 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector             &face_is_
   }
 }
 
-int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
+int64_t Ioss::Utils::get_side_offset(const Ioss::ElementTopology * parent_topo, const Ioss::ElementTopology * side_topo)
 {
-
-  const Ioss::ElementTopology *side_topo   = sb->topology();
-  const Ioss::ElementTopology *parent_topo = sb->parent_element_topology();
   int64_t                      side_offset = 0;
   if ((side_topo != nullptr) && (parent_topo != nullptr)) {
     int side_topo_dim = side_topo->parametric_dimension();
@@ -956,6 +953,13 @@ int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
     }
   }
   return side_offset;
+}
+
+int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
+{
+  const Ioss::ElementTopology *side_topo   = sb->topology();
+  const Ioss::ElementTopology *parent_topo = sb->parent_element_topology();
+  return get_side_offset(parent_topo, side_topo);
 }
 
 std::string Ioss::Utils::shape_to_string(const Ioss::ElementShape &shape)

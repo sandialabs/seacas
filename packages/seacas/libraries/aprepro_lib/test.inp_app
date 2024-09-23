@@ -190,6 +190,11 @@ $$$$ Test formatting and string concatenation
 {endloop}
 Reset format to default: {_FORMAT = _SAVE}
 
+$$$$ Test formatting using the `format` function.  _FORMAT is not modified
+{loop(20)}
+{__loop_1+1} Using the format {_f = "%." // tostring(__loop_1+1) // "f"},	PI = {format(PI,_f)}
+{endloop}
+
 $$$$ Test string rescanning and executing
 {ECHO(OFF)}
 {Test = '	This is line 1: {a = atan2(0,-1)}
@@ -257,4 +262,8 @@ This should not be echoed
 {loop(undefined)}
 This should not be echoed
 {endloop}
+$$$$ Test double brace echo off/on
+Nothing further on line: {{"not echoed"}}
+Noecho followed by non-parsing output: {{"not echoed"}}This should be echoed
+Echo, noecho setting variable, then echo that variable: {e="echo"}+{{d="echo"}}+{d}
 $End of test file

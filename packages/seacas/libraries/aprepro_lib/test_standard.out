@@ -3,7 +3,7 @@ $
 Test number representations
 1	1	1	1	1
 1	1	1	1	1
-	
+
 Test assign statements:
 5	5	$ Should print 5 5
 10	10 	$ Should print 10 10
@@ -38,18 +38,18 @@ correct
 correct
 
 $ Test ifdef lines
-	This line should be echoed. (a)
+This line should be echoed. (a)
 This line should be echoed. (b)
-     This line should be echoed. (c)
-  This line should be echoed. (d)
+This line should be echoed. (c)
+This line should be echoed. (d)
 
 $ Test ifdef - else lines
-             This line should be echoed. (1)
-		This line should be echoed (4)
+This line should be echoed. (1)
+This line should be echoed (4)
 
 $ Test ifndef - else lines
- This line should be echoed (6)
-    This line should be echoed. (7)
+This line should be echoed (6)
+This line should be echoed. (7)
 $ Lines a, b, c, d, 1, 4, 6, 7 should be echoed
 $ Check line counting -- should be on line 78: 
  
@@ -133,6 +133,28 @@ $$$$ Test formatting and string concatenation
 20 Using the format %.20g,	PI = 3.141592653589793116
 Reset format to default: %.10g
 
+$$$$ Test formatting using the `format` function.  _FORMAT is not modified
+1 Using the format %.1f,	PI = 3.1
+2 Using the format %.2f,	PI = 3.14
+3 Using the format %.3f,	PI = 3.142
+4 Using the format %.4f,	PI = 3.1416
+5 Using the format %.5f,	PI = 3.14159
+6 Using the format %.6f,	PI = 3.141593
+7 Using the format %.7f,	PI = 3.1415927
+8 Using the format %.8f,	PI = 3.14159265
+9 Using the format %.9f,	PI = 3.141592654
+10 Using the format %.10f,	PI = 3.1415926536
+11 Using the format %.11f,	PI = 3.14159265359
+12 Using the format %.12f,	PI = 3.141592653590
+13 Using the format %.13f,	PI = 3.1415926535898
+14 Using the format %.14f,	PI = 3.14159265358979
+15 Using the format %.15f,	PI = 3.141592653589793
+16 Using the format %.16f,	PI = 3.1415926535897931
+17 Using the format %.17f,	PI = 3.14159265358979312
+18 Using the format %.18f,	PI = 3.141592653589793116
+19 Using the format %.19f,	PI = 3.1415926535897931160
+20 Using the format %.20f,	PI = 3.14159265358979311600
+
 $$$$ Test string rescanning and executing
 
 Original String:
@@ -198,4 +220,8 @@ Word 6 of list1 and list2 are 62 and 82
 Word 7 of list1 and list2 are 63 and 83
 Word 8 of list1 and list2 are 64 and 84
 
+$$$$ Test double brace echo off/on
+Nothing further on line: 
+Noecho followed by non-parsing output: This should be echoed
+Echo, noecho setting variable, then echo that variable: echo++echo
 $End of test file

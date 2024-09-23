@@ -26,26 +26,33 @@ Name & Value & Description \\
  TRUE    & 1 & \\
  FALSE   & 0 & \\
  \_VERSION\_ & Varies, string value   & current version of \aprepro \\
- \_FORMAT& \texttt{"}\%.10g\texttt{"} & default output format \\
-  \_C\_  &  \texttt{"}\$\texttt{"} &  default comment character \\
+ \_FORMAT& \texttt{"\%.10g"} & default output format \\
+  \_C\_  &  \texttt{"\$"} &  default comment character \\
 \end{longtable}
 
 Note that the output format is used to output both integers and
-floating point numbers. Therefore, it should use the \%g format
-descriptor which will use either the decimal (\%d), exponential (\%e),
-or float (\%f) format, whichever is shorter, with insignificant zeros
-suppressed. If the output format is set to the empty string, the the
-output will use as many variables as needed to fully represent the
-double precision value.
+floating point numbers. Therefore, it should use the \texttt{\%g} format
+descriptor which will use either the decimal (\texttt{\%d}), exponential (\texttt{\%e}),
+or float (\texttt{\%f}) format, whichever is shorter, with insignificant zeros
+suppressed.
+
+If the output format is set to the empty string, the output will use
+as many variables as needed to fully represent the double precision
+value.  This can be selected at startup time using the command-line
+option \textbf{--full\_precision} or \textbf{-p}.
 
 The table below illustrates the effect of different format
 specifications on the output of the variable \textbf{PI} and the value
 1.0 . See the documentation of your C compiler for more
 information. For most cases, the default value is sufficient.
 
+If you need to temporarily change the output format for a specific
+case, you can use the \cmd{format(var, format)} command which will
+return a string representing \var{var} printed using the format
+specified in \var{format}.
 \begin{longtable}{lll}
 \caption{Effect of various output format specifications}\\
-Format & PI Output & 1.0 Output \\
+\var{\_FORMAT} & PI Output & 1.0 Output \\
 \hline
 \%.10g &  3.141592654      & 1  \\
 \%.10e &  3.1415926536e+00 & 1.0000000000e+00  \\
@@ -56,7 +63,7 @@ Format & PI Output & 1.0 Output \\
 
 The comment character should be set to the character that the program
 which will read the processed file uses as a comment character. The
-default value of \texttt{"}\$\texttt{"} is the comment character used
+default value of \texttt{"\$"} is the comment character used
 by the SEACAS codes at Sandia National Laboratories.  The \textbf{-c}
 command line option (described in Chapter~\ref{ch:execution}) changes
 the value of the comment variable to match the character specified on

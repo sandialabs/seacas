@@ -1,7 +1,7 @@
-/* -*- Mode: c++ -*- */
+s"}/* -*- Mode: c++ -*- */
 
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -697,6 +697,12 @@ integer {D}+({E})?
     BEGIN(END_CASE_SKIP);
   else
     BEGIN(if_state[if_lvl]);
+    unput('}');
+    unput('O');
+    unput('H');
+    unput('C');
+    unput('E');
+    unput('{');
   return(token::RBRACE);
 }
 

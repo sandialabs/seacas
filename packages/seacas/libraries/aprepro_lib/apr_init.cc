@@ -266,6 +266,11 @@ namespace SEAMS {
        "Switch statement. A case used in a containing switch statement."},
       {nullptr, nullptr, nullptr, nullptr}};
 
+  str_dc_init string_dc_fncts[] = {
+      {"format", do_format, "format(variable, output_format)",
+       "Print `variable` using the format specified in `output_format`"},
+      {nullptr, nullptr, nullptr, nullptr}};
+
   str_dcc_init string_dcc_fncts[] = {
       {"get_word", do_get_word, "get_word(n,svar,del)",
        "Returns a string containing the nth word of svar. The words are separated by one or more "
@@ -401,6 +406,7 @@ namespace SEAMS {
     internal_init_table(string_fncts,       strfnct,        SYMBOL_TYPE::STRING_FUNCTION);
     internal_init_table(string_c_fncts,     strfnct_c,      SYMBOL_TYPE::STRING_FUNCTION);
     internal_init_table(string_d_fncts,     strfnct_d,      SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_dc_fncts,    strfnct_dc,     SYMBOL_TYPE::STRING_FUNCTION);
     internal_init_table(string_dcc_fncts,   strfnct_dcc,    SYMBOL_TYPE::STRING_FUNCTION);
     internal_init_table(string_ccc_fncts,   strfnct_ccc,    SYMBOL_TYPE::STRING_FUNCTION);
     internal_init_table(string_cc_fncts,    strfnct_cc,     SYMBOL_TYPE::STRING_FUNCTION);
