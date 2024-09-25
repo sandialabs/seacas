@@ -4030,13 +4030,13 @@ namespace Ioex {
             index += comp_count;
           }
         }
-        auto eb_offset =
-            eb->get_offset(); // Offset of beginning of the element block elements for this block
-        int index = -1 * (field.get_index() +
-                          comp); // Negative since specifying index, not id to exodus API.
+        int map_index = -1 * (field.get_index() +
+                              comp); // Negative since specifying index, not id to exodus API.
 
-        ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, index,
-                                      proc_offset + eb_offset + 1, file_count, component.data());
+        size_t global_map_offset = eb->get_property("global_map_offset").get_int();
+        ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, map_index,
+                                      global_map_offset + proc_offset + 1, file_count,
+                                      component.data());
       }
     }
     else if (role == Ioss::Field::ATTRIBUTE) {

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -68,8 +68,7 @@ public:
   size_t             Num_Assembly() const { return num_assemblies; }
 
   // Times:
-
-  int    Num_Times() const { return num_times; }
+  int    Num_Times() const { return (int)times.size(); }
   double Time(int time_num) const;
 
   // Variables:
@@ -115,9 +114,8 @@ public:
   std::string Load_Element_Map();
   std::string Free_Element_Map();
   const INT  *Get_Element_Map() { return elmt_map; }
-  inline INT  Node_Map(size_t node_num) const;      // numbers are global, 1-offset
-  inline INT  Element_Map(size_t elmt_num) const;   // numbers are global, 1-offset
-  inline INT  Element_Order(size_t elmt_num) const; // numbers are global, 1-offset
+  inline INT  Node_Map(size_t node_num) const;    // numbers are global, 1-offset
+  inline INT  Element_Map(size_t elmt_num) const; // numbers are global, 1-offset
 
   // Nodal data:
 
@@ -225,9 +223,8 @@ protected:
   double *nodes{nullptr}; // Matrix;  dimension by num_nodes (row major form).
                           //          I.e., all x's then all y's, etc.
 
-  INT *node_map{nullptr};   // Array; num_nodes long when filled.
-  INT *elmt_map{nullptr};   // Array; num_elmts long when filled.
-  INT *elmt_order{nullptr}; // Array; num_elmts long when filled.
+  INT *node_map{nullptr}; // Array; num_nodes long when filled.
+  INT *elmt_map{nullptr}; // Array; num_elmts long when filled.
 
   // RESULTS info:
 
@@ -240,11 +237,10 @@ protected:
   std::vector<std::string> eb_vars{};
   std::vector<std::string> fb_vars{};
 
-  int    num_times{0};
   double time_scale{1.0};
   double time_offset{0.0};
 
-  double *times{nullptr};
+  std::vector<double> times{};
 
   int      cur_time{0};          // Current timestep number of the results (0 means none).
   double **results{nullptr};     // Array of pointers (to arrays of results data);
@@ -275,17 +271,6 @@ template <typename INT> inline INT ExoII_Read<INT>::Element_Map(size_t elmt_num)
 
   if (elmt_map) {
     return elmt_map[elmt_num - 1];
-  }
-  return 0;
-}
-
-template <typename INT> inline INT ExoII_Read<INT>::Element_Order(size_t elmt_num) const
-{
-  SMART_ASSERT(Check_State());
-  SMART_ASSERT(elmt_num <= num_elmts);
-
-  if (elmt_order) {
-    return elmt_order[elmt_num - 1];
   }
   return 0;
 }
