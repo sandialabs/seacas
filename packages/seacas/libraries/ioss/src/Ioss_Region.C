@@ -2897,8 +2897,7 @@ namespace Ioss {
       state++; // For the state we are going to write.
 
       reset_region();
-      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
-                                             dbChangeCount);
+      DynamicTopologyFileControl fileControl(this);
       fileControl.add_output_database_change_set(state);
 
       // Reset based on fileControl values
@@ -2940,8 +2939,7 @@ namespace Ioss {
       state++; // For the state we are going to write.
 
       reset_region();
-      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
-                                             dbChangeCount);
+      DynamicTopologyFileControl fileControl(this);
       fileControl.clone_and_replace_output_database(state);
 
       // Reset based on fileControl values
@@ -3057,10 +3055,9 @@ namespace Ioss {
   std::tuple<std::string, int, double> Region::locate_db_state(double targetTime) const
   {
     auto *cregion = const_cast<Region*>(this);
-    DynamicTopologyFileControl fileControl(cregion, get_file_cyclic_count(),
-                                           cregion->ifDatabaseExists, cregion->dbChangeCount);
+    DynamicTopologyStateLocator locator(cregion);
 
-    return fileControl.locate_db_state(targetTime);
+    return locator.locate_db_state(targetTime);
   }
 
   std::tuple<std::string, int, double> Region::get_db_max_time() const
@@ -3072,10 +3069,9 @@ namespace Ioss {
     }
 
     auto *cregion = const_cast<Region*>(this);
-    DynamicTopologyFileControl fileControl(cregion, get_file_cyclic_count(),
-                                           cregion->ifDatabaseExists, cregion->dbChangeCount);
+    DynamicTopologyStateLocator locator(cregion);
 
-    return fileControl.get_db_max_time();
+    return locator.get_db_max_time();
   }
 
   std::tuple<std::string, int, double> Region::get_db_min_time() const
@@ -3087,10 +3083,9 @@ namespace Ioss {
     }
 
     auto *cregion = const_cast<Region*>(this);
-    DynamicTopologyFileControl fileControl(cregion, get_file_cyclic_count(),
-                                           cregion->ifDatabaseExists, cregion->dbChangeCount);
+    DynamicTopologyStateLocator locator(cregion);
 
-    return fileControl.get_db_min_time();
+    return locator.get_db_min_time();
   }
 
 } // namespace Ioss

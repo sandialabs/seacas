@@ -507,6 +507,9 @@ namespace Ioex {
     }
 
     ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
+
+    open_root_group_nl();
+    open_child_group_nl(0);
   }
 
   bool BaseDatabaseIO::supports_internal_change_set_nl()
@@ -514,25 +517,23 @@ namespace Ioex {
     return supports_group_nl();
   }
 
-  bool BaseDatabaseIO::supports_group_nl()
+  bool BaseDatabaseIO::supports_group_nl() const
   {
     Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
 
-    int   idum;
-    float rdum;
-    char *cdum = NULL;
-    int ierr = ex_inquire(exoid, EX_INQ_FILE_FORMAT, &idum, &rdum, cdum);
-    if (ierr < 0) {
+    int64_t format = ex_inquire_int(exoid, EX_INQ_FILE_FORMAT);
+
+    if (format < 0) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: Could not query file format for file '{}'.\n", get_filename());
       IOSS_ERROR(errmsg);
     }
 
-    return (NC_FORMAT_NETCDF4 == idum);
+    return (NC_FORMAT_NETCDF4 == format);
   }
 
-  bool BaseDatabaseIO::open_root_group_nl()
+  bool BaseDatabaseIO::open_root_group_nl() const
   {
     // Get existing file pointer...
     bool success = false;
@@ -588,7 +589,7 @@ namespace Ioex {
     return open_group_nl(set_name);
   }
 
-  bool BaseDatabaseIO::open_group_nl(const std::string &group_name)
+  bool BaseDatabaseIO::open_group_nl(const std::string &group_name) const
   {
     // Get existing file pointer...
     bool success = false;
@@ -3297,7 +3298,7 @@ namespace Ioex {
     return names;
   }
 
-  Ioss::NameList BaseDatabaseIO::groups_describe_nl(bool return_full_names)
+  Ioss::NameList BaseDatabaseIO::groups_describe_nl(bool return_full_names) const
   {
     Ioss::SerializeIO serializeIO_(this);
 
@@ -3352,7 +3353,7 @@ namespace Ioex {
     return numChildGroup;
   }
 
-  int BaseDatabaseIO::num_child_group_nl()
+  int BaseDatabaseIO::num_child_group_nl() const
   {
     Ioss::SerializeIO serializeIO_(this);
     int               exoid = get_file_pointer();
@@ -3373,7 +3374,7 @@ namespace Ioex {
     return open_child_group_nl(index);
   }
 
-  bool BaseDatabaseIO::open_child_group_nl(int index)
+  bool BaseDatabaseIO::open_child_group_nl(int index) const
   {
     if (index < 0)
       return false;

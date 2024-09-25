@@ -58,7 +58,7 @@ public:
   IOSS_NODISCARD unsigned supported_formats() const { return m_supportedFormats; }
   IOSS_NODISCARD unsigned database_format() const { return m_databaseFormat; }
 
-  virtual void populate_change_sets();
+  virtual void populate_change_sets(bool loadAllFiles = true);
 
   IOSS_NODISCARD virtual DatabaseIO* open_change_set(unsigned index, Ioss::DatabaseUsage usage);
   virtual void close_change_set(unsigned index);
@@ -68,6 +68,13 @@ public:
   IOSS_NODISCARD std::string get_change_set_name(unsigned index) const;
 
   IOSS_NODISCARD unsigned get_file_cyclic_count() const { return m_fileCyclicCount; }
+
+  static std::string get_cyclic_database_filename(const std::string& baseFileName,
+                                                  unsigned int fileCyclicCount,
+                                                  unsigned int step);
+
+  static std::string get_linear_database_filename(const std::string& baseFileName,
+                                                  unsigned int step);
 
 private:
   std::vector<DatabaseIO*> m_changeSetDatabases;

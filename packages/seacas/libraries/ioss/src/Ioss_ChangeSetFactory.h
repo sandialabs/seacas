@@ -32,6 +32,10 @@ class IOSS_EXPORT ChangeSetFactory
 public:
   virtual ~ChangeSetFactory() = default;
   IOSS_NODISCARD static std::shared_ptr<ChangeSet> create(Ioss::Region *region);
+  IOSS_NODISCARD static std::shared_ptr<ChangeSet> create(Ioss::DatabaseIO* db,
+                                                          const std::string& dbName,
+                                                          const std::string& dbType,
+                                                          unsigned fileCyclicCount = 0);
 
   static int                        describe(NameList *names);
   IOSS_NODISCARD static NameList    describe();

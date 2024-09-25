@@ -77,7 +77,7 @@ namespace Ioex {
   void ChangeSet::get_group_change_sets()
   {
     auto iossDB = get_database();
-    Ioex::DatabaseIO* ioexDB = dynamic_cast<Ioex::DatabaseIO*>(iossDB);
+    Ioex::BaseDatabaseIO* ioexDB = dynamic_cast<Ioex::BaseDatabaseIO*>(iossDB);
 
     if(nullptr == ioexDB) {
       std::ostringstream errmsg;
@@ -100,7 +100,7 @@ namespace Ioex {
   bool ChangeSet::supports_group()
   {
     auto iossDB = get_database();
-    Ioex::DatabaseIO* ioexDB = dynamic_cast<Ioex::DatabaseIO*>(iossDB);
+    Ioex::BaseDatabaseIO* ioexDB = dynamic_cast<Ioex::BaseDatabaseIO*>(iossDB);
 
     if(nullptr == ioexDB) {
       std::ostringstream errmsg;
@@ -108,15 +108,15 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
 
-    return ioexDB->supports_group();
+    return ioexDB->supports_group() && (ioexDB->num_child_group() > 0);
   }
 
-  void ChangeSet::populate_change_sets()
+  void ChangeSet::populate_change_sets(bool loadAllFiles)
   {
     if(supports_group()) {
       get_group_change_sets();
     } else {
-      Ioss::ChangeSet::populate_change_sets();
+      Ioss::ChangeSet::populate_change_sets(loadAllFiles);
     }
   }
 

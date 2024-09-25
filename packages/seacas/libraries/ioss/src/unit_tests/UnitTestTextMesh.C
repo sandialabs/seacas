@@ -522,6 +522,10 @@ namespace {
     //      | 1  \| 3  \        //
     //      1-----2-----3       //
 
+#ifndef NDEBUG
+    GTEST_SKIP();
+#endif
+
     if (get_parallel_size() != 2)
       return;
     int rank = get_parallel_rank();

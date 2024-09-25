@@ -49,7 +49,7 @@ namespace Ioex {
 
     ~ChangeSet() override;
 
-    void populate_change_sets() override;
+    void populate_change_sets(bool loadAllFiles = true) override;
 
     IOSS_NODISCARD Ioss::DatabaseIO* open_change_set(unsigned index, Ioss::DatabaseUsage usage) override;
     void close_change_set(unsigned index) override;

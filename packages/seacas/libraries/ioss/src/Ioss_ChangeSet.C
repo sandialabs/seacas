@@ -152,9 +152,17 @@ namespace Ioss {
     m_changeSetDatabases.resize(m_changeSetNames.size(), nullptr);
   }
 
-  void ChangeSet::populate_change_sets()
+  void ChangeSet::populate_change_sets(bool loadAllFiles)
   {
     clear_change_sets();
+
+    if(!loadAllFiles) {
+      // Load only the current db file
+      m_databaseFormat = CHANGE_SET_LINEAR_MULTI_FILES;
+      m_changeSetNames.push_back(get_database()->get_filename());
+      m_changeSetDatabases.resize(m_changeSetNames.size(), nullptr);
+      return;
+    }
 
     if(get_file_cyclic_count() > 0) {
       get_cyclic_multi_file_change_sets();
@@ -247,6 +255,21 @@ namespace Ioss {
     m_changeSetDatabases.clear();
   }
 
+  std::string ChangeSet::get_cyclic_database_filename(const std::string& baseFileName,
+                                                      unsigned int fileCyclicCount,
+                                                      unsigned int step)
+  {
+    Ioss::FileNameGenerator generator = Ioss::construct_cyclic_filename_generator(fileCyclicCount);
+    return generator(baseFileName, step);
+  }
+
+  std::string ChangeSet::get_linear_database_filename(const std::string& baseFileName,
+                                                      unsigned int step)
+  {
+    Ioss:: FileNameGenerator generator = Ioss::construct_linear_filename_generator();
+    return generator(baseFileName, step);
+  }
+
   std::string
   expand_topology_files(FileNameGenerator generator,
                         const Ioss::ParallelUtils &util,
@@ -327,8 +350,9 @@ namespace Ioss {
 
   Ioss::FileNameGenerator construct_cyclic_filename_generator(unsigned cyclicCount)
   {
-    if (cyclicCount > 26)
+    if (cyclicCount > 26) {
       cyclicCount = 26;
+    }
 
     Ioss::FileNameGenerator generator = [cyclicCount](const std::string& baseFileName, unsigned step) {
                                                         static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

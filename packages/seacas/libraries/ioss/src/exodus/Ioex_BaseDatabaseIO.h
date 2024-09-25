@@ -196,13 +196,13 @@ namespace Ioex {
     int  num_internal_change_set_nl() override;
     Ioss::NameList internal_change_set_describe_nl(bool return_full_names) override;
 
-    virtual int  num_child_group_nl();
-    virtual bool open_root_group_nl();
-    virtual bool supports_group_nl();
-    virtual bool open_group_nl(const std::string &group_name);
-    virtual bool open_child_group_nl(int index);
-    virtual bool create_subgroup_nl(const std::string &group_name);
-    virtual Ioss::NameList groups_describe_nl(bool return_full_names);
+    int  num_child_group_nl() const;
+    bool open_root_group_nl() const;
+    bool supports_group_nl() const;
+    bool open_group_nl(const std::string &group_name) const;
+    bool open_child_group_nl(int index) const;
+    bool create_subgroup_nl(const std::string &group_name);
+    Ioss::NameList groups_describe_nl(bool return_full_names) const;
 
     bool begin_nl(Ioss::State state) override;
     bool end_nl(Ioss::State state) override;

@@ -55,7 +55,7 @@ std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::Region *re
   IOSS_FUNC_ENTER(m_);
   std::string dbType = region->get_property("database_type").get_string();
 
-  auto              iter = registry()->find(dbType);
+  auto iter = registry()->find(dbType);
   if (iter == registry()->end()) {
     if (registry()->empty()) {
       std::ostringstream errmsg;
@@ -74,15 +74,41 @@ std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::Region *re
   return cs;
 }
 
+std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::DatabaseIO* db,
+                                                                const std::string& dbName,
+                                                                const std::string& dbType,
+                                                                unsigned fileCyclicCount)
+{
+  IOSS_FUNC_ENTER(m_);
+
+  auto iter = registry()->find(dbType);
+  if (iter == registry()->end()) {
+    if (registry()->empty()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: No change set types have been registered.\n"
+                         "       Was Ioss::Init::Initializer() called?\n\n");
+      IOSS_ERROR(errmsg);
+    }
+    else {
+      iter = registry()->find("ioss");
+    }
+  }
+
+  Ioss::ChangeSetFactory *factory = (*iter).second;
+  Ioss::ChangeSet* csPtr = factory->make_ChangeSet(db, dbName, dbType, fileCyclicCount);
+  std::shared_ptr<Ioss::ChangeSet> cs(csPtr);
+  return cs;
+}
+
 Ioss::ChangeSet *Ioss::ChangeSetFactory::make_ChangeSet(Ioss::Region* region) const
 {
   return new ChangeSet(region);
 }
 
 Ioss::ChangeSet *Ioss::ChangeSetFactory::make_ChangeSet(Ioss::DatabaseIO* db,
-                                                       const std::string& dbName,
-                                                       const std::string& dbType,
-                                                       unsigned fileCyclicCount) const
+                                                        const std::string& dbName,
+                                                        const std::string& dbType,
+                                                        unsigned fileCyclicCount) const
 {
   return new ChangeSet(db, dbName, dbType, fileCyclicCount);
 }

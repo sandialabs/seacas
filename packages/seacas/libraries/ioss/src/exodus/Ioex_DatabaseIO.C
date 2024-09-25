@@ -171,9 +171,6 @@ namespace Ioex {
         IOSS_ERROR(errmsg);
       }
     }
-
-    open_root_group_nl();
-    open_child_group_nl(0);
   }
 
   bool DatabaseIO::check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
@@ -375,6 +372,11 @@ namespace Ioex {
 
     if (is_ok) {
       ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
+
+      if( fileExists) {
+        open_root_group_nl();
+        open_child_group_nl(0);
+      }
 
       // Check properties handled post-create/open...
       if (properties.exists("COMPRESSION_METHOD")) {
@@ -729,6 +731,7 @@ namespace Ioex {
       {
         Ioss::SerializeIO serializeIO_(this);
         timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+        int exTimestepCount = timestepCount;
         // Need to sync timestep count across ranks if parallel...
         if (isParallel) {
           auto min_timestep_count = util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MIN);
@@ -753,7 +756,7 @@ namespace Ioex {
 
         // For an exodus file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
-        tsteps.resize(timestepCount, -std::numeric_limits<double>::max());
+        tsteps.resize(exTimestepCount, -std::numeric_limits<double>::max());
 
         // The `EXODUS_CALL_GET_ALL_TIMES=NO` is typically only used in
         // isSerialParallel mode and the client is responsible for

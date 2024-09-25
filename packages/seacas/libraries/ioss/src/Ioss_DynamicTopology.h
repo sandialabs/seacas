@@ -78,8 +78,11 @@ namespace Ioss {
     int get_cumulative_topology_modification_field();
 
     virtual bool is_topology_modified() const;
-    virtual bool is_automatic_restart() const { return false; }
-    virtual bool is_restart_requested() const { return false; }
+    virtual bool is_automatic_restart() const { return m_automaticRestart; }
+    virtual bool is_restart_requested() const { return m_restartRequested; }
+
+    void set_automatic_restart(bool flag) { m_automaticRestart = flag; }
+    void set_restart_requested(bool flag) { m_restartRequested = flag; }
 
     static const std::string topology_modification_change_name()
     {
@@ -203,9 +206,7 @@ namespace Ioss {
   class IOSS_EXPORT DynamicTopologyFileControl
   {
   public:
-    DynamicTopologyFileControl(Region *region, unsigned int fileCyclicCount,
-                               IfDatabaseExistsBehavior &ifDatabaseExists,
-                               unsigned int             &dbChangeCount);
+    DynamicTopologyFileControl(Region *region);
 
     void clone_and_replace_output_database(int steps = 0);
     void add_output_database_change_set(int steps = 0);
@@ -213,10 +214,6 @@ namespace Ioss {
     static std::string change_set_prefix() { return "IOSS_FILE_GROUP-"; }
 
     DatabaseIO* get_database() const;
-
-    std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
-    std::tuple<std::string, int, double> get_db_min_time() const;
-    std::tuple<std::string, int, double> get_db_max_time() const;
 
     static std::string get_cyclic_database_filename(const std::string& baseFileName,
                                                     unsigned int fileCyclicCount,
@@ -253,6 +250,64 @@ namespace Ioss {
 
     DatabaseIO *clone_output_database(int steps);
     bool        replace_output_database(DatabaseIO *db);
+  };
+
+  class IOSS_EXPORT DynamicTopologyStateLocator
+  {
+  public:
+    DynamicTopologyStateLocator(Region *region, bool loadAllFiles = true);
+    DynamicTopologyStateLocator(Ioss::DatabaseIO* db,
+                                const std::string& dbName,
+                                const std::string& dbType,
+                                unsigned fileCyclicCount = 0,
+                                bool loadAllFiles = true);
+    DynamicTopologyStateLocator(Ioss::DatabaseIO* db,
+                                unsigned fileCyclicCount = 0,
+                                bool loadAllFiles = true);
+
+    virtual ~DynamicTopologyStateLocator();
+    DynamicTopologyStateLocator() = delete;
+    DynamicTopologyStateLocator(const DynamicTopologyStateLocator&) = delete;
+
+    DatabaseIO* get_database() const;
+
+    std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
+    std::tuple<std::string, int, double> get_db_min_time() const;
+    std::tuple<std::string, int, double> get_db_max_time() const;
+
+  private:
+
+    struct DatabaseState
+    {
+      DatabaseState(Ioss::DatabaseIO* db)
+      {
+        if(!db->supports_internal_change_set()) {
+          changeSet = db->get_filename();
+        }
+      }
+
+      std::string changeSet{"/"};
+      int state{-1};
+      double time{-std::numeric_limits<double>::max()};
+    };
+
+    using StateLocatorCompare = std::function<bool(double, double)>;
+
+    void locate_state_impl(Ioss::DatabaseIO* db, double targetTime, StateLocatorCompare comparator, DatabaseState& loc) const;
+
+    void locate_state(Ioss::DatabaseIO* db, double targetTime, DatabaseState& loc) const;
+
+    void locate_db_state_impl(double targetTime, DatabaseState& loc) const;
+
+    void get_db_time_impl(double init_time, StateLocatorCompare comparator, DatabaseState& loc) const;
+
+    IOSS_NODISCARD const ParallelUtils &util() const;
+
+    Ioss::DatabaseIO* m_database{nullptr};
+    std::string m_ioDB;
+    std::string m_dbType;
+    unsigned m_fileCyclicCount{0};
+    bool m_loadAllFiles{true};
   };
 
 } // namespace Ioss

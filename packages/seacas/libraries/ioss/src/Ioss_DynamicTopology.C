@@ -46,98 +46,6 @@
 
 namespace {
 
-struct DatabaseState
-{
-  DatabaseState(Ioss::DatabaseIO* db)
-  {
-    if(!db->supports_internal_change_set()) {
-      changeSet = db->get_filename();
-    }
-  }
-
-  std::string changeSet{"/"};
-  int state{-1};
-  double time{-std::numeric_limits<double>::max()};
-};
-
-using StateLocatorCompare = std::function<bool(double, double)>;
-
-void locate_state_impl(Ioss::DatabaseIO *db, double targetTime,
-                       StateLocatorCompare comparator, DatabaseState& loc)
-{
-  std::vector<double> timesteps = db->get_db_step_times();
-  int stepCount = timesteps.size();
-
-  double minTimeDiff = loc.state < 0 ? std::numeric_limits<double>::max() : std::fabs(loc.time - targetTime);
-
-  for(int istep = 1; istep <= stepCount; istep++) {
-    double stateTime = timesteps[istep-1];
-    double stepTimeDiff = std::fabs(stateTime - targetTime);
-    if(comparator(stepTimeDiff, minTimeDiff)) {
-      minTimeDiff = stepTimeDiff;
-      loc.time  = stateTime;
-      loc.state = istep;
-      loc.changeSet = db->supports_internal_change_set() ? db->get_internal_change_set_name() : db->get_filename();
-    }
-  }
-}
-
-void locate_state(Ioss::DatabaseIO *db, double targetTime, DatabaseState& loc)
-{
-  if(targetTime < 0.0) {
-    // Round towards 0
-    StateLocatorCompare compare = [](double a, double b) { return (a <= b); };
-    locate_state_impl(db, targetTime, compare, loc);
-  }
-  else {
-    // Round towards 0
-    StateLocatorCompare compare = [](double a, double b) { return (a < b); };
-    locate_state_impl(db, targetTime, compare, loc);
-  }
-}
-
-void locate_db_state_impl(Ioss::DatabaseIO* db, double targetTime, DatabaseState& loc)
-{
-  auto region = db->get_region();
-  auto changeSet = Ioss::ChangeSetFactory::create(region);
-  changeSet->populate_change_sets();
-
-  for(unsigned csIndex=0; csIndex<changeSet->size(); csIndex++) {
-    auto csdb = changeSet->open_change_set(csIndex, Ioss::QUERY_TIMESTEPS_ONLY);
-    locate_state(csdb, targetTime, loc);
-    changeSet->close_change_set(csIndex);
-  }
-}
-
-void get_db_time_impl(Ioss::DatabaseIO* db, double init_time,
-                      StateLocatorCompare comparator,
-                      DatabaseState& loc)
-{
-  auto region = db->get_region();
-  auto changeSet = Ioss::ChangeSetFactory::create(region);
-  changeSet->populate_change_sets();
-
-  double best_time = init_time;
-
-  for(unsigned csIndex=0; csIndex<changeSet->size(); csIndex++) {
-    auto csdb = changeSet->open_change_set(csIndex, Ioss::QUERY_TIMESTEPS_ONLY);
-
-    std::vector<double> timesteps = csdb->get_db_step_times();
-    int stepCount = static_cast<int>(timesteps.size());
-
-    for (int i = 1; i <= stepCount; i++) {
-      if (comparator(timesteps[i-1], best_time)) {
-        loc.time  = timesteps[i-1];
-        loc.state = i;
-        loc.changeSet = changeSet->get_change_set_name(csIndex);
-        best_time  = timesteps[i-1];
-      }
-    }
-
-    changeSet->close_change_set(csIndex);
-  }
-}
-
 bool file_exists(const Ioss::ParallelUtils &util,
                  const std::string &filename,
                  const std::string &db_type,
@@ -156,6 +64,28 @@ bool file_exists(const Ioss::ParallelUtils &util,
   std::string message;
   Ioss::FileInfo file = Ioss::FileInfo(full_filename);
   return file.parallel_exists(util.communicator(), message);
+}
+
+template<typename T>
+void update_database_for_grouping_entities(const T& container, Ioss::DatabaseIO *db)
+{
+  for(auto * entity : container) {
+    Ioss::GroupingEntity* ge = dynamic_cast<Ioss::GroupingEntity*>(entity);
+    assert(ge != nullptr);
+
+    if(ge->type() == Ioss::SIDESET) {
+      Ioss::SideSet *sset = dynamic_cast<Ioss::SideSet*>(ge);
+      assert(sset != nullptr);
+
+      sset->reset_database(db);
+      const auto &sblocks = sset->get_side_blocks();
+      for (const auto &sblock : sblocks) {
+        sblock->reset_database(db);
+      }
+    } else {
+      ge->reset_database(db);
+    }
+  }
 }
 
 }
@@ -323,7 +253,7 @@ void DynamicTopologyObserver::define_transient()
 
 }
 
-
+//-------------------------------------------------------------------------------------------
 DynamicTopologyBroker* DynamicTopologyBroker::broker()
 {
   static DynamicTopologyBroker broker_;
@@ -415,7 +345,7 @@ void DynamicTopologyBroker::set_topology_modification(const std::string& model_n
   notifier->set_topology_modification(type);
 }
 
-
+//-------------------------------------------------------------------------------------------
 struct DynamicTopologyObserverCompare {
   bool operator()(const std::shared_ptr<DynamicTopologyObserver> & lhs,
                   const std::shared_ptr<DynamicTopologyObserver> & rhs) const {
@@ -455,14 +385,12 @@ void DynamicTopologyNotifier::set_topology_modification(unsigned int type)
   }
 }
 
-
-DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region, unsigned int fileCyclicCount,
-                                                       IfDatabaseExistsBehavior &ifDatabaseExists,
-                                                       unsigned int &dbChangeCount)
+//-------------------------------------------------------------------------------------------
+DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region)
   : m_region(region)
-  , m_fileCyclicCount(fileCyclicCount)
-  , m_ifDatabaseExists(ifDatabaseExists)
-  , m_dbChangeCount(dbChangeCount)
+  , m_fileCyclicCount(region->get_file_cyclic_count())
+  , m_ifDatabaseExists(region->get_if_database_exists_behavior())
+  , m_dbChangeCount(region->get_topology_change_count())
 {
   if(nullptr == region) {
     std::ostringstream errmsg;
@@ -522,33 +450,13 @@ std::string DynamicTopologyFileControl::get_cyclic_database_filename(const std::
                                                                      unsigned int fileCyclicCount,
                                                                      unsigned int step)
 {
-  std::string filename = baseFileName;
-
-  if(fileCyclicCount > 0)
-  {
-    // The file suffix cycles through the first fileCyclicCount'th entries in A,B,C,D,E,F,...
-    if(step == 0)
-      step++;
-
-    static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    std::string tmp = "-" + suffix.substr((step - 1) % fileCyclicCount, 1);
-    filename += tmp;
-  }
-
-  return filename;
+  return ChangeSet::get_cyclic_database_filename(baseFileName, fileCyclicCount, step);
 }
 
 std::string DynamicTopologyFileControl::get_linear_database_filename(const std::string& baseFileName,
                                                                      unsigned int step)
 {
-  std::ostringstream filename;
-  filename << baseFileName;
-  if(step > 1)
-  {
-    filename << "-s" << std::setw(4) << std::setfill('0') << step;
-  }
-
-  return filename.str();
+  return ChangeSet::get_linear_database_filename(baseFileName, step);
 }
 
 std::string DynamicTopologyFileControl::construct_database_filename(int& step, Ioss::DatabaseUsage db_usage)
@@ -579,6 +487,8 @@ std::string DynamicTopologyFileControl::construct_database_filename(int& step, I
     // In this mode, we close the old file and open a new file
     // every time this is called. The file suffix cycles through
     // the first fileCyclicCount'th entries in A,B,C,D,E,F,...
+
+//    filename = get_cyclic_database_filename(m_ioDB, m_fileCyclicCount, step);
     if(step == 0)
       step++;
 
@@ -781,28 +691,6 @@ Ioss::DatabaseIO * DynamicTopologyFileControl::clone_output_database(int steps)
   return db;
 }
 
-template<typename T>
-void update_database_for_grouping_entities(const T& container, Ioss::DatabaseIO *db)
-{
-  for(auto * entity : container) {
-    Ioss::GroupingEntity* ge = dynamic_cast<Ioss::GroupingEntity*>(entity);
-    assert(ge != nullptr);
-
-    if(ge->type() == Ioss::SIDESET) {
-      Ioss::SideSet *sset = dynamic_cast<Ioss::SideSet*>(ge);
-      assert(sset != nullptr);
-
-      sset->reset_database(db);
-      const auto &sblocks = sset->get_side_blocks();
-      for (const auto &sblock : sblocks) {
-        sblock->reset_database(db);
-      }
-    } else {
-      ge->reset_database(db);
-    }
-  }
-}
-
 bool DynamicTopologyFileControl::replace_output_database(Ioss::DatabaseIO *db)
 {
   auto current_db = m_region->get_database();
@@ -856,17 +744,74 @@ void DynamicTopologyFileControl::add_output_database_change_set(IOSS_MAYBE_UNUSE
   m_dbChangeCount++;
 }
 
-std::tuple<std::string, int, double> DynamicTopologyFileControl::locate_db_state(double targetTime) const
+DatabaseIO* DynamicTopologyFileControl::get_database() const
+{
+  return m_region->get_database();
+}
+
+//-------------------------------------------------------------------------------------------
+DynamicTopologyStateLocator::DynamicTopologyStateLocator(Region *region, bool loadAllFiles)
+  : m_database(region->get_database())
+  , m_ioDB(region->get_property("base_filename").get_string())
+  , m_dbType(region->get_property("database_type").get_string())
+  , m_fileCyclicCount(region->get_file_cyclic_count())
+  , m_loadAllFiles(loadAllFiles)
+{
+
+}
+
+DynamicTopologyStateLocator::DynamicTopologyStateLocator(Ioss::DatabaseIO* db,
+                                                         const std::string& dbName,
+                                                         const std::string& dbType,
+                                                         unsigned fileCyclicCount,
+                                                         bool loadAllFiles)
+  : m_database(db)
+  , m_ioDB(dbName)
+  , m_dbType(dbType)
+  , m_fileCyclicCount(fileCyclicCount)
+  , m_loadAllFiles(loadAllFiles)
+{
+
+}
+
+DynamicTopologyStateLocator::DynamicTopologyStateLocator(Ioss::DatabaseIO* db,
+                                                         unsigned fileCyclicCount,
+                                                         bool loadAllFiles)
+  : m_database(db)
+  , m_ioDB(db->get_property_manager().get_optional("base_filename", db->get_filename()))
+  , m_dbType(db->get_property_manager().get_optional("database_type", ""))
+  , m_fileCyclicCount(fileCyclicCount)
+  , m_loadAllFiles(loadAllFiles)
+{
+
+}
+
+DynamicTopologyStateLocator::~DynamicTopologyStateLocator()
+{
+
+}
+
+const ParallelUtils &DynamicTopologyStateLocator::util() const
+{
+  return get_database()->util();
+}
+
+DatabaseIO* DynamicTopologyStateLocator::get_database() const
+{
+  return m_database;
+}
+
+std::tuple<std::string, int, double> DynamicTopologyStateLocator::locate_db_state(double targetTime) const
 {
   auto db = get_database();
   DatabaseState loc(db);
 
-  locate_db_state_impl(db, targetTime, loc);
+  locate_db_state_impl(targetTime, loc);
 
   return std::make_tuple(loc.changeSet, loc.state, loc.time);
 }
 
-std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_max_time() const
+std::tuple<std::string, int, double> DynamicTopologyStateLocator::get_db_max_time() const
 {
   auto db = get_database();
   DatabaseState loc(db);
@@ -874,12 +819,12 @@ std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_max_time
   double init_time = -std::numeric_limits<double>::max();
   StateLocatorCompare compare = [](double a, double b) { return (a > b); };
 
-  get_db_time_impl(db, init_time, compare, loc);
+  get_db_time_impl(init_time, compare, loc);
 
   return std::make_tuple(loc.changeSet, loc.state, loc.time);
 }
 
-std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_min_time() const
+std::tuple<std::string, int, double> DynamicTopologyStateLocator::get_db_min_time() const
 {
   auto db = get_database();
   DatabaseState loc(db);
@@ -887,15 +832,87 @@ std::tuple<std::string, int, double> DynamicTopologyFileControl::get_db_min_time
   double init_time = std::numeric_limits<double>::max();
   StateLocatorCompare compare = [](double a, double b) { return (a < b); };
 
-  get_db_time_impl(db, init_time, compare, loc);
+  get_db_time_impl(init_time, compare, loc);
 
   return std::make_tuple(loc.changeSet, loc.state, loc.time);
 }
 
-DatabaseIO* DynamicTopologyFileControl::get_database() const
+void DynamicTopologyStateLocator::locate_state_impl(Ioss::DatabaseIO* db,
+                                                    double targetTime,
+                                                    StateLocatorCompare comparator,
+                                                    DatabaseState& loc) const
 {
-  return m_region->get_database();
+  std::vector<double> timesteps = db->get_db_step_times();
+  int stepCount = timesteps.size();
+
+  double minTimeDiff = loc.state < 0 ? std::numeric_limits<double>::max() : std::fabs(loc.time - targetTime);
+
+  for(int istep = 1; istep <= stepCount; istep++) {
+    double stateTime = timesteps[istep-1];
+    double stepTimeDiff = std::fabs(stateTime - targetTime);
+    if(comparator(stepTimeDiff, minTimeDiff)) {
+      minTimeDiff = stepTimeDiff;
+      loc.time  = stateTime;
+      loc.state = istep;
+      loc.changeSet = db->supports_internal_change_set() ? db->get_internal_change_set_name() : db->get_filename();
+    }
+  }
 }
+
+void DynamicTopologyStateLocator::locate_state(Ioss::DatabaseIO* db, double targetTime, DatabaseState& loc) const
+{
+  if(targetTime < 0.0) {
+    // Round towards 0
+    StateLocatorCompare compare = [](double a, double b) { return (a <= b); };
+    locate_state_impl(db, targetTime, compare, loc);
+  }
+  else {
+    // Round towards 0
+    StateLocatorCompare compare = [](double a, double b) { return (a < b); };
+    locate_state_impl(db, targetTime, compare, loc);
+  }
+}
+
+void DynamicTopologyStateLocator::locate_db_state_impl(double targetTime, DatabaseState& loc) const
+{
+  auto changeSet = Ioss::ChangeSetFactory::create(m_database, m_ioDB, m_dbType, m_fileCyclicCount);
+  changeSet->populate_change_sets(m_loadAllFiles);
+
+  for(unsigned csIndex=0; csIndex<changeSet->size(); csIndex++) {
+    auto csdb = changeSet->open_change_set(csIndex, Ioss::QUERY_TIMESTEPS_ONLY);
+    locate_state(csdb, targetTime, loc);
+    changeSet->close_change_set(csIndex);
+  }
+}
+
+void DynamicTopologyStateLocator::get_db_time_impl(double init_time,
+                                                   StateLocatorCompare comparator,
+                                                   DatabaseState& loc) const
+{
+  auto changeSet = Ioss::ChangeSetFactory::create(m_database, m_ioDB, m_dbType, m_fileCyclicCount);
+  changeSet->populate_change_sets(m_loadAllFiles);
+
+  double best_time = init_time;
+
+  for(unsigned csIndex=0; csIndex<changeSet->size(); csIndex++) {
+    auto csdb = changeSet->open_change_set(csIndex, Ioss::QUERY_TIMESTEPS_ONLY);
+
+    std::vector<double> timesteps = csdb->get_db_step_times();
+    int stepCount = static_cast<int>(timesteps.size());
+
+    for (int i = 1; i <= stepCount; i++) {
+      if (comparator(timesteps[i-1], best_time)) {
+        loc.time  = timesteps[i-1];
+        loc.state = i;
+        loc.changeSet = changeSet->get_change_set_name(csIndex);
+        best_time  = timesteps[i-1];
+      }
+    }
+
+    changeSet->close_change_set(csIndex);
+  }
+}
+
 
 }
 

@@ -696,6 +696,11 @@ namespace Ioex {
     if (is_ok) {
       ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
 
+      if( fileExists) {
+        open_root_group_nl();
+        open_child_group_nl(0);
+      }
+
       // Check properties handled post-create/open...
       if (properties.exists("COMPRESSION_METHOD")) {
         auto method                    = properties.get("COMPRESSION_METHOD").get_string();
