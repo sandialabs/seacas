@@ -1371,10 +1371,15 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
   if (!header.empty()) {
     cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
   }
+
   for (const auto &field_name : fields) {
     if (detail) {
       const auto &field_ref = ige->get_fieldref(field_name);
+#if defined(__NVCC__)
+      std::cout << field_ref << suffix;
+#else
       fmt::print("{}{}", field_ref, suffix);
+#endif
     }
     else {
       const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
