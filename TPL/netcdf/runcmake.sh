@@ -15,8 +15,6 @@ else
   BUILD_TYPE="RELEASE"
 fi
 
-PREFIX="NETCDF_"
-
 SHARED="${SHARED:-YES}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
