@@ -70,6 +70,7 @@ namespace Ioss {
     virtual void reset_topology_modification_all();
     virtual void reset_topology_modification();
     virtual void set_topology_modification(unsigned int type);
+    virtual void sync_topology_modification(unsigned int modFlag, unsigned int cumulativeModFlag);
     virtual unsigned int get_topology_modification() const;
 
     virtual unsigned int get_cumulative_topology_modification() const;

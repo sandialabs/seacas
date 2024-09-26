@@ -145,6 +145,12 @@ void DynamicTopologyObserver::set_topology_modification_nl(unsigned int type)
   m_cumulativeTopologyModification |= type;
 }
 
+void DynamicTopologyObserver::sync_topology_modification(unsigned int modFlag, unsigned int cumulativeModFlag)
+{
+  m_topologyModification = modFlag;
+  m_cumulativeTopologyModification = cumulativeModFlag;
+}
+
 void DynamicTopologyObserver::set_topology_modification(unsigned int type)
 {
   if(!(m_topologyModification & type)) {
