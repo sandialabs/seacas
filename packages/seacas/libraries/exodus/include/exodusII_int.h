@@ -26,7 +26,7 @@
 #include "netcdf_meta.h"
 #endif
 
-#if NC_HAS_ZSTD == 1
+#if NC_HAS_ZSTD == 1 || NC_HAS_BZ2
 #include "netcdf_filter.h"
 #endif
 
