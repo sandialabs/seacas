@@ -195,8 +195,8 @@ namespace Ioss {
   {
     region.get_database()->progress(__func__);
 
-    debug      = debug_level;
-    auto numel = region.get_property("element_count").get_int();
+    debug        = debug_level;
+    size_t numel = region.get_property("element_count").get_int();
 
     // Determine which element block(s) are adjacent to the faceset specifying "lines"
     // The `adjacent_blocks` contains the names of all element blocks that are adjacent to the

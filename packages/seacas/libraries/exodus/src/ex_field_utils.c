@@ -70,11 +70,10 @@ const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_
 
   // Return the name of the field corresponding to the specified 1-based component(s)
   static char field_name[EX_MAX_NAME + 1];
-  const char *suffices[EX_MAX_FIELD_NESTING + 1] = {NULL};
+  const char *suffices[EX_MAX_FIELD_NESTING] = {NULL};
   for (int i = 0; i < field->nesting; i++) {
     suffices[i] = ex_field_component_suffix(field, i, component[i]);
   }
-  suffices[EX_MAX_FIELD_NESTING] = NULL;
 
   // Build up name incrementally which makes it easier to handle an empty component_separator...
   sprintf(field_name, "%s", field->name);

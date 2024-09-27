@@ -73,7 +73,8 @@ namespace {
     }
   }
 
-  template <typename T, typename INT> INT median3(const T v[], INT iv[], size_t left, size_t right)
+  template <typename T, typename INT>
+  size_t median3(const T v[], INT iv[], size_t left, size_t right)
   {
     size_t center = (left + right) / 2;
     size_t pl     = left;
@@ -100,7 +101,7 @@ namespace {
   template <typename T, typename INT> void iqsort(const T v[], INT iv[], size_t left, size_t right)
   {
     if (left + QSORT_CUTOFF <= right) {
-      INT    pivot = median3(v, iv, left, right);
+      size_t pivot = median3(v, iv, left, right);
       size_t i     = left;
       size_t j     = right - 1;
 
