@@ -269,7 +269,7 @@ namespace Ioex {
     // handled prior to opening/creating database...
     if (properties.exists("FILE_TYPE")) {
       std::string type = properties.get("FILE_TYPE").get_string();
-      type = Ioss::Utils::lowercase(type);
+      type             = Ioss::Utils::lowercase(type);
       if (type == "netcdf3" || type == "netcdf-3") {
         exodusMode = EX_CLOBBER; // Reset back to default...
       }
@@ -308,7 +308,11 @@ namespace Ioex {
                       properties.get("COMPRESSION_SHUFFLE").get_int() > 0));
 
     if (compress) {
-      exodusMode |= EX_NETCDF4;
+      if (!(exodusMode & EX_NETCDF4)) {
+        fmt::print(Ioss::OUTPUT(), "IOEX: Compression requires netcdf-4/HDF5-based file.  Setting "
+                                   "file type to netcdf-4.\n");
+        exodusMode |= EX_NETCDF4;
+      }
     }
 #else
     fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  Compression "
