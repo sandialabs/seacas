@@ -267,22 +267,9 @@ namespace Ioex {
 
     // See if there are any properties that need to (or can) be
     // handled prior to opening/creating database...
-#if NC_HAS_HDF5
-    bool compress = ((properties.exists("COMPRESSION_LEVEL") &&
-                      properties.get("COMPRESSION_LEVEL").get_int() > 0) ||
-                     (properties.exists("COMPRESSION_SHUFFLE") &&
-                      properties.get("COMPRESSION_SHUFFLE").get_int() > 0));
-
-    if (compress) {
-      exodusMode |= EX_NETCDF4;
-    }
-#else
-    fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  Compression "
-                               "setting will be ignored.\n");
-#endif
-
     if (properties.exists("FILE_TYPE")) {
       std::string type = properties.get("FILE_TYPE").get_string();
+      type = Ioss::Utils::lowercase(type);
       if (type == "netcdf3" || type == "netcdf-3") {
         exodusMode = EX_CLOBBER; // Reset back to default...
       }
@@ -312,6 +299,20 @@ namespace Ioex {
 #else
     fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  "
                                "ENABLE_FILE_GROUPS setting will be ignored.\n");
+#endif
+
+#if NC_HAS_HDF5
+    bool compress = ((properties.exists("COMPRESSION_LEVEL") &&
+                      properties.get("COMPRESSION_LEVEL").get_int() > 0) ||
+                     (properties.exists("COMPRESSION_SHUFFLE") &&
+                      properties.get("COMPRESSION_SHUFFLE").get_int() > 0));
+
+    if (compress) {
+      exodusMode |= EX_NETCDF4;
+    }
+#else
+    fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  Compression "
+                               "setting will be ignored.\n");
 #endif
 
     if (properties.exists("MAXIMUM_NAME_LENGTH")) {
