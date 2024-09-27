@@ -841,7 +841,7 @@ namespace {
 
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    bool               combine_similar = true;
+    bool               combine_similar = false;
     const std::string &prefix          = region.name();
 
     const Ioss::NodeSetContainer &nss = region.get_nodesets();
