@@ -577,7 +577,7 @@ namespace SEAMS {
     char *p = string;
     while (*p != '\0') {
       if (isupper(static_cast<int>(*p)) != 0) {
-        *p = tolower(static_cast<int>(*p));
+        *p = static_cast<char>(tolower(static_cast<int>(*p)));
       }
       p++;
     }
@@ -589,7 +589,7 @@ namespace SEAMS {
     char *p = string;
     while (*p != '\0') {
       if (islower(static_cast<int>(*p)) != 0) {
-        *p = toupper(static_cast<int>(*p));
+        *p = static_cast<char>(toupper(static_cast<int>(*p)));
       }
       p++;
     }
@@ -859,13 +859,13 @@ namespace SEAMS {
   const char *do_if(double x)
   {
     aprepro->inIfdefGetvar = false;
-    aprepro->lexer->if_handler(x);
+    aprepro->lexer->if_handler((x != 0.0));
     return nullptr;
   }
 
   const char *do_notif(double x)
   {
-    aprepro->lexer->if_handler(!x);
+    aprepro->lexer->if_handler(x == 0.0);
     return nullptr;
   }
 
@@ -919,7 +919,7 @@ namespace SEAMS {
     // does not appear, then return the remainder of the string. If
     // 'begin' == "", then start at beginning; if 'end' == "", then
     // return remainder of the string.
-    char *start = string;
+    auto *start = string;
 
     if (std::strlen(begin) > 0) {
       start = std::strstr(string, begin);
@@ -928,11 +928,11 @@ namespace SEAMS {
       }
     }
 
-    int len = std::strlen(start);
+    auto len = std::strlen(start);
     if (std::strlen(end) > 0) {
-      char *finish = std::strstr(start, end);
+      auto *finish = std::strstr(start, end);
       if (finish != nullptr) {
-        len = finish - start;
+        len = static_cast<size_t>(finish - start);
       }
     }
 
@@ -963,17 +963,17 @@ namespace SEAMS {
     if (my_array_data != nullptr) {
       std::ostringstream lines;
 
-      int rows = my_array_data->rows;
-      int cols = my_array_data->cols;
+      auto rows = my_array_data->rows;
+      auto cols = my_array_data->cols;
 
-      int idx = 0;
+      size_t idx = 0;
 
-      for (int ir = 0; ir < rows; ir++) {
+      for (size_t ir = 0; ir < rows; ir++) {
         if (ir > 0) {
           lines << "\n";
         }
         lines << "\t";
-        for (int ic = 0; ic < cols; ic++) {
+        for (size_t ic = 0; ic < cols; ic++) {
           const SEAMS::symrec *format = aprepro->getsym("_FORMAT");
           if (format->value.svar.empty()) {
             fmt::print(lines, "{}", my_array_data->data[idx++]);
@@ -1004,15 +1004,15 @@ namespace SEAMS {
 
   array *do_make_array(double rows, double cols)
   {
-    auto array_data = aprepro->make_array(rows, cols);
+    auto array_data = aprepro->make_array(static_cast<size_t>(rows), static_cast<size_t>(cols));
     return array_data;
   }
 
   array *do_make_array_init(double rows, double cols, double init)
   {
-    auto array_data = aprepro->make_array(rows, cols);
-    int  isize      = (int)rows * int(cols);
-    for (int i = 0; i < isize; i++) {
+    auto array_data = aprepro->make_array(static_cast<size_t>(rows), static_cast<size_t>(cols));
+    auto isize      = static_cast<size_t>(rows) * static_cast<size_t>(cols);
+    for (size_t i = 0; i < isize; i++) {
       array_data->data[i] = init;
     }
     return array_data;
@@ -1020,10 +1020,10 @@ namespace SEAMS {
 
   array *do_identity(double size)
   {
-    auto array_data = aprepro->make_array(size, size);
+    auto array_data = aprepro->make_array(static_cast<size_t>(size), static_cast<size_t>(size));
 
-    int isize = size;
-    for (int i = 0; i < isize; i++) {
+    size_t isize = static_cast<size_t>(size);
+    for (size_t i = 0; i < isize; i++) {
       array_data->data[i * isize + i] = 1.0;
     }
     return array_data;
@@ -1033,11 +1033,11 @@ namespace SEAMS {
   {
     // Create 1D array with `count` rows and 1 column.
     // Values are linearly spaced from `init` to `final`
-    int  isize      = count;
-    auto array_data = aprepro->make_array(count, 1);
+    auto isize      = static_cast<size_t>(count);
+    auto array_data = aprepro->make_array(isize, 1);
 
     double inc = (final - init) / (count - 1);
-    for (int i = 0; i < isize; i++) {
+    for (size_t i = 0; i < isize; i++) {
       array_data->data[i] = init + (double)i * inc;
     }
     return array_data;
@@ -1047,8 +1047,8 @@ namespace SEAMS {
   {
     auto array_data = aprepro->make_array(a->cols, a->rows);
 
-    for (int i = 0; i < a->rows; i++) {
-      for (int j = 0; j < a->cols; j++) {
+    for (size_t i = 0; i < a->rows; i++) {
+      for (size_t j = 0; j < a->cols; j++) {
         array_data->data[j * a->rows + i] = a->data[i * a->cols + j];
       }
     }
@@ -1153,8 +1153,8 @@ namespace SEAMS {
       file->clear();
       file->seekg(0);
 
-      int idx = 0;
-      rows    = 0;
+      size_t idx = 0;
+      rows       = 0;
       while (std::getline(*file, line)) {
         if (++rows > rows_to_skip) {
           auto tokens = tokenize(line, delim);
@@ -1194,14 +1194,14 @@ namespace SEAMS {
         }
       }
 
-      auto array_data = aprepro->make_array(rows, cols);
+      auto array_data = aprepro->make_array(static_cast<size_t>(rows), static_cast<size_t>(cols));
 
       // Read file again storing entries in array_data->data
       file->clear();
       file->seekg(0);
 
-      int idx = 0;
-      rows    = 0;
+      size_t idx = 0;
+      rows       = 0;
       while (std::getline(*file, line)) {
         if (line[0] != comment[0]) {
           rows++;
@@ -1216,7 +1216,7 @@ namespace SEAMS {
           }
         }
       }
-      assert((int)rows == array_data->rows);
+      assert(static_cast<size_t>(rows) == array_data->rows);
       delete file;
       return array_data;
     }
@@ -1228,7 +1228,7 @@ namespace SEAMS {
     auto tokens     = SEAMS::tokenize(string, delm);
     auto array_data = aprepro->make_array(tokens.size(), 1);
 
-    int idx = 0;
+    size_t idx = 0;
     for (const auto &token : tokens) {
       array_data->data[idx++] = std::stod(token);
     }
