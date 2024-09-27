@@ -150,8 +150,8 @@ namespace Ioss {
 
   private:
     IOSS_NODISCARD bool equal_(const Ioss::ElementTopology &rhs, bool quiet) const;
-    const std::string   name_;
-    const std::string   masterElementName_;
+    const std::string   name_{};
+    const std::string   masterElementName_{};
 
     static const std::string &topology_shape_to_permutation_name(Ioss::ElementShape topoShape);
 

@@ -15,14 +15,10 @@
 
 namespace Ioss {
   class DatabaseIO;
-} // namespace Ioss
-namespace Ioss {
   class ElementTopology;
 } // namespace Ioss
 
 namespace Ioss {
-  class ElementBlock;
-
   /** \brief Base class for all 'block'-type grouping entities, which means all
    *         members of the block are similar or have the same topology.
    *
@@ -56,6 +52,7 @@ namespace Ioss {
     {
       return idOffset < local_id && local_id <= idOffset + entityCount;
     }
+
     /** \brief Set the 'offset' for the block.
      *
      *  The 'offset' is used to map an element location within an
