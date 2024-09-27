@@ -63,7 +63,7 @@ TEST_CASE("invalid element")
 {
   // Check that asking for invalid element returns nullptr pointer.
   Ioss::ElementTopology *invalid = Ioss::ElementTopology::factory("Greg", true);
-  REQUIRE(invalid == nullptr);
+  CHECK(invalid == nullptr);
 }
 
 TEST_CASE("test_all_elements")
@@ -130,8 +130,7 @@ namespace {
     if (element->name() != "node") {
       REQUIRE(static_cast<int>(perm->num_permutation_nodes()) == element->number_corner_nodes());
       // Element shape matches permutation type
-      REQUIRE(Ioss::Utils::lowercase(Ioss::Utils::shape_to_string(element->shape())) ==
-              perm->type());
+      CHECK(Ioss::Utils::lowercase(Ioss::Utils::shape_to_string(element->shape())) == perm->type());
 
       if (perm->num_permutations() > 0) {
         const auto &permutation = perm->permutation_indices(0);
