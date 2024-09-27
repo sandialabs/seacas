@@ -83,7 +83,7 @@ namespace {
 
   void gl_fixup(const char *prompt, int change, int cursor); /* fixup state variables and screen */
   int  gl_getc();                                            /* read one char from terminal */
-  void gl_kill(int pos);                                     /* delete to EOL */
+  void gl_kill(size_t pos);                                  /* delete to EOL */
   void gl_newline();                                         /* handle \n or \r */
   void gl_putc(int c);                                       /* write one char to terminal */
   void gl_puts(const char *const buf);                       /* write a line to terminal */
@@ -433,7 +433,7 @@ namespace {
       if (gl_cnt > GL_BUF_SIZE - 2) {
         gl_error("\n*** Error: getline(): input buffer overflow\n");
       }
-      for (int i = gl_cnt; i >= gl_pos; i--) {
+      for (size_t i = gl_cnt; i >= gl_pos; i--) {
         gl_buf[i + 1] = gl_buf[i];
       }
       gl_buf[gl_pos] = (char)c;
@@ -458,10 +458,10 @@ namespace {
         if (gl_cnt + len >= GL_BUF_SIZE) {
           gl_error("\n*** Error: getline(): input buffer overflow\n");
         }
-        for (int i = gl_cnt; i >= gl_pos; i--) {
+        for (size_t i = gl_cnt; i >= gl_pos; i--) {
           gl_buf[i + len] = gl_buf[i];
         }
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
           gl_buf[gl_pos + i] = gl_killbuf[i];
         }
         gl_fixup(gl_prompt, gl_pos, gl_pos + len);
@@ -473,7 +473,7 @@ namespace {
         if (gl_pos + len > gl_cnt) {
           gl_buf[gl_pos + len] = '\0';
         }
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
           gl_buf[gl_pos + i] = gl_killbuf[i];
         }
         gl_extent = len;
@@ -531,7 +531,7 @@ namespace {
   {
     if ((loc == -1 && gl_pos > 0) || (loc == 0 && gl_pos < gl_cnt)) {
       int j = 0;
-      for (int i = gl_pos + loc; i < gl_cnt; i++) {
+      for (size_t i = gl_pos + loc; i < gl_cnt; i++) {
         if (i < GL_BUF_SIZE - 1) {
           if ((j == 0) && (killsave != 0)) {
             gl_killbuf[0] = gl_buf[i];
@@ -551,7 +551,7 @@ namespace {
     }
   }
 
-  void gl_kill(int pos)
+  void gl_kill(size_t pos)
 
   /* delete from pos to the end of line */
   {
@@ -619,11 +619,11 @@ namespace {
     int backup = gl_pos - gl_shift; /* how far to backup before fixing */
     if (change >= 0) {
       gl_cnt = strlen(gl_buf);
-      if (change > gl_cnt) {
+      if (change > (int)gl_cnt) {
         change = gl_cnt;
       }
     }
-    if (cursor > gl_cnt) {
+    if (cursor > (int)gl_cnt) {
       if (cursor != GL_BUF_SIZE) { /* GL_BUF_SIZE means end of line */
         if (gl_ellipses_during_completion) {
           gl_beep();
@@ -650,7 +650,7 @@ namespace {
     if (new_shift != gl_shift) { /* scroll occurs */
       gl_shift  = new_shift;
       off_left  = (gl_shift) ? 1 : 0;
-      off_right = (gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
+      off_right = ((int)gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
       left      = gl_shift;
       new_right = right = (off_right) ? gl_shift + gl_width - 2 : gl_cnt;
     }
@@ -662,7 +662,7 @@ namespace {
         left   = change;
         backup = gl_pos - change;
       }
-      off_right = (gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
+      off_right = ((int)gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
       right     = (off_right) ? gl_shift + gl_width - 2 : gl_cnt;
       new_right = (gl_extent && (right > left + gl_extent)) ? left + gl_extent : right;
     }
