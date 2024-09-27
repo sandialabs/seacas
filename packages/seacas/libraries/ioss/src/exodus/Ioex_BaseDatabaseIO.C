@@ -233,9 +233,8 @@ namespace Ioex {
     }
     // This is also done down in the exodus library, but helps logic to do it here...
     if (util().get_environment("EXODUS_VERBOSE", isParallel)) {
-      fmt::print(
-          Ioss::DebugOut(),
-          "IOEX: Exodus error reporting set to VERBOSE because EXODUS_VERBOSE environment variable is set.\n");
+      fmt::print(Ioss::DebugOut(), "IOEX: Exodus error reporting set to VERBOSE because "
+                                   "EXODUS_VERBOSE environment variable is set.\n");
       ex_opts(EX_VERBOSE);
     }
 
@@ -277,6 +276,9 @@ namespace Ioex {
     if (compress) {
       exodusMode |= EX_NETCDF4;
     }
+#else
+    fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  Compression "
+                               "setting will be ignored.\n");
 #endif
 
     if (properties.exists("FILE_TYPE")) {
@@ -288,11 +290,17 @@ namespace Ioex {
       if (type == "netcdf4" || type == "netcdf-4" || type == "hdf5") {
         exodusMode |= EX_NETCDF4;
       }
+#else
+      fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  FILE_TYPE "
+                                 "setting will be ignored.\n");
 #endif
 #if NC_HAS_CDF5
       else if (type == "netcdf5" || type == "netcdf-5" || type == "cdf5") {
         exodusMode |= EX_64BIT_DATA;
       }
+#else
+      fmt::print(Ioss::OUTPUT(), "IOEX: CDF5/netcdf-5 is not supported in this build.  FILE_TYPE "
+                                 "setting will be ignored.\n");
 #endif
     }
 
@@ -301,6 +309,9 @@ namespace Ioex {
       exodusMode |= EX_NETCDF4;
       exodusMode |= EX_NOCLASSIC;
     }
+#else
+    fmt::print(Ioss::OUTPUT(), "IOEX: HDF5/netcdf-4 is not supported in this build.  "
+                               "ENABLE_FILE_GROUPS setting will be ignored.\n");
 #endif
 
     if (properties.exists("MAXIMUM_NAME_LENGTH")) {
