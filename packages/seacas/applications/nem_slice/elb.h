@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "5.02 (2024-08-22)"
+#define ELB_VERSION "5.03 (2024-09-30)"
 #define UTIL_NAME   "nem_slice"
 #define ELB_FALSE   0
 #define ELB_TRUE    1
@@ -53,28 +53,54 @@ template <typename INT> void vec_free(std::vector<INT> &V)
 /* Prototype for timing function */
 extern double get_time();
 
+/* Machine types */
+enum class MachineType { INVALID, MESH, HCUBE, HYPERCUBE, CLUSTER };
+
 /* Structure used for the description of the machine for which the
  * load balance is to be constructed. */
 struct Machine_Description
 {
-  int type{-1};
-  int num_dims{-1};
-  int dim[3]{};
-  int num_boxes{-1};     /* added for cluster type machines */
-  int procs_per_box{-1}; /* added for cluster type machines, if there is only
-                        one box, then this is the same as num_procs */
+  MachineType type{MachineType::INVALID};
+  int         num_dims{-1};
+  int         dim[3]{};
+  int         num_boxes{-1};     /* added for cluster type machines */
+  int         procs_per_box{-1}; /* added for cluster type machines, if there is only
+                                one box, then this is the same as num_procs */
   int num_procs{-1};
 
   Machine_Description() { dim[0] = dim[1] = dim[2] = -1; }
+};
+
+/* Load balance types */
+enum class Balance {
+  INVALID,
+  MULTIKL,
+  SPECTRAL,
+  INERTIAL,
+  LINEAR,
+  RANDOM,
+  SCATTERED,
+  INFILE,
+  KL_REFINE,
+  NO_REFINE,
+  NUM_SECTS,
+  CNCT_DOM,
+  OUTFILE,
+  ZPINCH,
+  BRICK,
+  ZOLTAN_RCB,
+  ZOLTAN_RIB,
+  ZOLTAN_HSFC,
+  IGNORE_Z
 };
 
 /* Structure used for the description of what type of load balance is
  * to be performed. */
 template <typename INT> struct LB_Description
 {
-  int         type{-1};
+  Balance     type{-1};
   int         ignore_z{0};
-  int         refine{-1};
+  Balance     refine{-1};
   int         num_sects{-1};
   int         cnctd_dom{-1};
   int         outfile{-1};
@@ -101,18 +127,20 @@ template <typename INT> struct LB_Description
   LB_Description() = default;
 };
 
+enum class DecompType { NODAL, ELEMENTAL };
+
 /* Structure for the problem description. */
 struct Problem_Description
 {
-  int    type{-1};
-  int    read_coords{-1};
-  int    coarse_flag{-1};
-  int    alloc_graph{-1};
-  size_t num_vertices{0};
-  int    vis_out{-1};
-  int    skip_checks{-1};     /* put in to skip some error checks for some meshes  */
-  int    face_adj{-1};        /* true if using face definition of adjacencies      */
-  int    partial_adj{0};      /* true if allowing partial (3/4) of nodes to */
+  DecompType type{-1};
+  int        read_coords{-1};
+  int        coarse_flag{-1};
+  int        alloc_graph{-1};
+  size_t     num_vertices{0};
+  int        vis_out{-1};
+  int        skip_checks{-1}; /* put in to skip some error checks for some meshes  */
+  int        face_adj{-1};    /* true if using face definition of adjacencies      */
+  int        partial_adj{0};  /* true if allowing partial (3/4) of nodes to */
                               /* determine adjacencies */
   int   global_mech{-1};      /* true if looking for mechanisms in original mesh   */
   int   local_mech{-1};       /* true if looking for mechanisms in subdivided mesh */
@@ -130,15 +158,29 @@ struct Problem_Description
   Problem_Description() = default;
 };
 
+/* Solver options */
+enum class SolverOptions { INVALID, TOLER, USE_RQI, VMAX };
+
 /* Structure for parameters needed for the Eigensolver in Chaco */
 struct Solver_Description
 {
-  double tolerance{-1.0};
-  int    rqi_flag{-1};
-  int    vmax{-1};
+  double        tolerance{-1.0};
+  SolverOptions rqi_flag{SolverOptions::INVALID};
+  int           vmax{-1};
 
   Solver_Description() = default;
 };
+
+/* Weighting options */
+/*
+ * NOTE: the position of NO_WEIGHT, READ_EXO, EL_BLK, and EWGT_ON
+ * should not be changed. These are the possible values for the
+ * "type" variable in the Weight struct. They need to b 0, 1, 2, & 4
+ * to allow bit masking for the type. The other variables are not
+ * currently used in the type, but are needed since they appear
+ * on the command line.
+ */
+enum WeightingOptions { NO_WEIGHT, READ_EXO, EL_BLK, VAR_INDX, EDGE_WGT, TIME_INDX, VAR_NAME };
 
 /* Structure used to store information about the weighting scheme, if
  * any, that is to be used. */
@@ -215,48 +257,8 @@ template <typename INT> struct Graph_Description
 };
 
 /* Various constants */
-enum DecompType { NODAL, ELEMENTAL };
 
 #define UTIL_NAME "nem_slice"
 
-/* Load balance types */
-enum Balance {
-  MULTIKL,
-  SPECTRAL,
-  INERTIAL,
-  LINEAR,
-  RANDOM,
-  SCATTERED,
-  INFILE,
-  KL_REFINE,
-  NO_REFINE,
-  NUM_SECTS,
-  CNCT_DOM,
-  OUTFILE,
-  ZPINCH,
-  BRICK,
-  ZOLTAN_RCB,
-  ZOLTAN_RIB,
-  ZOLTAN_HSFC,
-  IGNORE_Z
-};
-
-/* Machine types */
-enum MachineType { MESH, HCUBE, HYPERCUBE, CLUSTER };
-
-/* Solver options */
-enum SolverOptions { TOLER, USE_RQI, VMAX };
-
 /* ISSUES options */
-enum Issues { LOCAL_ISSUES, GLOBAL_ISSUES };
-
-/* Weighting options */
-/*
- * NOTE: the position of NO_WEIGHT, READ_EXO, EL_BLK, and EWGT_ON
- * should not be changed. These are the possible values for the
- * "type" variable in the Weight struct. They need to b 0, 1, 2, & 4
- * to allow bit masking for the type. The other variables are not
- * currently used in the type, but are needed since they appear
- * on the command line.
- */
-enum WeightingOptions { NO_WEIGHT, READ_EXO, EL_BLK, VAR_INDX, EDGE_WGT, TIME_INDX, VAR_NAME };
+enum class Issues { LOCAL_ISSUES, GLOBAL_ISSUES };

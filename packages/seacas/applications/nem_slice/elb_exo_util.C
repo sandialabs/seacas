@@ -56,7 +56,7 @@ int read_exo_weights(Problem_Description *prob, Weight_Description *weight, INT 
   }
 
   std::vector<float> values(weight->nvals);
-  if (prob->type == NODAL) {
+  if (prob->type == DecompType::NODAL) {
     size_t tmp_nodes = ex_inquire_int(exoid, EX_INQ_NODES);
     /* check to make sure the sizes agree */
     if ((size_t)weight->nvals != tmp_nodes) {
@@ -336,19 +336,19 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
 
     /* find out if this element block is weighted */
     int wgt = -1;
-    if (weight->type & EL_BLK) {
+    if (weight->type & WeightingOptions::EL_BLK) {
       wgt = in_list(mesh->eb_ids[cnt], weight->elemblk);
     }
 
     /* Fill the 2D global connectivity array */
-    if (((problem->type == ELEMENTAL) && (weight->type & EL_BLK)) ||
-        ((problem->type == NODAL) && (weight->type & EL_BLK))) {
+    if (((problem->type == DecompType::ELEMENTAL) && (weight->type & WeightingOptions::EL_BLK)) ||
+        ((problem->type == DecompType::NODAL) && (weight->type & WeightingOptions::EL_BLK))) {
 
       for (int64_t cnt2 = 0; cnt2 < mesh->eb_cnts[cnt]; cnt2++) {
         mesh->elem_type[gelem_cnt] = mesh->eb_type[cnt];
 
         /* while going through the blocks, take care of the weighting */
-        if ((problem->type == ELEMENTAL) && (weight->type & EL_BLK)) {
+        if ((problem->type == DecompType::ELEMENTAL) && (weight->type & WeightingOptions::EL_BLK)) {
           /* is this block weighted */
           if (wgt >= 0) {
             /* check if there is a read value */
@@ -376,7 +376,7 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
           mesh->connect[gelem_cnt][cnt3] = node;
 
           /* deal with the weighting if necessary */
-          if ((problem->type == NODAL) && (weight->type & EL_BLK)) {
+          if ((problem->type == DecompType::NODAL) && (weight->type & EL_BLK)) {
             /* is this block weighted */
             if (wgt >= 0) {
               /* check if I read an exodus file */
@@ -460,7 +460,7 @@ template <typename INT>
 int init_weight_struct(Problem_Description *problem, Mesh_Description<INT> *mesh,
                        Weight_Description *weight)
 {
-  if (problem->type == NODAL) {
+  if (problem->type == DecompType::NODAL) {
     weight->nvals = mesh->num_nodes;
   }
   else {

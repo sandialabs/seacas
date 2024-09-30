@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -203,7 +203,7 @@ namespace {
     }
 
     /* Find the adjacency for a nodal based decomposition */
-    if (problem->type == NODAL) {
+    if (problem->type == DecompType::NODAL) {
       graph->nadj = 0;
       for (size_t ncnt = 0; ncnt < mesh->num_nodes; ncnt++) {
         graph->start[ncnt] = graph->nadj;
@@ -297,11 +297,11 @@ namespace {
                     tmp_element[entry] = ecnt;
                     (graph->nadj)++;
                     graph->adj.push_back(entry);
-                    if (weight->type & EDGE_WGT) {
+                    if (weight->type & WeightingOptions::EDGE_WGT) {
                       weight->edges.push_back(1.0);
                     }
                   }
-                  else if (weight->type & EDGE_WGT) {
+                  else if (weight->type & WeightingOptions::EDGE_WGT) {
                     int iret = in_list(entry, (graph->nadj) - (graph->start[cnt]),
                                        &graph->adj[graph->start[cnt]]);
                     assert(iret >= 0);
@@ -554,7 +554,7 @@ namespace {
                         if (sid > 0) {
                           (graph->nadj)++;
                           graph->adj.push_back(entry);
-                          if (weight->type & EDGE_WGT) {
+                          if (weight->type & WeightingOptions::EDGE_WGT) {
                             /*
                              * the edge weight is the number of nodes in the
                              * connecting face
@@ -646,11 +646,11 @@ namespace {
 
                         (graph->nadj)++;
                         graph->adj.push_back(entry);
-                        if (weight->type & EDGE_WGT) {
+                        if (weight->type & WeightingOptions::EDGE_WGT) {
                           weight->edges.push_back(1.0);
                         }
                       }
-                      else if (weight->type & EDGE_WGT) {
+                      else if (weight->type & WeightingOptions::EDGE_WGT) {
                         weight->edges[iret + (graph->start[cnt])] += 1.0F;
                       }
                     }
@@ -680,7 +680,7 @@ namespace {
     }
 
     /* Adjust for a mesh with spheres */
-    if (problem->type == ELEMENTAL && sphere->num) {
+    if (problem->type == DecompType::ELEMENTAL && sphere->num) {
       /* Decrement adjacency entries */
       for (auto &elem : graph->adj) {
         for (size_t ecnt = 0; ecnt < mesh->num_el_blks; ecnt++) {

@@ -103,7 +103,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   ex_set_option(exoid, EX_OPT_COMPRESSION_SHUFFLE, 1);
 
   /* Create the title */
-  if (problem->type == NODAL) {
+  if (problem->type == DecompType::NODAL) {
     method1 = "nodal";
   }
   else {
@@ -116,26 +116,26 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   method2 = "method2: ";
 
   switch (lb->type) {
-  case MULTIKL:
+  case Balance::MULTIKL:
     method1 += "Multilevel-KL decomposition";
     method2 += "With Kernighan-Lin refinement";
     break;
-  case SPECTRAL: method1 += "Spectral decomposition"; break;
-  case INERTIAL: method1 += "Inertial decomposition"; break;
-  case ZPINCH: method1 += "ZPINCH decomposition"; break;
-  case BRICK: method1 += "BRICK decomposition"; break;
-  case ZOLTAN_RCB: method1 += "RCB decomposition"; break;
-  case ZOLTAN_RIB: method1 += "RIB decomposition"; break;
-  case ZOLTAN_HSFC: method1 += "HSFC decomposition"; break;
-  case LINEAR: method1 += "Linear decomposition"; break;
-  case RANDOM: method1 += "Random decomposition"; break;
-  case SCATTERED: method1 += "Scattered decomposition"; break;
+  case Balance::SPECTRAL: method1 += "Spectral decomposition"; break;
+  case Balance::INERTIAL: method1 += "Inertial decomposition"; break;
+  case Balance::ZPINCH: method1 += "ZPINCH decomposition"; break;
+  case Balance::BRICK: method1 += "BRICK decomposition"; break;
+  case Balance::ZOLTAN_RCB: method1 += "RCB decomposition"; break;
+  case Balance::ZOLTAN_RIB: method1 += "RIB decomposition"; break;
+  case Balance::ZOLTAN_HSFC: method1 += "HSFC decomposition"; break;
+  case Balance::LINEAR: method1 += "Linear decomposition"; break;
+  case Balance::RANDOM: method1 += "Random decomposition"; break;
+  case Balance::SCATTERED: method1 += "Scattered decomposition"; break;
   }
 
-  if (lb->refine == KL_REFINE && lb->type != MULTIKL) {
+  if (lb->refine == Balance::KL_REFINE && lb->type != Balance::MULTIKL) {
     method2 += "with Kernighan-Lin refinement";
   }
-  else if (lb->type != MULTIKL) {
+  else if (lb->type != Balance::MULTIKL) {
     method2 += "no refinement";
   }
 
@@ -150,7 +150,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
     /* Sort node maps */
     gds_qsort(Data(lb->int_nodes[proc]), lb->int_nodes[proc].size());
-    if (problem->type == NODAL) {
+    if (problem->type == DecompType::NODAL) {
       sort2(lb->ext_nodes[proc].size(), Data(lb->ext_nodes[proc]), Data(lb->ext_procs[proc]));
     }
 
@@ -223,7 +223,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   std::vector<INT> num_nmap_cnts(machine->num_procs);
   std::vector<INT> num_emap_cnts(machine->num_procs);
 
-  if (problem->type == NODAL) {
+  if (problem->type == DecompType::NODAL) {
     /* need to check and make sure that there really are comm maps */
     for (int cnt = 0; cnt < machine->num_procs; cnt++) {
       if (!lb->bor_nodes[cnt].empty()) {
@@ -275,7 +275,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     }
   }
 
-  if (problem->type == NODAL) /* Nodal load balance output */
+  if (problem->type == DecompType::NODAL) /* Nodal load balance output */
   {
     /* Set up for the concatenated communication map parameters */
     std::vector<INT> node_proc_ptr(machine->num_procs + 1);
@@ -328,7 +328,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
     } /* End "for(proc=0; proc < machine->num_procs; proc++)" */
   }
-  else if (problem->type == ELEMENTAL) /* Elemental load balance output */
+  else if (problem->type == DecompType::ELEMENTAL) /* Elemental load balance output */
   {
     std::vector<INT> node_proc_ptr(machine->num_procs + 1);
     std::vector<INT> node_cmap_ids_cc(machine->num_procs);
@@ -459,7 +459,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
    * number of element blocks.
    */
   int vis_nelem_blks;
-  if (prob->type == ELEMENTAL) {
+  if (prob->type == DecompType::ELEMENTAL) {
     vis_nelem_blks = machine->num_procs;
   }
   else {
@@ -572,7 +572,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
     std::vector<INT> tmp_connect(nsize);
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
       elem_map[ecnt] = ecnt + 1;
-      if (prob->type == ELEMENTAL) {
+      if (prob->type == DecompType::ELEMENTAL) {
         elem_block[ecnt] = lb->vertex2proc[ecnt];
       }
       else {
@@ -651,7 +651,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
     }
 
     const char *var_names[] = {"proc"};
-    if (prob->type == NODAL) {
+    if (prob->type == DecompType::NODAL) {
       /* Allocate memory for the nodal values */
       std::vector<float> proc_vals(mesh->num_nodes);
 
@@ -682,7 +682,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
         return 0;
       }
     }
-    else if (prob->type == ELEMENTAL) {
+    else if (prob->type == DecompType::ELEMENTAL) {
       /* Allocate memory for the element values */
       std::vector<float> proc_vals(mesh->num_elems);
 

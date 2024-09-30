@@ -89,7 +89,7 @@ namespace {
   template <typename INT>
   int identify_mechanisms(Machine_Description *machine, Problem_Description *problem,
                           Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
-                          Graph_Description<INT> *graph, int check_type);
+                          Graph_Description<INT> *graph, Issues check_type);
 
   int extract_connected_lists(int nrow, const int *columns, const int *rows, int *list,
                               std::vector<int> &list_ptr);
@@ -180,9 +180,10 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
      working on the loadbalance
   */
 
-  if (problem->type == ELEMENTAL && problem->global_mech == 1 && problem->alloc_graph == ELB_TRUE) {
+  if (problem->type == DecompType::ELEMENTAL && problem->global_mech == 1 &&
+      problem->alloc_graph == ELB_TRUE) {
     fmt::print("\n==============Looking For Global Issues=================\n");
-    identify_mechanisms(machine, problem, mesh, lb, graph, GLOBAL_ISSUES);
+    identify_mechanisms(machine, problem, mesh, lb, graph, Issues::GLOBAL_ISSUES);
     fmt::print("============================================================\n");
     fmt::print("\n");
   }
@@ -198,10 +199,11 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     }
   }
 
-  if (((problem->type == NODAL) && (lb->type == INERTIAL)) ||
-      ((problem->type == ELEMENTAL) &&
-       (lb->type == INERTIAL || lb->type == ZPINCH || lb->type == BRICK || lb->type == ZOLTAN_RCB ||
-        lb->type == ZOLTAN_RIB || lb->type == ZOLTAN_HSFC))) {
+  if (((problem->type == DecompType::NODAL) && (lb->type == Balance::INERTIAL)) ||
+      ((problem->type == DecompType::ELEMENTAL) &&
+       (lb->type == Balance::INERTIAL || lb->type == Balance::ZPINCH ||
+        lb->type == Balance::BRICK || lb->type == Balance::ZOLTAN_RCB ||
+        lb->type == Balance::ZOLTAN_RIB || lb->type == Balance::ZOLTAN_HSFC))) {
     if (problem->read_coords != ELB_TRUE) {
       Gen_Error(0, "FATAL: internal logic error. Reading coordinates, but read_coords not set");
       return 0;
@@ -240,9 +242,10 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
    * or ZOLTAN geometric load balancing,
    * I need to come up with coordinates for the elements.
    */
-  if ((problem->type == ELEMENTAL) &&
-      (lb->type == INERTIAL || lb->type == ZPINCH || lb->type == BRICK || lb->type == ZOLTAN_RCB ||
-       lb->type == ZOLTAN_RIB || lb->type == ZOLTAN_HSFC)) {
+  if ((problem->type == DecompType::ELEMENTAL) &&
+      (lb->type == Balance::INERTIAL || lb->type == Balance::ZPINCH || lb->type == Balance::BRICK ||
+       lb->type == Balance::ZOLTAN_RCB || lb->type == Balance::ZOLTAN_RIB ||
+       lb->type == Balance::ZOLTAN_HSFC)) {
     if (problem->read_coords != ELB_TRUE) {
       Gen_Error(0, "FATAL: internal logic error. Reading coordinates, but read_coords not set");
       return 0;
@@ -287,7 +290,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
        (lb->type==INERTIAL||ZPINCH||BRICK||ZOLTAN))"*/
 
   /* Allocate memory for the vertex to processor vector */
-  if (problem->type == ELEMENTAL) {
+  if (problem->type == DecompType::ELEMENTAL) {
     lb->vertex2proc =
         reinterpret_cast<int *>(malloc(((problem->num_vertices) + sphere->num) * sizeof(int)));
   }
@@ -300,23 +303,23 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     return 0;
   }
 
-  if (machine->type == HCUBE) {
+  if (machine->type == MachineType::HCUBE) {
     arch      = 0;
     num_level = ilog2i(static_cast<unsigned int>(machine->procs_per_box));
   }
-  if (machine->type == MESH) {
+  if (machine->type == MachineType::MESH) {
     arch      = machine->num_dims;
     num_level = 0;
   }
 
-  if (lb->refine == KL_REFINE) {
+  if (lb->refine == Balance::KL_REFINE) {
     refine = 1;
   }
   else {
     refine = 2;
   }
 
-  if (lb->type == INFILE) {
+  if (lb->type == Balance::INFILE) {
     assignfile = lb->file.c_str();
     fp         = fopen(assignfile, "r");
     if (fp == nullptr) {
@@ -331,21 +334,22 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   }
 
   switch (lb->type) {
-  case MULTIKL: glob_method = 1; break;
-  case SPECTRAL: glob_method = 2; break;
-  case INERTIAL: glob_method = 3; break;
-  case ZPINCH:
-  case BRICK:
-  case ZOLTAN_RCB:
-  case ZOLTAN_RIB:
-  case ZOLTAN_HSFC:
+  case Balance::MULTIKL: glob_method = 1; break;
+  case Balance::SPECTRAL: glob_method = 2; break;
+  case Balance::INERTIAL: glob_method = 3; break;
+  case Balance::ZPINCH:
+  case Balance::BRICK:
+  case Balance::ZOLTAN_RCB:
+  case Balance::ZOLTAN_RIB:
+  case Balance::ZOLTAN_HSFC:
     glob_method = 999; /* Chaco methods don't apply to ZPINCH, BRICK
                           ZOLTAN_RCB, ZOLTAN_RIB, ZOLTAN_HSFC */
     break;
-  case LINEAR: glob_method = 4; break;
-  case RANDOM: glob_method = 5; break;
-  case SCATTERED: glob_method = 6; break;
-  case INFILE: glob_method = 7; break;
+  case Balance::LINEAR: glob_method = 4; break;
+  case Balance::RANDOM: glob_method = 5; break;
+  case Balance::SCATTERED: glob_method = 6; break;
+  case Balance::INFILE: glob_method = 7; break;
+  default:; // do nothing
   }
 
   /* check if Chaco is supposed to make sure that the domains are connected */
@@ -397,12 +401,13 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
 
     fmt::print("=======================Call Chaco===========================\n");
     time1 = get_time();
-    if (lb->type == INFILE) {
+    if (lb->type == Balance::INFILE) {
       flag =
           input_assign(fp, const_cast<char *>(assignfile), problem->num_vertices, lb->vertex2proc);
     }
-    if (lb->type == ZPINCH || lb->type == BRICK || lb->type == ZOLTAN_RCB ||
-        lb->type == ZOLTAN_RIB || lb->type == ZOLTAN_HSFC) {
+    if (lb->type == Balance::ZPINCH || lb->type == Balance::BRICK ||
+        lb->type == Balance::ZOLTAN_RCB || lb->type == Balance::ZOLTAN_RIB ||
+        lb->type == Balance::ZOLTAN_HSFC) {
       fmt::print(stderr, "KDD -- ZPINCH, BRICK, ZOLTAN_RCB, ZOLTAN_RIB, and "
                          "ZOLTAN_HSFC not supported with num_boxes > 1.\n");
       fmt::print(stderr, "KDD -- Contact Karen Devine, kddevin@sandia.gov.\n");
@@ -412,7 +417,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       flag = INTER_FACE(problem->num_vertices, (int *)Data(graph->start), (int *)Data(graph->adj),
                         Data(weight->vertices), Data(weight->edges), x_ptr, y_ptr, z_ptr,
                         const_cast<char *>(assignfile), (char *)nullptr, lb->vertex2proc, tmp_arch,
-                        tmp_lev, dim, goal, glob_method, refine, solve->rqi_flag, solve->vmax,
+                        tmp_lev, dim, goal, glob_method, refine, (int)solve->rqi_flag, solve->vmax,
                         lb->num_sects, solve->tolerance, seed);
     }
 
@@ -605,7 +610,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
          * num_level are already set for each box.
          */
         if (problem->num_groups > 1) {
-          if (machine->type == MESH) {
+          if (machine->type == MachineType::MESH) {
 
             /*
              * mesh and groups are in conflict.  the only way to resolve
@@ -646,7 +651,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         for (int cnt = 0; cnt < upper; cnt++) {
           tmpdim[cnt] = machine->dim[cnt];
         }
-        if (machine->type == MESH) {
+        if (machine->type == MachineType::MESH) {
           totalproc = tmpdim[0];
           if (tmpdim[1] != 0) {
             totalproc *= tmpdim[1];
@@ -660,40 +665,41 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         }
       }
 
-      if (lb->type == INFILE) {
+      if (lb->type == Balance::INFILE) {
         flag = input_assign(fp, const_cast<char *>(assignfile), tmp_nv, tmp_v2p);
       }
-      else if (lb->type == ZPINCH) {
+      else if (lb->type == Balance::ZPINCH) {
         flag = ZPINCH_assign(machine, tmp_nv, tmp_x, tmp_y, tmp_z, tmp_v2p);
         BALANCE_STATS(machine, nullptr, tmp_nv, tmp_v2p);
       }
-      else if (lb->type == BRICK) {
+      else if (lb->type == Balance::BRICK) {
         flag = BRICK_assign(machine, tmp_nv, tmp_x, tmp_y, tmp_z, tmp_v2p);
         BALANCE_STATS(machine, nullptr, tmp_nv, tmp_v2p);
       }
 #ifdef USE_ZOLTAN
-      else if (lb->type == ZOLTAN_RCB) {
+      else if (lb->type == Balance::ZOLTAN_RCB) {
         flag = ZOLTAN_assign("RCB", totalproc, tmp_nv, tmp_vwgts, tmp_x, tmp_y, tmp_z, lb->ignore_z,
                              tmp_v2p, argc, argv);
         BALANCE_STATS(machine, tmp_vwgts, tmp_nv, tmp_v2p);
       }
-      else if (lb->type == ZOLTAN_RIB) {
+      else if (lb->type == Balance::ZOLTAN_RIB) {
         flag = ZOLTAN_assign("RIB", totalproc, tmp_nv, tmp_vwgts, tmp_x, tmp_y, tmp_z, lb->ignore_z,
                              tmp_v2p, argc, argv);
         BALANCE_STATS(machine, tmp_vwgts, tmp_nv, tmp_v2p);
       }
-      else if (lb->type == ZOLTAN_HSFC) {
+      else if (lb->type == Balance::ZOLTAN_HSFC) {
         flag = ZOLTAN_assign("HSFC", totalproc, tmp_nv, tmp_vwgts, tmp_x, tmp_y, tmp_z,
                              lb->ignore_z, tmp_v2p, argc, argv);
         BALANCE_STATS(machine, tmp_vwgts, tmp_nv, tmp_v2p);
       }
 #else
-      else if (lb->type == ZOLTAN_RCB || lb->type == ZOLTAN_RIB || lb->type == ZOLTAN_HSFC) {
+      else if (lb->type == Balance::ZOLTAN_RCB || lb->type == Balance::ZOLTAN_RIB ||
+               lb->type == Balance::ZOLTAN_HSFC) {
         Gen_Error(0, "fatal: Invalid load balance types -- Zoltan is not supported in this build");
         goto cleanup;
       }
 #endif
-      else if (lb->type == LINEAR) {
+      else if (lb->type == Balance::LINEAR) {
         fmt::print(stderr, "Using internal linear decomposition\n");
         /* assign the elements to the processors linearly */
         size_t cnt = mesh->num_elems / machine->num_procs;
@@ -719,7 +725,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
           assert(lb->vertex2proc[i] < machine->num_procs);
         }
       }
-      else if (lb->type == SCATTERED) {
+      else if (lb->type == Balance::SCATTERED) {
         // Bad decomposition, useful for maximizing communication for testing algorithms...
         /* each element 'e' assigned to processor 'e' % 'num_proc' */
 
@@ -741,7 +747,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         time1 = get_time();
         flag  = INTER_FACE(tmp_nv, (int *)tmp_start, (int *)tmp_adj, tmp_vwgts, tmp_ewgts, tmp_x,
                            tmp_y, tmp_z, const_cast<char *>(assignfile), (char *)nullptr, tmp_v2p,
-                           arch, num_level, tmpdim, goal, glob_method, refine, solve->rqi_flag,
+                           arch, num_level, tmpdim, goal, glob_method, refine, (int)solve->rqi_flag,
                            solve->vmax, lb->num_sects, solve->tolerance, seed);
         time2 = get_time();
         fmt::print("========================================================\n");
@@ -814,7 +820,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     vec_free(weight->edges);
   }
 
-  if (problem->type == ELEMENTAL) {
+  if (problem->type == DecompType::ELEMENTAL) {
     /*
      * If this is an elemental load balance and there are spheres present
      * then adjust lb->vertex2proc accordingly. The spheres are then
@@ -824,7 +830,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       // If type == LINEAR || SCATTERED, then the spheres were handled above (unless the model
       // is
       // all spheres...)
-      if ((lb->type != LINEAR && lb->type != SCATTERED) || sphere->num == mesh->num_elems) {
+      if ((lb->type != Balance::LINEAR && lb->type != Balance::SCATTERED) ||
+          sphere->num == mesh->num_elems) {
 
         if (sphere->num != mesh->num_elems) {
           // If all spheres, don't need to open up space...
@@ -883,7 +890,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       fmt::print("\n==============Looking For Local Issues==================\n");
 
       if (problem->face_adj == 1 && problem->alloc_graph == ELB_TRUE) {
-        identify_mechanisms(machine, problem, mesh, lb, graph, LOCAL_ISSUES);
+        identify_mechanisms(machine, problem, mesh, lb, graph, Issues::LOCAL_ISSUES);
       }
       else {
         /* need to free the bigger graph and create a face adjacent graph */
@@ -919,7 +926,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
           graph->adj[cnt]++;
         }
 
-        identify_mechanisms(machine, problem, mesh, lb, graph, LOCAL_ISSUES);
+        identify_mechanisms(machine, problem, mesh, lb, graph, Issues::LOCAL_ISSUES);
 
         problem->alloc_graph = tmp_alloc_graph;
         problem->face_adj    = tmp_adjacency;
@@ -962,7 +969,7 @@ cleanup:
     }
   }
 
-  if (lb->type == INFILE) {
+  if (lb->type == Balance::INFILE) {
     fclose(fp);
   }
 
@@ -1025,7 +1032,7 @@ int generate_maps(Machine_Description *machine, Problem_Description *problem,
   /*-----------------------------Execution Begins------------------------------*/
 
   /* Generate the map for a nodal load balance */
-  if (problem->type == NODAL) {
+  if (problem->type == DecompType::NODAL) {
     /*
      * Generate the nodal and elemental distribution for a nodal
      * decomposition.
@@ -1064,7 +1071,7 @@ namespace {
   template <typename INT>
   int identify_mechanisms(Machine_Description *machine, Problem_Description *problem,
                           Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
-                          Graph_Description<INT> *graph, int check_type)
+                          Graph_Description<INT> *graph, Issues check_type)
   {
     std::vector<int> list_ptr;
 
@@ -1074,7 +1081,7 @@ namespace {
      */
 
     if (problem->find_cnt_domains == 1) {
-      if (check_type == GLOBAL_ISSUES) {
+      if (check_type == Issues::GLOBAL_ISSUES) {
         size_t           nrow = mesh->num_elems;
         std::vector<int> rows(nrow + 1);
         std::vector<int> list(nrow);
@@ -1112,7 +1119,7 @@ namespace {
         }
       }
 
-      if (check_type == LOCAL_ISSUES) {
+      if (check_type == Issues::LOCAL_ISSUES) {
 
         std::vector<int> proc_cnt(machine->num_procs);
         std::vector<INT> local_number(mesh->num_elems);
@@ -1236,7 +1243,7 @@ namespace {
       std::vector<int> proc_cnt(machine->num_procs);
       std::vector<INT> local_number(mesh->num_elems);
 
-      if (check_type == LOCAL_ISSUES) {
+      if (check_type == Issues::LOCAL_ISSUES) {
         for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
           int proc = lb->vertex2proc[ecnt];
           assert(proc < machine->num_procs);
@@ -1261,7 +1268,7 @@ namespace {
 
           int nsides = get_elem_info(NSIDES, etype);
           int proc   = 0;
-          if (check_type == LOCAL_ISSUES) {
+          if (check_type == Issues::LOCAL_ISSUES) {
             proc = lb->vertex2proc[ecnt];
           }
           else {
@@ -1296,7 +1303,7 @@ namespace {
                 E_Type etype2 = mesh->elem_type[el2];
 
                 int proc2 = 0;
-                if (check_type == LOCAL_ISSUES) {
+                if (check_type == Issues::LOCAL_ISSUES) {
                   proc2 = lb->vertex2proc[el2];
                 }
                 assert(proc2 < machine->num_procs);
@@ -1362,7 +1369,7 @@ namespace {
               size_t el2    = problems[node] - 1;
               E_Type etype2 = mesh->elem_type[el2];
 
-              if (check_type == LOCAL_ISSUES) {
+              if (check_type == Issues::LOCAL_ISSUES) {
                 fmt::print("WARNING: On Processor {} Local Element {}"
                            " ({}) has a mechanism through Global Node {}"
                            " with Local Element {} ({})\n",
@@ -1386,7 +1393,7 @@ namespace {
 
       if (num_found) {
         fmt::print("Total mechanisms found = {}\n", num_found);
-        if (check_type == LOCAL_ISSUES) {
+        if (check_type == Issues::LOCAL_ISSUES) {
           if (problem->mech_add_procs == 1) {
             machine->num_procs++;
             fmt::print("\n!!! Processor count increased to {} processors\n", machine->num_procs);
@@ -2343,7 +2350,7 @@ namespace {
       exit(-1);
     }
 
-    if (machine->type != MESH) {
+    if (machine->type != MachineType::MESH) {
       fmt::print(stderr, "KDD -- Machine must be a MESH "
                          "with # wedges * # slices processors.\n");
       fmt::print(stderr, "KDD -- Use nem_slice argument -m mesh=AxB, \n");
@@ -2549,7 +2556,7 @@ namespace {
       exit(-1);
     }
 
-    if (machine->type != MESH) {
+    if (machine->type != MachineType::MESH) {
       fmt::print(stderr, "KDD -- Machine must be a MESH "
                          "with nx * ny * nz processors.\n");
       fmt::print(stderr, "KDD -- Use nem_slice argument -m mesh=AxBxC, \n");
