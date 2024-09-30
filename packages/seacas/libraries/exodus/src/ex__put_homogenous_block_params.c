@@ -47,7 +47,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
              "ERROR: Bad block type (%d) specified for all blocks file id %d", blocks[0].type,
              exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-    return (EX_FATAL);
+    return EX_FATAL;
   }
 
   { /* Output ids for this block */
@@ -58,7 +58,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
                "array in file id %d",
                exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
 
     for (size_t i = 0; i < block_count; i++) {
@@ -70,7 +70,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
                ex_name_of_object(blocks[0].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(ids);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
 
     if ((status = nc_put_var_longlong(exoid, varid, ids)) != NC_NOERR) {
@@ -78,7 +78,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
                ex_name_of_object(blocks[0].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(ids);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
     free(ids);
   }
@@ -91,7 +91,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
                "array in file id %d",
                exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
 
     for (size_t i = 0; i < block_count; i++) {
@@ -103,7 +103,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
                ex_name_of_object(blocks[0].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(stat);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
 
     if ((status = nc_put_var_int(exoid, varid, stat)) != NC_NOERR) {
@@ -111,7 +111,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
                ex_name_of_object(blocks[0].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(stat);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
     free(stat);
   }
@@ -121,7 +121,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
   if ((status = exi_redef(exoid, __func__)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
-    return (EX_FATAL);
+    return EX_FATAL;
   }
 
   /* inquire previously defined dimensions  */
@@ -348,7 +348,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
   if ((status = exi_leavedef(exoid, __func__)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode in file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
-    return (EX_FATAL);
+    return EX_FATAL;
   }
 
   /* ======================================================================== */
@@ -357,7 +357,7 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
     case EX_EDGE_BLOCK: vblkids = VAR_ID_ED_BLK; break;
     case EX_FACE_BLOCK: vblkids = VAR_ID_FA_BLK; break;
     case EX_ELEM_BLOCK: vblkids = VAR_ID_EL_BLK; break;
-    default: return (EX_FATAL); /* should have been handled earlier; quiet compiler here */
+    default: return EX_FATAL; /* should have been handled earlier; quiet compiler here */
     }
 
     int att_name_varid = -1;
@@ -382,10 +382,10 @@ int exi_put_homogenous_block_params(int exoid, size_t block_count, const struct 
     }
   }
 
-  return (EX_NOERR);
+  return EX_NOERR;
 
 /* Fatal error: exit definition mode and return */
 error_ret:
   exi_leavedef(exoid, __func__);
-  return (EX_FATAL);
+  return EX_FATAL;
 }

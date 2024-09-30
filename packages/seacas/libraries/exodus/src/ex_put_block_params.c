@@ -55,7 +55,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
   const char *dnfpe       = NULL;
 
   if (block_count == 0) {
-    return (EX_NOERR);
+    return EX_NOERR;
   }
 
   EX_FUNC_ENTER();

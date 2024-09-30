@@ -42,7 +42,7 @@ static int check_valid_side(size_t side_num, size_t max_sides, char *topology, i
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     err_stat = EX_FATAL;
   }
-  return (err_stat);
+  return err_stat;
 }
 
 static void get_nodes(int exoid, void_int *to, size_t ito, void_int *from, size_t ifrom)

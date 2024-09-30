@@ -53,7 +53,7 @@ INT StringToCount(char *size_str)
   else if (rc == 0) {
     size = -1;
   }
-  return (size);
+  return size;
 } /* StringToCount() */
 
 void get_file_name(const char *base, const char *ext, int rank, int nprocs, const char *other,
