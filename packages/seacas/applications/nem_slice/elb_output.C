@@ -130,6 +130,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   case Balance::LINEAR: method1 += "Linear decomposition"; break;
   case Balance::RANDOM: method1 += "Random decomposition"; break;
   case Balance::SCATTERED: method1 += "Scattered decomposition"; break;
+  default:; // do nothing
   }
 
   if (lb->refine == Balance::KL_REFINE && lb->type != Balance::MULTIKL) {
