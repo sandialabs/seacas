@@ -214,22 +214,22 @@ struct Weight_Description
 /* Structure used to store information about the FEM mesh */
 template <typename INT> struct Mesh_Description
 {
-  size_t              num_nodes{0};
-  size_t              num_elems{0};
-  size_t              num_dims{0};
-  size_t              num_el_blks{0};
-  std::vector<INT>    eb_cnts{};
-  std::vector<INT>    eb_ids{};
-  std::vector<INT>    eb_npe{};
-  std::vector<E_Type> eb_type{};
-  size_t              num_node_sets{0};
-  size_t              num_side_sets{0};
-  size_t              max_np_elem{0};
-  size_t              ns_list_len{0};
-  char                title[MAX_LINE_LENGTH + 1]{};
-  std::vector<float>  coords{};
-  std::vector<E_Type> elem_type{};
-  INT               **connect;
+  size_t                   num_nodes{0};
+  size_t                   num_elems{0};
+  size_t                   num_dims{0};
+  size_t                   num_el_blks{0};
+  std::vector<INT>         eb_cnts{};
+  std::vector<INT>         eb_ids{};
+  std::vector<INT>         eb_npe{};
+  std::vector<ElementType> eb_type{};
+  size_t                   num_node_sets{0};
+  size_t                   num_side_sets{0};
+  size_t                   max_np_elem{0};
+  size_t                   ns_list_len{0};
+  char                     title[MAX_LINE_LENGTH + 1]{};
+  std::vector<float>       coords{};
+  std::vector<ElementType> elem_type{};
+  INT                    **connect;
 
   Mesh_Description() : connect(nullptr) {}
 };

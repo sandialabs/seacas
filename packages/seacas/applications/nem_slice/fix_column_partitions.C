@@ -34,7 +34,7 @@ namespace {
   */
 
   template <typename INT>
-  void find_adjacent_element(INT cur_elem, E_Type etype, int side_id, int nadj, INT const *adj,
+  void find_adjacent_element(INT cur_elem, ElementType etype, int side_id, int nadj, INT const *adj,
                              Mesh_Description<INT> const *const mesh, INT *adj_elem, int *adj_side)
   {
     *adj_elem = -1;
@@ -54,8 +54,8 @@ namespace {
     get_ss_mirror(etype, Data(side_nodes), side_id, Data(side_nodes_flipped));
 
     for (int i = 0; i < nadj; i++) {
-      INT    adj_elem_id = adj[i] - 1; // Adjacency graph entries start from 1
-      E_Type etype2      = mesh->elem_type[adj_elem_id];
+      INT         adj_elem_id = adj[i] - 1; // Adjacency graph entries start from 1
+      ElementType etype2      = mesh->elem_type[adj_elem_id];
 
       // Does this side occurs in the adjacent element?
 
@@ -113,7 +113,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       continue;
     }
 
-    E_Type etype = mesh->elem_type[i];
+    ElementType etype = mesh->elem_type[i];
 
     // Only hexes and wedges can be stacked in columns
     if (!is_hex(etype) && !is_wedge(etype)) {

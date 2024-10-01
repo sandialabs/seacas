@@ -245,8 +245,8 @@ namespace {
       int nsides     = 0;
 
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-        E_Type etype      = mesh->elem_type[ecnt];
-        E_Type etype_last = NULL_EL;
+        ElementType etype      = mesh->elem_type[ecnt];
+        ElementType etype_last = ElementType::NULL_EL;
         if (etype != etype_last) {
           etype_last = etype;
           element_3d = is_3d_element(mesh->elem_type[ecnt]);
@@ -256,7 +256,7 @@ namespace {
           nsides = get_elem_info(NSIDES, etype);
         }
 
-        if (etype != SPHERE || problem->no_sph == 1) {
+        if (etype != ElementType::SPHERE || problem->no_sph == 1) {
           graph->start[cnt] = graph->nadj;
           assert(graph->nadj == graph->adj.size());
 
@@ -287,7 +287,7 @@ namespace {
 
                 /* make sure we're not checking if the element
                    is connected to itself */
-                if (ecnt != (size_t)entry && mesh->elem_type[entry] != SPHERE) {
+                if (ecnt != (size_t)entry && mesh->elem_type[entry] != ElementType::SPHERE) {
                   /* If tmp_element[entry] != ecnt, then entry is not in list... */
                   if ((size_t)tmp_element[entry] != ecnt) {
 #if 0
@@ -480,7 +480,7 @@ namespace {
                        * is connected to only an edge of a quad/tet
                        */
 
-                      E_Type etype2 = mesh->elem_type[entry];
+                      ElementType etype2 = mesh->elem_type[entry];
 
                       /* make sure this is a 3d element*/
 
@@ -526,7 +526,7 @@ namespace {
                           /* if this element 1 is a hexshell, then only
                              require 4 of the 6 nodes to match between elements
                              1 and 2 */
-                          if (etype == HEXSHELL && side_cnt == 6) {
+                          if (etype == ElementType::HEXSHELL && side_cnt == 6) {
                             side_cnt = 4;
                           }
 

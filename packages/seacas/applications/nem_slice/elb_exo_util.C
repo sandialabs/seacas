@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "elb.h"      // for Weight_Description, etc
-#include "elb_elem.h" // for get_elem_type, E_Type, etc
+#include "elb_elem.h" // for get_elem_type, ElementType, etc
 #include "elb_err.h"  // for Gen_Error, MAX_ERR_MSG
 #include "elb_exo.h"
 #include "elb_groups.h" // for parse_groups
@@ -233,7 +233,7 @@ int read_mesh_params(const std::string &exo_file, Problem_Description *problem,
       sphere->end[0] = mesh->eb_cnts[cnt];
     }
 
-    if (mesh->eb_type[cnt] == SPHERE && problem->no_sph != 1) {
+    if (mesh->eb_type[cnt] == ElementType::SPHERE && problem->no_sph != 1) {
       sphere->num += mesh->eb_cnts[cnt];
       sphere->adjust[cnt] = 0;
     }

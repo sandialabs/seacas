@@ -25,7 +25,7 @@
 
 #include "chaco.h"      // for input_assign, interface
 #include "elb.h"        // for LB_Description<INT>, etc
-#include "elb_elem.h"   // for E_Type, get_elem_info, etc
+#include "elb_elem.h"   // for ElementType, get_elem_info, etc
 #include "elb_err.h"    // for Gen_Error
 #include "elb_graph.h"  // for generate_graph
 #include "elb_groups.h" // for get_group_info
@@ -260,7 +260,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       size_t cnt = 0;
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
 
-        if (mesh->elem_type[ecnt] != SPHERE || problem->no_sph == 1) {
+        if (mesh->elem_type[ecnt] != ElementType::SPHERE || problem->no_sph == 1) {
           /*
            * for our purposes, the coordinate of the element will
            * be the average of the coordinates of the nodes that make
@@ -840,7 +840,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
              * First generate "holes" in the vertex2proc vector where the
              * sphere assignments will be.
              */
-            if (mesh->elem_type[ecnt] == SPHERE) {
+            if (mesh->elem_type[ecnt] == ElementType::SPHERE) {
               for (size_t cnt = (problem->num_vertices); cnt > ecnt; cnt--) {
                 lb->vertex2proc[cnt] = lb->vertex2proc[cnt - 1];
               }
@@ -861,7 +861,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         size_t cnt2  = 0;
 
         for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-          if (mesh->elem_type[ecnt] == SPHERE) {
+          if (mesh->elem_type[ecnt] == ElementType::SPHERE) {
             lb->vertex2proc[ecnt] = iproc;
             cnt2++;
 
@@ -1254,7 +1254,7 @@ namespace {
 
       size_t num_found = 0;
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-        E_Type etype = mesh->elem_type[ecnt];
+        ElementType etype = mesh->elem_type[ecnt];
 
         /* need to check for volume elements */
         if (is_3d_element(etype)) {
@@ -1299,8 +1299,8 @@ namespace {
                */
               for (size_t pcnt = 0; pcnt < nhold; pcnt++) {
 
-                size_t el2    = graph->sur_elem[node][pcnt];
-                E_Type etype2 = mesh->elem_type[el2];
+                size_t      el2    = graph->sur_elem[node][pcnt];
+                ElementType etype2 = mesh->elem_type[el2];
 
                 int proc2 = 0;
                 if (check_type == Issues::LOCAL_ISSUES) {
@@ -1309,11 +1309,12 @@ namespace {
                 assert(proc2 < machine->num_procs);
 
                 if (ecnt != el2 && proc == proc2) {
-                  if (etype2 == BAR2 || etype2 == BAR3 || etype2 == SHELL2 || etype2 == SHELL3) {
+                  if (etype2 == ElementType::BAR2 || etype2 == ElementType::BAR3 ||
+                      etype2 == ElementType::SHELL2 || etype2 == ElementType::SHELL3) {
                     problems[node] = el2 + 1;
                   }
-                  else if (etype2 == SHELL4 || etype2 == SHELL8 || etype2 == TSHELL3 ||
-                           etype2 == TSHELL6) {
+                  else if (etype2 == ElementType::SHELL4 || etype2 == ElementType::SHELL8 ||
+                           etype2 == ElementType::TSHELL3 || etype2 == ElementType::TSHELL6) {
                     /*
                      * look for an element connect to one of the shells faces (not edges)
                      * one can look at elements connected to 3 of the nodes - cannot use
@@ -1366,8 +1367,8 @@ namespace {
           for (int ncnt = 0; ncnt < nnodes; ncnt++) {
             size_t node = mesh->connect[ecnt][ncnt];
             if (problems[node]) {
-              size_t el2    = problems[node] - 1;
-              E_Type etype2 = mesh->elem_type[el2];
+              size_t      el2    = problems[node] - 1;
+              ElementType etype2 = mesh->elem_type[el2];
 
               if (check_type == Issues::LOCAL_ISSUES) {
                 fmt::print("WARNING: On Processor {} Local Element {}"
@@ -1432,9 +1433,9 @@ namespace {
       int internal = 1;
       int flag     = 0;
       for (size_t ecnt = 0; ecnt < graph->sur_elem[ncnt].size(); ecnt++) {
-        int    elem   = graph->sur_elem[ncnt][ecnt];
-        E_Type etype  = mesh->elem_type[elem];
-        int    nnodes = get_elem_info(NNODES, etype);
+        int         elem   = graph->sur_elem[ncnt][ecnt];
+        ElementType etype  = mesh->elem_type[elem];
+        int         nnodes = get_elem_info(NNODES, etype);
         for (size_t i = 0; i < static_cast<size_t>(nnodes); i++) {
           int proc_n = lb->vertex2proc[mesh->connect[elem][i]];
           assert(proc_n < machine->num_procs);
@@ -1470,8 +1471,8 @@ namespace {
     /* Find the internal elements */
     time1 = get_time();
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-      E_Type etype  = mesh->elem_type[ecnt];
-      int    nnodes = get_elem_info(NNODES, etype);
+      ElementType etype  = mesh->elem_type[ecnt];
+      int         nnodes = get_elem_info(NNODES, etype);
       for (size_t ncnt = 0; ncnt < static_cast<size_t>(nnodes); ncnt++) {
         int node = mesh->connect[ecnt][ncnt];
         int proc = lb->vertex2proc[node];
@@ -1580,10 +1581,10 @@ namespace {
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
         int proc = lb->vertex2proc[ecnt];
         assert(proc < machine->num_procs);
-        bool   internal = true;
-        int    flag     = 0;
-        E_Type etype    = mesh->elem_type[ecnt];
-        int    dim1     = get_elem_info(NDIM, etype);
+        bool        internal = true;
+        int         flag     = 0;
+        ElementType etype    = mesh->elem_type[ecnt];
+        int         dim1     = get_elem_info(NDIM, etype);
 
         /* need to check for hex's or tet's */
         bool hflag1 = is_hex(etype);
@@ -1627,7 +1628,8 @@ namespace {
 
             /* ignore degenerate bars */
 
-            if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
+            if (!((etype == ElementType::BAR2 || etype == ElementType::SHELL2) &&
+                  side_nodes[0] == side_nodes[1])) {
 
               size_t nhold = graph->sur_elem[side_nodes[0]].size();
               for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
@@ -1811,7 +1813,7 @@ namespace {
 
               if (proc != proc2) {
 
-                E_Type etype2 = mesh->elem_type[elem];
+                ElementType etype2 = mesh->elem_type[elem];
 
                 int dim2 = get_elem_info(NDIM, etype2);
 
@@ -1861,7 +1863,7 @@ namespace {
                      * small kludge to handle 6 node faces butted up against
                      * 4 node faces
                      */
-                    if (etype == HEXSHELL && side_cnt == 6) {
+                    if (etype == ElementType::HEXSHELL && side_cnt == 6) {
                       side_cnt = 4;
                     }
 
