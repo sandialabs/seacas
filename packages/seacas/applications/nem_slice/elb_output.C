@@ -130,6 +130,8 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   case Balance::LINEAR: method1 += "Linear decomposition"; break;
   case Balance::RANDOM: method1 += "Random decomposition"; break;
   case Balance::SCATTERED: method1 += "Scattered decomposition"; break;
+  case Balance::INFILE: method1 += "Infile decomposition"; break;
+  case Balance::INVALID: method1 += "ERROR: Invalid decomposition"; break;
   default:; // do nothing
   }
 
