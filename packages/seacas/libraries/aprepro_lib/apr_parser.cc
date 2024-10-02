@@ -171,7 +171,7 @@ namespace SEAMS {
   {
   }
 
-  Parser::~Parser() {}
+  Parser::~Parser() = default;
 
   Parser::syntax_error::~syntax_error() YY_NOEXCEPT YY_NOTHROW {}
 

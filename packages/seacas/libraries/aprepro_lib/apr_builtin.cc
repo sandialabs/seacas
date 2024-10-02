@@ -108,7 +108,7 @@ namespace SEAMS {
     reset_error();
     double temp = (x < 0 ? -std::floor(-(x)) : std::floor(x));
     SEAMS::math_error("int");
-    return (temp);
+    return temp;
   }
 
   // DO_NINT:  Calculate integer nearest value
@@ -117,7 +117,7 @@ namespace SEAMS {
     reset_error();
     double temp = (x < 0 ? -std::floor(0.5 - x) : std::floor(x + 0.5));
     SEAMS::math_error("nint");
-    return (temp);
+    return temp;
   }
 
   // DO_DIST: Calculate distance between point 1 at (x1,y1) and
@@ -128,7 +128,7 @@ namespace SEAMS {
     reset_error();
     double temp = std::hypot((x1 - x2), (y1 - y2));
     SEAMS::math_error("hypot");
-    return (temp);
+    return temp;
   }
 
   // DO_ANGLE: Calculate angle (radians) between vector 1 at (0,0; x1,y1) and
@@ -140,7 +140,7 @@ namespace SEAMS {
     reset_error();
     temp = acos(temp);
     SEAMS::math_error("angle");
-    return (temp);
+    return temp;
   }
 
   // DO_ANGLE: Calculate angle (degrees) between vector 1 at (0,0; x1,y1) and
@@ -152,7 +152,7 @@ namespace SEAMS {
     reset_error();
     temp = r2d(acos(temp));
     SEAMS::math_error("angled");
-    return (temp);
+    return temp;
   }
 
   // DO_HYPOT: calculate sqrt(p^2 + q^2)
@@ -169,7 +169,7 @@ namespace SEAMS {
     reset_error();
     double temp = max(x, y);
     SEAMS::math_error("max");
-    return (temp);
+    return temp;
   }
 
   double do_min(double x, double y)
@@ -177,7 +177,7 @@ namespace SEAMS {
     reset_error();
     double temp = min(x, y);
     SEAMS::math_error("min");
-    return (temp);
+    return temp;
   }
 
   double do_d2r(double x) { return (d2r(x)); }
@@ -189,7 +189,7 @@ namespace SEAMS {
     reset_error();
     double temp = sin(d2r(x));
     SEAMS::math_error("sind");
-    return (temp);
+    return temp;
   }
 
   double do_sin(double x)
@@ -197,7 +197,7 @@ namespace SEAMS {
     reset_error();
     double temp = sin(x);
     SEAMS::math_error("sin");
-    return (temp);
+    return temp;
   }
 
   double do_cosd(double x)
@@ -205,7 +205,7 @@ namespace SEAMS {
     reset_error();
     double temp = cos(d2r(x));
     SEAMS::math_error("cosd");
-    return (temp);
+    return temp;
   }
 
   double do_cos(double x)
@@ -213,7 +213,7 @@ namespace SEAMS {
     reset_error();
     double temp = cos(x);
     SEAMS::math_error("cos");
-    return (temp);
+    return temp;
   }
 
   double do_tand(double x)
@@ -221,7 +221,7 @@ namespace SEAMS {
     reset_error();
     double temp = tan(d2r(x));
     SEAMS::math_error("tand");
-    return (temp);
+    return temp;
   }
 
   double do_tan(double x)
@@ -229,7 +229,7 @@ namespace SEAMS {
     reset_error();
     double temp = tan(x);
     SEAMS::math_error("tan");
-    return (temp);
+    return temp;
   }
 
   double do_atan2d(double x, double y)
@@ -237,7 +237,7 @@ namespace SEAMS {
     reset_error();
     double temp = r2d(atan2(x, y));
     SEAMS::math_error("atan2d");
-    return (temp);
+    return temp;
   }
 
   double do_atan2(double x, double y)
@@ -245,7 +245,7 @@ namespace SEAMS {
     reset_error();
     double temp = atan2(x, y);
     SEAMS::math_error("atan2");
-    return (temp);
+    return temp;
   }
 
   double do_atand(double x)
@@ -253,7 +253,7 @@ namespace SEAMS {
     reset_error();
     double temp = r2d(atan(x));
     SEAMS::math_error("atand");
-    return (temp);
+    return temp;
   }
 
   double do_atan(double x)
@@ -261,7 +261,7 @@ namespace SEAMS {
     reset_error();
     double temp = atan(x);
     SEAMS::math_error("atan");
-    return (temp);
+    return temp;
   }
 
   double do_asind(double x)
@@ -269,7 +269,7 @@ namespace SEAMS {
     reset_error();
     double temp = r2d(asin(x));
     SEAMS::math_error("asind");
-    return (temp);
+    return temp;
   }
 
   double do_asin(double x)
@@ -277,7 +277,7 @@ namespace SEAMS {
     reset_error();
     double temp = asin(x);
     SEAMS::math_error("asin");
-    return (temp);
+    return temp;
   }
 
   double do_acosd(double x)
@@ -285,7 +285,7 @@ namespace SEAMS {
     reset_error();
     double temp = r2d(acos(x));
     SEAMS::math_error("acosd");
-    return (temp);
+    return temp;
   }
 
   double do_acos(double x)
@@ -293,7 +293,7 @@ namespace SEAMS {
     reset_error();
     double temp = acos(x);
     SEAMS::math_error("acos");
-    return (temp);
+    return temp;
   }
 
   // do_srand(x) Seed the random generator with the specified integer value
@@ -333,7 +333,7 @@ namespace SEAMS {
     reset_error();
     double temp = (y) >= 0 ? fabs(x) : -fabs(x);
     SEAMS::math_error("sign");
-    return (temp);
+    return temp;
   }
 
   double do_dim(double x, double y)
@@ -341,7 +341,7 @@ namespace SEAMS {
     reset_error();
     double temp = x - (min(x, y));
     SEAMS::math_error("dim");
-    return (temp);
+    return temp;
   }
 
   double do_fabs(double x)
@@ -349,7 +349,7 @@ namespace SEAMS {
     reset_error();
     double temp = fabs(x);
     SEAMS::math_error("fabs");
-    return (temp);
+    return temp;
   }
 
   double do_ceil(double x)
@@ -357,7 +357,7 @@ namespace SEAMS {
     reset_error();
     double temp = ceil(x);
     SEAMS::math_error("ceil");
-    return (temp);
+    return temp;
   }
 
   double do_cosh(double x)
@@ -365,7 +365,7 @@ namespace SEAMS {
     reset_error();
     double temp = cosh(x);
     SEAMS::math_error("cosh");
-    return (temp);
+    return temp;
   }
 
   double do_exp(double x)
@@ -381,7 +381,7 @@ namespace SEAMS {
     else {
       reset_error();
     }
-    return (temp);
+    return temp;
   }
 
   double do_expm1(double x)
@@ -389,7 +389,7 @@ namespace SEAMS {
     reset_error();
     double temp = std::expm1(x);
     SEAMS::math_error("exp");
-    return (temp);
+    return temp;
   }
 
   double do_erf(double x) { return std::erf(x); }
@@ -401,7 +401,7 @@ namespace SEAMS {
     reset_error();
     double temp = floor(x);
     SEAMS::math_error("floor");
-    return (temp);
+    return temp;
   }
 
   double do_fmod(double x, double y)
@@ -409,7 +409,7 @@ namespace SEAMS {
     reset_error();
     double temp = fmod(x, y);
     SEAMS::math_error("fmod");
-    return (temp);
+    return temp;
   }
 
   double do_log(double x)
@@ -417,7 +417,7 @@ namespace SEAMS {
     reset_error();
     double temp = std::log(x);
     SEAMS::math_error("log");
-    return (temp);
+    return temp;
   }
 
   double do_log10(double x)
@@ -425,7 +425,7 @@ namespace SEAMS {
     reset_error();
     double temp = std::log10(x);
     SEAMS::math_error("log10");
-    return (temp);
+    return temp;
   }
 
   double do_sinh(double x)
@@ -433,7 +433,7 @@ namespace SEAMS {
     reset_error();
     double temp = sinh(x);
     SEAMS::math_error("sinh");
-    return (temp);
+    return temp;
   }
 
   double do_sqrt(double x)
@@ -444,7 +444,7 @@ namespace SEAMS {
     if (fetestexcept(FE_INVALID | FE_OVERFLOW | FE_DIVBYZERO) != 0) {
       SEAMS::math_error("sqrt");
     }
-    return (temp);
+    return temp;
   }
 
   double do_cbrt(double x)
@@ -455,7 +455,7 @@ namespace SEAMS {
     if (fetestexcept(FE_INVALID | FE_OVERFLOW | FE_DIVBYZERO) != 0) {
       SEAMS::math_error("sqrt");
     }
-    return (temp);
+    return temp;
   }
 
   double do_tanh(double x)
@@ -463,7 +463,7 @@ namespace SEAMS {
     reset_error();
     double temp = tanh(x);
     SEAMS::math_error("tanh");
-    return (temp);
+    return temp;
   }
 
   double do_polarX(double rad, double ang) { return (rad * cos(d2r(ang))); }
