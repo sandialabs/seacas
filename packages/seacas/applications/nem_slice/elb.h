@@ -19,11 +19,6 @@
 #define ELB_FALSE   0
 #define ELB_TRUE    1
 
-/* Macro for maximum value */
-#ifndef MAX
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#endif
-
 /*
  * Constants for memory allocation of graph structures. The smaller these
  * values, the more memory-efficient the code will be. Larger values

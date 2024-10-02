@@ -94,12 +94,12 @@ int get_ss_mirror(ElementType etype,             /* The element type */
 );
 
 /* Define for the maximum number of nodes on an element side/face */
-#define MAX_SIDE_NODES 9
+const int MAX_SIDE_NODES = 9;
 /*
  * Define for the maximum number of sides (and hence communications
  * entries) that an element can have
  */
-#define MAX_ELEM_SIDES 6
+const int MAX_ELEM_SIDES = 6;
 
 bool is_hex(ElementType etype);
 bool is_tet(ElementType etype);

@@ -246,7 +246,7 @@ int read_mesh_params(const std::string &exo_file, Problem_Description *problem,
       sphere->end[cnt]   = sphere->begin[cnt] + mesh->eb_cnts[cnt];
     }
 
-    mesh->max_np_elem = MAX(mesh->max_np_elem, (size_t)nodes_in_elem);
+    mesh->max_np_elem = std::max(mesh->max_np_elem, (size_t)nodes_in_elem);
   }
 
   /* Close the ExodusII file */
@@ -385,7 +385,8 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
                 if (weight->ow_read) {
                   /* check if it has been overwritten already */
                   if (weight->ow[node]) {
-                    weight->vertices[node] = MAX(weight->vertices[node], weight->elemblk_wgt[wgt]);
+                    weight->vertices[node] =
+                        std::max(weight->vertices[node], weight->elemblk_wgt[wgt]);
                   }
                   else {
                     weight->vertices[node] = weight->elemblk_wgt[wgt];
@@ -394,7 +395,7 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
                 }
               }
               else {
-                weight->vertices[node] = MAX(weight->vertices[node], weight->elemblk_wgt[wgt]);
+                weight->vertices[node] = std::max(weight->vertices[node], weight->elemblk_wgt[wgt]);
               }
             }
             else {
