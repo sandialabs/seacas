@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ioss_Sort.h"
+#include <array>
 #include <cassert>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -102,7 +103,7 @@ TEST_CASE("sort")
     SECTION("output")
     {
       // Just printing output; no test...
-      std::string type[] = {"sawtooth", "do_rand", "stagger", "plateau", "shuffle"};
+      std::array<std::string, 5> type = {"sawtooth", "do_rand", "stagger", "plateau", "shuffle"};
       fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
     }
 
