@@ -27,7 +27,8 @@
 static void exi_get_entity_count(int exoid, ex_init_params *info)
 {
   int ndims;
-  nc_inq(exoid, &ndims, NULL, NULL, NULL);
+  int include_parent_group = 1;
+  nc_inq_dimids(exoid, &ndims, NULL, include_parent_group);
   for (int dimid = 0; dimid < ndims; dimid++) {
     char   dim_nm[NC_MAX_NAME + 1] = {'\0'};
     size_t dim_sz;
