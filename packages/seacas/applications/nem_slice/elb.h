@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "5.03 (2024-09-30)"
+#define ELB_VERSION "5.04 (2024-10-02)"
 #define UTIL_NAME   "nem_slice"
 #define ELB_FALSE   0
 #define ELB_TRUE    1
@@ -62,13 +62,11 @@ struct Machine_Description
 {
   MachineType type{MachineType::INVALID};
   int         num_dims{-1};
-  int         dim[3]{};
+  int         dim[3]{-1, -1, -1};
   int         num_boxes{-1};     /* added for cluster type machines */
   int         procs_per_box{-1}; /* added for cluster type machines, if there is only
                                 one box, then this is the same as num_procs */
   int num_procs{-1};
-
-  Machine_Description() { dim[0] = dim[1] = dim[2] = -1; }
 };
 
 /* Load balance types */
@@ -123,8 +121,6 @@ template <typename INT> struct LB_Description
   std::vector<std::vector<INT>>              e_cmap_sides{};
   std::vector<std::vector<INT>>              e_cmap_procs{};
   std::vector<std::vector<INT>>              e_cmap_neigh{};
-
-  LB_Description() = default;
 };
 
 enum class DecompType { NODAL, ELEMENTAL };
@@ -154,8 +150,6 @@ struct Problem_Description
   int              num_groups{-1};
   int              int64db{0};  /* integer types for output mesh database */
   int              int64api{0}; /* integer types for exodus api calls */
-
-  Problem_Description() = default;
 };
 
 /* Solver options */
@@ -167,8 +161,6 @@ struct Solver_Description
   double        tolerance{-1.0};
   SolverOptions rqi_flag{SolverOptions::INVALID};
   int           vmax{-1};
-
-  Solver_Description() = default;
 };
 
 /* Weighting options */
@@ -207,8 +199,6 @@ struct Weight_Description
 
   std::vector<int>   vertices{};
   std::vector<float> edges{};
-
-  Weight_Description() = default;
 };
 
 /* Structure used to store information about the FEM mesh */
@@ -229,9 +219,7 @@ template <typename INT> struct Mesh_Description
   char                     title[MAX_LINE_LENGTH + 1]{};
   std::vector<float>       coords{};
   std::vector<ElementType> elem_type{};
-  INT                    **connect;
-
-  Mesh_Description() : connect(nullptr) {}
+  INT                    **connect{nullptr};
 };
 
 /* Structure for handling meshes with spheres */
@@ -241,8 +229,6 @@ struct Sphere_Info
   std::vector<int> adjust{};
   std::vector<int> begin{};
   std::vector<int> end{};
-
-  Sphere_Info() = default;
 };
 
 /* Structure used to store various information about the graph */
@@ -253,7 +239,6 @@ template <typename INT> struct Graph_Description
   std::vector<INT>              adj{};
   std::vector<INT>              start{};
   std::vector<std::vector<INT>> sur_elem;
-  Graph_Description() = default;
 };
 
 /* Various constants */

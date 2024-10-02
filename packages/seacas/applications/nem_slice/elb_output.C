@@ -580,7 +580,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
       }
       else {
         int proc         = lb->vertex2proc[mesh->connect[ecnt][0]];
-        int nnodes       = get_elem_info(NNODES, mesh->elem_type[ecnt]);
+        int nnodes       = get_elem_info(ElementInfo::NNODES, mesh->elem_type[ecnt]);
         elem_block[ecnt] = proc;
         for (int ncnt = 1; ncnt < nnodes; ncnt++) {
           if (lb->vertex2proc[mesh->connect[ecnt][ncnt]] != proc) {
@@ -605,7 +605,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
           old_pos += pos + 1;
           ecnt       = mesh->num_elems - old_pos;
           el_ptr     = Data(elem_block) + old_pos;
-          int nnodes = get_elem_info(NNODES, mesh->elem_type[old_pos - 1]);
+          int nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[old_pos - 1]);
           for (int ncnt = 0; ncnt < nnodes; ncnt++) {
             tmp_connect[ccnt++] = mesh->connect[old_pos - 1][ncnt] + 1;
           }

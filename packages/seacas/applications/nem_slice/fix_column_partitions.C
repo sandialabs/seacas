@@ -124,7 +124,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     // local numbering of nodes with respect to the element node list
 
     INT *elnodes  = mesh->connect[i];
-    int  nelnodes = get_elem_info(NNODES, etype);
+    int  nelnodes = get_elem_info(ElementInfo::NNODES, etype);
 
     float elcoord[27][3];
     for (int j = 0; j < nelnodes; j++) {
@@ -135,7 +135,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
     int top_side0 = 0;
     int bot_side0 = 0;
-    int nelfaces  = get_elem_info(NSIDES, etype);
+    int nelfaces  = get_elem_info(ElementInfo::NSIDES, etype);
 
     // Find top and bottom faces by eliminating lateral faces under
     // the assumption that lateral face normals have no Z component

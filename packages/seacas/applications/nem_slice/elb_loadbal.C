@@ -266,7 +266,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
            * be the average of the coordinates of the nodes that make
            * up that element
            */
-          size_t nnodes = get_elem_info(NNODES, mesh->elem_type[cnt]);
+          size_t nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[cnt]);
           for (size_t ncnt = 0; ncnt < nnodes; ncnt++) {
             x_elem_ptr[cnt] += x_ptr[(mesh->connect[ecnt][ncnt])];
             y_elem_ptr[cnt] += y_ptr[(mesh->connect[ecnt][ncnt])];
@@ -1259,14 +1259,14 @@ namespace {
         /* need to check for volume elements */
         if (is_3d_element(etype)) {
 
-          int nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
+          int nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[ecnt]);
 
           for (int ncnt = 0; ncnt < nnodes; ncnt++) {
             size_t node    = mesh->connect[ecnt][ncnt];
             problems[node] = 0;
           }
 
-          int nsides = get_elem_info(NSIDES, etype);
+          int nsides = get_elem_info(ElementInfo::NSIDES, etype);
           int proc   = 0;
           if (check_type == Issues::LOCAL_ISSUES) {
             proc = lb->vertex2proc[ecnt];
@@ -1321,7 +1321,7 @@ namespace {
                      * diagonals due to triangular shells
                      */
 
-                    int nsides2 = get_elem_info(NSIDES, etype2);
+                    int nsides2 = get_elem_info(ElementInfo::NSIDES, etype2);
 
                     size_t count = 0;
                     for (int cnt = 0; cnt < nsides2; cnt++) {
@@ -1435,7 +1435,7 @@ namespace {
       for (size_t ecnt = 0; ecnt < graph->sur_elem[ncnt].size(); ecnt++) {
         int         elem   = graph->sur_elem[ncnt][ecnt];
         ElementType etype  = mesh->elem_type[elem];
-        int         nnodes = get_elem_info(NNODES, etype);
+        int         nnodes = get_elem_info(ElementInfo::NNODES, etype);
         for (size_t i = 0; i < static_cast<size_t>(nnodes); i++) {
           int proc_n = lb->vertex2proc[mesh->connect[elem][i]];
           assert(proc_n < machine->num_procs);
@@ -1472,7 +1472,7 @@ namespace {
     time1 = get_time();
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
       ElementType etype  = mesh->elem_type[ecnt];
-      int         nnodes = get_elem_info(NNODES, etype);
+      int         nnodes = get_elem_info(ElementInfo::NNODES, etype);
       for (size_t ncnt = 0; ncnt < static_cast<size_t>(nnodes); ncnt++) {
         int node = mesh->connect[ecnt][ncnt];
         int proc = lb->vertex2proc[node];
@@ -1530,7 +1530,7 @@ namespace {
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
         int  proce  = lb->vertex2proc[ecnt];
         auto etype  = mesh->elem_type[ecnt];
-        int  nsides = get_elem_info(NSIDES, etype);
+        int  nsides = get_elem_info(ElementInfo::NSIDES, etype);
         assert(nsides == 2);
 
         /* check each side of this element */
@@ -1584,7 +1584,7 @@ namespace {
         bool        internal = true;
         int         flag     = 0;
         ElementType etype    = mesh->elem_type[ecnt];
-        int         dim1     = get_elem_info(NDIM, etype);
+        int         dim1     = get_elem_info(ElementInfo::NDIM, etype);
 
         /* need to check for hex's or tet's */
         bool hflag1 = is_hex(etype);
@@ -1592,7 +1592,7 @@ namespace {
         /* a TET10 cannot connect to a HEX */
         bool tflag1 = is_tet(etype);
 
-        int nsides = get_elem_info(NSIDES, etype);
+        int nsides = get_elem_info(ElementInfo::NSIDES, etype);
 
         /* check each side of this element */
         for (int nscnt = 0; nscnt < nsides; nscnt++) {
@@ -1815,7 +1815,7 @@ namespace {
 
                 ElementType etype2 = mesh->elem_type[elem];
 
-                int dim2 = get_elem_info(NDIM, etype2);
+                int dim2 = get_elem_info(ElementInfo::NDIM, etype2);
 
                 int diff = abs(dim1 - dim2);
 
@@ -1900,7 +1900,7 @@ namespace {
                     Gen_Error(0, cmesg);
                     cmesg = fmt::format("Element 1: {}", (ecnt + 1));
                     Gen_Error(0, cmesg);
-                    nnodes = get_elem_info(NNODES, etype);
+                    nnodes = get_elem_info(ElementInfo::NNODES, etype);
                     cmesg  = "connect table:";
                     for (int i = 0; i < nnodes; i++) {
                       std::string tmpstr = fmt::format(" {}", (size_t)(mesh->connect[ecnt][i] + 1));
@@ -1917,7 +1917,7 @@ namespace {
                     Gen_Error(0, cmesg);
                     cmesg = fmt::format("Element 2: {}", (size_t)(elem + 1));
                     Gen_Error(0, cmesg);
-                    nnodes = get_elem_info(NNODES, etype2);
+                    nnodes = get_elem_info(ElementInfo::NNODES, etype2);
                     cmesg  = "connect table:";
                     for (int i = 0; i < nnodes; i++) {
                       std::string tmpstr = fmt::format(" {}", (size_t)(mesh->connect[elem][i] + 1));

@@ -318,7 +318,7 @@ bool is_3d_element(ElementType etype)
  *----------------------------------------------------------------------------
  * This function returns various information about the input element type.
  *****************************************************************************/
-int get_elem_info(const int req, const ElementType etype)
+int get_elem_info(const ElementInfo req, const ElementType etype)
 {
 
   int answer = 0;
@@ -327,10 +327,10 @@ int get_elem_info(const int req, const ElementType etype)
   {
   case ElementType::BAR1D2:
     switch (req) {
-    case NNODES: answer = 2; break;
-    case NSIDE_NODES: answer = 1; break;
-    case NSIDES: answer = 2; break;
-    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    case ElementInfo::NNODES: answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 1; break;
+    case ElementInfo::NSIDES: answer = 2; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -340,10 +340,10 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::BAR2:
     switch (req) {
-    case NNODES: answer = 2; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 1; break;
-    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    case ElementInfo::NNODES: answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 1; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -353,10 +353,10 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::SHELL2:
     switch (req) {
-    case NNODES: answer = 2; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 1; break;
-    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    case ElementInfo::NNODES: answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 1; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -366,10 +366,10 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::SHELL3:
     switch (req) {
-    case NNODES: answer = 3; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 1; break;
-    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    case ElementInfo::NNODES: answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 1; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -379,10 +379,10 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::BAR1D3:
     switch (req) {
-    case NNODES: answer = 3; break;
-    case NSIDE_NODES: answer = 1; break;
-    case NSIDES: answer = 2; break;
-    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    case ElementInfo::NNODES: answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 1; break;
+    case ElementInfo::NSIDES: answer = 2; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -392,10 +392,10 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::BAR3:
     switch (req) {
-    case NNODES: answer = 3; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 1; break;
-    case NDIM: /* number of physical dimensions */ answer = 1; break;
+    case ElementInfo::NNODES: answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 1; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 1; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -405,20 +405,20 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::SPHERE:
     switch (req) {
-    case NNODES: answer = 1; break;
-    case NSIDE_NODES: answer = 0; break;
-    case NSIDES: answer = 0; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 1; break;
+    case ElementInfo::NSIDE_NODES: answer = 0; break;
+    case ElementInfo::NSIDES: answer = 0; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     }
     break;
 
   case ElementType::QUAD4: /* First order quad */
     switch (req)           /* select type of information required*/
     {
-    case NNODES: /* number of nodes */ answer = 4; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 4; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal:unknown quantity");
       error_report();
@@ -429,10 +429,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::QUAD8: /* 2nd order serendipity quad */
     switch (req)           /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 8; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 3; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 8; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 3; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -443,10 +443,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::QUAD9: /* biquadratic quadrilateral */
     switch (req)           /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 9; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 3; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 9; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 3; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -457,9 +457,9 @@ int get_elem_info(const int req, const ElementType etype)
   /* NOTE: cannot determine NSIDE_NODES for SHELL element */
   case ElementType::SHELL4:
     switch (req) {
-    case NNODES: answer = 4; break;
-    case NSIDES: answer = 6; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NNODES: answer = 4; break;
+    case ElementInfo::NSIDES: answer = 6; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -469,9 +469,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::SHELL8:
     switch (req) {
-    case NNODES: answer = 8; break;
-    case NSIDES: answer = 6; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NNODES: answer = 8; break;
+    case ElementInfo::NSIDES: answer = 6; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -481,9 +481,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::SHELL9:
     switch (req) {
-    case NNODES: answer = 9; break;
-    case NSIDES: answer = 6; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NNODES: answer = 9; break;
+    case ElementInfo::NSIDES: answer = 6; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -494,10 +494,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TRI3:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 3; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 3; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 3; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -508,10 +508,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TRI4:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 4; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 2; break;
-    case NSIDES: answer = 3; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 4; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 2; break;
+    case ElementInfo::NSIDES: answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -522,10 +522,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TRI6:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 6; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 3; break;
-    case NSIDES: answer = 3; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 6; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 3; break;
+    case ElementInfo::NSIDES: answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -536,10 +536,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TRI7:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 7; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDE_NODES: answer = 3; break;
-    case NSIDES: answer = 3; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 7; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDE_NODES: answer = 3; break;
+    case ElementInfo::NSIDES: answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -551,9 +551,9 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TSHELL3:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 3; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDES: answer = 5; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 3; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDES: answer = 5; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -564,9 +564,9 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TSHELL4:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 4; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDES: answer = 5; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 4; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDES: answer = 5; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -577,9 +577,9 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TSHELL6:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 6; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDES: answer = 5; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 6; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDES: answer = 5; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -590,9 +590,9 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TSHELL7:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 7; break;
-    case NDIM: /* number of physical dimensions */ answer = 2; break;
-    case NSIDES: answer = 5; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 7; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 2; break;
+    case ElementInfo::NSIDES: answer = 5; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -603,10 +603,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::HEX8: /* trilinear hexahedron */
     switch (req)          /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 8; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 4; break;
-    case NSIDES: answer = 6; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 8; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 4; break;
+    case ElementInfo::NSIDES: answer = 6; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -616,9 +616,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::HEX16: /* localization element NSNODES is not consistent... */
     switch (req) {
-    case NNODES: /* number of nodes */ answer = 16; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDES: answer = 6; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 16; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDES: answer = 6; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -629,10 +629,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::HEX20: /* serendipity triquadratic hexahedron */
     switch (req)           /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 20; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 8; break;
-    case NSIDES: answer = 6; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 20; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 8; break;
+    case ElementInfo::NSIDES: answer = 6; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -643,10 +643,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::HEX27: /* triquadratic hexahedron */
     switch (req)           /* select type of information required*/
     {
-    case NNODES: /* number of nodes */ answer = 27; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 9; break;
-    case NSIDES: answer = 6; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 27; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 9; break;
+    case ElementInfo::NSIDES: answer = 6; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -657,9 +657,9 @@ int get_elem_info(const int req, const ElementType etype)
   /* NOTE: cannot determine NSIDE_NODES for HEXSHELL element */
   case ElementType::HEXSHELL:
     switch (req) {
-    case NNODES: answer = 12; break;
-    case NSIDES: answer = 6; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 12; break;
+    case ElementInfo::NSIDES: answer = 6; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -670,10 +670,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TET4: /* trilinear tetrahedron */
     switch (req)          /* select type of information required*/
     {
-    case NNODES: /* number of nodes */ answer = 4; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 3; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 4; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 3; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -684,10 +684,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TET10: /* triquadradic tetrahedron */
     switch (req)           /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 10; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 6; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 10; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 6; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -698,10 +698,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TET14:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 14; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 7; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 14; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 7; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -712,10 +712,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TET15:
     switch (req) /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 15; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 7; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 15; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 7; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -726,10 +726,10 @@ int get_elem_info(const int req, const ElementType etype)
   case ElementType::TET8: /* 8-node (midface nodes) tetrahedron */
     switch (req)          /* select type of information required */
     {
-    case NNODES: /* number of nodes */ answer = 8; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
-    case NSIDE_NODES: answer = 4; break;
-    case NSIDES: answer = 4; break;
+    case ElementInfo::NNODES: /* number of nodes */ answer = 8; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NSIDE_NODES: answer = 4; break;
+    case ElementInfo::NSIDES: answer = 4; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -740,9 +740,9 @@ int get_elem_info(const int req, const ElementType etype)
   /* NOTE: cannot determine NSIDE_NODES for WEDGE elements */
   case ElementType::WEDGE6:
     switch (req) {
-    case NNODES: answer = 6; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 6; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -752,9 +752,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::WEDGE12:
     switch (req) {
-    case NNODES: answer = 12; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 12; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -764,9 +764,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::WEDGE15:
     switch (req) {
-    case NNODES: answer = 15; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 15; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -776,9 +776,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::WEDGE16:
     switch (req) {
-    case NNODES: answer = 16; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 16; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -788,9 +788,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::WEDGE20:
     switch (req) {
-    case NNODES: answer = 20; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 20; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -800,9 +800,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::WEDGE21:
     switch (req) {
-    case NNODES: answer = 21; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 21; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -813,9 +813,9 @@ int get_elem_info(const int req, const ElementType etype)
   /* NOTE: cannot determine NSIDE_NODES for PYRAMID element */
   case ElementType::PYRAMID5:
     switch (req) {
-    case NNODES: answer = 5; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 5; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -825,9 +825,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::PYRAMID13:
     switch (req) {
-    case NNODES: answer = 13; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 13; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -837,9 +837,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::PYRAMID14:
     switch (req) {
-    case NNODES: answer = 14; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 14; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -849,9 +849,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::PYRAMID18:
     switch (req) {
-    case NNODES: answer = 18; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 18; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -861,9 +861,9 @@ int get_elem_info(const int req, const ElementType etype)
 
   case ElementType::PYRAMID19:
     switch (req) {
-    case NNODES: answer = 19; break;
-    case NSIDES: answer = 5; break;
-    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case ElementInfo::NNODES: answer = 19; break;
+    case ElementInfo::NSIDES: answer = 5; break;
+    case ElementInfo::NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
       Gen_Error(0, "fatal: unknown quantity");
       error_report();
@@ -927,7 +927,7 @@ int get_side_id(const ElementType etype, const INT *connect, const int nsnodes, 
     }
   }
 
-  int nnodes = get_elem_info(NNODES, etype);
+  int nnodes = get_elem_info(ElementInfo::NNODES, etype);
 
   /* Find all of the side nodes in the connect table */
   int num = 0;
@@ -1453,7 +1453,7 @@ int get_side_id_hex_tet(const ElementType etype,   /* The element type */
 {
   std::array<int, MAX_SIDE_NODES> loc_node_ids{};
 
-  int nnodes = get_elem_info(NNODES, etype);
+  int nnodes = get_elem_info(ElementInfo::NNODES, etype);
 
   /* Find the local node numbers for nodes forming the side */
   int lcnt = 0;
@@ -1713,7 +1713,7 @@ int ss_to_node_list(const ElementType etype,    /* The element type */
   case ElementType::SHELL2:
     /* Bar1 has 1 side */
     for (i = 0; i < 2; i++) {
-      ss_node_list[i] = connect[(bar_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[bar_table[side_num][i] - 1];
     }
     break;
 
@@ -1721,358 +1721,302 @@ int ss_to_node_list(const ElementType etype,    /* The element type */
   case ElementType::SHELL3:
     /* Bar has 1 side */
     for (i = 0; i < 3; i++) {
-      ss_node_list[i] = connect[(bar_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[bar_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::QUAD4:
     for (i = 0; i < 2; i++) {
-      ss_node_list[i] = connect[(quad_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[quad_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::QUAD8:
   case ElementType::QUAD9:
     for (i = 0; i < 3; i++) {
-      ss_node_list[i] = connect[(quad_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[quad_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::SHELL4:
-    switch (side_num) {
-    case 0:
-    case 1:
+    if (side_num == 0 || side_num == 1) {
       for (i = 0; i < 4; i++) {
-        ss_node_list[i] = connect[(shell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[shell_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       /*
        * sides 3, 4, 5, & 6 correspond to sides 1, 2, 3, & 4
        * of the quad element.
        */
       for (i = 0; i < 2; i++) {
-        ss_node_list[i] = connect[(quad_table[(side_num - 2)][i] - 1)];
+        ss_node_list[i] = connect[quad_table[side_num - 2][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::SHELL8:
-    switch (side_num) {
-    case 0:
-    case 1:
+    if (side_num == 0 || side_num == 1) {
       for (i = 0; i < 8; i++) {
-        ss_node_list[i] = connect[(shell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[shell_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       /*
        * sides 3, 4, 5, & 6 correspond to sides 1, 2, 3, & 4
        * of the quad element.
        */
       for (i = 0; i < 3; i++) {
-        ss_node_list[i] = connect[(quad_table[(side_num - 2)][i] - 1)];
+        ss_node_list[i] = connect[quad_table[side_num - 2][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::SHELL9:
-    switch (side_num) {
-    case 0:
-    case 1:
+    if (side_num == 0 || side_num == 1) {
       for (i = 0; i < 9; i++) {
-        ss_node_list[i] = connect[(shell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[shell_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       /*
        * sides 3, 4, 5, & 6 correspond to sides 1, 2, 3, & 4
        * of the quad element.
        */
       for (i = 0; i < 3; i++) {
-        ss_node_list[i] = connect[(quad_table[(side_num - 2)][i] - 1)];
+        ss_node_list[i] = connect[quad_table[(side_num - 2)][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::TRI3:
   case ElementType::TRI4:
     for (i = 0; i < 2; i++) {
-      ss_node_list[i] = connect[(tri_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[tri_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::TRI6:
   case ElementType::TRI7:
     for (i = 0; i < 3; i++) {
-      ss_node_list[i] = connect[(tri_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[tri_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::TSHELL3:
   case ElementType::TSHELL4:
-    switch (side_num) {
-    case 0:
-    case 1:
+    if (side_num == 0 || side_num == 1) {
       for (i = 0; i < 3; i++) {
-        ss_node_list[i] = connect[(tshell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[tshell_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       /*
        * sides 3, 4 & 5 correspond to sides 1, 2 & 3
        * of the tri element.
        */
       for (i = 0; i < 2; i++) {
-        ss_node_list[i] = connect[(tri_table[(side_num - 2)][i] - 1)];
+        ss_node_list[i] = connect[tri_table[(side_num - 2)][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::TSHELL6:
   case ElementType::TSHELL7:
-    switch (side_num) {
-    case 0:
-    case 1:
+    if (side_num == 0 || side_num == 1) {
       for (i = 0; i < 6; i++) {
-        ss_node_list[i] = connect[(tshell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[tshell_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       /*
        * sides 3, 4 & 5 correspond to sides 1, 2 & 3
        * of the tri element.
        */
       for (i = 0; i < 3; i++) {
-        ss_node_list[i] = connect[(tri_table[(side_num - 2)][i] - 1)];
+        ss_node_list[i] = connect[tri_table[(side_num - 2)][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::HEX8:
     for (i = 0; i < 4; i++) {
-      ss_node_list[i] = connect[(hex_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[hex_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::HEX16:
-    switch (side_num) {
-    case 4:
-    case 5:
+    if (side_num == 4 || side_num == 5) {
       for (i = 0; i < 8; i++) {
-        ss_node_list[i] = connect[(hex16_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[hex16_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 6; i++) {
-        ss_node_list[i] = connect[(hex16_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[hex16_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::HEX20:
     for (i = 0; i < 8; i++) {
-      ss_node_list[i] = connect[(hex_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[hex_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::HEX27:
     for (i = 0; i < 9; i++) {
-      ss_node_list[i] = connect[(hex_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[hex_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::TET4:
     for (i = 0; i < 3; i++) {
-      ss_node_list[i] = connect[(tetra_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[tetra_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::TET10:
     for (i = 0; i < 6; i++) {
-      ss_node_list[i] = connect[(tetra_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[tetra_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::TET14:
   case ElementType::TET15:
     for (i = 0; i < 7; i++) {
-      ss_node_list[i] = connect[(tetra_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[tetra_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::TET8:
     for (i = 0; i < 4; i++) {
-      ss_node_list[i] = connect[(tetra_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[tetra_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::WEDGE6:
-    switch (side_num) {
-    case 3:
-    case 4:
+    if (side_num == 3 || side_num == 4) {
       for (i = 0; i < 3; i++) {
-        ss_node_list[i] = connect[(wedge6_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge6_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 4; i++) {
-        ss_node_list[i] = connect[(wedge6_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge6_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::WEDGE12:
     for (i = 0; i < 6; i++) {
-      ss_node_list[i] = connect[(wedge12_table[side_num][i] - 1)];
+      ss_node_list[i] = connect[wedge12_table[side_num][i] - 1];
     }
     break;
 
   case ElementType::WEDGE15:
   case ElementType::WEDGE16:
-    switch (side_num) {
-    case 3:
-    case 4:
+    if (side_num == 3 || side_num == 4) {
       for (i = 0; i < 6; i++) {
-        ss_node_list[i] = connect[(wedge15_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge15_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 8; i++) {
-        ss_node_list[i] = connect[(wedge15_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge15_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::WEDGE20:
-    switch (side_num) {
-    case 3:
-    case 4:
+    if (side_num == 3 || side_num == 4) {
       for (i = 0; i < 7; i++) {
-        ss_node_list[i] = connect[(wedge20_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge20_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 9; i++) {
-        ss_node_list[i] = connect[(wedge20_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge20_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::WEDGE21:
-    switch (side_num) {
-    case 3:
-    case 4:
+    if (side_num == 3 || side_num == 4) {
       for (i = 0; i < 7; i++) {
-        ss_node_list[i] = connect[(wedge21_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge21_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 9; i++) {
-        ss_node_list[i] = connect[(wedge21_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[wedge21_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::HEXSHELL:
-    switch (side_num) {
-    case 4:
-    case 5:
+    if (side_num == 4 || side_num == 5) {
       for (i = 0; i < 4; i++) {
-        ss_node_list[i] = connect[(hexshell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[hexshell_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 6; i++) {
-        ss_node_list[i] = connect[(hexshell_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[hexshell_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::PYRAMID5:
-    switch (side_num) {
-    case 4:
+    if (side_num == 4) {
       for (i = 0; i < 4; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 3; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::PYRAMID13:
-    switch (side_num) {
-    case 4:
+    if (side_num == 4) {
       for (i = 0; i < 8; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 6; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::PYRAMID14:
-    switch (side_num) {
-    case 4:
+    if (side_num == 4) {
       for (i = 0; i < 9; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 6; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
   case ElementType::PYRAMID18:
   case ElementType::PYRAMID19: /* Pyramid18 with mid-volume node */
-    switch (side_num) {
-    case 4:
+    if (side_num == 4) {
       for (i = 0; i < 9; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
-
-    default:
+    }
+    else {
       for (i = 0; i < 7; i++) {
-        ss_node_list[i] = connect[(pyramid_table[side_num][i] - 1)];
+        ss_node_list[i] = connect[pyramid_table[side_num][i] - 1];
       }
-      break;
     }
     break;
 
@@ -2082,7 +2026,7 @@ int ss_to_node_list(const ElementType etype,    /* The element type */
   } /* End "switch (etype)" */
 
   /* the variable "i" should be the number of positions that I filled */
-  return (i);
+  return i;
 
 } /*-------------------------End ss_to_node_list()---------------------------*/
 
@@ -2501,6 +2445,6 @@ int get_ss_mirror(const ElementType etype,             /* The element type */
   } /* End "switch (etype)" */
 
   /* the variable "i" should be the number of positions that I filled */
-  return (i);
+  return i;
 
 } /*-------------------------Ed get_ss_mirror()---------------------------*/

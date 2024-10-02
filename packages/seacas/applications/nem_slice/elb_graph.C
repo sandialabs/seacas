@@ -97,7 +97,7 @@ namespace {
     // The hope is that this code will speed up the entire routine even
     // though we are iterating the complete connectivity array twice.
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-      int nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
+      int nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[ecnt]);
       for (int ncnt = 0; ncnt < nnodes; ncnt++) {
         INT node = mesh->connect[ecnt][ncnt];
         assert(node < (INT)mesh->num_nodes);
@@ -145,7 +145,7 @@ namespace {
 
     /* Find the surrounding elements for each node in the mesh */
     for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
-      int nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
+      int nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[ecnt]);
       for (int ncnt = 0; ncnt < nnodes; ncnt++) {
         INT node = mesh->connect[ecnt][ncnt];
 
@@ -210,7 +210,7 @@ namespace {
         assert(graph->nadj == graph->adj.size());
         for (size_t ecnt = 0; ecnt < graph->sur_elem[ncnt].size(); ecnt++) {
           size_t elem   = graph->sur_elem[ncnt][ecnt];
-          int    nnodes = get_elem_info(NNODES, mesh->elem_type[elem]);
+          int    nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[elem]);
           for (int i = 0; i < nnodes; i++) {
             INT entry = mesh->connect[elem][i];
 
@@ -251,9 +251,9 @@ namespace {
           etype_last = etype;
           element_3d = is_3d_element(mesh->elem_type[ecnt]);
           if (problem->face_adj == 0) {
-            nnodes = get_elem_info(NNODES, etype);
+            nnodes = get_elem_info(ElementInfo::NNODES, etype);
           }
-          nsides = get_elem_info(NSIDES, etype);
+          nsides = get_elem_info(ElementInfo::NSIDES, etype);
         }
 
         if (etype != ElementType::SPHERE || problem->no_sph == 1) {
@@ -581,7 +581,7 @@ namespace {
                           Gen_Error(0, cmesg);
                           cmesg = fmt::format("Element 1: {}", (ecnt + 1));
                           Gen_Error(0, cmesg);
-                          nnodes = get_elem_info(NNODES, etype);
+                          nnodes = get_elem_info(ElementInfo::NNODES, etype);
                           cmesg  = "connect table:";
                           for (int ii = 0; ii < nnodes; ii++) {
                             tmpstr = fmt::format(" {}", (size_t)(mesh->connect[ecnt][ii] + 1));
@@ -598,7 +598,7 @@ namespace {
                           Gen_Error(0, cmesg);
                           cmesg = fmt::format("Element 2: {}", (entry + 1));
                           Gen_Error(0, cmesg);
-                          nnodes = get_elem_info(NNODES, etype2);
+                          nnodes = get_elem_info(ElementInfo::NNODES, etype2);
                           cmesg  = "connect table:";
                           for (int ii = 0; ii < nnodes; ii++) {
                             tmpstr = fmt::format(" {}", (size_t)(mesh->connect[entry][ii] + 1));
@@ -621,7 +621,7 @@ namespace {
                * 1d or 2d elements
                */
 
-              nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
+              nnodes = get_elem_info(ElementInfo::NNODES, mesh->elem_type[ecnt]);
 
               for (int ncnt = 0; ncnt < nnodes; ncnt++) {
                 /* node is the node number 'ncnt' of element 'ecnt' */

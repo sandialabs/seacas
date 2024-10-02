@@ -7,6 +7,9 @@
  */
 #pragma once
 
+/* Define element info requests */
+enum class ElementInfo { NNODES = 0, NDIM = 2, NSIDE_NODES = 4, NSIDES = 5 };
+
 /* Define element types */
 enum class ElementType {
   SPHERE,
@@ -61,7 +64,7 @@ extern ElementType get_elem_type(const char *elem_name, /* ExodusII element name
                                  int         num_dim    /* Number of dimensions of the mesh */
 );
 
-extern int get_elem_info(int         info,     /* The requested information */
+extern int get_elem_info(ElementInfo info,     /* The requested information */
                          ElementType elem_type /* The element type */
 );
 
@@ -89,12 +92,6 @@ int get_ss_mirror(ElementType etype,             /* The element type */
                   int         side_num,          /* The element side number */
                   INT         mirror_node_list[] /* The list of the mirror side node IDs */
 );
-
-/* Define element info requests */
-#define NNODES      0
-#define NDIM        2
-#define NSIDE_NODES 4
-#define NSIDES      5
 
 /* Define for the maximum number of nodes on an element side/face */
 #define MAX_SIDE_NODES 9
