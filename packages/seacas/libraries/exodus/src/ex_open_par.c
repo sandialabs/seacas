@@ -384,12 +384,10 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     int ngatts;   /* number of global attributes */
     int recdimid; /* id of unlimited dimension */
 
-    int varid;
-
     /* Determine number of variables on the database... */
     nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
 
-    for (varid = 0; varid < nvars; varid++) {
+    for (int varid = 0; varid < nvars; varid++) {
       struct ncvar var;
       nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
 
