@@ -261,10 +261,11 @@ namespace {
 
       if (!interFace.groupName.empty()) {
         bool success = dbi->open_internal_change_set(interFace.groupName);
+
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       interFace.groupName, inpfile);
+                       group_path, inpfile);
           }
           return;
         }

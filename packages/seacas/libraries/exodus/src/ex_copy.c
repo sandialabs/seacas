@@ -176,6 +176,7 @@ int ex_copy_transient(int in_exoid, int out_exoid)
 static int cpy_variable_data(int in_exoid, int out_exoid, int in_large, int mesh_only)
 {
   int nvars; /* number of variables */
+  /* NOTE: This is incorrect for files containing groups */
   EXCHECKI(nc_inq(in_exoid, NULL, &nvars, NULL, NULL));
   for (int varid = 0; varid < nvars; varid++) {
     bool         is_filtered;
@@ -216,6 +217,7 @@ static int cpy_variables(int in_exoid, int out_exoid, int in_large, int mesh_onl
 {
   int recdimid; /* id of unlimited dimension */
   int nvars;    /* number of variables */
+  /* NOTE: This is incorrect for files containing groups */
   EXCHECKI(nc_inq(in_exoid, NULL, &nvars, NULL, &recdimid));
   for (int varid = 0; varid < nvars; varid++) {
     struct ncvar var; /* variable */
@@ -259,6 +261,7 @@ static int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
 
   int ndims;    /* number of dimensions */
   int recdimid; /* id of unlimited dimension */
+  /* NOTE: This is incorrect for files containing groups */
   EXCHECKI(nc_inq(in_exoid, &ndims, NULL, NULL, &recdimid));
   for (int dimid = 0; dimid < ndims; dimid++) {
 
@@ -344,6 +347,7 @@ static int cpy_global_att(int in_exoid, int out_exoid)
   struct ncatt att; /* attribute */
 
   int ngatts;
+  /* NOTE: This is incorrect for files containing groups */
   EXCHECKI(nc_inq(in_exoid, NULL, NULL, &ngatts, NULL));
 
   /* copy global attributes */
