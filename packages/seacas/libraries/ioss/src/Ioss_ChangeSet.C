@@ -43,17 +43,39 @@ int file_exists( const Ioss::ParallelUtils &util,
   return file.parallel_exists(util.communicator(), message);
 }
 
-bool internal_decomp_specified(const Ioss::PropertyManager& props)
+std::string get_decomposition_property(const Ioss::PropertyManager &properties,
+                                       Ioss::DatabaseUsage          db_usage)
+{
+  std::string decomp_method;
+  std::string decomp_property;
+  if (db_usage == Ioss::READ_MODEL) {
+    decomp_property = "MODEL_DECOMPOSITION_METHOD";
+  }
+  else if (db_usage == Ioss::READ_RESTART || db_usage == Ioss::QUERY_TIMESTEPS_ONLY) {
+    decomp_property = "RESTART_DECOMPOSITION_METHOD";
+  }
+
+  // Applies to either read_model or read_restart
+  if (properties.exists("DECOMPOSITION_METHOD")) {
+    std::string method = properties.get("DECOMPOSITION_METHOD").get_string();
+    return Ioss::Utils::uppercase(method);
+  }
+
+  // Check for property...
+  if (properties.exists(decomp_property)) {
+    std::string method = properties.get(decomp_property).get_string();
+    return Ioss::Utils::uppercase(method);
+  }
+  return decomp_method;
+}
+
+bool internal_decomp_specified(const Ioss::PropertyManager& props, Ioss::DatabaseUsage usage)
 {
   bool internalDecompSpecified = false;
 
-  const std::string restartDecompMethod("RESTART_DECOMPOSITION_METHOD");
-
-  if (props.exists(restartDecompMethod)) {
-    Ioss::Property prop = props.get(restartDecompMethod);
-    if (prop.get_string() != "EXTERNAL") {
-      internalDecompSpecified = true;
-    }
+  std::string method = get_decomposition_property(props, usage);
+  if (!method.empty() && method != "EXTERNAL") {
+    internalDecompSpecified = true;
   }
 
   return internalDecompSpecified;
@@ -113,7 +135,7 @@ namespace Ioss {
       ++step;
 
       std::string expanded = Ioss::expand_topology_files(generator, util(), m_ioDB,
-                                                         db->get_property_manager(), step);
+                                                         db->get_property_manager(), db->usage(), step);
       if(!expanded.empty()) {
         m_changeSetNames.push_back(expanded);
       }
@@ -140,7 +162,7 @@ namespace Ioss {
       ++step;
 
       std::string expanded = Ioss::expand_topology_files(generator, util(), m_ioDB,
-                                                         db->get_property_manager(), step);
+                                                         db->get_property_manager(), db->usage(), step);
       if(!expanded.empty()) {
         m_changeSetNames.push_back(expanded);
       }
@@ -275,7 +297,7 @@ namespace Ioss {
                         const Ioss::ParallelUtils &util,
                         const std::string& basename,
                         const Ioss::PropertyManager& properties,
-                        int step)
+                        Ioss::DatabaseUsage usage, int step)
   {
     // See if there are multiple topology files
 
@@ -285,7 +307,7 @@ namespace Ioss {
 
     std::string filename = generator(basename, step);
 
-    bool internalDecompSpecified = internal_decomp_specified(properties);
+    bool internalDecompSpecified = internal_decomp_specified(properties, usage);
     std::string message;
     int exists = ::file_exists(util, filename, message, internalDecompSpecified);
 
@@ -325,7 +347,7 @@ namespace Ioss {
     // If the file exists on some, but not all, throw an exception.
 
     Ioss::DatabaseIO* db = nullptr;
-    std::string filename = expand_topology_files(generator, util, basename, properties, step);
+    std::string filename = expand_topology_files(generator, util, basename, properties, usage, step);
 
     if( !filename.empty() ) {
       db = Ioss::IOFactory::create(db_type, filename, usage,

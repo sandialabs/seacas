@@ -41,7 +41,7 @@ expand_topology_files(FileNameGenerator generator,
                       const Ioss::ParallelUtils &util,
                       const std::string& basename,
                       const Ioss::PropertyManager& properties,
-                      int step);
+                      Ioss::DatabaseUsage usage, int step);
 
 FileNameGenerator construct_cyclic_filename_generator(unsigned cyclicCount);
 FileNameGenerator construct_linear_filename_generator();
@@ -63,7 +63,7 @@ public:
   IOSS_NODISCARD virtual DatabaseIO* open_change_set(unsigned index, Ioss::DatabaseUsage usage);
   virtual void close_change_set(unsigned index);
 
-  IOSS_NODISCARD unsigned size() const { return m_changeSetNames.size(); }
+  IOSS_NODISCARD size_t size() const { return m_changeSetNames.size(); }
   IOSS_NODISCARD const std::vector<std::string>& names() const { return m_changeSetNames; }
   IOSS_NODISCARD std::string get_change_set_name(unsigned index) const;
 

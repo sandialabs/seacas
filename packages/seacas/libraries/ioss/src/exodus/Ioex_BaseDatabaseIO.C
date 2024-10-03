@@ -514,10 +514,10 @@ namespace Ioex {
 
   bool BaseDatabaseIO::supports_internal_change_set_nl()
   {
-    return supports_group_nl();
+    return supports_group();
   }
 
-  bool BaseDatabaseIO::supports_group_nl() const
+  bool BaseDatabaseIO::supports_group() const
   {
     Ioss::SerializeIO serializeIO_(this);
     int exoid = get_file_pointer();
@@ -3283,7 +3283,7 @@ namespace Ioex {
 
   Ioss::NameList BaseDatabaseIO::internal_change_set_describe_nl(bool return_full_names)
   {
-    Ioss::NameList names = groups_describe_nl(return_full_names);
+    Ioss::NameList names = groups_describe(return_full_names);
 
     // Downshift by 1 since the first is the root group "/"
     int numNames = static_cast<int>(names.size());
@@ -3298,7 +3298,7 @@ namespace Ioex {
     return names;
   }
 
-  Ioss::NameList BaseDatabaseIO::groups_describe_nl(bool return_full_names) const
+  Ioss::NameList BaseDatabaseIO::groups_describe(bool return_full_names) const
   {
     Ioss::SerializeIO serializeIO_(this);
 
@@ -3345,7 +3345,7 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
 
-    int numChildGroup = num_child_group_nl();
+    int numChildGroup = num_child_group();
 
     m_exodusFilePtr = currentExodusFilePtr;
     m_groupName = currentGroupName;
@@ -3353,7 +3353,7 @@ namespace Ioex {
     return numChildGroup;
   }
 
-  int BaseDatabaseIO::num_child_group_nl() const
+  int BaseDatabaseIO::num_child_group() const
   {
     Ioss::SerializeIO serializeIO_(this);
     int               exoid = get_file_pointer();

@@ -884,7 +884,7 @@ void DynamicTopologyStateLocator::locate_db_state_impl(double targetTime, Databa
   auto changeSet = Ioss::ChangeSetFactory::create(m_database, m_ioDB, m_dbType, m_fileCyclicCount);
   changeSet->populate_change_sets(m_loadAllFiles);
 
-  for(unsigned csIndex=0; csIndex<changeSet->size(); csIndex++) {
+  for(size_t csIndex=0; csIndex<changeSet->size(); csIndex++) {
     auto csdb = changeSet->open_change_set(csIndex, Ioss::QUERY_TIMESTEPS_ONLY);
     locate_state(csdb, targetTime, loc);
     changeSet->close_change_set(csIndex);
@@ -900,7 +900,7 @@ void DynamicTopologyStateLocator::get_db_time_impl(double init_time,
 
   double best_time = init_time;
 
-  for(unsigned csIndex=0; csIndex<changeSet->size(); csIndex++) {
+  for(size_t csIndex=0; csIndex<changeSet->size(); csIndex++) {
     auto csdb = changeSet->open_change_set(csIndex, Ioss::QUERY_TIMESTEPS_ONLY);
 
     std::vector<double> timesteps = csdb->get_db_step_times();

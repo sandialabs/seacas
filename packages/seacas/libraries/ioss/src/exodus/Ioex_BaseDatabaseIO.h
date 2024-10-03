@@ -96,11 +96,7 @@ namespace Ioex {
      *
      *  \returns True if successful.
      */
-    bool supports_group()
-    {
-      IOSS_FUNC_ENTER(m_);
-      return supports_group_nl();
-    }
+    bool supports_group() const;
 
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
@@ -148,11 +144,7 @@ namespace Ioex {
      *         contains groups, return the number of child groups for
      *         the current group.
      */
-    int num_child_group()
-    {
-      IOSS_FUNC_ENTER(m_);
-      return num_child_group_nl();
-    }
+    int num_child_group() const;
 
     /** \brief If a database type supports groups, open the child group
      *         of the current group at the specified [zero-based] index
@@ -172,11 +164,7 @@ namespace Ioex {
      *             or full group name paths.
      *  \returns True if successful.
      */
-    Ioss::NameList groups_describe(bool return_full_names = false)
-    {
-      IOSS_FUNC_ENTER(m_);
-      return groups_describe_nl(return_full_names);
-    }
+    Ioss::NameList groups_describe(bool return_full_names = false) const;
 
   protected:
     // Check to see if database state is ok...
@@ -196,13 +184,10 @@ namespace Ioex {
     int  num_internal_change_set_nl() override;
     Ioss::NameList internal_change_set_describe_nl(bool return_full_names) override;
 
-    int  num_child_group_nl() const;
     bool open_root_group_nl() const;
-    bool supports_group_nl() const;
     bool open_group_nl(const std::string &group_name) const;
     bool open_child_group_nl(int index) const;
     bool create_subgroup_nl(const std::string &group_name);
-    Ioss::NameList groups_describe_nl(bool return_full_names) const;
 
     bool begin_nl(Ioss::State state) override;
     bool end_nl(Ioss::State state) override;
