@@ -447,7 +447,7 @@ namespace SEAMS {
                       const std::string &short_opt, size_t min_length)
     {
       // See if `option` starts with 1 or 2 leading `-`.
-      int number_dash = option[0] == '-' ? (option[1] == '-' ? 2 : 1) : 0;
+      size_t number_dash = option[0] == '-' ? (option[1] == '-' ? 2 : 1) : 0;
 
       // See if `option` contains a `=`, save position...
       auto equals = option.find('=');
@@ -632,7 +632,7 @@ namespace SEAMS {
     return ret_value;
   }
 
-  array *Aprepro::make_array(int r, int c)
+  array *Aprepro::make_array(size_t r, size_t c)
   {
     auto ptr = new array(r, c);
     array_allocations.push_back(ptr);

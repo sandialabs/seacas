@@ -68,7 +68,7 @@ SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   DataWarp        "cmake/TPLs/"    SS
   METIS           "cmake/TPLs/"    SS
   ParMETIS        "cmake/TPLs/"    SS
-  Pamgen          "cmake/TPLs/"    SS
+  Pamgen          "TRIBITS_PKG"    SS
   Matio           "cmake/TPLs/"    SS
   CUDA            "cmake/TPLs/"    SS
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS

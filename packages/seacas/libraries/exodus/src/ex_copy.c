@@ -21,7 +21,7 @@
 #define EXCHECKI(funcall)                                                                          \
   if ((funcall) != NC_NOERR) {                                                                     \
     fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                      \
-    return (EX_FATAL);                                                                             \
+    return EX_FATAL;                                                                               \
   }
 
 #define EXCHECKF(funcall)                                                                          \
@@ -66,7 +66,7 @@ static int is_truth_table_variable(const char *var_name)
   /* If copying just the "mesh" or "non-transient" portion of the
    * input DB, these are the variables that won't be copied:
    */
-  return (strstr(var_name, "_var_tab") != NULL);
+  return strstr(var_name, "_var_tab") != NULL;
 }
 
 static int is_non_mesh_variable(const char *var_name)
@@ -413,7 +413,7 @@ static int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
     nc_copy_att(in_id, var_in_id, att_nm, out_id, var_out_id);
   }
 
-  return (EX_NOERR);
+  return EX_NOERR;
 }
 /*! \endcond */
 
@@ -718,11 +718,11 @@ static int cpy_var_val(int in_id, int out_id, char *var_nm)
   /* Free the space that held the variable */
   free(void_ptr);
 
-  return (EX_NOERR);
+  return EX_NOERR;
 
 err_ret:
   free(void_ptr);
-  return (EX_FATAL);
+  return EX_FATAL;
 
 } /* end cpy_var_val() */
 
@@ -789,7 +789,7 @@ static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
 
   /* Free the space that held the variable */
   free(void_ptr);
-  return (EX_NOERR);
+  return EX_NOERR;
 
 } /* end cpy_coord_val() */
 

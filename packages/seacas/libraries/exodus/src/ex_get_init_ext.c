@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -27,7 +27,8 @@
 static void exi_get_entity_count(int exoid, ex_init_params *info)
 {
   int ndims;
-  nc_inq(exoid, &ndims, NULL, NULL, NULL);
+  int include_parent_group = 1;
+  nc_inq_dimids(exoid, &ndims, NULL, include_parent_group);
   for (int dimid = 0; dimid < ndims; dimid++) {
     char   dim_nm[NC_MAX_NAME + 1] = {'\0'};
     size_t dim_sz;
@@ -58,11 +59,11 @@ static int ex_get_dim_value(int exoid, const char *name, const char *dimension_n
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", name,
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
     *value = tmp;
   }
-  return (EX_NOERR);
+  return EX_NOERR;
 }
 
 /*!

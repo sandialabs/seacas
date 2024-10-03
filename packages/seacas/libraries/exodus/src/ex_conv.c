@@ -37,7 +37,7 @@ struct exi_file_item *exi_find_file_item(int exoid)
     }
     ptr = ptr->next;
   }
-  return (ptr);
+  return ptr;
 }
 
 #define EX__MAX_PATHLEN 8192
@@ -546,10 +546,10 @@ int exi_comp_ws(int exoid)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
     ex_err(__func__, errmsg, EX_BADFILEID);
-    return (EX_FATAL);
+    return EX_FATAL;
   }
   /* Stored as 0 for 4-byte; 1 for 8-byte */
-  return ((file->user_compute_wordsize + 1) * 4);
+  return (file->user_compute_wordsize + 1) * 4;
 }
 
 /*!

@@ -504,6 +504,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
       if (szip + zlib + zstd + bz2 == 0) {
         zlib = true;
+        if (my_processor == 0) {
+          fmt::print(stderr, "INFO: Compression level specified, but no algorithm.  Defaulting to "
+                             "'zlib' and setting netcdf-4 file type.\n");
+        }
       }
 
       if (zlib) {

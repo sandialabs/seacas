@@ -55,12 +55,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION       "9.02"
+#define EXODUS_VERSION       "9.03"
 #define EXODUS_VERSION_MAJOR 9
-#define EXODUS_VERSION_MINOR 2
-#define EXODUS_RELEASE_DATE  "August 27, 2024"
+#define EXODUS_VERSION_MINOR 3
+#define EXODUS_RELEASE_DATE  "October 2, 2024"
 
-#define EX_API_VERS       9.02f
+#define EX_API_VERS       9.03f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 #define EX_VERS           EX_API_VERS
 

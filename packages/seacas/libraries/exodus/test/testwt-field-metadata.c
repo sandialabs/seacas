@@ -82,7 +82,7 @@ int main(int argc, char **argv)
   /* Write element block names */
   for (int i = 0; i < num_elem_blk; i++) {
     char block_names[32];
-    sprintf(block_names, "block_%c", i + 'A');
+    snprintf(block_names, 32, "block_%c", i + 'A');
     EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names));
   }
 

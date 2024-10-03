@@ -55,7 +55,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s name array in file id %d", type,
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status); /* exit define mode and return */
+      return status; /* exit define mode and return */
     }
     exi_set_compact_storage(exoid, varid);
 #if defined(EX_CAN_USE_NC_DEF_VAR_FILL)
@@ -63,7 +63,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
     nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
   }
-  return (NC_NOERR);
+  return EX_NOERR;
 }
 
 static int ex_write_object_params(int exoid, const char *type, const char *dimension_name,
@@ -79,7 +79,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d", type,
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status); /* exit define mode and return */
+      return status; /* exit define mode and return */
     }
     /* ...and some variables */
     /* element block id status array */
@@ -91,7 +91,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s status array in file id %d",
                type, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status); /* exit define mode and return */
+      return status; /* exit define mode and return */
     }
 
     size_t sixty_four_kb = 64 * 1024; // Compact storage can only be used for < 64KiByte data sizes
@@ -112,7 +112,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s id array in file id %d", type,
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status); /* exit define mode and return */
+      return status; /* exit define mode and return */
     }
     if (int_size * count < sixty_four_kb) {
       exi_set_compact_storage(exoid, varid);
@@ -124,10 +124,10 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s property name %s in file id %d",
                type, "ID", exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status);
+      return status;
     }
   }
-  return (NC_NOERR);
+  return EX_NOERR;
 }
 
 static int ex_write_map_params(int exoid, const char *map_name, const char *map_dim_name,
@@ -147,7 +147,7 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d",
                map_name, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status); /* exit define mode and return */
+      return status; /* exit define mode and return */
     }
 
     int dim[] = {*map_dimension};
@@ -159,7 +159,7 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s id array in file id %d",
                map_name, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (status); /* exit define mode and return */
+      return status; /* exit define mode and return */
     }
 
     /*   store property name as attribute of property array variable */
@@ -168,10 +168,10 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s property name %s in file id %d",
                map_name, "ID", exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (EX_FATAL);
+      return EX_FATAL;
     }
   }
-  return (NC_NOERR);
+  return EX_NOERR;
 }
 
 static void invalidate_id_status(int exoid, const char *var_stat, const char *var_id, int count,

@@ -65,7 +65,7 @@ namespace {
   int         gl_width     = 0;             /* net size available for input */
   int         gl_extent    = 0;             /* how far to redraw, 0 means all */
   int         gl_overwrite = 0;             /* overwrite mode */
-  int         gl_pos, gl_cnt = 0;           /* position and size of input */
+  size_t      gl_pos, gl_cnt = 0;           /* position and size of input */
   char        gl_killbuf[GL_BUF_SIZE] = ""; /* killed text */
   const char *gl_prompt;                    /* to save the prompt string */
   int         gl_search_mode = 0;           /* search mode flag */
@@ -83,7 +83,7 @@ namespace {
 
   void gl_fixup(const char *prompt, int change, int cursor); /* fixup state variables and screen */
   int  gl_getc();                                            /* read one char from terminal */
-  void gl_kill(int pos);                                     /* delete to EOL */
+  void gl_kill(size_t pos);                                  /* delete to EOL */
   void gl_newline();                                         /* handle \n or \r */
   void gl_putc(int c);                                       /* write one char to terminal */
   void gl_puts(const char *const buf);                       /* write a line to terminal */
@@ -248,14 +248,14 @@ namespace {
   void gl_puts(const char *const buf)
   {
     if (buf) {
-      int len = strlen(buf);
+      auto len = strlen(buf);
       write(1, buf, len);
     }
   }
 
   [[noreturn]] void gl_error(const char *const buf)
   {
-    int len = strlen(buf);
+    auto len = strlen(buf);
 
     gl_cleanup();
     write(2, buf, len);
@@ -268,7 +268,7 @@ namespace {
     if (gl_init_done < 0) { /* -1 only on startup */
       const char *cp = (const char *)getenv("COLUMNS");
       if (cp != nullptr) {
-        int w = strtol(cp, nullptr, 10);
+        auto w = strtoul(cp, nullptr, 10);
         if (w > 20)
           SEAMS::gl_setwidth(w);
       }
@@ -295,7 +295,7 @@ namespace {
 } // namespace
 
 namespace SEAMS {
-  void gl_setwidth(int w)
+  void gl_setwidth(size_t w)
   {
     if (w > 250) {
       w = 250;
@@ -433,7 +433,7 @@ namespace {
       if (gl_cnt > GL_BUF_SIZE - 2) {
         gl_error("\n*** Error: getline(): input buffer overflow\n");
       }
-      for (int i = gl_cnt; i >= gl_pos; i--) {
+      for (size_t i = gl_cnt; i >= gl_pos; i--) {
         gl_buf[i + 1] = gl_buf[i];
       }
       gl_buf[gl_pos] = (char)c;
@@ -452,16 +452,16 @@ namespace {
   void gl_yank()
   /* adds the kill buffer to the input buffer at current location */
   {
-    int len = strlen(gl_killbuf);
+    auto len = strlen(gl_killbuf);
     if (len > 0) {
       if (gl_overwrite == 0) {
         if (gl_cnt + len >= GL_BUF_SIZE) {
           gl_error("\n*** Error: getline(): input buffer overflow\n");
         }
-        for (int i = gl_cnt; i >= gl_pos; i--) {
+        for (size_t i = gl_cnt; i >= gl_pos; i--) {
           gl_buf[i + len] = gl_buf[i];
         }
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
           gl_buf[gl_pos + i] = gl_killbuf[i];
         }
         gl_fixup(gl_prompt, gl_pos, gl_pos + len);
@@ -473,7 +473,7 @@ namespace {
         if (gl_pos + len > gl_cnt) {
           gl_buf[gl_pos + len] = '\0';
         }
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
           gl_buf[gl_pos + i] = gl_killbuf[i];
         }
         gl_extent = len;
@@ -531,7 +531,7 @@ namespace {
   {
     if ((loc == -1 && gl_pos > 0) || (loc == 0 && gl_pos < gl_cnt)) {
       int j = 0;
-      for (int i = gl_pos + loc; i < gl_cnt; i++) {
+      for (size_t i = gl_pos + loc; i < gl_cnt; i++) {
         if (i < GL_BUF_SIZE - 1) {
           if ((j == 0) && (killsave != 0)) {
             gl_killbuf[0] = gl_buf[i];
@@ -551,7 +551,7 @@ namespace {
     }
   }
 
-  void gl_kill(int pos)
+  void gl_kill(size_t pos)
 
   /* delete from pos to the end of line */
   {
@@ -604,9 +604,9 @@ namespace {
       gl_width = gl_termw - strlen(prompt);
     }
     else if (strcmp(prompt, last_prompt) != 0) {
-      int l1 = strlen(last_prompt);
-      int l2 = strlen(prompt);
-      gl_cnt = gl_cnt + l1 - l2;
+      auto l1 = strlen(last_prompt);
+      auto l2 = strlen(prompt);
+      gl_cnt  = gl_cnt + l1 - l2;
       copy_string(last_prompt, prompt, 80);
       gl_putc('\r');
       gl_puts(prompt);
@@ -619,11 +619,11 @@ namespace {
     int backup = gl_pos - gl_shift; /* how far to backup before fixing */
     if (change >= 0) {
       gl_cnt = strlen(gl_buf);
-      if (change > gl_cnt) {
+      if (change > (int)gl_cnt) {
         change = gl_cnt;
       }
     }
-    if (cursor > gl_cnt) {
+    if (cursor > (int)gl_cnt) {
       if (cursor != GL_BUF_SIZE) { /* GL_BUF_SIZE means end of line */
         if (gl_ellipses_during_completion) {
           gl_beep();
@@ -650,7 +650,7 @@ namespace {
     if (new_shift != gl_shift) { /* scroll occurs */
       gl_shift  = new_shift;
       off_left  = (gl_shift) ? 1 : 0;
-      off_right = (gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
+      off_right = ((int)gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
       left      = gl_shift;
       new_right = right = (off_right) ? gl_shift + gl_width - 2 : gl_cnt;
     }
@@ -662,7 +662,7 @@ namespace {
         left   = change;
         backup = gl_pos - change;
       }
-      off_right = (gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
+      off_right = ((int)gl_cnt > gl_shift + gl_width - 1) ? 1 : 0;
       right     = (off_right) ? gl_shift + gl_width - 2 : gl_cnt;
       new_right = (gl_extent && (right > left + gl_extent)) ? left + gl_extent : right;
     }
@@ -744,11 +744,11 @@ namespace SEAMS {
       p++;
     }
     if (*p) {
-      int len = strlen(buf);
+      auto len = strlen(buf);
       if (strchr(p, '\n')) { /* previously line already has NL stripped */
         len--;
       }
-      if ((prev == nullptr) || ((int)strlen(prev) != len) || strncmp(prev, buf, (size_t)len) != 0) {
+      if ((prev == nullptr) || (strlen(prev) != len) || strncmp(prev, buf, len) != 0) {
         hist_buf[hist_last] = hist_save(buf);
         prev                = hist_buf[hist_last];
         hist_last           = (hist_last + 1) % HIST_SIZE;
@@ -800,7 +800,7 @@ namespace {
   /* makes a copy of the string */
   {
     char       *s   = nullptr;
-    size_t      len = strlen(p);
+    auto        len = strlen(p);
     const char *nl  = strpbrk(p, "\n\r");
 
     if (nl) {
