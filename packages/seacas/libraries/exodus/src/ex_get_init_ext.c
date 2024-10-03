@@ -26,13 +26,16 @@
 
 static void exi_get_entity_count(int exoid, ex_init_params *info)
 {
-  int ndims;
-  int include_parent_group = 1;
+  int include_parent_group = 0; // Only want dims in current group
+  int ndims                = 0;
   nc_inq_dimids(exoid, &ndims, NULL, include_parent_group);
+  int *dimids = calloc(ndims, sizeof(int));
+  nc_inq_dimids(exoid, &ndims, dimids, include_parent_group);
+
   for (int dimid = 0; dimid < ndims; dimid++) {
     char   dim_nm[NC_MAX_NAME + 1] = {'\0'};
     size_t dim_sz;
-    nc_inq_dim(exoid, dimid, dim_nm, &dim_sz);
+    nc_inq_dim(exoid, dimids[dimid], dim_nm, &dim_sz);
     /* For assemblies, we check for a dim starting with "num_entity_assembly" */
     if (strncmp(dim_nm, "num_entity_assembly", 19) == 0) {
       info->num_assembly++;
@@ -41,6 +44,7 @@ static void exi_get_entity_count(int exoid, ex_init_params *info)
       info->num_blob++;
     }
   }
+  free(dimids);
 }
 
 /* Used to reduce repeated code below */
