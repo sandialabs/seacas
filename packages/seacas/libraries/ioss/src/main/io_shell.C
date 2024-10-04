@@ -265,7 +265,7 @@ namespace {
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       group_path, inpfile);
+                       interFace.groupName, inpfile);
           }
           return;
         }
