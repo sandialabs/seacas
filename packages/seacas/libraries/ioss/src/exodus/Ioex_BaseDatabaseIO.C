@@ -430,9 +430,15 @@ namespace Ioex {
         handle_output_file(write_message, nullptr, nullptr, overwrite, abort_if_error);
       }
 
+#if 0
+      // I think this is the correct change (deleting this block of code) since `handle_output_file` is returning a 
+      // `m_exodusFilePtr` and sets`m_groupName`, so that is redundant with calling `ex_get_group_id` and even 
+      // worse, `ex_get_group_id` is looking for a child group of itself...
+      // I'm not sure whether the code in this block is needed for an input file though...
       if (!m_groupName.empty()) {
         ex_get_group_id(m_exodusFilePtr, m_groupName.c_str(), &m_exodusFilePtr);
       }
+#endif
     }
     assert(m_exodusFilePtr >= 0);
     fileExists = true;
