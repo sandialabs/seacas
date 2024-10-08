@@ -45,7 +45,7 @@ jobs:
         ###
       - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.netcdf }}
         id: cache-TPL-mpi
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2 # v4.1.0
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.netcdf }}
           key: TPL-v5-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.netcdf }}
@@ -105,7 +105,7 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2 # v4.1.0
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.netcdf }}
           key: TPL-v5-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.netcdf }}
