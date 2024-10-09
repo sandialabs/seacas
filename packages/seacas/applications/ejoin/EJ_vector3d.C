@@ -11,7 +11,7 @@
 vector3d::vector3d(double X, double Y, double Z) : x(X), y(Y), z(Z) {}
 
 //----------------------------------------------------------------------------
-vector3d::vector3d(double location[3]) : x(location[0]), y(location[1]), z(location[2]) {}
+vector3d::vector3d(const double location[3]) : x(location[0]), y(location[1]), z(location[2]) {}
 
 void vector3d::set(double X, double Y, double Z)
 {
@@ -35,14 +35,14 @@ vector3d &vector3d::reverse()
   return *this;
 }
 
-bool vector3d::operator==(const vector3d &from) const
+bool operator==(const vector3d &lhs, const vector3d &rhs)
 {
-  return (x == from.x && y == from.y && z == from.z);
+  return (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z);
 }
 
-bool vector3d::operator!=(const vector3d &from) const
+bool operator!=(const vector3d &lhs, const vector3d &rhs)
 {
-  return (x != from.x || y != from.y || z != from.z);
+  return (lhs.x != rhs.x || lhs.y != rhs.y || lhs.z == rhs.z);
 }
 
 vector3d operator+(const vector3d &lhs, const vector3d &rhs)
