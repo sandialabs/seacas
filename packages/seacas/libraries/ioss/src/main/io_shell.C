@@ -260,12 +260,12 @@ namespace {
       }
 
       if (!interFace.groupName.empty()) {
-	std::string group_path = "/" + interFace.groupName;
-        bool success = dbi->open_group(group_path);
+        bool success = dbi->open_internal_change_set(interFace.groupName);
+
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       group_path, inpfile);
+                       interFace.groupName, inpfile);
           }
           return;
         }
@@ -360,7 +360,7 @@ namespace {
             // Putting each file into its own output group...
             // The name of the group will be the basename portion of the filename...
             Ioss::FileInfo file(inpfile);
-            dbo->create_subgroup(file.tailname());
+            dbo->create_internal_change_set(file.tailname());
           }
           else {
             first = false;
@@ -495,7 +495,7 @@ namespace {
     }
 
     if (!interFace.groupName.empty()) {
-      bool success = dbi1->open_group(interFace.groupName);
+      bool success = dbi1->open_internal_change_set(interFace.groupName);
       if (!success) {
         if (rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,
@@ -557,7 +557,7 @@ namespace {
     }
 
     if (!interFace.groupName.empty()) {
-      bool success = dbi2->open_group(interFace.groupName);
+      bool success = dbi2->open_internal_change_set(interFace.groupName);
       if (!success) {
         if (rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,

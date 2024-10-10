@@ -674,7 +674,7 @@ namespace Ioss {
     }
 
     if (!interFace.groupname().empty()) {
-      bool success = dbi->open_group(interFace.groupname());
+      bool success = dbi->open_internal_change_set(interFace.groupname());
       if (!success) {
         std::string inpfile = interFace.filename();
         fmt::print("ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupname(),

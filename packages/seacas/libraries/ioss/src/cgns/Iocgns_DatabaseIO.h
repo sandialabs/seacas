@@ -108,6 +108,7 @@ namespace Iocgns {
     size_t finalize_structured_blocks();
     void   finalize_database() const override;
     void   get_step_times_nl() override;
+    std::vector<double> get_db_step_times_nl() override;
 
     void create_unstructured_block(int base, int zone, size_t &num_node);
     void write_adjacency_data();

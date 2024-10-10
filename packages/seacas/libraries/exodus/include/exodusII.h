@@ -215,6 +215,7 @@ enum ex_inquiry {
   EX_INQ_NUM_ELEM_SET_VAR    = 69, /**< number of element set variables */
   EX_INQ_NUM_SIDE_SET_VAR    = 70, /**< number of sideset variables */
   EX_INQ_NUM_GLOBAL_VAR      = 71, /**< number of global variables */
+  EX_INQ_FILE_FORMAT         = 72, /**< netCDF file format */
   EX_INQ_INVALID             = -1
 };
 

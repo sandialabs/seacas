@@ -806,6 +806,16 @@ namespace Iocgns {
                           myProcessor);
   }
 
+  std::vector<double> ParallelDatabaseIO::get_db_step_times_nl()
+  {
+    std::vector<double> timesteps;
+
+    Utils::get_step_times(get_file_pointer(), timesteps, nullptr, timeScaleFactor,
+                          myProcessor);
+
+    return timesteps;
+  }
+
   void ParallelDatabaseIO::write_adjacency_data()
   {
     // Determine adjacency information between unstructured blocks.
