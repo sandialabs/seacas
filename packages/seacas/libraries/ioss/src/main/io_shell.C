@@ -260,12 +260,12 @@ namespace {
       }
 
       if (!interFace.groupName.empty()) {
-	std::string group_path = "/" + interFace.groupName;
-        bool success = dbi->open_group(group_path);
+        std::string group_path = "/" + interFace.groupName;
+        bool        success    = dbi->open_group(group_path);
         if (!success) {
           if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       group_path, inpfile);
+            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", group_path,
+                       inpfile);
           }
           return;
         }

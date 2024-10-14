@@ -364,7 +364,8 @@ namespace Iotm {
         std::vector<EntityId> sideNodes =
             get_sorted_side_nodes(adjacency.elementIndex, adjacency.side);
 
-        for (int otherSide = 1; otherSide <= get_element_topology(neighborElementIndex).num_face_sides();
+        for (int otherSide = 1;
+             otherSide <= get_element_topology(neighborElementIndex).num_face_sides();
              ++otherSide) {
           std::vector<EntityId> otherSideNodes =
               get_sorted_side_nodes(neighborElementIndex, otherSide);
