@@ -357,7 +357,7 @@ namespace {
           // Putting each file into its own output group...
           // The name of the group will be the basename portion of the filename...
           Ioss::FileInfo file(inpfile);
-          bool success = dbo->create_internal_change_set(file.tailname());
+          bool           success = dbo->create_internal_change_set(file.tailname());
           if (!success) {
             if (rank == 0) {
               fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
