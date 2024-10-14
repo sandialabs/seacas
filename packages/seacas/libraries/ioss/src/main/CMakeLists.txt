@@ -232,7 +232,6 @@ IF (SEACASIoss_ENABLE_THREADSAFE)
     COMM mpi serial
     FINAL_PASS_REGULAR_EXPRESSION
   )
-ENDIF()
 
   if (TPL_Netcdf_Enables_Netcdf4)
   SET(IOSHELL_ARG --split_times 1 --in_type generated 10x10x10+shell:xXyYzZ+times:4+variables:element,2,nodal,3)
@@ -264,7 +263,7 @@ ENDIF()
     FINAL_PASS_REGULAR_EXPRESSION
   )
   endif()
-
+ENDIF()
 ENDIF()
 
 IF (TPL_ENABLE_Pamgen OR Trilinos_ENABLE_Pamgen)
