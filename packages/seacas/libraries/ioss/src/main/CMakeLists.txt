@@ -126,6 +126,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
   XHOSTTYPE Windows
   )
 
+  if (TPL_Netcdf_Enables_Netcdf4)
   SET(IOSHELL_ARG --split_times 1 --in_type generated 10x10x10+shell:xXyYzZ+times:4+variables:element,2,nodal,3)
   TRIBITS_ADD_ADVANCED_TEST(
     io_shell_group_ungroup
@@ -154,6 +155,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
     COMM serial
     FINAL_PASS_REGULAR_EXPRESSION
   )
+  endif()
 
 if (TPL_ENABLE_MPI)
   IF (TPL_Netcdf_PARALLEL)
