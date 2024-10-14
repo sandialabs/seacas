@@ -126,6 +126,35 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
   XHOSTTYPE Windows
   )
 
+  SET(IOSHELL_ARG --split_times 1 --in_type generated 10x10x10+shell:xXyYzZ+times:4+variables:element,2,nodal,3)
+  TRIBITS_ADD_ADVANCED_TEST(
+    io_shell_group_ungroup
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${IOSHELL_ARG} splits.g
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits.g_1 splits.g_2 splits.g_3 splits.g_4  grouped.g
+    TEST_2 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS --extract_group splits.g_1 grouped.g split-extract.g_1
+    TEST_3 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS --extract_group splits.g_2 grouped.g split-extract.g_2
+    TEST_4 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS --extract_group splits.g_3 grouped.g split-extract.g_3
+    TEST_5 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS --extract_group splits.g_4 grouped.g split-extract.g_4
+    TEST_6 EXEC exodiff ARGS -pedantic splits.g_1 split-extract.g_1
+       DIRECTORY ../../../../applications/exodiff
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    TEST_7 EXEC exodiff ARGS -pedantic splits.g_2 split-extract.g_2
+       DIRECTORY ../../../../applications/exodiff
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    TEST_8 EXEC exodiff ARGS -pedantic splits.g_3 split-extract.g_3
+       DIRECTORY ../../../../applications/exodiff
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    TEST_9 EXEC exodiff ARGS -pedantic splits.g_4 split-extract.g_4
+       DIRECTORY ../../../../applications/exodiff
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    COMM serial
+    FINAL_PASS_REGULAR_EXPRESSION
+  )
+
 if (TPL_ENABLE_MPI)
   IF (TPL_Netcdf_PARALLEL)
     TRIBITS_ADD_ADVANCED_TEST(exodus_fpp_serialize
