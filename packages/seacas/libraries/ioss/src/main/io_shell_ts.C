@@ -196,7 +196,6 @@ namespace {
   {
     Ioss::PropertyManager properties = set_properties(interFace);
 
-    bool first = true;
     for (const auto &inpfile : interFace.inputFile) {
       Ioss::DatabaseIO *dbi =
           Ioss::IOFactory::create(interFace.inFiletype, inpfile, Ioss::READ_MODEL,
@@ -219,7 +218,14 @@ namespace {
       }
 
       if (!interFace.groupName.empty()) {
-        bool success = dbi->open_group(interFace.groupName);
+        bool success = dbi->open_root_group();
+        if (!success) {
+          if (rank == 0) {
+            fmt::print(stderr, "ERROR: Unable to open root group in file '{}'\n", inpfile);
+          }
+          return;
+        }
+        success = dbi->open_group(interFace.groupName);
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
@@ -283,15 +289,25 @@ namespace {
       if (interFace.inputFile.size() > 1) {
         properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
 
-        if (!first) {
-          // Putting each file into its own output group...
-          // The name of the group will be the basename portion of the filename...
-          Ioss::FileInfo file(inpfile);
-          dbo->create_subgroup(file.tailname());
-        }
-        else {
-          first = false;
-        }
+	bool success = dbo->open_root_group();
+	if (!success) {
+	  if (rank == 0) {
+	    fmt::print(stderr, "ERROR: Unable to open root group in output file.\n");
+	  }
+	  return;
+	}
+
+	// Putting each file into its own output group...
+	// The name of the group will be the basename portion of the filename...
+	Ioss::FileInfo file(inpfile);
+	success = dbo->create_subgroup(file.tailname());
+	if (!success) {
+	  if (rank == 0) {
+	    fmt::print(stderr, "ERROR: Unable to create group {} in output file.\n",
+		       file.tailname());
+	  }
+	  return;
+	}
       }
 
       if (interFace.debug) {
