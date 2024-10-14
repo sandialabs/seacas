@@ -2392,7 +2392,7 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
 
   timesteps.reserve(num_timesteps);
   for (int i = 0; i < num_timesteps; i++) {
-    if(nullptr != region) {
+    if (nullptr != region) {
       region->add_state(times[i] * timeScaleFactor);
     }
     timesteps.push_back(times[i]);

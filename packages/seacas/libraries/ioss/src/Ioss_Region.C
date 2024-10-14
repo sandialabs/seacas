@@ -367,8 +367,8 @@ namespace Ioss {
     properties.add(Property(this, "current_state", Property::INTEGER));
     properties.add(Property(this, "database_name", Property::STRING));
 
-    property_add(Property("base_filename",
-                          iodatabase->get_property_manager().get_optional("base_filename", iodatabase->get_filename())));
+    property_add(Property("base_filename", iodatabase->get_property_manager().get_optional(
+                                               "base_filename", iodatabase->get_filename())));
     property_add(Property("database_type",
                           iodatabase->get_property_manager().get_optional("database_type", "")));
   }
@@ -2901,7 +2901,7 @@ namespace Ioss {
       fileControl.add_output_database_change_set(state);
 
       // Reset based on fileControl values
-      dbChangeCount = fileControl.get_topology_change_count();
+      dbChangeCount    = fileControl.get_topology_change_count();
       ifDatabaseExists = fileControl.get_if_database_exists_behavior();
     }
   }
@@ -2943,7 +2943,7 @@ namespace Ioss {
       fileControl.clone_and_replace_output_database(state);
 
       // Reset based on fileControl values
-      dbChangeCount = fileControl.get_topology_change_count();
+      dbChangeCount    = fileControl.get_topology_change_count();
       ifDatabaseExists = fileControl.get_if_database_exists_behavior();
     }
   }
@@ -3054,7 +3054,7 @@ namespace Ioss {
 
   std::tuple<std::string, int, double> Region::locate_db_state(double targetTime) const
   {
-    auto *cregion = const_cast<Region*>(this);
+    auto                       *cregion = const_cast<Region *>(this);
     DynamicTopologyStateLocator locator(cregion);
 
     return locator.locate_db_state(targetTime);
@@ -3068,7 +3068,7 @@ namespace Ioss {
       return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
     }
 
-    auto *cregion = const_cast<Region*>(this);
+    auto                       *cregion = const_cast<Region *>(this);
     DynamicTopologyStateLocator locator(cregion);
 
     return locator.get_db_max_time();
@@ -3082,7 +3082,7 @@ namespace Ioss {
       return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
     }
 
-    auto *cregion = const_cast<Region*>(this);
+    auto                       *cregion = const_cast<Region *>(this);
     DynamicTopologyStateLocator locator(cregion);
 
     return locator.get_db_min_time();

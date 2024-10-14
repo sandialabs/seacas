@@ -18,10 +18,10 @@
 #include <string> // for string, operator==, etc
 #include <vector>
 
-#include "Ioss_ChangeSetFactory.h"// for ChangeSetFactory
-#include "Ioss_Property.h"        // for Property
-#include "Ioss_PropertyManager.h" // for PropertyManager
-#include "Ioss_Region.h"          // for Region
+#include "Ioss_ChangeSetFactory.h" // for ChangeSetFactory
+#include "Ioss_Property.h"         // for Property
+#include "Ioss_PropertyManager.h"  // for PropertyManager
+#include "Ioss_Region.h"           // for Region
 
 namespace Ioex {
   // ========================================================================
@@ -42,69 +42,70 @@ namespace Ioex {
 #endif
   }
 
-  Ioss::ChangeSet *ChangeSetFactory::make_ChangeSet(Ioss::Region* region) const
+  Ioss::ChangeSet *ChangeSetFactory::make_ChangeSet(Ioss::Region *region) const
   {
     return new ChangeSet(region);
   }
 
-  Ioss::ChangeSet *ChangeSetFactory::make_ChangeSet(Ioss::DatabaseIO* db,
-                                                    const std::string& dbName,
-                                                    const std::string& dbType,
-                                                    unsigned fileCyclicCount) const
+  Ioss::ChangeSet *ChangeSetFactory::make_ChangeSet(Ioss::DatabaseIO *db, const std::string &dbName,
+                                                    const std::string &dbType,
+                                                    unsigned           fileCyclicCount) const
   {
     return new ChangeSet(db, dbName, dbType, fileCyclicCount);
   }
 
   // ========================================================================
-  ChangeSet::ChangeSet(Ioss::Region *region)
-      : Ioss::ChangeSet(region)
+  ChangeSet::ChangeSet(Ioss::Region *region) : Ioss::ChangeSet(region)
   {
-    Ioss::ChangeSet::m_supportedFormats = (Ioss::CHANGE_SET_INTERNAL_FILES     |
-                                           Ioss::CHANGE_SET_LINEAR_MULTI_FILES |
-                                           Ioss::CHANGE_SET_CYCLIC_MULTI_FILES);
+    Ioss::ChangeSet::m_supportedFormats =
+        (Ioss::CHANGE_SET_INTERNAL_FILES | Ioss::CHANGE_SET_LINEAR_MULTI_FILES |
+         Ioss::CHANGE_SET_CYCLIC_MULTI_FILES);
   }
 
-  ChangeSet::ChangeSet(Ioss::DatabaseIO* db, const std::string& dbName, const std::string& dbType, unsigned fileCyclicCount)
+  ChangeSet::ChangeSet(Ioss::DatabaseIO *db, const std::string &dbName, const std::string &dbType,
+                       unsigned fileCyclicCount)
       : Ioss::ChangeSet(db, dbName, dbType, fileCyclicCount)
   {
-    Ioss::ChangeSet::m_supportedFormats = (Ioss::CHANGE_SET_INTERNAL_FILES     |
-                                           Ioss::CHANGE_SET_LINEAR_MULTI_FILES |
-                                           Ioss::CHANGE_SET_CYCLIC_MULTI_FILES);
+    Ioss::ChangeSet::m_supportedFormats =
+        (Ioss::CHANGE_SET_INTERNAL_FILES | Ioss::CHANGE_SET_LINEAR_MULTI_FILES |
+         Ioss::CHANGE_SET_CYCLIC_MULTI_FILES);
   }
 
   ChangeSet::~ChangeSet() {}
 
   void ChangeSet::get_group_change_sets()
   {
-    auto iossDB = get_database();
-    Ioex::BaseDatabaseIO* ioexDB = dynamic_cast<Ioex::BaseDatabaseIO*>(iossDB);
+    auto                  iossDB = get_database();
+    Ioex::BaseDatabaseIO *ioexDB = dynamic_cast<Ioex::BaseDatabaseIO *>(iossDB);
 
-    if(nullptr == ioexDB) {
+    if (nullptr == ioexDB) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The database file named '{}' is not Exodus format\n",iossDB->get_filename());
+      fmt::print(errmsg, "ERROR: The database file named '{}' is not Exodus format\n",
+                 iossDB->get_filename());
       IOSS_ERROR(errmsg);
     }
 
-    m_databaseFormat = Ioss::CHANGE_SET_INTERNAL_FILES;
+    m_databaseFormat   = Ioss::CHANGE_SET_INTERNAL_FILES;
     m_currentChangeSet = ioexDB->get_internal_change_set_name();
 
     Ioss::NameList names = ioexDB->groups_describe(false);
 
     // Downshift by 1 since the first is the root group "/"
     int numNames = static_cast<int>(names.size());
-    for(int i=0; i<numNames-1; i++) {
-      m_changeSetNames.push_back(names[i+1]);
+    for (int i = 0; i < numNames - 1; i++) {
+      m_changeSetNames.push_back(names[i + 1]);
     }
   }
 
   bool ChangeSet::supports_group()
   {
-    auto iossDB = get_database();
-    Ioex::BaseDatabaseIO* ioexDB = dynamic_cast<Ioex::BaseDatabaseIO*>(iossDB);
+    auto                  iossDB = get_database();
+    Ioex::BaseDatabaseIO *ioexDB = dynamic_cast<Ioex::BaseDatabaseIO *>(iossDB);
 
-    if(nullptr == ioexDB) {
+    if (nullptr == ioexDB) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The database file named '{}' is not Exodus format\n",iossDB->get_filename());
+      fmt::print(errmsg, "ERROR: The database file named '{}' is not Exodus format\n",
+                 iossDB->get_filename());
       IOSS_ERROR(errmsg);
     }
 
@@ -113,9 +114,10 @@ namespace Ioex {
 
   void ChangeSet::populate_change_sets(bool loadAllFiles)
   {
-    if(supports_group()) {
+    if (supports_group()) {
       get_group_change_sets();
-    } else {
+    }
+    else {
       Ioss::ChangeSet::populate_change_sets(loadAllFiles);
     }
   }
@@ -128,7 +130,7 @@ namespace Ioex {
 
   void ChangeSet::close_change_set(unsigned index)
   {
-    if(Ioss::CHANGE_SET_INTERNAL_FILES != m_databaseFormat) {
+    if (Ioss::CHANGE_SET_INTERNAL_FILES != m_databaseFormat) {
       Ioss::ChangeSet::close_change_set(index);
       return;
     }
@@ -136,17 +138,17 @@ namespace Ioex {
     verify_change_set_index(index);
 
     auto iossDB = get_database();
-    if(!iossDB->open_internal_change_set(m_currentChangeSet)) {
+    if (!iossDB->open_internal_change_set(m_currentChangeSet)) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: The database file named '{}' could not open group '{}\n",
-                         iossDB->get_filename(), m_currentChangeSet);
+                 iossDB->get_filename(), m_currentChangeSet);
       IOSS_ERROR(errmsg);
     }
   }
 
-  Ioss::DatabaseIO* ChangeSet::open_change_set(unsigned index, Ioss::DatabaseUsage usage)
+  Ioss::DatabaseIO *ChangeSet::open_change_set(unsigned index, Ioss::DatabaseUsage usage)
   {
-    if(Ioss::CHANGE_SET_INTERNAL_FILES != m_databaseFormat) {
+    if (Ioss::CHANGE_SET_INTERNAL_FILES != m_databaseFormat) {
       return Ioss::ChangeSet::open_change_set(index, usage);
     }
 
@@ -157,4 +159,4 @@ namespace Ioex {
 
     return db;
   }
-}
+} // namespace Ioex

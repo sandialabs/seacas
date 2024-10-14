@@ -135,8 +135,7 @@ namespace {
     o_region.end_mode(Ioss::STATE_MODEL);
   }
 
-  void define_transient(Ioss::Region &o_region,
-                        const std::string &elemFieldName)
+  void define_transient(Ioss::Region &o_region, const std::string &elemFieldName)
   {
     o_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 

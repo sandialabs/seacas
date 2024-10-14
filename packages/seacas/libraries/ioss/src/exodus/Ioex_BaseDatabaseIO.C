@@ -524,15 +524,12 @@ namespace Ioex {
     open_child_group_nl(0);
   }
 
-  bool BaseDatabaseIO::supports_internal_change_set_nl()
-  {
-    return supports_group();
-  }
+  bool BaseDatabaseIO::supports_internal_change_set_nl() { return supports_group(); }
 
   bool BaseDatabaseIO::supports_group() const
   {
     Ioss::SerializeIO serializeIO_(this);
-    int exoid = get_file_pointer();
+    int               exoid = get_file_pointer();
 
     int64_t format = ex_inquire_int(exoid, EX_INQ_FILE_FORMAT);
 
@@ -582,7 +579,7 @@ namespace Ioex {
 
   bool BaseDatabaseIO::open_internal_change_set_nl(const std::string &set_name)
   {
-    if(set_name == m_groupName) {
+    if (set_name == m_groupName) {
       return true;
     }
 
@@ -3299,12 +3296,12 @@ namespace Ioex {
 
     // Downshift by 1 since the first is the root group "/"
     int numNames = static_cast<int>(names.size());
-    for(int i=0; i<numNames-1; i++) {
-      names[i] = names[i+1];
+    for (int i = 0; i < numNames - 1; i++) {
+      names[i] = names[i + 1];
     }
 
-    if(numNames > 0) {
-      names.resize(numNames-1);
+    if (numNames > 0) {
+      names.resize(numNames - 1);
     }
 
     return names;
@@ -3347,20 +3344,19 @@ namespace Ioex {
   int BaseDatabaseIO::num_internal_change_set_nl()
   {
     // Save and reset state
-    int currentExodusFilePtr = m_exodusFilePtr;
-    std::string currentGroupName = m_groupName;
+    int         currentExodusFilePtr = m_exodusFilePtr;
+    std::string currentGroupName     = m_groupName;
 
     if (!open_root_group_nl()) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open root group.\n",
-          m_groupName);
+      fmt::print(errmsg, "ERROR: Could not open root group.\n", m_groupName);
       IOSS_ERROR(errmsg);
     }
 
     int numChildGroup = num_child_group();
 
     m_exodusFilePtr = currentExodusFilePtr;
-    m_groupName = currentGroupName;
+    m_groupName     = currentGroupName;
 
     return numChildGroup;
   }
@@ -3378,8 +3374,7 @@ namespace Ioex {
   {
     if (!open_root_group_nl()) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open root group.\n",
-          m_groupName);
+      fmt::print(errmsg, "ERROR: Could not open root group.\n", m_groupName);
       IOSS_ERROR(errmsg);
     }
 

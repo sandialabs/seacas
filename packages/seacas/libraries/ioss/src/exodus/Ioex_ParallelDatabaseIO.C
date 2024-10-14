@@ -696,7 +696,7 @@ namespace Ioex {
     if (is_ok) {
       ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
 
-      if( fileExists) {
+      if (fileExists) {
         open_root_group_nl();
         open_child_group_nl(0);
       }
@@ -956,10 +956,10 @@ namespace Ioex {
     int                 timestep_count = 0;
     std::vector<double> tsteps(0);
 
-    int& l_timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
+    int &l_timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
 
     {
-      timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+      timestep_count  = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
       l_timestepCount = timestep_count;
       if (timestep_count <= 0) {
         return tsteps;
@@ -998,10 +998,10 @@ namespace Ioex {
     last_time = std::min(last_time, max_time);
 
     Ioss::Region *this_region = get_region();
-    int numSteps = 0;
+    int           numSteps    = 0;
     for (int i = 0; i < max_step; i++) {
       if (tsteps[i] <= last_time) {
-        if(setRegionTimeSteps) {
+        if (setRegionTimeSteps) {
           this_region->add_state(tsteps[i] * timeScaleFactor);
         }
 
@@ -1032,10 +1032,7 @@ namespace Ioex {
     return internal_get_step_times_nl(false);
   }
 
-  void ParallelDatabaseIO::get_step_times_nl()
-  {
-    internal_get_step_times_nl(true);
-  }
+  void ParallelDatabaseIO::get_step_times_nl() { internal_get_step_times_nl(true); }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(ex_entity_type type) const
   {

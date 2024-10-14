@@ -29,7 +29,7 @@
 #include <map>        // for map, map<>::value_compare
 #include <memory>
 #include <sstream>
-#include <string>  // for string, operator<
+#include <string> // for string, operator<
 #include <tuple>
 #include <utility> // for pair
 #include <vector>  // for vector
@@ -326,9 +326,9 @@ namespace Ioss {
 
   protected:
     std::string get_internal_change_set_name() const;
-    void update_dynamic_topology();
-    void clone_and_replace_output_database(int steps = 0);
-    void add_output_database_change_set(int steps = 0, bool force_addition = false);
+    void        update_dynamic_topology();
+    void        clone_and_replace_output_database(int steps = 0);
+    void        add_output_database_change_set(int steps = 0, bool force_addition = false);
 
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;

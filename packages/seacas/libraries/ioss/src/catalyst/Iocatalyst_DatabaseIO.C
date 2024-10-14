@@ -360,7 +360,7 @@ namespace Iocatalyst {
     std::vector<double> getTime()
     {
       std::vector<double> times;
-      auto &node = this->DBNode;
+      auto               &node = this->DBNode;
       if (node.has_path(getTimePath())) {
         times.push_back(node[getTimePath()].as_float64());
       }

@@ -177,11 +177,11 @@ namespace Ioex {
 
     void release_memory_nl() override;
 
-    bool supports_internal_change_set_nl() override;
-    bool open_internal_change_set_nl(const std::string &set_name) override;
-    bool open_internal_change_set_nl(int index) override;
-    bool create_internal_change_set_nl(const std::string &set_name) override;
-    int  num_internal_change_set_nl() override;
+    bool           supports_internal_change_set_nl() override;
+    bool           open_internal_change_set_nl(const std::string &set_name) override;
+    bool           open_internal_change_set_nl(int index) override;
+    bool           create_internal_change_set_nl(const std::string &set_name) override;
+    int            num_internal_change_set_nl() override;
     Ioss::NameList internal_change_set_describe_nl(bool return_full_names) override;
 
     bool open_root_group_nl() const;

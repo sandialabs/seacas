@@ -68,7 +68,7 @@ namespace Ioex {
     IOSS_NODISCARD int get_file_pointer() const override; // Open file and set exodusFilePtr.
 
   private:
-    void get_step_times_nl() override;
+    void                get_step_times_nl() override;
     std::vector<double> get_db_step_times_nl() override;
     std::vector<double> internal_get_step_times_nl(bool setRegionTimeSteps);
 

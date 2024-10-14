@@ -9,8 +9,8 @@
 #include "Ioss_CodeTypes.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
-#include "exodus/Ioex_IOFactory.h"
 #include "exodus/Ioex_ChangeSet.h"
+#include "exodus/Ioex_IOFactory.h"
 #if defined(SEACAS_HAVE_EXONULL)
 #include "exonull/Ioexnl_IOFactory.h"
 #endif
@@ -50,8 +50,8 @@
 
 #include "Ioss_IOFactory.h"
 
-#include "Ioss_DynamicTopology.h"
 #include "Ioss_ChangeSetFactory.h"
+#include "Ioss_DynamicTopology.h"
 
 namespace {
 #if defined(IOSS_THREADSAFE)

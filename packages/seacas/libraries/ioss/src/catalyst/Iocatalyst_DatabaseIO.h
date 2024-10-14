@@ -92,8 +92,8 @@ namespace Iocatalyst {
     bool begin_nl(Ioss::State state) override;
     bool end_nl(Ioss::State state) override;
 
-    void read_meta_data_nl() override;
-    void get_step_times_nl() override;
+    void                read_meta_data_nl() override;
+    void                get_step_times_nl() override;
     std::vector<double> get_db_step_times_nl() override;
 
     bool begin_state_nl(int state, double time) override;

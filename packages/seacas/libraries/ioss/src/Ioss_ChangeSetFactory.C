@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_ChangeSetFactory.h"
 #include "Ioss_ChangeSet.h"
+#include "Ioss_ChangeSetFactory.h"
 #include "Ioss_Utils.h" // for IOSS_ERROR
 #include "Ioss_Version.h"
 #include <fmt/format.h>
@@ -28,7 +28,7 @@ namespace {
 
   int describe_nl(Ioss::ChangeSetFactoryMap *registry, Ioss::NameList *names)
   {
-    int                                count = 0;
+    int                                       count = 0;
     Ioss::ChangeSetFactoryMap::const_iterator I;
     for (I = registry->begin(); I != registry->end(); ++I) {
       names->push_back((*I).first);
@@ -68,16 +68,16 @@ std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::Region *re
     }
   }
 
-  Ioss::ChangeSetFactory *factory = (*iter).second;
-  Ioss::ChangeSet* csPtr = factory->make_ChangeSet(region);
+  Ioss::ChangeSetFactory          *factory = (*iter).second;
+  Ioss::ChangeSet                 *csPtr   = factory->make_ChangeSet(region);
   std::shared_ptr<Ioss::ChangeSet> cs(csPtr);
   return cs;
 }
 
-std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::DatabaseIO* db,
-                                                                const std::string& dbName,
-                                                                const std::string& dbType,
-                                                                unsigned fileCyclicCount)
+std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::DatabaseIO  *db,
+                                                                const std::string &dbName,
+                                                                const std::string &dbType,
+                                                                unsigned           fileCyclicCount)
 {
   IOSS_FUNC_ENTER(m_);
 
@@ -95,20 +95,20 @@ std::shared_ptr<Ioss::ChangeSet> Ioss::ChangeSetFactory::create(Ioss::DatabaseIO
   }
 
   Ioss::ChangeSetFactory *factory = (*iter).second;
-  Ioss::ChangeSet* csPtr = factory->make_ChangeSet(db, dbName, dbType, fileCyclicCount);
+  Ioss::ChangeSet        *csPtr   = factory->make_ChangeSet(db, dbName, dbType, fileCyclicCount);
   std::shared_ptr<Ioss::ChangeSet> cs(csPtr);
   return cs;
 }
 
-Ioss::ChangeSet *Ioss::ChangeSetFactory::make_ChangeSet(Ioss::Region* region) const
+Ioss::ChangeSet *Ioss::ChangeSetFactory::make_ChangeSet(Ioss::Region *region) const
 {
   return new ChangeSet(region);
 }
 
-Ioss::ChangeSet *Ioss::ChangeSetFactory::make_ChangeSet(Ioss::DatabaseIO* db,
-                                                        const std::string& dbName,
-                                                        const std::string& dbType,
-                                                        unsigned fileCyclicCount) const
+Ioss::ChangeSet *Ioss::ChangeSetFactory::make_ChangeSet(Ioss::DatabaseIO  *db,
+                                                        const std::string &dbName,
+                                                        const std::string &dbType,
+                                                        unsigned           fileCyclicCount) const
 {
   return new ChangeSet(db, dbName, dbType, fileCyclicCount);
 }
@@ -151,4 +151,3 @@ Ioss::ChangeSetFactoryMap *Ioss::ChangeSetFactory::registry()
   static ChangeSetFactoryMap registry_;
   return &registry_;
 }
-

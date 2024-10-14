@@ -831,8 +831,8 @@ namespace Ioss {
     virtual bool begin_nl(Ioss::State state) = 0;
     virtual bool end_nl(Ioss::State state)   = 0;
 
-    virtual void read_meta_data_nl() = 0;
-    virtual void get_step_times_nl() {}
+    virtual void                read_meta_data_nl() = 0;
+    virtual void                get_step_times_nl() {}
     virtual std::vector<double> get_db_step_times_nl() { return std::vector<double>(); }
 
     virtual bool begin_state_nl(int state, double time);

@@ -1644,8 +1644,7 @@ namespace Iocgns {
   {
     std::vector<double> timesteps;
 
-    Utils::get_step_times(get_file_pointer(), timesteps, nullptr, timeScaleFactor,
-                          myProcessor);
+    Utils::get_step_times(get_file_pointer(), timesteps, nullptr, timeScaleFactor, myProcessor);
 
     return timesteps;
   }

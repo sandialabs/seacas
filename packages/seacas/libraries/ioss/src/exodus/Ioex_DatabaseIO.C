@@ -373,7 +373,7 @@ namespace Ioex {
     if (is_ok) {
       ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
 
-      if( fileExists) {
+      if (fileExists) {
         open_root_group_nl();
         open_child_group_nl(0);
       }
@@ -676,16 +676,16 @@ namespace Ioex {
 
   std::vector<double> DatabaseIO::internal_get_step_times_nl(bool setRegionTimeSteps)
   {
-    bool                exists         = false;
-    double              last_time      = DBL_MAX;
-    int                 tstepCount     = 0;
+    bool                exists     = false;
+    double              last_time  = DBL_MAX;
+    int                 tstepCount = 0;
     std::vector<double> tsteps(0);
 
     // Use reference to make sure that no Region modifications occur based on the input flag
     // setRegionTimeSteps flag determines whether we are actually populating the region
     // timesteps or just querying the timesteps that are on a specific database without
     // populating the regions timesteps data and setting the number of timesteps on the region
-    int& timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
+    int &timestepCount = setRegionTimeSteps ? m_timestepCount : tstepCount;
 
     if (dbUsage == Ioss::WRITE_HISTORY) {
       if (myProcessor == 0) {
@@ -713,10 +713,10 @@ namespace Ioex {
             properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
 
         Ioss::Region *this_region = get_region();
-        int numSteps = 0;
+        int           numSteps    = 0;
         for (int i = 0; i < max_step; i++) {
           if (tsteps[i] <= max_time) {
-            if(setRegionTimeSteps) {
+            if (setRegionTimeSteps) {
               this_region->add_state_nl(tsteps[i] * timeScaleFactor);
             }
 
@@ -730,26 +730,28 @@ namespace Ioex {
     else {
       {
         Ioss::SerializeIO serializeIO_(this);
-        timestepCount = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
+        timestepCount       = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
         int exTimestepCount = timestepCount;
         // Need to sync timestep count across ranks if parallel...
         if (isParallel) {
-          auto min_timestep_count = util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MIN);
+          auto min_timestep_count =
+              util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MIN);
           if (min_timestep_count == 0) {
-            auto max_timestep_count = util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MAX);
+            auto max_timestep_count =
+                util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MAX);
             if (max_timestep_count != 0) {
               if (myProcessor == 0) {
                 // NOTE: Don't want to warn on all processors if the
                 // timestep count is zero on some, but not all ranks.
                 fmt::print(Ioss::WarnOut(),
-                    "At least one database has no timesteps.  No times will be read on ANY"
-                    " database for consistency.\n");
+                           "At least one database has no timesteps.  No times will be read on ANY"
+                           " database for consistency.\n");
               }
             }
           }
           timestepCount = min_timestep_count;
         }
-	
+
         if (timestepCount <= 0) {
           return tsteps;
         }
@@ -810,10 +812,10 @@ namespace Ioex {
       last_time = std::min(last_time, max_time);
 
       Ioss::Region *this_region = get_region();
-      int numSteps = 0;
+      int           numSteps    = 0;
       for (int i = 0; i < max_step; i++) {
         if (tsteps[i] <= last_time) {
-          if(setRegionTimeSteps) {
+          if (setRegionTimeSteps) {
             this_region->add_state_nl(tsteps[i] * timeScaleFactor);
           }
 
@@ -847,10 +849,7 @@ namespace Ioex {
     return internal_get_step_times_nl(false);
   }
 
-  void DatabaseIO::get_step_times_nl()
-  {
-    internal_get_step_times_nl(true);
-  }
+  void DatabaseIO::get_step_times_nl() { internal_get_step_times_nl(true); }
 
   void DatabaseIO::read_communication_metadata()
   {
