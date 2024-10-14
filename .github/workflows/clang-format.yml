@@ -1,6 +1,18 @@
-name: test-clang-format
+# NOTE: This action requires write permissions to be set in your GitHub
+#       repo/fork for it to be able to commit changes.
+#
+# This is currently enabled via:
+#
+#   settings > Actions > General > Workflow permissions
+#
+# which you will need to set to "Read and write permissions"
+#
 
-on: [push]
+name: Clang Format Commit Changes
+
+on: 
+  workflow_dispatch:
+  push:
 
 concurrency:  
   group: ${{ github.workflow}}-${{ github.head_ref }}  
@@ -10,22 +22,28 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  formatting-check:
+    name: Commit clang-format changes
     runs-on: ubuntu-latest
 
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    permissions:
+        contents: write # In order to allow EndBug/add-and-commit to commit changes
     steps:
     - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
-    - uses: DoozyX/clang-format-lint-action@v0.18.1
+
+    - name: Fix C and Java formatting issues detected by clang-format
+      uses: DoozyX/clang-format-lint-action@v0.18.2
       with:
         source: 'packages/seacas'
         exclude: 'packages/seacas/doc-source'
-        extensions: 'c,C,h,cpp'
+        extensions: 'c,C,h,cpp,hpp'
         clangFormatVersion: 18
+	inplace: True
         style: file
-    - uses: EndBug/add-and-commit@v9
+
+    - uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4
       with:
-        author_name: Clang-Format Robot
-        author_email: gsjaardema@gmail.com
-        message: 'Committing clang-format changes'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          author_name: github-actions
+          author_email: 41898282+github-actions[bot]@users.noreply.github.com
+          message: 'Committing clang-format changes'
