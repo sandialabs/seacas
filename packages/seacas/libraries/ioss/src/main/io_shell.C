@@ -223,7 +223,6 @@ namespace {
   {
     Ioss::PropertyManager properties = set_properties(interFace);
 
-    bool first = true;
     for (const auto &inpfile : interFace.inputFile) {
 
       //========================================================================
@@ -260,7 +259,14 @@ namespace {
       }
 
       if (!interFace.groupName.empty()) {
-        bool success = dbi->open_internal_change_set(interFace.groupName);
+        bool success = dbi->open_root_group();
+        if (!success) {
+          if (rank == 0) {
+            fmt::print(stderr, "ERROR: Unable to open root group in file '{}'\n", inpfile);
+          }
+          return;
+        }
+        success = dbi->open_internal_change_set(interFace.groupName);
 
         if (!success) {
           if (rank == 0) {
@@ -356,14 +362,28 @@ namespace {
         if (interFace.inputFile.size() > 1) {
           properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
 
-          if (!first) {
-            // Putting each file into its own output group...
-            // The name of the group will be the basename portion of the filename...
-            Ioss::FileInfo file(inpfile);
-            dbo->create_internal_change_set(file.tailname());
+          bool success = dbo->open_root_group();
+          if (!success) {
+            if (rank == 0) {
+              fmt::print(stderr, "ERROR: Unable to open root group in output file.\n");
+            }
+            return;
           }
-          else {
-            first = false;
+          // Putting each file into its own output group...
+          // The name of the group will be the basename portion of the filename...
+          Ioss::FileInfo file(inpfile);
+          dbo->create_internal_change_set(file.tailname());
+
+          // Putting each file into its own output group...
+          // The name of the group will be the basename portion of the filename...
+          Ioss::FileInfo file(inpfile);
+          success = dbo->create_subgroup(file.tailname());
+          if (!success) {
+            if (rank == 0) {
+              fmt::print(stderr, "ERROR: Unable to create group {} in output file.\n",
+                         file.tailname());
+            }
+            return;
           }
         }
 

@@ -879,9 +879,9 @@ namespace Iotm {
     if (nullptr == sideset)
       return;
 
-    SideBlockInfo       info = sideset->get_side_block_info(sideBlockName);
-    Ioss::ElementTopology* topology = Ioss::ElementTopology::factory(info.elementTopology, true);
-    Ioss::ElementTopology* side_topology = Ioss::ElementTopology::factory(info.sideTopology, true);
+    SideBlockInfo          info     = sideset->get_side_block_info(sideBlockName);
+    Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(info.elementTopology, true);
+    Ioss::ElementTopology *side_topology = Ioss::ElementTopology::factory(info.sideTopology, true);
 
     int sideOffset = Ioss::Utils::get_side_offset(topology, side_topology);
 

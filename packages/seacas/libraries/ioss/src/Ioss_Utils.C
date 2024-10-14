@@ -940,9 +940,10 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector             &face_is_
   }
 }
 
-int64_t Ioss::Utils::get_side_offset(const Ioss::ElementTopology * parent_topo, const Ioss::ElementTopology * side_topo)
+int64_t Ioss::Utils::get_side_offset(const Ioss::ElementTopology *parent_topo,
+                                     const Ioss::ElementTopology *side_topo)
 {
-  int64_t                      side_offset = 0;
+  int64_t side_offset = 0;
   if ((side_topo != nullptr) && (parent_topo != nullptr)) {
     int side_topo_dim = side_topo->parametric_dimension();
     int elem_topo_dim = parent_topo->parametric_dimension();
