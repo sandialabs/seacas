@@ -22,3 +22,10 @@ jobs:
         extensions: 'c,C,h,cpp'
         clangFormatVersion: 18
         style: file
+    - uses: EndBug/add-and-commit@v9
+      with:
+        author_name: Clang-Format Robot
+        author_email: gsjaardema@gmail.com
+        message: 'Committing clang-format changes'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
