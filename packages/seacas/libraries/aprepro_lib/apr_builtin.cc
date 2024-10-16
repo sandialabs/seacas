@@ -683,6 +683,10 @@ namespace SEAMS {
     auto &tokens = get_tokenized_strings(string, delm);
 
     auto in = static_cast<size_t>(n);
+    if (in == 0) {
+      aprepro->error("Index to get_word must be positive.", false);
+      return "";
+    }
     if (tokens.size() >= in) {
       char *word = nullptr;
       new_string(tokens[in - 1], &word);
