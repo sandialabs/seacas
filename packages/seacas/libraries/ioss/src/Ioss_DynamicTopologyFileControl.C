@@ -91,81 +91,81 @@ namespace {
 
 namespace Ioss {
 
-DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region)
-  : m_region(region)
-  , m_fileCyclicCount(region->get_file_cyclic_count())
-  , m_ifDatabaseExists(region->get_if_database_exists_behavior())
-  , m_dbChangeCount(region->get_topology_change_count())
-{
-  if(nullptr == region) {
-    std::ostringstream errmsg;
-    fmt::print(errmsg, "ERROR: null region passed in as argument to DynamicTopologyFileControl");
-    IOSS_ERROR(errmsg);
+  DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region)
+      : m_region(region), m_fileCyclicCount(region->get_file_cyclic_count()),
+        m_ifDatabaseExists(region->get_if_database_exists_behavior()),
+        m_dbChangeCount(region->get_topology_change_count())
+  {
+    if (nullptr == region) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: null region passed in as argument to DynamicTopologyFileControl");
+      IOSS_ERROR(errmsg);
+    }
+
+    m_ioDB   = region->get_property("base_filename").get_string();
+    m_dbType = region->get_property("database_type").get_string();
   }
 
-  m_ioDB   = region->get_property("base_filename").get_string();
-  m_dbType = region->get_property("database_type").get_string();
-}
+  const ParallelUtils &DynamicTopologyFileControl::util() const
+  {
+    return m_region->get_database()->util();
+  }
 
-const ParallelUtils &DynamicTopologyFileControl::util() const
-{
-  return m_region->get_database()->util();
-}
+  bool DynamicTopologyFileControl::file_exists(const std::string  &filename,
+                                               const std::string  &db_type,
+                                               Ioss::DatabaseUsage db_usage)
+  {
+    return ::file_exists(util(), filename, db_type, db_usage);
+  }
 
-bool DynamicTopologyFileControl::file_exists(const std::string &filename,
-                                             const std::string &db_type,
-                                             Ioss::DatabaseUsage db_usage)
-{
-  return ::file_exists(util(), filename, db_type, db_usage);
-}
+  std::string DynamicTopologyFileControl::get_unique_linear_filename(Ioss::DatabaseUsage db_usage)
+  {
+    std::string filename = m_ioDB;
 
-std::string DynamicTopologyFileControl::get_unique_linear_filename(Ioss::DatabaseUsage db_usage)
-{
-  std::string filename = m_ioDB;
+    do {
+      // Run this loop at least once for all files.  If this is an automatic
+      // restart, then make sure that the generated file does not already exist,
+      // so keep running the loop until we generate a filename that doesn't exist...
+      std::ostringstream tmp_filename;
+      tmp_filename << m_ioDB;
 
-  do {
-    // Run this loop at least once for all files.  If this is an automatic
-    // restart, then make sure that the generated file does not already exist,
-    // so keep running the loop until we generate a filename that doesn't exist...
-    std::ostringstream tmp_filename;
-    tmp_filename << m_ioDB;
+      // Don't append the "-s000X" the first time in case the base filename doesn't
+      // exist -- we want write to the name specified by the user if at all possible and
+      // once that exists, then start adding on the suffix...
+      if (m_dbChangeCount > 1) {
+        tmp_filename << "-s" << std::setw(4) << std::setfill('0') << m_dbChangeCount;
+      }
+      filename = tmp_filename.str();
+      ++m_dbChangeCount;
+    } while (file_exists(filename, m_dbType, db_usage));
+    --m_dbChangeCount;
+    return filename;
+  }
 
-    // Don't append the "-s000X" the first time in case the base filename doesn't
-    // exist -- we want write to the name specified by the user if at all possible and
-    // once that exists, then start adding on the suffix...
-    if (m_dbChangeCount > 1) {
-      tmp_filename << "-s" << std::setw(4) << std::setfill('0') << m_dbChangeCount;
-    }
-    filename = tmp_filename.str();
-    ++m_dbChangeCount;
-  } while(file_exists(filename, m_dbType, db_usage));
-  --m_dbChangeCount;
-  return filename;
-}
+  std::string DynamicTopologyFileControl::get_internal_file_change_set_name(unsigned int step)
+  {
+    std::ostringstream change_setname;
+    change_setname << change_set_prefix();
+    change_setname << step;
+    return change_setname.str();
+  }
 
-std::string DynamicTopologyFileControl::get_internal_file_change_set_name(unsigned int step)
-{
-  std::ostringstream change_setname;
-  change_setname << change_set_prefix();
-  change_setname << step;
-  return change_setname.str();
-}
+  std::string DynamicTopologyFileControl::get_cyclic_database_filename(
+      const std::string &baseFileName, unsigned int fileCyclicCount, unsigned int step)
+  {
+    return ChangeSet::get_cyclic_database_filename(baseFileName, fileCyclicCount, step);
+  }
 
-std::string DynamicTopologyFileControl::get_cyclic_database_filename(const std::string& baseFileName,
-                                                                     unsigned int fileCyclicCount,
-                                                                     unsigned int step)
-{
-  return ChangeSet::get_cyclic_database_filename(baseFileName, fileCyclicCount, step);
-}
+  std::string
+  DynamicTopologyFileControl::get_linear_database_filename(const std::string &baseFileName,
+                                                           unsigned int       step)
+  {
+    return ChangeSet::get_linear_database_filename(baseFileName, step);
+  }
 
-std::string DynamicTopologyFileControl::get_linear_database_filename(const std::string& baseFileName,
-                                                                     unsigned int step)
-{
-  return ChangeSet::get_linear_database_filename(baseFileName, step);
-}
-
-std::string DynamicTopologyFileControl::construct_database_filename(int& step, Ioss::DatabaseUsage db_usage)
-{
+  std::string DynamicTopologyFileControl::construct_database_filename(int                &step,
+                                                                      Ioss::DatabaseUsage db_usage)
+  {
     // Filename will be of the form -- ioDB-sxxxx where xxxx is step
     // number.  Assume maximum of 9999 steps (will do more, but won't have
     // good lineup of step numbers.

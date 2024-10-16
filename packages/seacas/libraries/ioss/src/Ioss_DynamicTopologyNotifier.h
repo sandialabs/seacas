@@ -25,59 +25,59 @@
 
 namespace Ioss {
 
-class IOSS_EXPORT DynamicTopologyNotifier
-{
-public:
-  DynamicTopologyNotifier(const std::string &model_name) : m_modelName(model_name) {}
-
-  virtual ~DynamicTopologyNotifier() = default;
-
-  std::string name() const { return m_modelName; }
-
-  std::vector<std::shared_ptr<DynamicTopologyObserver>> get_observers() const
+  class IOSS_EXPORT DynamicTopologyNotifier
   {
-    return m_observers;
-  }
+  public:
+    DynamicTopologyNotifier(const std::string &model_name) : m_modelName(model_name) {}
 
-  void register_observer(std::shared_ptr<DynamicTopologyObserver> observer);
+    virtual ~DynamicTopologyNotifier() = default;
 
-  void unregister_observer(std::shared_ptr<DynamicTopologyObserver> observer);
+    std::string name() const { return m_modelName; }
 
-  void reset_topology_modification();
-
-  void set_topology_modification(unsigned int type);
-
-  template <typename ObserverType> bool has_observer_type() const
-  {
-    bool found = false;
-
-    for (const std::shared_ptr<DynamicTopologyObserver> &observer : m_observers) {
-      if (dynamic_cast<const ObserverType *>(observer.get()) != nullptr) {
-        found = true;
-        break;
-      }
-    }
-    return found;
-  }
-
-  template <typename ObserverType>
-  std::vector<std::shared_ptr<ObserverType>> get_observer_type() const
-  {
-    std::vector<std::shared_ptr<ObserverType>> typed_observers;
-
-    for (const std::shared_ptr<DynamicTopologyObserver> &observer : m_observers) {
-      ObserverType *typed_observer = dynamic_cast<ObserverType *>(observer.get());
-      if (typed_observer != nullptr) {
-        typed_observers.push_back(std::dynamic_pointer_cast<ObserverType>(observer));
-      }
+    std::vector<std::shared_ptr<DynamicTopologyObserver>> get_observers() const
+    {
+      return m_observers;
     }
 
-    return typed_observers;
-  }
+    void register_observer(std::shared_ptr<DynamicTopologyObserver> observer);
 
-private:
-  const std::string                                     m_modelName;
-  std::vector<std::shared_ptr<DynamicTopologyObserver>> m_observers;
-};
+    void unregister_observer(std::shared_ptr<DynamicTopologyObserver> observer);
 
-}
+    void reset_topology_modification();
+
+    void set_topology_modification(unsigned int type);
+
+    template <typename ObserverType> bool has_observer_type() const
+    {
+      bool found = false;
+
+      for (const std::shared_ptr<DynamicTopologyObserver> &observer : m_observers) {
+        if (dynamic_cast<const ObserverType *>(observer.get()) != nullptr) {
+          found = true;
+          break;
+        }
+      }
+      return found;
+    }
+
+    template <typename ObserverType>
+    std::vector<std::shared_ptr<ObserverType>> get_observer_type() const
+    {
+      std::vector<std::shared_ptr<ObserverType>> typed_observers;
+
+      for (const std::shared_ptr<DynamicTopologyObserver> &observer : m_observers) {
+        ObserverType *typed_observer = dynamic_cast<ObserverType *>(observer.get());
+        if (typed_observer != nullptr) {
+          typed_observers.push_back(std::dynamic_pointer_cast<ObserverType>(observer));
+        }
+      }
+
+      return typed_observers;
+    }
+
+  private:
+    const std::string                                     m_modelName;
+    std::vector<std::shared_ptr<DynamicTopologyObserver>> m_observers;
+  };
+
+} // namespace Ioss

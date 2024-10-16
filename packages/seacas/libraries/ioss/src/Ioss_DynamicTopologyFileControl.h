@@ -23,55 +23,55 @@
 #include <string> // for string, operator<
 
 namespace Ioss {
-class Region;
+  class Region;
 
-class IOSS_EXPORT DynamicTopologyFileControl
-{
-public:
-  DynamicTopologyFileControl(Region *region);
+  class IOSS_EXPORT DynamicTopologyFileControl
+  {
+  public:
+    DynamicTopologyFileControl(Region *region);
 
-  void clone_and_replace_output_database(int steps = 0);
-  void add_output_database_change_set(int steps = 0);
+    void clone_and_replace_output_database(int steps = 0);
+    void add_output_database_change_set(int steps = 0);
 
-  static std::string change_set_prefix() { return "IOSS_FILE_GROUP-"; }
+    static std::string change_set_prefix() { return "IOSS_FILE_GROUP-"; }
 
-  DatabaseIO *get_database() const;
+    DatabaseIO *get_database() const;
 
-  static std::string get_cyclic_database_filename(const std::string &baseFileName,
-                                                  unsigned int       fileCyclicCount,
-                                                  unsigned int       step);
+    static std::string get_cyclic_database_filename(const std::string &baseFileName,
+                                                    unsigned int       fileCyclicCount,
+                                                    unsigned int       step);
 
-  static std::string get_linear_database_filename(const std::string &baseFileName,
-                                                  unsigned int       step);
+    static std::string get_linear_database_filename(const std::string &baseFileName,
+                                                    unsigned int       step);
 
-  static std::string get_internal_file_change_set_name(unsigned int step);
+    static std::string get_internal_file_change_set_name(unsigned int step);
 
-  unsigned int             get_topology_change_count() const { return m_dbChangeCount; }
-  unsigned int             get_file_cyclic_count() const { return m_fileCyclicCount; }
-  IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return m_ifDatabaseExists; }
+    unsigned int             get_topology_change_count() const { return m_dbChangeCount; }
+    unsigned int             get_file_cyclic_count() const { return m_fileCyclicCount; }
+    IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return m_ifDatabaseExists; }
 
-private:
-  Region     *m_region{nullptr};
-  std::string m_ioDB;
-  std::string m_dbType;
+  private:
+    Region     *m_region{nullptr};
+    std::string m_ioDB;
+    std::string m_dbType;
 
-  PropertyManager m_properties;
+    PropertyManager m_properties;
 
-  unsigned int             m_fileCyclicCount;
-  IfDatabaseExistsBehavior m_ifDatabaseExists;
-  unsigned int             m_dbChangeCount;
+    unsigned int             m_fileCyclicCount;
+    IfDatabaseExistsBehavior m_ifDatabaseExists;
+    unsigned int             m_dbChangeCount;
 
-  IOSS_NODISCARD const ParallelUtils &util() const;
+    IOSS_NODISCARD const ParallelUtils &util() const;
 
-  std::string get_unique_linear_filename(DatabaseUsage db_usage);
-  std::string construct_database_filename(int &step, DatabaseUsage db_usage);
-  bool        file_exists(const std::string &filename, const std::string &db_type,
-                          DatabaseUsage db_usage);
-  bool        abort_if_exists(const std::string &filename, const std::string &db_type,
-                              DatabaseUsage db_usage);
+    std::string get_unique_linear_filename(DatabaseUsage db_usage);
+    std::string construct_database_filename(int &step, DatabaseUsage db_usage);
+    bool        file_exists(const std::string &filename, const std::string &db_type,
+                            DatabaseUsage db_usage);
+    bool        abort_if_exists(const std::string &filename, const std::string &db_type,
+                                DatabaseUsage db_usage);
 
-  DatabaseIO *clone_output_database(int steps);
-  bool        replace_output_database(DatabaseIO *db);
-};
+    DatabaseIO *clone_output_database(int steps);
+    bool        replace_output_database(DatabaseIO *db);
+  };
 
-}
+} // namespace Ioss

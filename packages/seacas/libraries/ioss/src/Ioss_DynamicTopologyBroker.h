@@ -25,34 +25,34 @@
 #include <string> // for string, operator<
 
 namespace Ioss {
-class Region;
+  class Region;
 
-class IOSS_EXPORT DynamicTopologyBroker
-{
-public:
-  static DynamicTopologyBroker *broker();
+  class IOSS_EXPORT DynamicTopologyBroker
+  {
+  public:
+    static DynamicTopologyBroker *broker();
 
-  void register_model(const std::string &model_name);
-  void remove_model(const std::string &model_name);
-  void clear_models();
+    void register_model(const std::string &model_name);
+    void remove_model(const std::string &model_name);
+    void clear_models();
 
-  std::shared_ptr<DynamicTopologyNotifier> get_notifier(const std::string &model_name) const;
-  std::vector<std::shared_ptr<DynamicTopologyObserver>>
-  get_observers(const std::string &model_name) const;
+    std::shared_ptr<DynamicTopologyNotifier> get_notifier(const std::string &model_name) const;
+    std::vector<std::shared_ptr<DynamicTopologyObserver>>
+    get_observers(const std::string &model_name) const;
 
-  void register_observer(const std::string                       &model_name,
-                         std::shared_ptr<DynamicTopologyObserver> observer);
-  void register_observer(const std::string                       &model_name,
-                         std::shared_ptr<DynamicTopologyObserver> observer, Region &region);
+    void register_observer(const std::string                       &model_name,
+                           std::shared_ptr<DynamicTopologyObserver> observer);
+    void register_observer(const std::string                       &model_name,
+                           std::shared_ptr<DynamicTopologyObserver> observer, Region &region);
 
-  void reset_topology_modification(const std::string &model_name);
-  void set_topology_modification(const std::string &model_name, unsigned int type);
+    void reset_topology_modification(const std::string &model_name);
+    void set_topology_modification(const std::string &model_name, unsigned int type);
 
-private:
-  DynamicTopologyBroker() {};
-  DynamicTopologyBroker(DynamicTopologyBroker &);
+  private:
+    DynamicTopologyBroker() {};
+    DynamicTopologyBroker(DynamicTopologyBroker &);
 
-  std::map<std::string, std::shared_ptr<DynamicTopologyNotifier>> m_notifiers;
-};
+    std::map<std::string, std::shared_ptr<DynamicTopologyNotifier>> m_notifiers;
+  };
 
-}
+} // namespace Ioss
