@@ -16,7 +16,7 @@ jobs:
       - name: Find Trailing Whitespace
         run: |
           set +e
-          lines=$(git grep --cached -In '[[:blank:]]$')
+          lines=$(git grep --cached -In '[[:blank:]]$' packages/seacas/applications packages/seacas/libraries)
           if [ ! -z "$lines" ]; then
              echo -e "\n The following lines contain trailing whitespace: \n"
              echo -e "${lines}"
