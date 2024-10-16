@@ -65,7 +65,7 @@ namespace {
   int         gl_width     = 0;             /* net size available for input */
   int         gl_extent    = 0;             /* how far to redraw, 0 means all */
   int         gl_overwrite = 0;             /* overwrite mode */
-  size_t      gl_pos, gl_cnt = 0;           /* position and size of input */
+  int         gl_pos, gl_cnt = 0;           /* position and size of input */
   char        gl_killbuf[GL_BUF_SIZE] = ""; /* killed text */
   const char *gl_prompt;                    /* to save the prompt string */
   int         gl_search_mode = 0;           /* search mode flag */
@@ -452,7 +452,7 @@ namespace {
   void gl_yank()
   /* adds the kill buffer to the input buffer at current location */
   {
-    auto len = strlen(gl_killbuf);
+    int len = strlen(gl_killbuf);
     if (len > 0) {
       if (gl_overwrite == 0) {
         if (gl_cnt + len >= GL_BUF_SIZE) {

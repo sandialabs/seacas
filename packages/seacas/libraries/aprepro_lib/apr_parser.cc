@@ -1710,7 +1710,7 @@ namespace SEAMS {
 
           case 174: // exp: exp MOD exp
           {
-            if ((yystack_[0].value.val) == 0.) {
+            if ((int)(yystack_[0].value.val) == 0.) {
               (yylhs.value.val) = (int)(yystack_[2].value.val);
               yyerror(aprepro, "Zero divisor");
               yyerrok;

@@ -579,7 +579,7 @@ exp:      NUM                   { $$ = $1;                              }
                                     }
                                   else
                                     $$ = $1 / $3;                       }
-        | exp MOD exp           { if ($3 == 0.)
+        | exp MOD exp           { if ((int)$3 == 0.)
                                     {
 				      $$ = (int)$1;
                                       yyerror(aprepro, "Zero divisor");
