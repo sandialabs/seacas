@@ -13,4 +13,14 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
-      - uses: harupy/find-trailing-whitespace@56310d70ae8fd21afec8d4307d2d9ab6c15e7c5d # master
+      - name: Find Trailing Whitespace
+        run: |
+          set +e
+          lines=$(git grep --cached -In '[[:blank:]]$')
+          if [ ! -z "$lines" ]; then
+             echo -e "\n The following lines contain trailing whitespace: \n"
+             echo -e "${lines}"
+             echo -e "\nFailed.\n"
+             exit 1
+          fi
+          exit 0
