@@ -1535,7 +1535,7 @@ namespace {
 
     global->elementCount = goffset;
     global_element_map.resize(goffset);
-    if (goffest == 0) {
+    if (goffset == 0) {
       return;
     }
 
