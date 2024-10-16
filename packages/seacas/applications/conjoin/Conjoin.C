@@ -1535,6 +1535,9 @@ namespace {
 
     global->elementCount = goffset;
     global_element_map.resize(goffset);
+    if (goffset == 0) {
+      return;
+    }
 
     size_t max_id        = global_element_map[global->elementCount - 1].first;
     bool   is_contiguous = max_id == global_element_map.size();

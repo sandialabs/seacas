@@ -28,7 +28,7 @@ s"}/* -*- Mode: c++ -*- */
 #include "apr_tokenize.h"
 #include "fmt/format.h"
 #include "fmt/ostream.h"
-  
+
 
 #define YY_NO_UNISTD_H
 /* import the parser's token type into a local typedef */
@@ -1087,7 +1087,7 @@ integer {D}+({E})?
     std::string new_string("}");
     auto        ins = new std::istringstream(new_string); // Declare an input string stream.
     yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
-    
+
     if (aprepro.ap_options.debugging) {
       std::cerr << "DEBUG IMPORT: " << string << "\n";
     }
