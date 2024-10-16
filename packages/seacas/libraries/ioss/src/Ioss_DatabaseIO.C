@@ -1607,8 +1607,8 @@ namespace Ioss {
   void DatabaseIO::reset_database_nl()
   {
     release_memory_nl();
-    dbState = STATE_INVALID;
-    nodeCount = 0;
+    dbState      = STATE_INVALID;
+    nodeCount    = 0;
     elementCount = 0;
     sideTopology.clear();
     blockAdjacency.clear();
