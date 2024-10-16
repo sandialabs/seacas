@@ -246,6 +246,13 @@ namespace Ioss {
       flush_database_nl();
     }
 
+    void reset_database() const
+    {
+      IOSS_FUNC_ENTER(m_);
+      progress(__func__);
+      reset_database_nl();
+    }
+
     /** \brief If a database type supports internal change sets and if the database
      *         contains internal change sets, open the specified set.
      *
@@ -790,13 +797,9 @@ namespace Ioss {
     virtual void closeDatabase_nl() const;
     virtual void flush_database_nl() const {}
 
-    virtual void release_memory_nl()
-    {
-      nodeMap.release_memory();
-      edgeMap.release_memory();
-      faceMap.release_memory();
-      elemMap.release_memory();
-    }
+    virtual void release_memory_nl();
+
+    virtual void reset_database_nl();
 
   private:
     virtual bool ok_nl(bool /* write_message */, std::string * /* error_message */,

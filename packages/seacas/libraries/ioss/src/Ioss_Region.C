@@ -3034,7 +3034,7 @@ namespace Ioss {
   void Region::update_dynamic_topology()
   {
     bool has_output_observer = topologyObserver && !get_database()->is_input();
-    if (has_output_observer && topologyObserver->is_topology_modified()) {
+    if (has_output_observer && topologyObserver->needs_new_output_file()) {
       if (topologyObserver->get_control_option() != FileControlOption::CONTROL_NONE) {
         int steps = get_property("state_count").get_int();
         start_new_output_database_entry(steps);

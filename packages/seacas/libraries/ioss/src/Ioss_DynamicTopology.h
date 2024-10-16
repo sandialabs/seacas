@@ -103,6 +103,8 @@ namespace Ioss {
 
     virtual FileControlOption get_control_option() const { return FileControlOption::CONTROL_NONE; }
 
+    virtual bool needs_new_output_file() const;
+
   protected:
     Region      *m_region{nullptr};
     unsigned int m_topologyModification{TOPOLOGY_SAME};
