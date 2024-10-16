@@ -246,7 +246,7 @@ namespace Ioss {
       flush_database_nl();
     }
 
-    void reset_database() const
+    void reset_database()
     {
       IOSS_FUNC_ENTER(m_);
       progress(__func__);
