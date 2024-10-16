@@ -27,6 +27,8 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_DynamicTopology.h"
+#include "Ioss_DynamicTopologyBroker.h"
+#include "Ioss_DynamicTopologyFileControl.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_Field.h" // for Field, etc
 #include "Ioss_FileInfo.h"

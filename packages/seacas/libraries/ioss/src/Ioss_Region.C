@@ -11,6 +11,8 @@
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
+#include "Ioss_DynamicTopologyFileControl.h"
+#include "Ioss_DynamicTopologyStateLocator.h"
 #include "Ioss_EdgeBlock.h"
 #include "Ioss_EdgeSet.h"
 #include "Ioss_ElementBlock.h"

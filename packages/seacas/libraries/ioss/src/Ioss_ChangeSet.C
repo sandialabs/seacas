@@ -22,6 +22,7 @@
 #include <fmt/ostream.h>
 
 #include <assert.h>
+#include <iomanip>
 
 namespace {
   int file_exists(const Ioss::ParallelUtils &util, const std::string &filename,

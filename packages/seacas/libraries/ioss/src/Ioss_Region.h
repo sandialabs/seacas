@@ -10,6 +10,7 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_DynamicTopology.h"
+#include "Ioss_DynamicTopologyObserver.h"
 #include "Ioss_EntityType.h" // for EntityType, etc
 #include "Ioss_Field.h"
 #include "Ioss_GroupingEntity.h" // for GroupingEntity

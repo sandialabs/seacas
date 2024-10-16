@@ -51,7 +51,7 @@
 #include "Ioss_IOFactory.h"
 
 #include "Ioss_ChangeSetFactory.h"
-#include "Ioss_DynamicTopology.h"
+#include "Ioss_DynamicTopologyBroker.h"
 
 namespace {
 #if defined(IOSS_THREADSAFE)
