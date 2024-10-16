@@ -89,14 +89,12 @@ namespace Iocatalyst {
     IOSS_NODISCARD bool split_type_changed() const { return split_type_c; }
 
   private:
-    bool open_group_nl(const std::string & /* group_name */) override { return false; }
-    bool create_subgroup_nl(const std::string & /* group_name */) override { return false; }
-
     bool begin_nl(Ioss::State state) override;
     bool end_nl(Ioss::State state) override;
 
-    void read_meta_data_nl() override;
-    void get_step_times_nl() override;
+    void                read_meta_data_nl() override;
+    void                get_step_times_nl() override;
+    std::vector<double> get_db_step_times_nl() override;
 
     bool begin_state_nl(int state, double time) override;
     bool end_state_nl(int state, double time) override;

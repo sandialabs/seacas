@@ -259,19 +259,11 @@ namespace {
       }
 
       if (!interFace.groupName.empty()) {
-        bool success = dbi->open_root_group();
+        bool success = dbi->open_internal_change_set(interFace.groupName);
         if (!success) {
           if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open root group in file '{}'\n", inpfile);
-          }
-          return;
-        }
-        std::string group_path = interFace.groupName;
-        success                = dbi->open_group(group_path);
-        if (!success) {
-          if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", group_path,
-                       inpfile);
+            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
+                       interFace.groupName, inpfile);
           }
           return;
         }
@@ -362,21 +354,13 @@ namespace {
         if (interFace.inputFile.size() > 1) {
           properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
 
-          bool success = dbo->open_root_group();
-          if (!success) {
-            if (rank == 0) {
-              fmt::print(stderr, "ERROR: Unable to open root group in output file.\n");
-            }
-            return;
-          }
-
           // Putting each file into its own output group...
           // The name of the group will be the basename portion of the filename...
           Ioss::FileInfo file(inpfile);
-          success = dbo->create_subgroup(file.tailname());
+          bool           success = dbo->create_internal_change_set(file.tailname());
           if (!success) {
             if (rank == 0) {
-              fmt::print(stderr, "ERROR: Unable to create group {} in output file.\n",
+              fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
                          file.tailname());
             }
             return;
@@ -511,7 +495,7 @@ namespace {
     }
 
     if (!interFace.groupName.empty()) {
-      bool success = dbi1->open_group(interFace.groupName);
+      bool success = dbi1->open_internal_change_set(interFace.groupName);
       if (!success) {
         if (rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,
@@ -573,7 +557,7 @@ namespace {
     }
 
     if (!interFace.groupName.empty()) {
-      bool success = dbi2->open_group(interFace.groupName);
+      bool success = dbi2->open_internal_change_set(interFace.groupName);
       if (!success) {
         if (rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,

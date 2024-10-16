@@ -11,6 +11,8 @@
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
+#include "Ioss_DynamicTopologyFileControl.h"
+#include "Ioss_DynamicTopologyStateLocator.h"
 #include "Ioss_EdgeBlock.h"
 #include "Ioss_EdgeSet.h"
 #include "Ioss_ElementBlock.h"
@@ -308,6 +310,7 @@ namespace {
       entity->field_erase(role);
     }
   }
+
 } // namespace
 
 namespace Ioss {
@@ -366,7 +369,8 @@ namespace Ioss {
     properties.add(Property(this, "current_state", Property::INTEGER));
     properties.add(Property(this, "database_name", Property::STRING));
 
-    property_add(Property("base_filename", iodatabase->get_filename()));
+    property_add(Property("base_filename", iodatabase->get_property_manager().get_optional(
+                                               "base_filename", iodatabase->get_filename())));
     property_add(Property("database_type",
                           iodatabase->get_property_manager().get_optional("database_type", "")));
   }
@@ -714,7 +718,7 @@ namespace Ioss {
           if (!fileGroupsStarted) {
             int  steps          = get_property("state_count").get_int();
             bool force_addition = true;
-            add_output_database_group(steps, force_addition);
+            add_output_database_change_set(steps, force_addition);
 
             fileGroupsStarted = true;
           }
@@ -2852,13 +2856,13 @@ namespace Ioss {
     case FileControlOption::CONTROL_AUTO_MULTI_FILE:
       clone_and_replace_output_database(steps);
       break;
-    case FileControlOption::CONTROL_AUTO_GROUP_FILE: add_output_database_group(steps); break;
+    case FileControlOption::CONTROL_AUTO_GROUP_FILE: add_output_database_change_set(steps); break;
     case FileControlOption::CONTROL_NONE:
     default: return; break;
     }
   }
 
-  void Region::add_output_database_group(int steps, bool force_addition)
+  void Region::add_output_database_change_set(int steps, bool force_addition)
   {
     if (get_database()->is_input())
       return;
@@ -2895,9 +2899,12 @@ namespace Ioss {
       state++; // For the state we are going to write.
 
       reset_region();
-      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
-                                             dbChangeCount);
-      fileControl.add_output_database_group(state);
+      DynamicTopologyFileControl fileControl(this);
+      fileControl.add_output_database_change_set(state);
+
+      // Reset based on fileControl values
+      dbChangeCount    = fileControl.get_topology_change_count();
+      ifDatabaseExists = fileControl.get_if_database_exists_behavior();
     }
   }
 
@@ -2934,9 +2941,12 @@ namespace Ioss {
       state++; // For the state we are going to write.
 
       reset_region();
-      DynamicTopologyFileControl fileControl(this, fileCyclicCount, ifDatabaseExists,
-                                             dbChangeCount);
+      DynamicTopologyFileControl fileControl(this);
       fileControl.clone_and_replace_output_database(state);
+
+      // Reset based on fileControl values
+      dbChangeCount    = fileControl.get_topology_change_count();
+      ifDatabaseExists = fileControl.get_if_database_exists_behavior();
     }
   }
 
@@ -2963,26 +2973,14 @@ namespace Ioss {
     return TOPOLOGY_SAME;
   }
 
-  bool Region::load_group_mesh(const std::string &child_group_name)
+  bool Region::load_internal_change_set_mesh(const std::string &set_name)
   {
-    // Check name for '/' which is not allowed since it is the
-    // separator character in a full group path
-    if (child_group_name.find('/') != std::string::npos) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
-                 child_group_name);
-      IOSS_ERROR(errmsg);
-    }
-
     DatabaseIO *iodatabase = get_database();
 
     if (!iodatabase->is_input())
       return false;
 
-    if (!iodatabase->open_root_group())
-      return false;
-
-    if (!iodatabase->open_group(child_group_name))
+    if (!iodatabase->open_internal_change_set(set_name))
       return false;
 
     reset_region();
@@ -3005,17 +3003,14 @@ namespace Ioss {
     return true;
   }
 
-  bool Region::load_group_mesh(const int child_group_index)
+  bool Region::load_internal_change_set_mesh(const int child_group_index)
   {
     DatabaseIO *iodatabase = get_database();
 
     if (!iodatabase->is_input())
       return false;
 
-    if (!iodatabase->open_root_group())
-      return false;
-
-    if (!iodatabase->open_child_group(child_group_index))
+    if (!iodatabase->open_internal_change_set(child_group_index))
       return false;
 
     reset_region();
@@ -3041,7 +3036,7 @@ namespace Ioss {
   void Region::update_dynamic_topology()
   {
     bool has_output_observer = topologyObserver && !get_database()->is_input();
-    if (has_output_observer && topologyObserver->is_topology_modified()) {
+    if (has_output_observer && topologyObserver->needs_new_output_file()) {
       if (topologyObserver->get_control_option() != FileControlOption::CONTROL_NONE) {
         int steps = get_property("state_count").get_int();
         start_new_output_database_entry(steps);
@@ -3053,4 +3048,46 @@ namespace Ioss {
       topologyObserver->reset_topology_modification();
     }
   }
+
+  std::string Region::get_internal_change_set_name() const
+  {
+    return get_database()->get_internal_change_set_name();
+  }
+
+  std::tuple<std::string, int, double> Region::locate_db_state(double targetTime) const
+  {
+    auto                       *cregion = const_cast<Region *>(this);
+    DynamicTopologyStateLocator locator(cregion);
+
+    return locator.locate_db_state(targetTime);
+  }
+
+  std::tuple<std::string, int, double> Region::get_db_max_time() const
+  {
+    IOSS_FUNC_ENTER(m_);
+    auto db = get_database();
+    if (!db->is_input() && db->usage() != WRITE_RESULTS && db->usage() != WRITE_RESTART) {
+      return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
+    }
+
+    auto                       *cregion = const_cast<Region *>(this);
+    DynamicTopologyStateLocator locator(cregion);
+
+    return locator.get_db_max_time();
+  }
+
+  std::tuple<std::string, int, double> Region::get_db_min_time() const
+  {
+    IOSS_FUNC_ENTER(m_);
+    auto db = get_database();
+    if (!db->is_input() && db->usage() != WRITE_RESULTS && db->usage() != WRITE_RESTART) {
+      return std::make_tuple(get_internal_change_set_name(), currentState, stateTimes[0]);
+    }
+
+    auto                       *cregion = const_cast<Region *>(this);
+    DynamicTopologyStateLocator locator(cregion);
+
+    return locator.get_db_min_time();
+  }
+
 } // namespace Ioss

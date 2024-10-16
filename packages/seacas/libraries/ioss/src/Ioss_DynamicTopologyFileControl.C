@@ -6,11 +6,14 @@
 
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
+#include "Ioss_ChangeSet.h"
+#include "Ioss_ChangeSetFactory.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_DynamicTopology.h"
+#include "Ioss_DynamicTopologyFileControl.h"
 #include "Ioss_EdgeBlock.h"
 #include "Ioss_EdgeSet.h"
 #include "Ioss_ElementBlock.h"
@@ -25,325 +28,73 @@
 #include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_StructuredBlock.h"
 
-#include <climits>
-#include <cstddef>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <string>
 
 #include <assert.h>
+#include <climits>
+#include <cstddef>
+#include <functional>
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 
-#include "Ioss_ParallelUtils.h"
+namespace {
+
+  bool file_exists(const Ioss::ParallelUtils &util, const std::string &filename,
+                   const std::string &db_type, Ioss::DatabaseUsage db_usage)
+  {
+    int         par_size      = util.parallel_size();
+    int         par_rank      = util.parallel_rank();
+    bool        is_parallel   = par_size > 1;
+    std::string full_filename = filename;
+    if (is_parallel && (db_type == "exodusII" || db_type == "cgns") &&
+        (db_usage != Ioss::WRITE_HISTORY)) {
+      full_filename = Ioss::Utils::decode_filename(filename, par_rank, par_size);
+    }
+
+    std::string    message;
+    Ioss::FileInfo file = Ioss::FileInfo(full_filename);
+    return file.parallel_exists(util.communicator(), message);
+  }
+
+  template <typename T>
+  void update_database_for_grouping_entities(const T &container, Ioss::DatabaseIO *db)
+  {
+    for (auto *entity : container) {
+      Ioss::GroupingEntity *ge = dynamic_cast<Ioss::GroupingEntity *>(entity);
+      assert(ge != nullptr);
+
+      if (ge->type() == Ioss::SIDESET) {
+        Ioss::SideSet *sset = dynamic_cast<Ioss::SideSet *>(ge);
+        assert(sset != nullptr);
+
+        sset->reset_database(db);
+        const auto &sblocks = sset->get_side_blocks();
+        for (const auto &sblock : sblocks) {
+          sblock->reset_database(db);
+        }
+      }
+      else {
+        ge->reset_database(db);
+      }
+    }
+  }
+
+} // namespace
 
 namespace Ioss {
 
-  void DynamicTopologyObserver::check_region() const
-  {
-    if (nullptr == m_region) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: A region has not been registered with the "
-                         "Dynamic Topology Observer.\n\n");
-      IOSS_ERROR(errmsg);
-    }
-  }
-
-  void DynamicTopologyObserver::register_region(Region *region)
-  {
-    if (nullptr != region && nullptr != m_region && region != m_region) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Attempt to re-register different region on "
-                         "Dynamic Topology Observer.\n\n");
-      IOSS_ERROR(errmsg);
-    }
-
-    m_region = region;
-  }
-
-  void DynamicTopologyObserver::register_notifier(DynamicTopologyNotifier *notifier)
-  {
-    if (nullptr != notifier && nullptr != m_notifier && notifier != m_notifier) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Attempt to re-register different notifier on "
-                         "Dynamic Topology Observer.\n\n");
-      IOSS_ERROR(errmsg);
-    }
-
-    m_notifier = notifier;
-  }
-
-  void DynamicTopologyObserver::set_cumulative_topology_modification(unsigned int type)
-  {
-    m_cumulativeTopologyModification = type;
-  }
-
-  unsigned int DynamicTopologyObserver::get_cumulative_topology_modification() const
-  {
-    return m_cumulativeTopologyModification;
-  }
-
-  unsigned int DynamicTopologyObserver::get_topology_modification() const
-  {
-    return m_topologyModification;
-  }
-
-  void DynamicTopologyObserver::set_topology_modification_nl(unsigned int type)
-  {
-    m_topologyModification |= type;
-    m_cumulativeTopologyModification |= type;
-  }
-
-  void DynamicTopologyObserver::set_topology_modification(unsigned int type)
-  {
-    if (!(m_topologyModification & type)) {
-      set_topology_modification_nl(type);
-
-      if (nullptr != m_notifier) {
-        for (auto observer : m_notifier->get_observers()) {
-          observer->set_topology_modification_nl(type);
-        }
-      }
-    }
-  }
-
-  void DynamicTopologyObserver::reset_topology_modification()
-  {
-    m_topologyModification = TOPOLOGY_SAME;
-  }
-
-  void DynamicTopologyObserver::reset_topology_modification_all()
-  {
-    if (m_topologyModification != TOPOLOGY_SAME) {
-      reset_topology_modification();
-
-      if (nullptr != m_notifier) {
-        for (auto observer : m_notifier->get_observers()) {
-          observer->reset_topology_modification();
-        }
-      }
-    }
-  }
-
-  bool DynamicTopologyObserver::is_topology_modified() const
-  {
-    return m_topologyModification != TOPOLOGY_SAME;
-  }
-
-  const ParallelUtils &DynamicTopologyObserver::util() const
-  {
-    check_region();
-    return m_region->get_database()->util();
-  }
-
-  void DynamicTopologyObserver::synchronize_topology_modified_flags()
-  {
-    check_region();
-    int num_processors = m_region->get_database()->parallel_size();
-    // Synchronize the topology flags between all processors in case
-    // it has not been set consistently.
-    if (num_processors > 1) {
-      static unsigned int buffer[2];
-      buffer[0] = m_cumulativeTopologyModification;
-      buffer[1] = m_topologyModification;
-
-      util().attribute_reduction(2 * sizeof(unsigned int), reinterpret_cast<char *>(buffer));
-
-      m_cumulativeTopologyModification = buffer[0];
-      m_topologyModification           = buffer[1];
-    }
-  }
-
-  int DynamicTopologyObserver::get_cumulative_topology_modification_field()
-  {
-    check_region();
-    const std::string variable_name = topology_modification_change_name();
-
-    int ivalue = 0;
-
-    if (m_region->field_exists(variable_name)) {
-      Field topo_field = m_region->get_field(variable_name);
-      if (topo_field.get_type() == Field::INTEGER) {
-        m_region->get_field_data(variable_name, &ivalue, sizeof(int));
-      }
-      else {
-        double value;
-        m_region->get_field_data(variable_name, &value, sizeof(double));
-        ivalue = (int)value;
-      }
-    }
-
-    int num_processors = m_region->get_database()->parallel_size();
-    // Synchronize the value between all processors in case
-    // it has not been set consistently.
-    if (num_processors > 1) {
-      unsigned int buffer[1];
-      buffer[0] = ivalue;
-
-      util().attribute_reduction(sizeof(unsigned int), reinterpret_cast<char *>(buffer));
-
-      ivalue = (int)buffer[0];
-    }
-
-    m_cumulativeTopologyModification = ivalue;
-
-    return ivalue;
-  }
-
-  void DynamicTopologyObserver::define_model() {}
-
-  void DynamicTopologyObserver::write_model() {}
-
-  void DynamicTopologyObserver::define_transient() {}
-
-  DynamicTopologyBroker *DynamicTopologyBroker::broker()
-  {
-    static DynamicTopologyBroker broker_;
-    return &broker_;
-  }
-
-  void DynamicTopologyBroker::register_model(const std::string &model_name)
-  {
-    auto iter = m_notifiers.find(model_name);
-    if (iter != m_notifiers.end()) {
-      return;
-    }
-
-    m_notifiers[model_name] = std::make_shared<DynamicTopologyNotifier>(model_name);
-  }
-
-  std::shared_ptr<DynamicTopologyNotifier>
-  DynamicTopologyBroker::get_notifier(const std::string &model_name) const
-  {
-    auto iter = m_notifiers.find(model_name);
-    if (iter != m_notifiers.end()) {
-      return iter->second;
-    }
-
-    return {};
-  }
-
-  std::vector<std::shared_ptr<DynamicTopologyObserver>>
-  DynamicTopologyBroker::get_observers(const std::string &model_name) const
-  {
-    std::vector<std::shared_ptr<DynamicTopologyObserver>> observers;
-
-    auto notifier = get_notifier(model_name);
-
-    if (notifier) {
-      return notifier->get_observers();
-    }
-
-    return observers;
-  }
-
-  void DynamicTopologyBroker::remove_model(const std::string &model_name)
-  {
-    auto iter = m_notifiers.find(model_name);
-    if (iter != m_notifiers.end()) {
-      m_notifiers.erase(iter);
-    }
-  }
-
-  void DynamicTopologyBroker::clear_models() { m_notifiers.clear(); }
-
-  void DynamicTopologyBroker::register_observer(const std::string                       &model_name,
-                                                std::shared_ptr<DynamicTopologyObserver> observer)
-  {
-    auto notifier = get_notifier(model_name);
-
-    if (!notifier) {
-      register_model(model_name);
-      notifier = get_notifier(model_name);
-    }
-
-    notifier->register_observer(observer);
-  }
-
-  void DynamicTopologyBroker::register_observer(const std::string                       &model_name,
-                                                std::shared_ptr<DynamicTopologyObserver> observer,
-                                                Region                                  &region)
-  {
-    region.register_mesh_modification_observer(observer);
-    register_observer(model_name, observer);
-  }
-
-  void DynamicTopologyBroker::reset_topology_modification(const std::string &model_name)
-  {
-    auto notifier = get_notifier(model_name);
-
-    if (!notifier)
-      return;
-
-    notifier->reset_topology_modification();
-  }
-
-  void DynamicTopologyBroker::set_topology_modification(const std::string &model_name,
-                                                        unsigned int       type)
-  {
-    auto notifier = get_notifier(model_name);
-
-    if (!notifier)
-      return;
-
-    notifier->set_topology_modification(type);
-  }
-
-  struct DynamicTopologyObserverCompare
-  {
-    bool operator()(const std::shared_ptr<DynamicTopologyObserver> &lhs,
-                    const std::shared_ptr<DynamicTopologyObserver> &rhs) const
-    {
-      assert(lhs && (lhs->get_region() != nullptr));
-      assert(rhs && (rhs->get_region() != nullptr));
-      return (lhs->get_region() < rhs->get_region());
-    }
-  };
-
-  void DynamicTopologyNotifier::register_observer(std::shared_ptr<DynamicTopologyObserver> observer)
-  {
-    observer->register_notifier(this);
-    m_observers.push_back(observer);
-    std::sort(m_observers.begin(), m_observers.end(), DynamicTopologyObserverCompare());
-  }
-
-  void
-  DynamicTopologyNotifier::unregister_observer(std::shared_ptr<DynamicTopologyObserver> observer)
-  {
-    auto iter = std::find(m_observers.begin(), m_observers.end(), observer);
-    if (iter != m_observers.end()) {
-      (*iter)->register_notifier(nullptr);
-      m_observers.erase(iter);
-    }
-  }
-
-  void DynamicTopologyNotifier::reset_topology_modification()
-  {
-    for (std::shared_ptr<DynamicTopologyObserver> &observer : m_observers) {
-      observer->reset_topology_modification();
-    }
-  }
-
-  void DynamicTopologyNotifier::set_topology_modification(unsigned int type)
-  {
-    for (std::shared_ptr<DynamicTopologyObserver> &observer : m_observers) {
-      observer->set_topology_modification(type);
-    }
-  }
-
-  DynamicTopologyFileControl::DynamicTopologyFileControl(Region                   *region,
-                                                         unsigned int              fileCyclicCount,
-                                                         IfDatabaseExistsBehavior &ifDatabaseExists,
-                                                         unsigned int             &dbChangeCount)
-      : m_region(region), m_fileCyclicCount(fileCyclicCount), m_ifDatabaseExists(ifDatabaseExists),
-        m_dbChangeCount(dbChangeCount)
+  DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region)
+      : m_region(region), m_fileCyclicCount(region->get_file_cyclic_count()),
+        m_ifDatabaseExists(region->get_if_database_exists_behavior()),
+        m_dbChangeCount(region->get_topology_change_count())
   {
     if (nullptr == region) {
       std::ostringstream errmsg;
@@ -364,32 +115,10 @@ namespace Ioss {
                                                const std::string  &db_type,
                                                Ioss::DatabaseUsage db_usage)
   {
-    bool        exists        = false;
-    int         par_size      = m_region->get_database()->parallel_size();
-    int         par_rank      = m_region->get_database()->parallel_rank();
-    bool        is_parallel   = par_size > 1;
-    std::string full_filename = filename;
-    if (is_parallel && db_type == "exodusII" && db_usage != Ioss::WRITE_HISTORY) {
-      full_filename = Ioss::Utils::decode_filename(filename, par_rank, par_size);
-    }
-
-    if (!is_parallel || par_rank == 0) {
-      // Now, see if this file exists...
-      // Don't want to do a system call on all processors since it can take minutes
-      // on some of the larger machines, filesystems, and processor counts...
-      Ioss::FileInfo file = Ioss::FileInfo(full_filename);
-      exists              = file.exists();
-    }
-
-    if (is_parallel) {
-      int iexists = exists ? 1 : 0;
-      util().broadcast(iexists, 0);
-      exists = iexists == 1;
-    }
-    return exists;
+    return ::file_exists(util(), filename, db_type, db_usage);
   }
 
-  std::string DynamicTopologyFileControl::get_unique_filename(Ioss::DatabaseUsage db_usage)
+  std::string DynamicTopologyFileControl::get_unique_linear_filename(Ioss::DatabaseUsage db_usage)
   {
     std::string filename = m_ioDB;
 
@@ -413,6 +142,27 @@ namespace Ioss {
     return filename;
   }
 
+  std::string DynamicTopologyFileControl::get_internal_file_change_set_name(unsigned int step)
+  {
+    std::ostringstream change_setname;
+    change_setname << change_set_prefix();
+    change_setname << step;
+    return change_setname.str();
+  }
+
+  std::string DynamicTopologyFileControl::get_cyclic_database_filename(
+      const std::string &baseFileName, unsigned int fileCyclicCount, unsigned int step)
+  {
+    return ChangeSet::get_cyclic_database_filename(baseFileName, fileCyclicCount, step);
+  }
+
+  std::string
+  DynamicTopologyFileControl::get_linear_database_filename(const std::string &baseFileName,
+                                                           unsigned int       step)
+  {
+    return ChangeSet::get_linear_database_filename(baseFileName, step);
+  }
+
   std::string DynamicTopologyFileControl::construct_database_filename(int                &step,
                                                                       Ioss::DatabaseUsage db_usage)
   {
@@ -429,7 +179,7 @@ namespace Ioss {
         error_message += "The database FILENAME has not been defined\n";
       }
       std::ostringstream errmsg;
-      fmt::print(errmsg, fmt::runtime(error_message));
+      errmsg << error_message;
       IOSS_ERROR(errmsg);
     }
     assert(!m_ioDB.empty());
@@ -439,6 +189,8 @@ namespace Ioss {
       // In this mode, we close the old file and open a new file
       // every time this is called. The file suffix cycles through
       // the first fileCyclicCount'th entries in A,B,C,D,E,F,...
+
+      //    filename = get_cyclic_database_filename(m_ioDB, m_fileCyclicCount, step);
       if (step == 0)
         step++;
 
@@ -499,7 +251,7 @@ namespace Ioss {
           }
         }
         else if (m_ifDatabaseExists == Ioss::DB_ADD_SUFFIX) {
-          filename = get_unique_filename(db_usage);
+          filename = get_unique_linear_filename(db_usage);
         }
         else if (m_ifDatabaseExists == Ioss::DB_ADD_SUFFIX_OVERWRITE) {
           if (m_dbChangeCount > 0) {
@@ -517,7 +269,7 @@ namespace Ioss {
         }
       }
       else if (m_ifDatabaseExists == Ioss::DB_ADD_SUFFIX) {
-        filename = get_unique_filename(db_usage);
+        filename = get_unique_linear_filename(db_usage);
       }
       else {
         filename = m_ioDB;
@@ -625,29 +377,6 @@ namespace Ioss {
     return db;
   }
 
-  template <typename T>
-  void update_database_for_grouping_entities(const T &container, Ioss::DatabaseIO *db)
-  {
-    for (auto *entity : container) {
-      Ioss::GroupingEntity *ge = dynamic_cast<Ioss::GroupingEntity *>(entity);
-      assert(ge != nullptr);
-
-      if (ge->type() == Ioss::SIDESET) {
-        Ioss::SideSet *sset = dynamic_cast<Ioss::SideSet *>(ge);
-        assert(sset != nullptr);
-
-        sset->reset_database(db);
-        const auto &sblocks = sset->get_side_blocks();
-        for (const auto &sblock : sblocks) {
-          sblock->reset_database(db);
-        }
-      }
-      else {
-        ge->reset_database(db);
-      }
-    }
-  }
-
   bool DynamicTopologyFileControl::replace_output_database(Ioss::DatabaseIO *db)
   {
     auto current_db = m_region->get_database();
@@ -687,19 +416,20 @@ namespace Ioss {
       replace_output_database(db);
   }
 
-  void DynamicTopologyFileControl::add_output_database_group(int /* steps */)
+  void DynamicTopologyFileControl::add_output_database_change_set(IOSS_MAYBE_UNUSED int steps)
   {
-    auto current_db = m_region->get_database();
+    auto current_db = get_database();
 
     std::ostringstream oss;
-    oss << group_prefix();
+    oss << change_set_prefix();
     oss << m_dbChangeCount;
 
     current_db->release_memory();
-    current_db->open_root_group();
-    current_db->create_subgroup(oss.str());
+    current_db->create_internal_change_set(oss.str());
 
     m_dbChangeCount++;
   }
+
+  DatabaseIO *DynamicTopologyFileControl::get_database() const { return m_region->get_database(); }
 
 } // namespace Ioss

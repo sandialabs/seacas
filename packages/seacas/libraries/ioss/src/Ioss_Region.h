@@ -10,6 +10,7 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_DynamicTopology.h"
+#include "Ioss_DynamicTopologyObserver.h"
 #include "Ioss_EntityType.h" // for EntityType, etc
 #include "Ioss_Field.h"
 #include "Ioss_GroupingEntity.h" // for GroupingEntity
@@ -29,7 +30,8 @@
 #include <map>        // for map, map<>::value_compare
 #include <memory>
 #include <sstream>
-#include <string>  // for string, operator<
+#include <string> // for string, operator<
+#include <tuple>
 #include <utility> // for pair
 #include <vector>  // for vector
 
@@ -152,11 +154,21 @@ namespace Ioss {
     // on the database if cycle and overlay are being used.
     IOSS_NODISCARD std::pair<int, double> get_max_time() const;
 
+    // Return a tuple consisting of the step (1-based) corresponding to
+    // the maximum time across all change sets on the database, the corresponding
+    // maximum time value and the corresponding set.
+    IOSS_NODISCARD std::tuple<std::string, int, double> get_db_max_time() const;
+
     // Return a pair consisting of the step (1-based) corresponding to
     // the minimum time on the database and the corresponding minimum
     // time value. Note that this may not necessarily be the first step
     // on the database if cycle and overlay are being used.
     IOSS_NODISCARD std::pair<int, double> get_min_time() const;
+
+    // Return a tuple consisting of the step (1-based) corresponding to
+    // the minimum time across all change sets on the database, the corresponding
+    // minimum time value and the corresponding set.
+    IOSS_NODISCARD std::tuple<std::string, int, double> get_db_min_time() const;
 
     // Functions for an output region...
     bool add(NodeBlock *node_block);
@@ -294,26 +306,30 @@ namespace Ioss {
     void start_new_output_database_entry(int steps = 0);
 
     void         set_topology_change_count(unsigned int new_count) { dbChangeCount = new_count; }
-    unsigned int get_topology_change_count() { return dbChangeCount; }
+    unsigned int get_topology_change_count() const { return dbChangeCount; }
 
     void         set_file_cyclic_count(unsigned int new_count) { fileCyclicCount = new_count; }
-    unsigned int get_file_cyclic_count() { return fileCyclicCount; }
+    unsigned int get_file_cyclic_count() const { return fileCyclicCount; }
 
     void set_if_database_exists_behavior(IfDatabaseExistsBehavior if_exists)
     {
       ifDatabaseExists = if_exists;
     }
+    IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return ifDatabaseExists; }
 
     bool model_is_written() const { return modelWritten; }
     bool transient_is_written() const { return transientWritten; }
 
-    bool load_group_mesh(const std::string &child_group_name);
-    bool load_group_mesh(const int child_group_index);
+    bool load_internal_change_set_mesh(const std::string &set_name);
+    bool load_internal_change_set_mesh(const int set_index);
+
+    IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 
   protected:
-    void update_dynamic_topology();
-    void clone_and_replace_output_database(int steps = 0);
-    void add_output_database_group(int steps = 0, bool force_addition = false);
+    std::string get_internal_change_set_name() const;
+    void        update_dynamic_topology();
+    void        clone_and_replace_output_database(int steps = 0);
+    void        add_output_database_change_set(int steps = 0, bool force_addition = false);
 
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;

@@ -9,6 +9,7 @@
 #include "Ioss_CodeTypes.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
+#include "exodus/Ioex_ChangeSet.h"
 #include "exodus/Ioex_IOFactory.h"
 #if defined(SEACAS_HAVE_EXONULL)
 #include "exonull/Ioexnl_IOFactory.h"
@@ -49,6 +50,9 @@
 
 #include "Ioss_IOFactory.h"
 
+#include "Ioss_ChangeSetFactory.h"
+#include "Ioss_DynamicTopologyBroker.h"
+
 namespace {
 #if defined(IOSS_THREADSAFE)
   std::mutex m_;
@@ -74,6 +78,7 @@ namespace Ioss::Init {
 
 #if defined(SEACAS_HAVE_EXODUS)
     Ioex::IOFactory::factory(); // Exodus
+    Ioex::ChangeSetFactory::factory();
 #if defined(SEACAS_HAVE_EXONULL)
     Ioexnl::IOFactory::factory();
 #endif
@@ -98,6 +103,8 @@ namespace Ioss::Init {
     Iogs::IOFactory::factory(); // Structured Mesh Generator
     Ionull::IOFactory::factory();
     Ioss::StorageInitializer();
+    Ioss::DynamicTopologyBroker::broker();
+    Ioss::ChangeSetFactory::factory();
     Ioss::Initializer();
     Iotr::Initializer();
 #ifdef HAVE_SEACASIOSS_ADIOS2
