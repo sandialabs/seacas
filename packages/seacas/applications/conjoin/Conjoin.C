@@ -1535,7 +1535,7 @@ namespace {
 
     global->elementCount = goffset;
     global_element_map.resize(goffset);
-    if (goffset == 0) {
+    if (goffset == 0) {   
       return;
     }
 
@@ -1546,7 +1546,7 @@ namespace {
     // The global_element_map may or may not be globally sorted; however, each
     // block is sorted, so if we do the iteration by blocks, we can
     // use lower_bound instead of doing global searches...
-    for (auto &glob_block : glob_blocks) {
+    for (auto &glob_block : glob_blocks) {   
 
       auto gm_begin = global_element_map.begin() + glob_block.offset_;
       auto gm_end   = gm_begin + glob_block.elementCount;
