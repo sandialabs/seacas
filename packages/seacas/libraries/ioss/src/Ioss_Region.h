@@ -299,23 +299,26 @@ namespace Ioss {
       return topologyObserver;
     }
 
-    void         reset_topology_modification();
-    void         set_topology_modification(unsigned int type);
+    void                        reset_topology_modification();
+    void                        set_topology_modification(unsigned int type);
     IOSS_NODISCARD unsigned int get_topology_modification() const;
 
     void start_new_output_database_entry(int steps = 0);
 
-    void         set_topology_change_count(unsigned int new_count) { dbChangeCount = new_count; }
+    void set_topology_change_count(unsigned int new_count) { dbChangeCount = new_count; }
     IOSS_NODISCARD unsigned int get_topology_change_count() const { return dbChangeCount; }
 
-    void         set_file_cyclic_count(unsigned int new_count) { fileCyclicCount = new_count; }
+    void set_file_cyclic_count(unsigned int new_count) { fileCyclicCount = new_count; }
     IOSS_NODISCARD unsigned int get_file_cyclic_count() const { return fileCyclicCount; }
 
     void set_if_database_exists_behavior(IfDatabaseExistsBehavior if_exists)
     {
       ifDatabaseExists = if_exists;
     }
-    IOSS_NODISCARD IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return ifDatabaseExists; }
+    IOSS_NODISCARD IfDatabaseExistsBehavior get_if_database_exists_behavior() const
+    {
+      return ifDatabaseExists;
+    }
 
     IOSS_NODISCARD bool model_is_written() const { return modelWritten; }
     IOSS_NODISCARD bool transient_is_written() const { return transientWritten; }
