@@ -98,18 +98,18 @@ namespace Ioss {
                                                       DatabaseState      &loc) const
   {
     std::vector<double> timesteps = db->get_db_step_times();
-    int                 stepCount = timesteps.size();
+    size_t              stepCount = timesteps.size();
 
     double minTimeDiff =
         loc.state < 0 ? std::numeric_limits<double>::max() : std::fabs(loc.time - targetTime);
 
-    for (int istep = 1; istep <= stepCount; istep++) {
+    for (size_t istep = 1; istep <= stepCount; istep++) {
       double stateTime    = timesteps[istep - 1];
       double stepTimeDiff = std::fabs(stateTime - targetTime);
       if (comparator(stepTimeDiff, minTimeDiff)) {
         minTimeDiff   = stepTimeDiff;
         loc.time      = stateTime;
-        loc.state     = istep;
+        loc.state     = static_cast<int>(istep);
         loc.changeSet = db->supports_internal_change_set() ? db->get_internal_change_set_name()
                                                            : db->get_filename();
       }

@@ -294,34 +294,34 @@ namespace Ioss {
                                               std::vector<U>         &field_data) const;
 
     void register_mesh_modification_observer(std::shared_ptr<DynamicTopologyObserver> observer);
-    std::shared_ptr<DynamicTopologyObserver> get_mesh_modification_observer() const
+    IOSS_NODISCARD std::shared_ptr<DynamicTopologyObserver> get_mesh_modification_observer() const
     {
       return topologyObserver;
     }
 
     void         reset_topology_modification();
     void         set_topology_modification(unsigned int type);
-    unsigned int get_topology_modification() const;
+    IOSS_NODISCARD unsigned int get_topology_modification() const;
 
     void start_new_output_database_entry(int steps = 0);
 
     void         set_topology_change_count(unsigned int new_count) { dbChangeCount = new_count; }
-    unsigned int get_topology_change_count() const { return dbChangeCount; }
+    IOSS_NODISCARD unsigned int get_topology_change_count() const { return dbChangeCount; }
 
     void         set_file_cyclic_count(unsigned int new_count) { fileCyclicCount = new_count; }
-    unsigned int get_file_cyclic_count() const { return fileCyclicCount; }
+    IOSS_NODISCARD unsigned int get_file_cyclic_count() const { return fileCyclicCount; }
 
     void set_if_database_exists_behavior(IfDatabaseExistsBehavior if_exists)
     {
       ifDatabaseExists = if_exists;
     }
-    IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return ifDatabaseExists; }
+    IOSS_NODISCARD IfDatabaseExistsBehavior get_if_database_exists_behavior() const { return ifDatabaseExists; }
 
-    bool model_is_written() const { return modelWritten; }
-    bool transient_is_written() const { return transientWritten; }
+    IOSS_NODISCARD bool model_is_written() const { return modelWritten; }
+    IOSS_NODISCARD bool transient_is_written() const { return transientWritten; }
 
-    bool load_internal_change_set_mesh(const std::string &set_name);
-    bool load_internal_change_set_mesh(const int set_index);
+    IOSS_NODISCARD bool load_internal_change_set_mesh(const std::string &set_name);
+    IOSS_NODISCARD bool load_internal_change_set_mesh(const int set_index);
 
     IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 

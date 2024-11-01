@@ -34,7 +34,12 @@ namespace Ioss {
 
     std::string name() const { return m_modelName; }
 
-    std::vector<std::shared_ptr<DynamicTopologyObserver>> get_observers() const
+    const std::vector<std::shared_ptr<DynamicTopologyObserver>>& get_observers() const
+    {
+      return m_observers;
+    }
+
+    std::vector<std::shared_ptr<DynamicTopologyObserver>>& get_observers()
     {
       return m_observers;
     }
