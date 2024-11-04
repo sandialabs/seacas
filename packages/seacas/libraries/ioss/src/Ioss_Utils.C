@@ -838,7 +838,9 @@ bool Ioss::Utils::check_int_to_real_overflow(const Ioss::Field &field, int64_t *
 std::string Ioss::Utils::platform_information()
 {
 #if !defined(__IOSS_WINDOWS__)
-  struct utsname sys_info{};
+  struct utsname sys_info
+  {
+  };
   uname(&sys_info);
   std::string info =
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
