@@ -116,7 +116,7 @@ namespace Ioss {
       set_topology_modification_nl(type);
 
       if (nullptr != m_notifier) {
-        for (auto observer : m_notifier->get_observers()) {
+        for (auto &observer : m_notifier->get_observers()) {
           observer->set_topology_modification_nl(type);
         }
       }
@@ -134,7 +134,7 @@ namespace Ioss {
       reset_topology_modification();
 
       if (nullptr != m_notifier) {
-        for (auto observer : m_notifier->get_observers()) {
+        for (auto &observer : m_notifier->get_observers()) {
           observer->reset_topology_modification();
         }
       }
