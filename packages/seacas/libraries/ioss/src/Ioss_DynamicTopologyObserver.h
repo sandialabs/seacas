@@ -29,9 +29,9 @@ namespace Ioss {
   class IOSS_EXPORT DynamicTopologyObserver
   {
   public:
-    DynamicTopologyObserver(Region *region) : m_region(region) {}
+    explicit DynamicTopologyObserver(Region *region) : m_region(region) {}
 
-    virtual ~DynamicTopologyObserver() {}
+    virtual ~DynamicTopologyObserver() = default;
 
     virtual void reset_topology_modification_all();
     virtual void reset_topology_modification();
@@ -51,7 +51,7 @@ namespace Ioss {
     void set_automatic_restart(bool flag) { m_automaticRestart = flag; }
     void set_restart_requested(bool flag) { m_restartRequested = flag; }
 
-    static const std::string topology_modification_change_name()
+    static std::string topology_modification_change_name()
     {
       return std::string("CUMULATIVE_TOPOLOGY_MODIFICATION");
     }

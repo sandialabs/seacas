@@ -28,7 +28,7 @@ namespace Ioss {
   class IOSS_EXPORT DynamicTopologyNotifier
   {
   public:
-    DynamicTopologyNotifier(const std::string &model_name) : m_modelName(model_name) {}
+    explicit DynamicTopologyNotifier(const std::string &model_name) : m_modelName(model_name) {}
 
     virtual ~DynamicTopologyNotifier() = default;
 

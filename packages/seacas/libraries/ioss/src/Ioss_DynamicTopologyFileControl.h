@@ -28,7 +28,7 @@ namespace Ioss {
   class IOSS_EXPORT DynamicTopologyFileControl
   {
   public:
-    DynamicTopologyFileControl(Region *region);
+    explicit DynamicTopologyFileControl(Region *region);
 
     void clone_and_replace_output_database(int steps = 0);
     void add_output_database_change_set(int steps = 0);

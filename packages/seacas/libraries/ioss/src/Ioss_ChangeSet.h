@@ -47,7 +47,7 @@ namespace Ioss {
   class IOSS_EXPORT ChangeSet
   {
   public:
-    ChangeSet(Ioss::Region *region);
+    explicit ChangeSet(Ioss::Region *region);
     ChangeSet(Ioss::DatabaseIO *db, const std::string &dbName, const std::string &dbType,
               unsigned fileCyclicCount);
 

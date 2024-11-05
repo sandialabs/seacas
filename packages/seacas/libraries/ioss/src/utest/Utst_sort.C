@@ -74,7 +74,7 @@ namespace {
 
 TEST_CASE("empty")
 {
-  std::vector<int64_t> x{};
+  std::vector<int64_t> x;
   Ioss::sort(x);
   CHECK(verify_sorted(x));
 }

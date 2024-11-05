@@ -48,7 +48,7 @@ namespace Ioss {
   private:
     struct DatabaseState
     {
-      DatabaseState(Ioss::DatabaseIO *db)
+      explicit DatabaseState(Ioss::DatabaseIO *db)
       {
         if (!db->supports_internal_change_set()) {
           changeSet = db->get_filename();
