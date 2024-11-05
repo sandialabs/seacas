@@ -4860,8 +4860,7 @@ namespace Ioex {
     return num_to_get;
   }
 
-  template <typename INT>
-  void ParallelDatabaseIO::output_processor_id_map(Ioss::Region *region)
+  template <typename INT> void ParallelDatabaseIO::output_processor_id_map(Ioss::Region *region)
   {
     std::vector<INT> proc_id(elementCount, myProcessor);
     const auto      &blocks = region->get_element_blocks();
