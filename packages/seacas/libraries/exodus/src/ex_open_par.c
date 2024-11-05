@@ -222,6 +222,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                "issue \n",
                canon_path);
       ex_err(__func__, errmsg, status);
+      free(canon_path);
+      EX_FUNC_LEAVE(EX_FATAL);
 #else
       /* This is an hdf5 (netcdf4) file. If NC_HAS_HDF5 is not defined,
          then we either don't have hdf5 support in this netcdf version,
@@ -238,6 +240,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                "other issue \n",
                canon_path);
       ex_err(__func__, errmsg, status);
+      free(canon_path);
+      EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
     else if (type == 4) {
@@ -249,6 +253,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                "issue \n",
                canon_path);
       ex_err(__func__, errmsg, status);
+      free(canon_path);
+      EX_FUNC_LEAVE(EX_FATAL);
 #else
       /* This is an cdf5 (64BIT_DATA) file. If NC_64BIT_DATA is not defined,
          then we either don't have cdf5 support in this netcdf version,
@@ -265,6 +271,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                "other issue \n",
                canon_path);
       ex_err(__func__, errmsg, status);
+      free(canon_path);
+      EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
     else if (type == 1 || type == 2) {
@@ -277,6 +285,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                "issue \n",
                canon_path);
       ex_err(__func__, errmsg, status);
+      free(canon_path);
+      EX_FUNC_LEAVE(EX_FATAL);
 #else
       /* This is an normal NetCDF format file, for parallel reading, the PNetCDF
          library is required but that is not compiled into this version.
@@ -287,6 +297,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                "built with PNetCDF support as required for parallel access to this file.\n",
                canon_path);
       ex_err(__func__, errmsg, status);
+      free(canon_path);
+      EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
 
