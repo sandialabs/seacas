@@ -166,14 +166,13 @@ namespace Ioss {
     IOSS_NODISCARD bool     property_exists(const std::string &property_name) const;
     IOSS_NODISCARD Property get_property(const std::string &property_name) const;
     IOSS_NODISCARD int64_t  get_optional_property(const std::string &property,
-                                                         int64_t            optional_value) const;
-    IOSS_NODISCARD std::string
-                                   get_optional_property(const std::string &property_name,
-                                                         const std::string &optional_value) const;
-    IOSS_NODISCARD NameList property_describe() const;
-    int                     property_describe(NameList *names) const;
-    IOSS_NODISCARD NameList property_describe(Ioss::Property::Origin origin) const;
-    int property_describe(Ioss::Property::Origin origin, NameList *names) const;
+                                                  int64_t            optional_value) const;
+    IOSS_NODISCARD std::string get_optional_property(const std::string &property_name,
+                                                     const std::string &optional_value) const;
+    IOSS_NODISCARD NameList    property_describe() const;
+    int                        property_describe(NameList *names) const;
+    IOSS_NODISCARD NameList    property_describe(Ioss::Property::Origin origin) const;
+    int                   property_describe(Ioss::Property::Origin origin, NameList *names) const;
     IOSS_NODISCARD size_t property_count() const;
     /** Add a property, or change its value if it already exists with
         a different value */
@@ -184,7 +183,7 @@ namespace Ioss {
     //                                FIELDS
     // ========================================================================
     // Just forward these through to the field manager...
-    void                               field_add(Field new_field);
+    void                        field_add(Field new_field);
     void                        field_erase(const std::string &field_name);
     void                        field_erase(Field::RoleType role);
     IOSS_NODISCARD bool         field_exists(const std::string &field_name) const;
@@ -195,7 +194,7 @@ namespace Ioss {
     int                         field_describe(Field::RoleType role, NameList *names) const;
     IOSS_NODISCARD NameList     field_describe(Field::RoleType role) const;
     IOSS_NODISCARD size_t       field_count() const;
-    IOSS_NODISCARD size_t              field_count(Field::RoleType role) const;
+    IOSS_NODISCARD size_t       field_count(Field::RoleType role) const;
 
     IOSS_NODISCARD bool check_for_duplicate(const Ioss::Field &new_field) const;
 

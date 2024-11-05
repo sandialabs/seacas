@@ -76,9 +76,9 @@ int ex_put_field_metadata(int exoid, const ex_field field)
 #endif
 
   exi_persist_redef(exoid, __func__);
-  int          status         = 0;
+  int                status         = 0;
   static const char *field_template = "Field@%s@%s";
-  char         attribute_name[NC_MAX_NAME + 1];
+  char               attribute_name[NC_MAX_NAME + 1];
   snprintf(attribute_name, NC_MAX_NAME + 1, field_template, field.name, "type");
   if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                          field.nesting, field.type)) != EX_NOERR) {
@@ -300,7 +300,7 @@ int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices)
   int  status;
   char errmsg[MAX_ERR_LENGTH];
 
-  char         attribute_name[NC_MAX_NAME + 1];
+  char               attribute_name[NC_MAX_NAME + 1];
   static const char *field_template = "Field@%s@%s";
 
   if (field.type[0] != EX_FIELD_TYPE_USER_DEFINED) {

@@ -49,7 +49,7 @@ namespace Ioss {
     void set_topology_modification(const std::string &model_name, unsigned int type);
 
   private:
-    DynamicTopologyBroker() = default;
+    DynamicTopologyBroker()                        = default;
     DynamicTopologyBroker(DynamicTopologyBroker &) = delete;
 
     std::map<std::string, std::shared_ptr<DynamicTopologyNotifier>> m_notifiers;
