@@ -23,9 +23,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
-#if !defined __NVCC__
 #include <fmt/color.h>
-#endif
 
 #if !defined(NO_ZOLTAN_SUPPORT)
 #include <zoltan.h>     // for Zoltan_Initialize

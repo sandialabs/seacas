@@ -29,9 +29,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
-#if !defined __NVCC__
 #include <fmt/color.h>
-#endif
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -972,10 +970,9 @@ namespace {
       // Must be at least 6 tokens...
       if (tokens.size() < 6) {
         fmt::print(stderr,
-#if !defined __NVCC__
                    fg(fmt::color::red),
-#endif
-                   "ERROR: ATTRIBUTE Command does not have enough tokens to be valid.\n"
+                   "ERROR: ATTRIBUTE Command does not have enough tokens to be valid.\n");
+	fmt::print(stderr, 
                    "\t\t{}\n",
                    fmt::join(tokens, " "));
         handle_help("attribute");
@@ -1094,10 +1091,9 @@ namespace {
     // Must be at least 4 tokens...
     if (tokens.size() < 4) {
       fmt::print(stderr,
-#if !defined __NVCC__
                  fg(fmt::color::red),
-#endif
-                 "ERROR: RENAME Command does not have enough tokens to be valid.\n"
+                 "ERROR: RENAME Command does not have enough tokens to be valid.\n");
+      fmt::print(stderr,
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
       handle_help("rename");
@@ -1228,10 +1224,9 @@ namespace {
     // TIME   OFFSET {{offset}
     if (tokens.size() < 3) {
       fmt::print(stderr,
-#if !defined __NVCC__
                  fg(fmt::color::red),
-#endif
-                 "ERROR: TIME Command does not have enough tokens to be valid.\n"
+                 "ERROR: TIME Command does not have enough tokens to be valid.\n");
+      fmt::print(stderr,
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
       handle_help("time");
@@ -1267,10 +1262,9 @@ namespace {
 
     if (tokens.size() < 3) {
       fmt::print(stderr,
-#if !defined __NVCC__
                  fg(fmt::color::red),
-#endif
-                 "ERROR: GEOMETRY Command does not have enough tokens to be valid.\n"
+                 "ERROR: GEOMETRY Command does not have enough tokens to be valid.\n");
+      fmt::print(stderr,
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
       handle_help("geometry");

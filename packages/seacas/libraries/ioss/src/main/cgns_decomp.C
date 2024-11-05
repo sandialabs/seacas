@@ -38,9 +38,7 @@
 #include "Ioss_ScopeGuard.h"
 #include "Ioss_StructuredBlock.h"
 
-#if !defined __NVCC__
 #include <fmt/color.h>
-#endif
 #include <fmt/format.h>
 
 namespace {
@@ -387,9 +385,7 @@ namespace {
       if (search == comms.end()) {
         valid = false;
         fmt::print(stderr,
-#if !defined __NVCC__
                    fg(fmt::color::red),
-#endif
                    "ERROR: Could not find matching ZGC for {}, proc {} -> {}, proc {}\n", key.first,
                    key.second, value.first, value.second);
       }
@@ -441,9 +437,7 @@ namespace {
           if (proc.second < 0) {
             // From decomposition
             fmt::print(
-#if !defined __NVCC__
                 fg(fmt::color::yellow),
-#endif
                 "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second, pw);
           }
           else {
@@ -689,9 +683,7 @@ int main(int argc, char *argv[])
   auto valid = validate_symmetric_communications(zones);
   if (!valid) {
     fmt::print(stderr,
-#if !defined __NVCC__
                fg(fmt::color::red),
-#endif
                "\nERROR: Zone Grid Communication interfaces are not symmetric.  There is an error "
                "in the decomposition.\n");
   }
