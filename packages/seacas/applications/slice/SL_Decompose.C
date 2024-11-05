@@ -269,11 +269,9 @@ namespace {
 } // namespace
 
 template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                                             const std::vector<float> &weights,
-                                             int     dummy);
+                                             const std::vector<float> &weights, int dummy);
 template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                                             const std::vector<float> &weights,
-                                             int64_t dummy);
+                                             const std::vector<float> &weights, int64_t dummy);
 
 template <typename INT>
 std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
