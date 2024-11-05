@@ -496,9 +496,7 @@ namespace {
     for (const auto &zone : zones) {
       if (zone->is_active()) {
         auto len = zone->m_name.length();
-        if (len > name_len) {
-          name_len = len;
-        }
+        name_len = std::max(name_len, len);
       }
     }
 
