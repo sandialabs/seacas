@@ -384,8 +384,7 @@ namespace {
       auto        search = comms.find(std::make_pair(value, key));
       if (search == comms.end()) {
         valid = false;
-        fmt::print(stderr,
-                   fg(fmt::color::red),
+        fmt::print(stderr, fg(fmt::color::red),
                    "ERROR: Could not find matching ZGC for {}, proc {} -> {}, proc {}\n", key.first,
                    key.second, value.first, value.second);
       }
@@ -436,9 +435,8 @@ namespace {
         for (const auto &proc : comms) {
           if (proc.second < 0) {
             // From decomposition
-            fmt::print(
-                fg(fmt::color::yellow),
-                "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second, pw);
+            fmt::print(fg(fmt::color::yellow), "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
+                       pw);
           }
           else {
             // Zone to Zone
@@ -680,8 +678,7 @@ int main(int argc, char *argv[])
 
   auto valid = validate_symmetric_communications(zones);
   if (!valid) {
-    fmt::print(stderr,
-               fg(fmt::color::red),
+    fmt::print(stderr, fg(fmt::color::red),
                "\nERROR: Zone Grid Communication interfaces are not symmetric.  There is an error "
                "in the decomposition.\n");
   }

@@ -427,9 +427,9 @@ namespace {
     size_t max_name = std::string("Block Name").length();
     size_t max_face = std::string("Face Count").length();
     for (auto &eb : ebs) {
-      const std::string &name = eb->name();
-      max_name = std::max(name.length(), max_name)
-      size_t face_width = Ioss::Utils::number_width(boundary_faces[name].size());
+      const std::string                                  &name = eb->name();
+      max_name = std::max(name.length(), max_name) size_t face_width =
+          Ioss::Utils::number_width(boundary_faces[name].size());
       max_face = std::max(face_width, max_face);
     }
     max_name += 4; // Padding

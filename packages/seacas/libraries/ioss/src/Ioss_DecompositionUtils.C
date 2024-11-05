@@ -20,10 +20,10 @@
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
 
+#include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
-#include <fmt/color.h>
 
 #if !defined(NO_ZOLTAN_SUPPORT)
 #include <zoltan.h>     // for Zoltan_Initialize
