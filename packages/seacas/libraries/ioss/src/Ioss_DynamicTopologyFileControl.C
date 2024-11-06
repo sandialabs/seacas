@@ -333,14 +333,12 @@ namespace Ioss {
       return nullptr;
 
     const Ioss::PropertyManager &current_properties = current_db->get_property_manager();
-    Ioss::NameList               names;
-    current_properties.describe(&names);
+    Ioss::NameList               names = current_properties.describe();
 
     // Iterate through properties and transfer to new output database...
-    Ioss::NameList::const_iterator I;
-    for (I = names.begin(); I != names.end(); ++I) {
-      if (!current_properties.exists(*I))
-        m_properties.add(current_properties.get(*I));
+    for (const auto &name : names) {
+      if (!m_properties.exists(name))
+        m_properties.add(current_properties.get(name));
     }
 
     auto db_usage = current_db->usage();
