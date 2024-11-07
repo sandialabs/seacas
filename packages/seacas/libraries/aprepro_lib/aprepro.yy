@@ -357,6 +357,7 @@ sexp:     QSTRING               { $$ = $1;                              }
             $$ = (char*)"";
         }
         | sexp CONCAT sexp      { concat_string($1, $3, &$$); }
+	| sexp PLU sexp         { concat_string($1, $3, &$$); }
         | SFNCT LPAR exp COMMA exp RPAR {
           if (arg_check($1, $1->value.strfnct_dd == NULL))
             $$ = (char*)(*($1->value.strfnct_dd))($3, $5);
@@ -402,7 +403,6 @@ sexp:     QSTRING               { $$ = $1;                              }
 	| sexp DIV sexp         { $$ = (char*)""; yyerror(aprepro, "Dividing a string by a string is not defined"); yyerrok;}
 	| exp PLU sexp          { $$ = (char*)""; yyerror(aprepro, "Adding an arithmetic and a string is not defined"); yyerrok;}
 	| sexp PLU exp          { $$ = (char*)""; yyerror(aprepro, "Adding a string and an arithmetic is not defined"); yyerrok;}
-	| sexp PLU sexp         { $$ = (char*)""; yyerror(aprepro, "Adding a string to a string is not defined"); yyerrok;}
 	| exp SUB sexp          { $$ = (char*)""; yyerror(aprepro, "Subtracting an arithmetic and a string is not defined"); yyerrok;}
 	| sexp SUB exp          { $$ = (char*)""; yyerror(aprepro, "Subtracting a string and an arithmetic is not defined"); yyerrok;}
 	| sexp SUB sexp         { $$ = (char*)""; yyerror(aprepro, "Subtracting a string from a string is not defined"); yyerrok;}

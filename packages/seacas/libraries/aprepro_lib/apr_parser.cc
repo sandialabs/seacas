@@ -2,7 +2,7 @@
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015, 2018-2021, 2024 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -480,6 +480,7 @@ namespace SEAMS {
     int yylen = 0;
 
     // Error handling.
+    int yynerrs_ = 0;
     int yyerrstatus_ = 0;
 
     /// The lookahead symbol.
@@ -1151,7 +1152,11 @@ namespace SEAMS {
                                 { concat_string((yystack_[2].value.string), (yystack_[0].value.string), &(yylhs.value.string)); }
     break;
 
-  case 109: // sexp: SFNCT LPAR exp COMMA exp RPAR
+  case 109: // sexp: sexp PLU sexp
+                                { concat_string((yystack_[2].value.string), (yystack_[0].value.string), &(yylhs.value.string)); }
+    break;
+
+  case 110: // sexp: SFNCT LPAR exp COMMA exp RPAR
                                         {
           if (arg_check((yystack_[5].value.tptr), (yystack_[5].value.tptr)->value.strfnct_dd == NULL))
             (yylhs.value.string) = (char*)(*((yystack_[5].value.tptr)->value.strfnct_dd))((yystack_[3].value.val), (yystack_[1].value.val));
@@ -1160,7 +1165,7 @@ namespace SEAMS {
         }
     break;
 
-  case 110: // sexp: SFNCT LPAR exp COMMA sexp COMMA sexp COMMA sexp COMMA sexp RPAR
+  case 111: // sexp: SFNCT LPAR exp COMMA sexp COMMA sexp COMMA sexp COMMA sexp RPAR
                                                                           {
           if (arg_check((yystack_[11].value.tptr), (yystack_[11].value.tptr)->value.strfnct_dcccc == NULL))
             (yylhs.value.string) = (char*)(*((yystack_[11].value.tptr)->value.strfnct_dcccc))((yystack_[9].value.val), (yystack_[7].value.string), (yystack_[5].value.string), (yystack_[3].value.string), (yystack_[1].value.string));
@@ -1169,7 +1174,7 @@ namespace SEAMS {
         }
     break;
 
-  case 111: // sexp: SFNCT LPAR exp COMMA sexp COMMA sexp RPAR
+  case 112: // sexp: SFNCT LPAR exp COMMA sexp COMMA sexp RPAR
                                                      {
           if (arg_check((yystack_[7].value.tptr), (yystack_[7].value.tptr)->value.strfnct_dcc == NULL))
             (yylhs.value.string) = (char*)(*((yystack_[7].value.tptr)->value.strfnct_dcc))((yystack_[5].value.val), (yystack_[3].value.string), (yystack_[1].value.string));
@@ -1178,7 +1183,7 @@ namespace SEAMS {
         }
     break;
 
-  case 112: // sexp: SFNCT LPAR exp COMMA sexp RPAR
+  case 113: // sexp: SFNCT LPAR exp COMMA sexp RPAR
                                          {
           if (arg_check((yystack_[5].value.tptr), (yystack_[5].value.tptr)->value.strfnct_dc == NULL))
             (yylhs.value.string) = (char*)(*((yystack_[5].value.tptr)->value.strfnct_dc))((yystack_[3].value.val), (yystack_[1].value.string));
@@ -1187,7 +1192,7 @@ namespace SEAMS {
         }
     break;
 
-  case 113: // sexp: SFNCT LPAR sexp COMMA sexp COMMA sexp RPAR
+  case 114: // sexp: SFNCT LPAR sexp COMMA sexp COMMA sexp RPAR
                                                       {
           if (arg_check((yystack_[7].value.tptr), (yystack_[7].value.tptr)->value.strfnct_ccc == NULL))
             (yylhs.value.string) = (char*)(*((yystack_[7].value.tptr)->value.strfnct_ccc))((yystack_[5].value.string), (yystack_[3].value.string), (yystack_[1].value.string));
@@ -1196,7 +1201,7 @@ namespace SEAMS {
         }
     break;
 
-  case 114: // sexp: SFNCT LPAR sexp COMMA sexp RPAR
+  case 115: // sexp: SFNCT LPAR sexp COMMA sexp RPAR
                                           {
           if (arg_check((yystack_[5].value.tptr), (yystack_[5].value.tptr)->value.strfnct_cc == NULL))
             (yylhs.value.string) = (char*)(*((yystack_[5].value.tptr)->value.strfnct_cc))((yystack_[3].value.string), (yystack_[1].value.string));
@@ -1205,44 +1210,40 @@ namespace SEAMS {
         }
     break;
 
-  case 115: // sexp: bool QUEST sexp COLON sexp
+  case 116: // sexp: bool QUEST sexp COLON sexp
                                       { (yylhs.value.string) = ((yystack_[4].value.val)) ? ((yystack_[2].value.string)) : ((yystack_[0].value.string));              }
     break;
 
-  case 116: // sexp: exp TIM sexp
+  case 117: // sexp: exp TIM sexp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Multiplying an arithmetic with a string is not defined"); yyerrok;}
     break;
 
-  case 117: // sexp: sexp TIM exp
+  case 118: // sexp: sexp TIM exp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Multiplying a string with an arithmetic is not defined"); yyerrok;}
     break;
 
-  case 118: // sexp: sexp TIM sexp
+  case 119: // sexp: sexp TIM sexp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Multiplying a string with a string is not defined"); yyerrok;}
     break;
 
-  case 119: // sexp: sexp DIV exp
+  case 120: // sexp: sexp DIV exp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Dividing a string by an arithmetic is not defined"); yyerrok;}
     break;
 
-  case 120: // sexp: exp DIV sexp
+  case 121: // sexp: exp DIV sexp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Dividing an arithmetic by a string is not defined"); yyerrok;}
     break;
 
-  case 121: // sexp: sexp DIV sexp
+  case 122: // sexp: sexp DIV sexp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Dividing a string by a string is not defined"); yyerrok;}
     break;
 
-  case 122: // sexp: exp PLU sexp
+  case 123: // sexp: exp PLU sexp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Adding an arithmetic and a string is not defined"); yyerrok;}
     break;
 
-  case 123: // sexp: sexp PLU exp
+  case 124: // sexp: sexp PLU exp
                                 { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Adding a string and an arithmetic is not defined"); yyerrok;}
-    break;
-
-  case 124: // sexp: sexp PLU sexp
-                                { (yylhs.value.string) = (char*)""; yyerror(aprepro, "Adding a string to a string is not defined"); yyerrok;}
     break;
 
   case 125: // sexp: exp SUB sexp
@@ -1733,6 +1734,7 @@ namespace SEAMS {
     // If not already recovering from an error, report this error.
     if (!yyerrstatus_)
       {
+        ++yynerrs_;
         context yyctx (*this, yyla);
         std::string msg = yysyntax_error_ (yyctx);
         error (YY_MOVE (msg));
@@ -2119,20 +2121,20 @@ namespace SEAMS {
       25,   190,     0,   191,     0,     0,    30,    19,    21,    31,
       20,    22,    88,     0,    90,    92,    94,    91,    58,    34,
       46,    59,    35,    47,    60,    36,    48,    61,    37,    49,
-      62,    38,    50,    63,    39,    51,   124,   123,   127,   126,
-     121,   119,   118,   117,   108,     0,    28,    23,    17,    29,
+      62,    38,    50,    63,    39,    51,   109,   124,   127,   126,
+     122,   120,   119,   118,   108,     0,    28,    23,    17,    29,
       24,    18,    70,    40,    10,    71,    41,    11,    72,    42,
       13,    73,    43,    14,    74,    44,    15,    75,    45,    16,
-     122,   182,   125,   183,   120,   185,    93,   116,   184,   186,
+     123,   182,   125,   183,   121,   185,    93,   117,   184,   186,
      189,     0,   194,   170,     0,   169,     0,   168,   107,     0,
      104,     0,   106,    83,     0,    77,     0,    82,   161,   137,
      138,   139,   184,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,   115,   193,   195,
-     196,     0,   173,   171,   172,     0,   175,     0,     0,   114,
-       0,   112,   109,    79,    78,     0,    81,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,   116,   193,   195,
+     196,     0,   173,   171,   172,     0,   175,     0,     0,   115,
+       0,   113,   110,    79,    78,     0,    81,     0,     0,     0,
        0,     0,     0,     0,     0,   197,   174,   177,     0,   176,
-       0,   113,     0,   111,    80,     0,     0,     0,     0,   179,
-     178,     0,     0,     0,     0,   180,     0,   110,     0,   181
+       0,   114,     0,   112,    80,     0,     0,     0,     0,   179,
+     178,     0,     0,     0,     0,   180,     0,   111,     0,   181
   };
 
   const short
@@ -2648,8 +2650,8 @@ namespace SEAMS {
        3,     3,     3,     3,     3,     3,     1,     4,     6,     6,
        8,     6,     4,     4,     3,     3,     3,     3,     3,     2,
        3,     3,     3,     3,     3,     1,     1,     1,     3,     3,
-       3,     3,     3,     3,     4,     3,     4,     4,     3,     6,
-      12,     8,     6,     8,     6,     5,     3,     3,     3,     3,
+       3,     3,     3,     3,     4,     3,     4,     4,     3,     3,
+       6,    12,     8,     6,     8,     6,     5,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     3,     1,     2,
        2,     1,     1,     2,     2,     2,     2,     3,     3,     3,
        3,     3,     3,     3,     3,     2,     2,     2,     2,     3,
@@ -2694,7 +2696,7 @@ namespace SEAMS {
      249,   255,   261,   267,   273,   277,   281,   284,   286,   294,
      296,   304,   305,   306,   307,   316,   317,   318,   319,   321,
      324,   328,   333,   334,   335,   341,   347,   353,   359,   360,
-     366,   372,   378,   384,   390,   396,   397,   398,   399,   400,
+     361,   367,   373,   379,   385,   391,   397,   398,   399,   400,
      401,   402,   403,   404,   405,   406,   407,   408,   410,   411,
      412,   413,   414,   415,   416,   417,   418,   419,   421,   424,
      429,   430,   431,   432,   433,   438,   439,   440,   441,   442,
