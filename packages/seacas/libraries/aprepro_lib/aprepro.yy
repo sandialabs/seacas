@@ -394,6 +394,18 @@ sexp:     QSTRING               { $$ = $1;                              }
             $$ = (char*)"";
         }
         | bool QUEST sexp COLON sexp  { $$ = ($1) ? ($3) : ($5);              }
+	| exp TIM sexp          { $$ = (char*)""; yyerror(aprepro, "Multiplying an arithmetic with a string is not defined"); yyerrok;}
+	| sexp TIM exp          { $$ = (char*)""; yyerror(aprepro, "Multiplying a string with an arithmetic is not defined"); yyerrok;}
+	| sexp TIM sexp         { $$ = (char*)""; yyerror(aprepro, "Multiplying a string with a string is not defined"); yyerrok;}
+	| sexp DIV exp          { $$ = (char*)""; yyerror(aprepro, "Dividing a string by an arithmetic is not defined"); yyerrok;}
+	| exp DIV sexp          { $$ = (char*)""; yyerror(aprepro, "Dividing an arithmetic by a string is not defined"); yyerrok;}
+	| sexp DIV sexp         { $$ = (char*)""; yyerror(aprepro, "Dividing a string by a string is not defined"); yyerrok;}
+	| exp PLU sexp          { $$ = (char*)""; yyerror(aprepro, "Adding an arithmetic and a string is not defined"); yyerrok;}
+	| sexp PLU exp          { $$ = (char*)""; yyerror(aprepro, "Adding a string and an arithmetic is not defined"); yyerrok;}
+	| sexp PLU sexp         { $$ = (char*)""; yyerror(aprepro, "Adding a string to a string is not defined"); yyerrok;}
+	| exp SUB sexp          { $$ = (char*)""; yyerror(aprepro, "Subtracting an arithmetic and a string is not defined"); yyerrok;}
+	| sexp SUB exp          { $$ = (char*)""; yyerror(aprepro, "Subtracting a string and an arithmetic is not defined"); yyerrok;}
+	| sexp SUB sexp         { $$ = (char*)""; yyerror(aprepro, "Subtracting a string from a string is not defined"); yyerrok;}
 
 exp:      NUM                   { $$ = $1;                              }
         | INC NUM               { $$ = $2 + 1;                          }
