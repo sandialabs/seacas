@@ -22,7 +22,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "1.06";
+  std::string version = "1.07 (2024/11/08)";
 
 #ifdef SEACAS_HAVE_MPI
   void mpi_finalize()
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   ON_BLOCK_EXIT(mpi_finalize);
 #endif
 
-  Info::Interface interFace;
+  Info::Interface interFace(version);
   interFace.parse_options(argc, argv);
 
   Ioss::Init::Initializer io;

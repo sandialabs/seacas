@@ -16,7 +16,10 @@
 #include "Ioss_Utils.h"
 #include "info_interface.h"
 
-Info::Interface::Interface() { enroll_options(); }
+Info::Interface::Interface(std::string app_version) : version(std::move(app_version))
+{
+ enroll_options(); 
+}
 
 void Info::Interface::enroll_options()
 {
@@ -196,7 +199,7 @@ bool Info::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("version") != nullptr) {
-    // Version is printed up front, just exit...
+    fmt::print(stderr, "IO_INFO\tVersion: {}\n", version);
     exit(0);
   }
 

@@ -19,7 +19,7 @@ namespace Info {
   class IO_INFO_LIB_EXPORT Interface
   {
   public:
-    Interface();
+    explicit Interface(std::string app_version);
 
     bool parse_options(int argc, char **argv);
 
@@ -44,7 +44,7 @@ namespace Info {
     std::string change_set_name() const { return changeSetName_; }
     std::string custom_field() const { return customField_; }
 
-    //! Dumps representation of data in this class to cerr
+    std::string              version{};
 
   private:
     void enroll_options();
