@@ -35,7 +35,7 @@ namespace IOShell {
     std::string              outputFile;
     std::string              inFiletype{"unknown"};
     std::string              outFiletype{"unknown"};
-    std::string              groupName;
+    std::string              changeSetName;
     std::string              decomp_method;
     std::string              decomp_extra{"processor_id"};
     std::string              compose_output{"default"};

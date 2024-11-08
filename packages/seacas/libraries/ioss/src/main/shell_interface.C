@@ -241,8 +241,11 @@ void IOShell::Interface::enroll_options()
                   nullptr, nullptr, true);
 #endif
 
+  options_.enroll(
+      "extract_change_set", Ioss::GetLongOption::MandatoryValue,
+      "Write the data from the specified change_set (formerly group) to the output file.", nullptr);
   options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
-                  "Write the data from the specified group to the output file.", nullptr);
+                  "[deprecated] Use `--extract_change_set`.", nullptr);
 
   options_.enroll(
       "split_times", Ioss::GetLongOption::MandatoryValue,
@@ -676,7 +679,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
   }
 
-  groupName = options_.get_option_value("extract_group", groupName);
+  changeSetName = options_.get_option_value("extract_group", changeSetName);
+  changeSetName = options_.get_option_value("extract_change_set", changeSetName);
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");

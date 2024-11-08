@@ -4,17 +4,6 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ionit_Initializer.h"
-#include "Ioss_Compare.h"
-#include "Ioss_CopyDatabase.h"
-#include "Ioss_FileInfo.h"
-#include "Ioss_MemoryUtils.h"
-#include "Ioss_MeshCopyOptions.h"
-#include "Ioss_MeshType.h"
-#include "Ioss_ParallelUtils.h"
-#include "Ioss_SerializeIO.h"
-#include "Ioss_SurfaceSplit.h"
-#include "Ioss_Utils.h"
 #include <cstdlib>
 #include <exception>
 #include <fmt/core.h>
@@ -26,15 +15,26 @@
 #include <tokenize.h>
 #include <vector>
 
+#include "Ionit_Initializer.h"
+#include "Ioss_Compare.h"
+#include "Ioss_CopyDatabase.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DataSize.h"
 #include "Ioss_DatabaseIO.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h"
 #include "Ioss_IOFactory.h"
+#include "Ioss_MemoryUtils.h"
+#include "Ioss_MeshCopyOptions.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_ScopeGuard.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 #include "shell_interface.h"
 
@@ -42,7 +42,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "6.9 (2024/09/27)";
+  std::string version = "7.0 (2024/11/08)";
 
   bool mem_stats = false;
 
@@ -81,6 +81,22 @@ namespace {
       name = Ioss::Utils::lowercase(name);
     }
     return options;
+  }
+
+  bool open_change_set(const std::string &cs_name, Ioss::DatabaseIO *db,
+                       const std::string &file_name, int rank)
+  {
+    bool success = true;
+    if (!cs_name.empty()) {
+      success = db->open_internal_change_set(cs_name);
+      if (!success) {
+        if (rank == 0) {
+          fmt::print(stderr, "ERROR: Unable to open change_set '{}' in file '{}'\n", cs_name,
+                     file_name);
+        }
+      }
+    }
+    return success;
   }
 
 #ifdef SEACAS_HAVE_MPI
@@ -258,13 +274,9 @@ namespace {
         dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
-      if (!interFace.groupName.empty()) {
-        bool success = dbi->open_internal_change_set(interFace.groupName);
+      {
+        bool success = open_change_set(interFace.changeSetName, dbi, inpfile, rank);
         if (!success) {
-          if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       interFace.groupName, inpfile);
-          }
           return;
         }
       }
@@ -354,10 +366,11 @@ namespace {
         if (interFace.inputFile.size() > 1) {
           properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
 
-          // Putting each file into its own output group...
-          // The name of the group will be the basename portion of the filename...
+          // Putting each file into its own change_set in the output file...
+          // The name of the change_set will be the basename portion of the filename...
           Ioss::FileInfo file(inpfile);
-          bool           success = dbo->create_internal_change_set(file.tailname());
+
+          bool success = dbo->create_internal_change_set(file.tailname());
           if (!success) {
             if (rank == 0) {
               fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
@@ -494,13 +507,9 @@ namespace {
       dbi1->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
-    if (!interFace.groupName.empty()) {
-      bool success = dbi1->open_internal_change_set(interFace.groupName);
+    {
+      bool success = open_change_set(interFace.changeSetName, dbi1, inpfile, rank);
       if (!success) {
-        if (rank == 0) {
-          fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,
-                     inpfile);
-        }
         return false;
       }
     }
@@ -556,13 +565,9 @@ namespace {
       dbi2->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
-    if (!interFace.groupName.empty()) {
-      bool success = dbi2->open_internal_change_set(interFace.groupName);
+    {
+      bool success = open_change_set(interFace.changeSetName, dbi2, interFace.outputFile, rank);
       if (!success) {
-        if (rank == 0) {
-          fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,
-                     inpfile);
-        }
         return false;
       }
     }
