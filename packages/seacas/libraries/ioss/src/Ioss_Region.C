@@ -592,11 +592,20 @@ namespace Ioss {
     int  num_width = Ioss::Utils::number_width(max_entity, true) + 2;
     int  sb_width  = Ioss::Utils::number_width(max_sb, true) + 2;
 
+    int  change_set_count = get_database()->num_internal_change_set();
+    auto change_set_name  = get_internal_change_set_name();
+    if (!change_set_name.empty() && change_set_name != "/") {
+      change_set_name = ",\t[CS: " + change_set_name + "]";
+    }
+    else {
+      change_set_name.clear();
+    }
+
     // clang-format off
     fmt::print(
         strm,
-        "\n Database: {0}\n"
-        " Mesh Type = {1}, {39}\n"
+        "\n Database: {0}{56}\n"
+        " Mesh Type = {1}, {39}. Change Sets = {57}\n"
         "                      {38:{24}s}\t                 {38:{23}s}\t Variables : Transient / Reduction\n"
         " Spatial dimensions = {2:{24}}\t                 {38:{23}s}\t Global     = {26:{25}}\t{44:{25}}\n"
         " Node blocks        = {7:{24}}\t Nodes         = {3:{23}}\t Nodal      = {27:{25}}\t{45:{25}}\n"
@@ -612,7 +621,7 @@ namespace Ioss {
         " Assemblies         = {40:{24}}\t                 {38:{23}s}\t Assembly   = {41:{25}}\t{54:{25}}\n"
         " Blobs              = {42:{24}}\t                 {38:{23}s}\t Blob       = {43:{25}}\t{55:{25}}\n\n"
         " Time steps         = {32:{24}}\n",
-        get_database()->get_filename(), mesh_type_string(),
+        get_database()->get_filename(), mesh_type_string(),                /* 0, 1 */
         fmt::group_digits(get_property("spatial_dimension").get_int()),
 	fmt::group_digits(get_property("node_count").get_int()),
         fmt::group_digits(get_property("edge_count").get_int()),
@@ -621,7 +630,7 @@ namespace Ioss {
 	fmt::group_digits(get_property("node_block_count").get_int()),
         fmt::group_digits(get_property("edge_block_count").get_int()),
 	fmt::group_digits(get_property("face_block_count").get_int()),
-        fmt::group_digits(get_property("element_block_count").get_int()),
+        fmt::group_digits(get_property("element_block_count").get_int()), /* 10 */
         fmt::group_digits(get_property("structured_block_count").get_int()),
 	fmt::group_digits(get_property("node_set_count").get_int()),
         fmt::group_digits(get_property("edge_set_count").get_int()),
@@ -631,7 +640,7 @@ namespace Ioss {
         fmt::group_digits(total_cells),
 	fmt::group_digits(total_ns_nodes),
 	fmt::group_digits(total_es_edges),
-	fmt::group_digits(total_fs_faces),
+	fmt::group_digits(total_fs_faces), /* 20 */
 	fmt::group_digits(total_es_elements),
 	fmt::group_digits(total_sides),
         num_width,
@@ -641,7 +650,7 @@ namespace Ioss {
 	fmt::group_digits(num_nod_vars),
 	fmt::group_digits(num_ele_vars),
 	fmt::group_digits(num_str_vars),
-        fmt::group_digits(num_ns_vars),
+        fmt::group_digits(num_ns_vars), /* 30 */
 	fmt::group_digits(num_ss_vars),
 	fmt::group_digits(num_ts),
 	fmt::group_digits(num_edg_vars),
@@ -651,8 +660,8 @@ namespace Ioss {
         fmt::group_digits(num_els_vars),
 	" ",
 	get_database()->get_format(),
-	fmt::group_digits(get_property("assembly_count").get_int()),
-        fmt::group_digits(num_asm_vars) ,
+	fmt::group_digits(get_property("assembly_count").get_int()), /* 40 */
+        fmt::group_digits(num_asm_vars),
 	fmt::group_digits(get_property("blob_count").get_int()),
 	fmt::group_digits(num_blob_vars),
 	fmt::group_digits(num_glo_red_vars),
@@ -661,12 +670,13 @@ namespace Ioss {
 	fmt::group_digits(num_fac_red_vars),
 	fmt::group_digits(num_ele_red_vars),
 	fmt::group_digits(num_str_red_vars),
-        fmt::group_digits(num_ns_red_vars),
+        fmt::group_digits(num_ns_red_vars), /* 50 */
 	fmt::group_digits(num_es_red_vars),
 	fmt::group_digits(num_fs_red_vars),
 	fmt::group_digits(num_els_red_vars),
 	fmt::group_digits(num_asm_red_vars),
-        fmt::group_digits(num_blob_red_vars));
+        fmt::group_digits(num_blob_red_vars),
+	change_set_name, change_set_count);
     // clang-format on
   }
 

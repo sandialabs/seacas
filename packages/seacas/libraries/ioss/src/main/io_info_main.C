@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
     codename = codename.substr(ind + 1, codename.size());
   }
 
-  if (interFace.list_groups()) {
-    Ioss::io_info_group_info(interFace);
+  if (interFace.list_change_sets()) {
+    Ioss::io_info_change_set_info(interFace);
   }
   else {
     Ioss::io_info_file_info(interFace);
