@@ -278,6 +278,14 @@ namespace {
         dbi->set_block_omissions(interFace.omitted_blocks, inclusions);
       }
 
+      // Change_set specified...  We will read the specified changeSet from the input file
+      if (!interFace.changeSetName.empty()) {
+        bool success = open_change_set(interFace.changeSetName, dbi, rank);
+        if (!success) {
+          return;
+        }
+      }
+
       // NOTE: 'region' owns 'db' pointer at this time...
       Ioss::Region region(dbi, "region_1");
 
@@ -308,14 +316,6 @@ namespace {
       }
       if (int_byte_size_api == 8) {
         interFace.ints_64_bit = true;
-      }
-
-      // Change_set specified...  We will read the specified changeSet from the input file
-      if (!interFace.changeSetName.empty()) {
-        bool success = open_change_set(interFace.changeSetName, dbi, rank);
-        if (!success) {
-          return;
-        }
       }
 
       //========================================================================
