@@ -328,6 +328,8 @@ namespace Ioss {
 
     IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 
+    void reset_region();
+
   protected:
     std::string get_internal_change_set_name() const;
     void        update_dynamic_topology();
@@ -359,7 +361,6 @@ namespace Ioss {
     bool end_mode_nl(State current_state);
 
     void delete_database() override;
-    void reset_region();
 
     mutable std::map<EntityType, AliasMap> aliases_; ///< Stores alias mappings
 
