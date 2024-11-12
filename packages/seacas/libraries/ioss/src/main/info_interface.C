@@ -18,7 +18,7 @@
 
 Info::Interface::Interface(std::string app_version) : version(std::move(app_version))
 {
- enroll_options(); 
+  enroll_options();
 }
 
 void Info::Interface::enroll_options()
