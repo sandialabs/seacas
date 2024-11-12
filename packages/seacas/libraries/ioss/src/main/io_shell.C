@@ -83,8 +83,7 @@ namespace {
     return options;
   }
 
-  bool open_change_set(const std::string &cs_name, Ioss::DatabaseIO *db,
-                       const std::string &file_name, int rank)
+  bool open_change_set(const std::string &cs_name, Ioss::DatabaseIO *db, int rank)
   {
     bool success = true;
     if (!cs_name.empty()) {
@@ -92,7 +91,7 @@ namespace {
       if (!success) {
         if (rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open change_set '{}' in file '{}'\n", cs_name,
-                     file_name);
+                     db->get_filename());
         }
       }
     }
@@ -313,7 +312,7 @@ namespace {
 
       // Change_set specified...  We will read the specified changeSet from the input file
       if (!interFace.changeSetName.empty()) {
-        bool success = open_change_set(interFace.changeSetName, dbi, inpfile, rank);
+        bool success = open_change_set(interFace.changeSetName, dbi, rank);
         if (!success) {
           return;
         }
@@ -549,13 +548,6 @@ namespace {
       dbi1->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
-    {
-      bool success = open_change_set(interFace.changeSetName, dbi1, inpfile, rank);
-      if (!success) {
-        return false;
-      }
-    }
-
     // NOTE: 'input_region1' owns 'dbi1' pointer at this time...
     Ioss::Region input_region1(dbi1, "region_1");
 
@@ -608,7 +600,14 @@ namespace {
     }
 
     {
-      bool success = open_change_set(interFace.changeSetName, dbi2, interFace.outputFile, rank);
+      bool success = open_change_set(interFace.changeSetName, dbi1, rank);
+      if (!success) {
+        return false;
+      }
+    }
+
+    {
+      bool success = open_change_set(interFace.changeSetName, dbi2, rank);
       if (!success) {
         return false;
       }
