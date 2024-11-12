@@ -274,13 +274,6 @@ namespace {
         dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
-      {
-        bool success = open_change_set(interFace.changeSetName, dbi, inpfile, rank);
-        if (!success) {
-          return;
-        }
-      }
-
       if (!interFace.omitted_blocks.empty()) {
         std::vector<std::string> inclusions{};
         dbi->set_block_omissions(interFace.omitted_blocks, inclusions);
@@ -317,6 +310,15 @@ namespace {
       if (int_byte_size_api == 8) {
         interFace.ints_64_bit = true;
       }
+
+      // Change_set specified...  We will read the specified changeSet from the input file
+      if (!interFace.changeSetName.empty()) {
+        bool success = open_change_set(interFace.changeSetName, dbi, inpfile, rank);
+        if (!success) {
+          return;
+        }
+      }
+
       //========================================================================
       // OUTPUT Database...
       //========================================================================
@@ -346,8 +348,15 @@ namespace {
       int flush_interval = interFace.flush_interval; // Default is zero -- do not flush until end
       properties.add(Ioss::Property("FLUSH_INTERVAL", flush_interval));
 
+      int change_set_count = dbi->num_internal_change_set();
+
       if (interFace.split_times == 0 || interFace.delete_timesteps || ts_count == 0 || append ||
-          interFace.inputFile.size() > 1) {
+          interFace.inputFile.size() > 1 ||
+          (change_set_count > 1 && interFace.changeSetName.empty())) {
+        if (interFace.inputFile.size() > 1 ||
+            (change_set_count > 1 && interFace.changeSetName.empty())) {
+          properties.add(Ioss::Property("ENABLE_FILE_GROUPS", "YES"));
+        }
         Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
             interFace.outFiletype, interFace.outputFile, Ioss::WRITE_RESTART,
             Ioss::ParallelUtils::comm_world(), properties);
@@ -380,8 +389,41 @@ namespace {
           }
         }
 
-        // Do normal copy...
-        Ioss::copy_database(region, output_region, options);
+        if (change_set_count > 1 && interFace.changeSetName.empty()) {
+          bool first    = true;
+          auto cs_names = dbi->internal_change_set_describe();
+          for (const auto &cs_name : cs_names) {
+            bool success = region.load_internal_change_set_mesh(cs_name);
+            if (!success) {
+              if (rank == 0) {
+                fmt::print(stderr, "ERROR: Unable to open change set {} in input file.\n", cs_name);
+              }
+              return;
+            }
+            // NEED TO FIX set_id as blocks are incrementing ids each group
+            // NEED TO FIX reset_region() is private -- exposed here for proof of concept.
+            output_region.reset_region();
+            output_region.get_database()->release_memory();
+            success = dbo->create_internal_change_set(cs_name);
+            if (!success) {
+              if (rank == 0) {
+                fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
+                           cs_name);
+              }
+              return;
+            }
+            fmt::print(stderr, "Copying change set {}\n", cs_name);
+            if (!first) {
+              options.ignore_qa_info = true;
+            }
+            Ioss::copy_database(region, output_region, options);
+            first = false;
+          }
+        }
+        else {
+          // Do normal copy...
+          Ioss::copy_database(region, output_region, options);
+        }
 
         if (mem_stats) {
           dbo->release_memory();
