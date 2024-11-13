@@ -116,11 +116,11 @@ namespace {
                                    const std::string           &field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
 
-  bool open_change_set(const std::string &cs_name, const Ioss::Region &region)
+  bool open_change_set(const std::string &cs_name, Ioss::Region &region)
   {
     bool success = true;
     if (!cs_name.empty()) {
-      success = region.get_database()->open_internal_change_set(cs_name);
+      success = region.load_internal_change_set_mesh(cs_name);
       if (!success) {
         fmt::print(stderr, "ERROR: Unable to open change_set '{}' in file '{}'\n", cs_name,
                    region.get_database()->get_filename());
@@ -143,7 +143,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
   tol_floor     = options.tol_floor;
 
   // COMPARE change_sets in the databases...
-  {
+  if (!options.selected_change_set.empty()) {
     std::ostringstream buf;
     fmt::print(buf, "CHANGE SET mismatch.");
     if (!compare_change_sets(input_region_1, input_region_2, buf)) {
@@ -163,24 +163,29 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     }
   }
 
-  auto cs1_names = input_region_1.get_database()->internal_change_set_describe();
-  auto cs2_names = input_region_2.get_database()->internal_change_set_describe();
+  if (options.selected_change_set.empty()) {
+    auto cs1_names = input_region_1.get_database()->internal_change_set_describe();
+    auto cs2_names = input_region_2.get_database()->internal_change_set_describe();
 
-  for (const auto &cs1_name : cs1_names) {
-    auto it = std::find(cs2_names.cbegin(), cs2_names.cend(), cs1_name);
-    if (it == cs2_names.cend()) {
-      fmt::print(Ioss::WarnOut(), "Skipping change set {}, not found in input #2.\n", cs1_name);
-      continue;
-    }
+    for (const auto &cs1_name : cs1_names) {
+      auto it = std::find(cs2_names.cbegin(), cs2_names.cend(), cs1_name);
+      if (it == cs2_names.cend()) {
+        fmt::print(Ioss::WarnOut(), "Skipping change set {}, not found in input #2.\n", cs1_name);
+        continue;
+      }
 
-    bool success1 = open_change_set(cs1_name, input_region_1);
-    bool success2 = open_change_set(cs1_name, input_region_2);
-    if (!success1 || !success2) {
-      continue;
+      bool success1 = open_change_set(cs1_name, input_region_1);
+      bool success2 = open_change_set(cs1_name, input_region_2);
+      if (!success1 || !success2) {
+        continue;
+      }
+      overall_result &= compare_database_internal(input_region_1, input_region_2, options);
     }
-    overall_result &= compare_database_internal(input_region_1, input_region_2, options);
+    return overall_result;
   }
-  return overall_result;
+  else {
+    return compare_database_internal(input_region_1, input_region_2, options);
+  }
 }
 
 namespace {

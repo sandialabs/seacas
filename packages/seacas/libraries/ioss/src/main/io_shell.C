@@ -8,6 +8,7 @@
 #include <exception>
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <limits>
 #include <stdint.h>
 #include <stdio.h>
@@ -46,34 +47,35 @@ namespace {
 
   bool mem_stats = false;
 
-  void file_copy(IOShell::Interface &interFace, int rank);
+  bool file_copy(IOShell::Interface &interFace, int rank);
   bool file_compare(IOShell::Interface &interFace, int rank);
 
   Ioss::PropertyManager set_properties(IOShell::Interface &interFace);
   Ioss::MeshCopyOptions set_mesh_copy_options(IOShell::Interface &interFace)
   {
     Ioss::MeshCopyOptions options{};
-    options.selected_times    = interFace.selected_times;
-    options.rel_tolerance     = interFace.rel_tolerance;
-    options.abs_tolerance     = interFace.abs_tolerance;
-    options.tol_floor         = interFace.tol_floor;
-    options.verbose           = !interFace.quiet;
-    options.output_summary    = true;
-    options.memory_statistics = interFace.memory_statistics;
-    options.debug             = interFace.debug;
-    options.ints_64_bit       = interFace.ints_64_bit;
-    options.delete_timesteps  = interFace.delete_timesteps;
-    options.minimum_time      = interFace.minimum_time;
-    options.maximum_time      = interFace.maximum_time;
-    options.time_scale        = interFace.time_scale;
-    options.time_offset       = interFace.time_offset;
-    options.data_storage_type = interFace.data_storage_type;
-    options.delay             = interFace.timestep_delay;
-    options.reverse           = interFace.reverse;
-    options.add_proc_id       = interFace.add_processor_id_field;
-    options.boundary_sideset  = interFace.boundary_sideset;
-    options.ignore_qa_info    = interFace.ignore_qa_info;
-    options.omitted_blocks    = !interFace.omitted_blocks.empty();
+    options.selected_times      = interFace.selected_times;
+    options.rel_tolerance       = interFace.rel_tolerance;
+    options.abs_tolerance       = interFace.abs_tolerance;
+    options.tol_floor           = interFace.tol_floor;
+    options.verbose             = !interFace.quiet;
+    options.output_summary      = true;
+    options.memory_statistics   = interFace.memory_statistics;
+    options.debug               = interFace.debug;
+    options.ints_64_bit         = interFace.ints_64_bit;
+    options.delete_timesteps    = interFace.delete_timesteps;
+    options.minimum_time        = interFace.minimum_time;
+    options.maximum_time        = interFace.maximum_time;
+    options.time_scale          = interFace.time_scale;
+    options.time_offset         = interFace.time_offset;
+    options.data_storage_type   = interFace.data_storage_type;
+    options.delay               = interFace.timestep_delay;
+    options.reverse             = interFace.reverse;
+    options.add_proc_id         = interFace.add_processor_id_field;
+    options.boundary_sideset    = interFace.boundary_sideset;
+    options.ignore_qa_info      = interFace.ignore_qa_info;
+    options.omitted_blocks      = !interFace.omitted_blocks.empty();
+    options.selected_change_set = interFace.changeSetName;
 
     options.omitted_sets = interFace.omitted_sets;
     Ioss::sort(options.omitted_sets);
@@ -81,6 +83,22 @@ namespace {
       name = Ioss::Utils::lowercase(name);
     }
     return options;
+  }
+
+  bool check_valid_change_set_name(const std::string &cs_name, const Ioss::Region &region, int rank)
+  {
+    auto cs_names = region.get_database()->internal_change_set_describe();
+    auto it       = std::find(cs_names.cbegin(), cs_names.cend(), cs_name);
+    if (it == cs_names.cend()) {
+      if (rank == 0) {
+        fmt::print(stderr,
+                   "ERROR: Change set {}, not found in database {}. Valid change sets are:\n"
+                   "       {}\n",
+                   cs_name, region.get_database()->get_filename(), fmt::join(cs_names, ", "));
+      }
+      return false;
+    }
+    return true;
   }
 
   bool open_change_set(const std::string &cs_name, Ioss::Region &region, int rank)
@@ -181,7 +199,7 @@ int main(int argc, char *argv[])
       success = file_compare(interFace, rank);
     }
     else {
-      file_copy(interFace, rank);
+      success = file_copy(interFace, rank);
     }
   }
   catch (std::exception &e) {
@@ -228,14 +246,15 @@ int main(int argc, char *argv[])
 #endif
   }
   if (rank == 0) {
-    fmt::print(stderr, "\n{} execution successful.\n", codename);
+    fmt::print(stderr, "\n{} execution {}.\n", codename, success ? "successful" : "failed");
   }
   return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 namespace {
-  void file_copy(IOShell::Interface &interFace, int rank)
+  bool file_copy(IOShell::Interface &interFace, int rank)
   {
+    bool                  success    = true;
     Ioss::PropertyManager properties = set_properties(interFace);
 
     for (const auto &inpfile : interFace.inputFile) {
@@ -283,9 +302,12 @@ namespace {
 
       // Change_set specified...  We will read the specified changeSet from the input file
       if (!interFace.changeSetName.empty()) {
-        bool success = open_change_set(interFace.changeSetName, region, rank);
+        success = check_valid_change_set_name(interFace.changeSetName, region, rank);
+        if (success) {
+          success = open_change_set(interFace.changeSetName, region, rank);
+        }
         if (!success) {
-          return;
+          return success;
         }
       }
 
@@ -296,7 +318,7 @@ namespace {
                      "'Structured' mesh is supported at this time.\n",
                      region.mesh_type_string());
         }
-        return;
+        return success;
       }
 
       // Get length of longest name on input file...
@@ -378,13 +400,13 @@ namespace {
           // The name of the change_set will be the basename portion of the filename...
           Ioss::FileInfo file(inpfile);
 
-          bool success = dbo->create_internal_change_set(file.tailname());
+          success = dbo->create_internal_change_set(file.tailname());
           if (!success) {
             if (rank == 0) {
               fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
                          file.tailname());
             }
-            return;
+            return success;
           }
         }
 
@@ -392,12 +414,12 @@ namespace {
           bool first    = true;
           auto cs_names = dbi->internal_change_set_describe();
           for (const auto &cs_name : cs_names) {
-            bool success = region.load_internal_change_set_mesh(cs_name);
+            success = region.load_internal_change_set_mesh(cs_name);
             if (!success) {
               if (rank == 0) {
                 fmt::print(stderr, "ERROR: Unable to open change set {} in input file.\n", cs_name);
               }
-              return;
+              return success;
             }
             // NEED TO FIX set_id as blocks are incrementing ids each group
             // NEED TO FIX reset_region() is private -- exposed here for proof of concept.
@@ -409,7 +431,7 @@ namespace {
                 fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
                            cs_name);
               }
-              return;
+              return success;
             }
             fmt::print(stderr, "Copying change set {}\n", cs_name);
             if (!first) {
@@ -508,6 +530,7 @@ namespace {
         dbi->progress("Memory Released... ");
       }
     } // loop over input files
+    return true;
   }
 
   bool file_compare(IOShell::Interface &interFace, int rank)
@@ -610,15 +633,19 @@ namespace {
       return false;
     }
 
-    {
-      bool success = open_change_set(interFace.changeSetName, input_region1, rank);
+    if (!interFace.changeSetName.empty()) {
+      bool success = check_valid_change_set_name(interFace.changeSetName, input_region1, rank);
+      if (success) {
+        success = open_change_set(interFace.changeSetName, input_region1, rank);
+      }
       if (!success) {
         return false;
       }
-    }
 
-    {
-      bool success = open_change_set(interFace.changeSetName, input_region2, rank);
+      success = check_valid_change_set_name(interFace.changeSetName, input_region2, rank);
+      if (success) {
+        success = open_change_set(interFace.changeSetName, input_region2, rank);
+      }
       if (!success) {
         return false;
       }

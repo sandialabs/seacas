@@ -33,10 +33,6 @@
 
 #include "shell_interface.h"
 
-#ifdef SEACAS_HAVE_KOKKOS
-#include <Kokkos_Core.hpp> // for Kokkos::View
-#endif
-
 #define DO_OUTPUT                                                                                  \
   if (rank == 0)                                                                                   \
   std::cerr
