@@ -473,6 +473,8 @@ namespace Ioss {
 
     // Ioex:DatabaseIO::read_communication_metadata() adds comm fields that need to be cleared
     erase_fields(Field::COMMUNICATION);
+
+    aliases_.clear();
   }
 
   void Region::delete_database() { GroupingEntity::really_delete_database(); }
@@ -2086,7 +2088,6 @@ namespace Ioss {
    */
   NodeBlock *Region::get_node_block(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, NODEBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2107,7 +2108,6 @@ namespace Ioss {
    */
   EdgeBlock *Region::get_edge_block(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, EDGEBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2128,7 +2128,6 @@ namespace Ioss {
    */
   FaceBlock *Region::get_face_block(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, FACEBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2149,7 +2148,6 @@ namespace Ioss {
    */
   ElementBlock *Region::get_element_block(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, ELEMENTBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2170,7 +2168,6 @@ namespace Ioss {
    */
   StructuredBlock *Region::get_structured_block(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, STRUCTUREDBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2191,7 +2188,6 @@ namespace Ioss {
    */
   SideSet *Region::get_sideset(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, SIDESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2212,7 +2208,6 @@ namespace Ioss {
    */
   SideBlock *Region::get_sideblock(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     SideBlock *ge = nullptr;
     for (const auto &ss : sideSets) {
       ge = ss->get_side_block(my_name);
@@ -2230,7 +2225,6 @@ namespace Ioss {
    */
   NodeSet *Region::get_nodeset(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, NODESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2251,7 +2245,6 @@ namespace Ioss {
    */
   EdgeSet *Region::get_edgeset(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, EDGESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2272,7 +2265,6 @@ namespace Ioss {
    */
   FaceSet *Region::get_faceset(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, FACESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2293,7 +2285,6 @@ namespace Ioss {
    */
   ElementSet *Region::get_elementset(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, ELEMENTSET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2314,7 +2305,6 @@ namespace Ioss {
    */
   CommSet *Region::get_commset(const std::string &my_name) const
   {
-    IOSS_FUNC_ENTER(m_);
     const std::string db_name = get_alias_nl(my_name, COMMSET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
@@ -2335,7 +2325,6 @@ namespace Ioss {
    */
   const CoordinateFrame &Region::get_coordinate_frame(int64_t id) const
   {
-    IOSS_FUNC_ENTER(m_);
     for (const auto &coor_frame : coordinateFrames) {
       if (coor_frame.id() == id) {
         return coor_frame;
