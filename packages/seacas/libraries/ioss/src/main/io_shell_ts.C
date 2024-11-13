@@ -4,6 +4,19 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
+#include <fmt/format.h>
+#include <iomanip>
+#include <iostream>
+#include <pthread.h>
+#include <string>
+#include <unistd.h>
+#include <vector>
+
 #include "Ionit_Initializer.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_DataPool.h"
@@ -17,19 +30,6 @@
 #include "Ioss_SurfaceSplit.h"
 #include "Ioss_Transform.h"
 #include "Ioss_Utils.h"
-#include <fmt/format.h>
-
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <cstdlib>
-#include <cstring>
-#include <iomanip>
-#include <iostream>
-#include <pthread.h>
-#include <string>
-#include <unistd.h>
-#include <vector>
 
 #include "shell_interface.h"
 
@@ -233,6 +233,9 @@ namespace {
         dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
+      // NOTE: 'region' owns 'db' pointer at this time...
+      Ioss::Region region(dbi, "region_1");
+
       if (!interFace.changeSetName.empty()) {
         bool success = open_change_set(interFace.changeSetName, region, rank);
         if (!success) {
@@ -243,9 +246,6 @@ namespace {
           return;
         }
       }
-
-      // NOTE: 'region' owns 'db' pointer at this time...
-      Ioss::Region region(dbi, "region_1");
 
       if (region.mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
         if (rank == 0) {
