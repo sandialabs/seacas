@@ -241,10 +241,9 @@ void IOShell::Interface::enroll_options()
                   nullptr, nullptr, true);
 #endif
 
-  options_.enroll("select_change_sets", Ioss::GetLongOption::MandatoryValue,
-                  "Read the specified change set(s) (comma-separated list) from the input file.  "
-                  "Use \"ALL\" for all change sets (default).",
-                  nullptr);
+  options_.enroll(
+      "select_change_sets", Ioss::GetLongOption::MandatoryValue,
+      "Read only the specified change set(s) (comma-separated list) from the input file.  Use \"ALL\" for all change sets (default).", nullptr);
   options_.enroll(
       "extract_change_set", Ioss::GetLongOption::MandatoryValue,
       "Write the data from the specified change_set (formerly group) to the output file.", nullptr);
@@ -793,6 +792,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       Ioss::Utils::copyright(std::cerr, "1999-2022");
     }
     exit(EXIT_SUCCESS);
+  }
+
+  if (!changeSetName.empty() && !selectedChangeSets.empty()) {
+    if (my_processor == 0) {
+      fmt::print(stderr,
+                 "ERROR: Only one of 'extract_change_set' or 'select_change_sets'can be specified.\n");
+    }
+    return false;
   }
 
   // Parse remaining options as directory paths.

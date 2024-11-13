@@ -396,7 +396,20 @@ namespace {
 
         if (change_set_count > 1 && interFace.changeSetName.empty()) {
           bool first    = true;
-          auto cs_names = dbi->internal_change_set_describe();
+	  Ioss::NameList cs_names; 
+	  if (!options.selected_change_sets.empty() && options.selected_change_sets != "ALL") {
+	    cs_names = Ioss::tokenize(options.selected_change_sets, ",");
+	    success = true;
+	    for (const auto &cs_name : cs_names) {
+	      success &= Ioss::Utils::check_valid_change_set_name(cs_name, region);
+	    }
+	    if (!success) {
+	      return false;
+	    }
+	  }
+	  else {
+	    cs_names = dbi->internal_change_set_describe();
+	  }
           for (const auto &cs_name : cs_names) {
             success = region.load_internal_change_set_mesh(cs_name);
             if (!success) {
@@ -405,8 +418,6 @@ namespace {
               }
               return success;
             }
-            // NEED TO FIX set_id as blocks are incrementing ids each group
-            // NEED TO FIX reset_region() is private -- exposed here for proof of concept.
             output_region.reset_region();
             output_region.get_database()->release_memory();
             success = dbo->create_internal_change_set(cs_name);
