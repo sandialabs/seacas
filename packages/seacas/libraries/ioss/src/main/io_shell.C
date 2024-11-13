@@ -75,7 +75,7 @@ namespace {
     options.boundary_sideset    = interFace.boundary_sideset;
     options.ignore_qa_info      = interFace.ignore_qa_info;
     options.omitted_blocks      = !interFace.omitted_blocks.empty();
-    options.selected_change_set = interFace.changeSetName;
+    options.selected_change_sets = interFace.selectedChangeSets;
 
     options.omitted_sets = interFace.omitted_sets;
     Ioss::sort(options.omitted_sets);
@@ -631,24 +631,6 @@ namespace {
                  "'Structured' mesh is supported at this time.\n",
                  input_region2.mesh_type_string());
       return false;
-    }
-
-    if (!interFace.changeSetName.empty()) {
-      bool success = check_valid_change_set_name(interFace.changeSetName, input_region1, rank);
-      if (success) {
-        success = open_change_set(interFace.changeSetName, input_region1, rank);
-      }
-      if (!success) {
-        return false;
-      }
-
-      success = check_valid_change_set_name(interFace.changeSetName, input_region2, rank);
-      if (success) {
-        success = open_change_set(interFace.changeSetName, input_region2, rank);
-      }
-      if (!success) {
-        return false;
-      }
     }
 
     // Get integer size being used on input file #1 and set it in
