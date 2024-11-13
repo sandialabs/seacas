@@ -241,9 +241,10 @@ void IOShell::Interface::enroll_options()
                   nullptr, nullptr, true);
 #endif
 
-  options_.enroll(
-      "select_change_sets", Ioss::GetLongOption::MandatoryValue,
-      "Read the specified change set(s) (comma-separated list) from the input file.  Use \"ALL\" for all change sets (default).", nullptr);
+  options_.enroll("select_change_sets", Ioss::GetLongOption::MandatoryValue,
+                  "Read the specified change set(s) (comma-separated list) from the input file.  "
+                  "Use \"ALL\" for all change sets (default).",
+                  nullptr);
   options_.enroll(
       "extract_change_set", Ioss::GetLongOption::MandatoryValue,
       "Write the data from the specified change_set (formerly group) to the output file.", nullptr);
@@ -683,8 +684,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
 
   selectedChangeSets = options_.get_option_value("select_change_sets", selectedChangeSets);
-  changeSetName = options_.get_option_value("extract_group", changeSetName);
-  changeSetName = options_.get_option_value("extract_change_set", changeSetName);
+  changeSetName      = options_.get_option_value("extract_group", changeSetName);
+  changeSetName      = options_.get_option_value("extract_change_set", changeSetName);
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");

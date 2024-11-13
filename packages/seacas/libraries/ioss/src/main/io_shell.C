@@ -54,27 +54,27 @@ namespace {
   Ioss::MeshCopyOptions set_mesh_copy_options(IOShell::Interface &interFace)
   {
     Ioss::MeshCopyOptions options{};
-    options.selected_times      = interFace.selected_times;
-    options.rel_tolerance       = interFace.rel_tolerance;
-    options.abs_tolerance       = interFace.abs_tolerance;
-    options.tol_floor           = interFace.tol_floor;
-    options.verbose             = !interFace.quiet;
-    options.output_summary      = true;
-    options.memory_statistics   = interFace.memory_statistics;
-    options.debug               = interFace.debug;
-    options.ints_64_bit         = interFace.ints_64_bit;
-    options.delete_timesteps    = interFace.delete_timesteps;
-    options.minimum_time        = interFace.minimum_time;
-    options.maximum_time        = interFace.maximum_time;
-    options.time_scale          = interFace.time_scale;
-    options.time_offset         = interFace.time_offset;
-    options.data_storage_type   = interFace.data_storage_type;
-    options.delay               = interFace.timestep_delay;
-    options.reverse             = interFace.reverse;
-    options.add_proc_id         = interFace.add_processor_id_field;
-    options.boundary_sideset    = interFace.boundary_sideset;
-    options.ignore_qa_info      = interFace.ignore_qa_info;
-    options.omitted_blocks      = !interFace.omitted_blocks.empty();
+    options.selected_times       = interFace.selected_times;
+    options.rel_tolerance        = interFace.rel_tolerance;
+    options.abs_tolerance        = interFace.abs_tolerance;
+    options.tol_floor            = interFace.tol_floor;
+    options.verbose              = !interFace.quiet;
+    options.output_summary       = true;
+    options.memory_statistics    = interFace.memory_statistics;
+    options.debug                = interFace.debug;
+    options.ints_64_bit          = interFace.ints_64_bit;
+    options.delete_timesteps     = interFace.delete_timesteps;
+    options.minimum_time         = interFace.minimum_time;
+    options.maximum_time         = interFace.maximum_time;
+    options.time_scale           = interFace.time_scale;
+    options.time_offset          = interFace.time_offset;
+    options.data_storage_type    = interFace.data_storage_type;
+    options.delay                = interFace.timestep_delay;
+    options.reverse              = interFace.reverse;
+    options.add_proc_id          = interFace.add_processor_id_field;
+    options.boundary_sideset     = interFace.boundary_sideset;
+    options.ignore_qa_info       = interFace.ignore_qa_info;
+    options.omitted_blocks       = !interFace.omitted_blocks.empty();
     options.selected_change_sets = interFace.selectedChangeSets;
 
     options.omitted_sets = interFace.omitted_sets;

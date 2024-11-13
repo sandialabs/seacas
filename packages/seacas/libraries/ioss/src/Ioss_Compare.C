@@ -124,9 +124,9 @@ namespace {
     auto it       = std::find(cs_names.cbegin(), cs_names.cend(), cs_name);
     if (it == cs_names.cend()) {
       fmt::print(stderr,
-		 "ERROR: Change set {}, not found in database {}. Valid change sets are:\n"
-		 "       {}\n",
-		 cs_name, region.get_database()->get_filename(), fmt::join(cs_names, ", "));
+                 "ERROR: Change set {}, not found in database {}. Valid change sets are:\n"
+                 "       {}\n",
+                 cs_name, region.get_database()->get_filename(), fmt::join(cs_names, ", "));
       return false;
     }
     return true;
@@ -179,11 +179,11 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     }
   }
 
-  Ioss::NameList cs1_names; 
+  Ioss::NameList cs1_names;
   Ioss::NameList cs2_names;
 
   if (!options.selected_change_sets.empty() && options.selected_change_sets != "ALL") {
-    cs1_names = Ioss::tokenize(options.selected_change_sets, ",");
+    cs1_names    = Ioss::tokenize(options.selected_change_sets, ",");
     bool success = true;
     for (const auto &cs_name : cs1_names) {
       success &= check_valid_change_set_name(cs_name, input_region_1);
