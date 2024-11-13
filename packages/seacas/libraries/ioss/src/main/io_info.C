@@ -229,7 +229,7 @@ namespace {
                      "-----------------------\n");
         }
         if (cs_name != "/") {
-          bool success = dbi->open_internal_change_set(cs_name);
+          bool success = region.load_internal_change_set_mesh(cs_name);
           if (!success) {
             fmt::print("ERROR: Unable to open change set '{}' in file '{}'\n", cs_name, inpfile);
             return;
