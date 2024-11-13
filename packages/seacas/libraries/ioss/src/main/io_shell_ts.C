@@ -95,6 +95,22 @@ namespace {
 
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
+
+  bool open_change_set(const std::string &cs_name, Ioss::Region &region, int rank)
+  {
+    bool success = true;
+    if (!cs_name.empty()) {
+      success = region.load_internal_change_set_mesh(cs_name);
+      if (!success) {
+        if (rank == 0) {
+          fmt::print(stderr, "ERROR: Unable to open change_set '{}' in file '{}'\n", cs_name,
+                     region.get_database()->get_filename());
+        }
+      }
+    }
+    return success;
+  }
+
 } // namespace
 // ========================================================================
 
@@ -217,12 +233,12 @@ namespace {
         dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
-      if (!interFace.groupName.empty()) {
-        bool success = dbi->open_internal_change_set(interFace.groupName);
+      if (!interFace.changeSetName.empty()) {
+        bool success = open_change_set(interFace.changeSetName, region, rank);
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       interFace.groupName, inpfile);
+                       interFace.changeSetName, inpfile);
           }
           return;
         }

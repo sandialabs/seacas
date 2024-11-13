@@ -83,15 +83,15 @@ namespace {
     return options;
   }
 
-  bool open_change_set(const std::string &cs_name, Ioss::DatabaseIO *db, int rank)
+  bool open_change_set(const std::string &cs_name, Ioss::Region &region, int rank)
   {
     bool success = true;
     if (!cs_name.empty()) {
-      success = db->open_internal_change_set(cs_name);
+      success = region.load_internal_change_set_mesh(cs_name);
       if (!success) {
         if (rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open change_set '{}' in file '{}'\n", cs_name,
-                     db->get_filename());
+                     region.get_database()->get_filename());
         }
       }
     }
@@ -278,16 +278,16 @@ namespace {
         dbi->set_block_omissions(interFace.omitted_blocks, inclusions);
       }
 
+      // NOTE: 'region' owns 'db' pointer at this time...
+      Ioss::Region region(dbi, "region_1");
+
       // Change_set specified...  We will read the specified changeSet from the input file
       if (!interFace.changeSetName.empty()) {
-        bool success = open_change_set(interFace.changeSetName, dbi, rank);
+        bool success = open_change_set(interFace.changeSetName, region, rank);
         if (!success) {
           return;
         }
       }
-
-      // NOTE: 'region' owns 'db' pointer at this time...
-      Ioss::Region region(dbi, "region_1");
 
       if (region.mesh_type() == Ioss::MeshType::HYBRID) {
         if (rank == 0) {
@@ -599,20 +599,6 @@ namespace {
       dbi2->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
-    {
-      bool success = open_change_set(interFace.changeSetName, dbi1, rank);
-      if (!success) {
-        return false;
-      }
-    }
-
-    {
-      bool success = open_change_set(interFace.changeSetName, dbi2, rank);
-      if (!success) {
-        return false;
-      }
-    }
-
     // NOTE: 'input_region2' owns 'dbi2' pointer at this time...
     Ioss::Region input_region2(dbi2, "region_2");
 
@@ -622,6 +608,20 @@ namespace {
                  "'Structured' mesh is supported at this time.\n",
                  input_region2.mesh_type_string());
       return false;
+    }
+
+    {
+      bool success = open_change_set(interFace.changeSetName, input_region1, rank);
+      if (!success) {
+        return false;
+      }
+    }
+
+    {
+      bool success = open_change_set(interFace.changeSetName, input_region2, rank);
+      if (!success) {
+        return false;
+      }
     }
 
     // Get integer size being used on input file #1 and set it in
