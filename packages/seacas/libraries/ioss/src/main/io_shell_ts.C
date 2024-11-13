@@ -96,13 +96,13 @@ namespace {
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
 
-  bool open_change_set(const std::string &cs_name, Ioss::Region &region, int rank)
+  bool open_change_set(const std::string &cs_name, Ioss::Region &region, int my_rank)
   {
     bool success = true;
     if (!cs_name.empty()) {
       success = region.load_internal_change_set_mesh(cs_name);
       if (!success) {
-        if (rank == 0) {
+        if (my_rank == 0) {
           fmt::print(stderr, "ERROR: Unable to open change_set '{}' in file '{}'\n", cs_name,
                      region.get_database()->get_filename());
         }
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-  void file_copy(IOShell::Interface &interFace, int rank)
+  void file_copy(IOShell::Interface &interFace, int my_rank)
   {
     Ioss::PropertyManager properties = set_properties(interFace);
 
@@ -237,9 +237,9 @@ namespace {
       Ioss::Region region(dbi, "region_1");
 
       if (!interFace.changeSetName.empty()) {
-        bool success = open_change_set(interFace.changeSetName, region, rank);
+        bool success = open_change_set(interFace.changeSetName, region, my_rank);
         if (!success) {
-          if (rank == 0) {
+          if (my_rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
                        interFace.changeSetName, inpfile);
           }
@@ -248,7 +248,7 @@ namespace {
       }
 
       if (region.mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-        if (rank == 0) {
+        if (my_rank == 0) {
           fmt::print(stderr,
                      "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' mesh is "
                      "supported at this time.\n",
@@ -325,9 +325,9 @@ namespace {
       // and output regions... (This is checked during nodeset output)
       if (output_region.get_database()->needs_shared_node_information()) {
         if (interFace.ints_64_bit)
-          set_owned_node_count(region, rank, (int64_t)0);
+          set_owned_node_count(region, my_rank, (int64_t)0);
         else
-          set_owned_node_count(region, rank, (int)0);
+          set_owned_node_count(region, my_rank, (int)0);
       }
 
       transfer_edgeblocks(region, output_region, interFace.debug);
@@ -984,7 +984,9 @@ namespace {
 
       assert(oge->field_exists(out_field_name));
 
+#ifdef SEACAS_HAVE_KOKKOS
       int basic_type = ige->get_field(field_name).get_type();
+#endif
 
       size_t isize = ige->get_field(field_name).get_size();
       size_t osize = oge->get_field(out_field_name).get_size();
@@ -1190,7 +1192,6 @@ namespace {
     if (isize != oge->get_field(field_name).get_size()) {
       assert(isize == oge->get_field(field_name).get_size());
     }
-    int basic_type = ige->get_field(field_name).get_type();
 
     if (field_name == "mesh_model_coordinates_x") {
       return;
@@ -1225,6 +1226,10 @@ namespace {
     if (field_name == "ids" && ige->type() == Ioss::SIDEBLOCK) {
       return;
     }
+
+#ifdef SEACAS_HAVE_KOKKOS
+    int basic_type = ige->get_field(field_name).get_type();
+#endif
 
     Ioss::DataPool pool;
     pool.data.resize(isize);
