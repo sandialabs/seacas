@@ -8,7 +8,7 @@
 #include "exo_entity.h"
 #include "side_set.h" // for Side_Set
 
-template <typename INT> class ExoII_Read;
+template <typename INT> class Exo_Read;
 
 template <typename INT> class Node_Set : public Exo_Entity
 {
@@ -45,5 +45,5 @@ private:
   mutable INT    *nodeIndex{nullptr}; // An index array which orders the nodelist in sorted order.
   mutable double *dist_factors{nullptr}; // Array.
 
-  friend class ExoII_Read<INT>;
+  friend class Exo_Read<INT>;
 };

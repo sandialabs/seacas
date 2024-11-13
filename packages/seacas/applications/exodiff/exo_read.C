@@ -7,8 +7,8 @@
 #include "ED_SystemInterface.h" // for SystemInterface, etc
 #include "assembly.h"
 #include "edge_block.h" // for Edge_Block
-#include "exoII_read.h"
 #include "exo_block.h"  // for Exo_Block
+#include "exo_read.h"
 #include "exodusII.h"   // for ex_init_params, ex_opts, etc
 #include "face_block.h" // for Face_Block
 #include "fmt/ostream.h"
@@ -32,13 +32,11 @@ namespace {
                  std::vector<std::string> &varlist);
 } // namespace
 
-template <typename INT> ExoII_Read<INT>::ExoII_Read() = default;
+template <typename INT> Exo_Read<INT>::Exo_Read() = default;
 
-template <typename INT> ExoII_Read<INT>::ExoII_Read(std::string fname) : file_name(std::move(fname))
-{
-}
+template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(std::move(fname)) {}
 
-template <typename INT> ExoII_Read<INT>::~ExoII_Read()
+template <typename INT> Exo_Read<INT>::~Exo_Read()
 {
   try {
     SMART_ASSERT(Check_State());
@@ -46,7 +44,7 @@ template <typename INT> ExoII_Read<INT>::~ExoII_Read()
     if (file_id >= 0) {
       std::string err = Close_File();
       if (!err.empty()) {
-        Error(fmt::format("ExoII_Read destructor(): closing file: \"{}\"\n", err));
+        Error(fmt::format("Exo_Read destructor(): closing file: \"{}\"\n", err));
       }
     }
 
@@ -73,7 +71,7 @@ template <typename INT> ExoII_Read<INT>::~ExoII_Read()
   }
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Close_File()
+template <typename INT> std::string Exo_Read<INT>::Close_File()
 {
   SMART_ASSERT(Check_State());
 
@@ -83,7 +81,7 @@ template <typename INT> std::string ExoII_Read<INT>::Close_File()
   int err = ex_close(file_id);
 
   if (err < 0) {
-    Error(fmt::format("ExoII_Read::Close_File(): {}: Unable to close file!  Aborting...\n", err));
+    Error(fmt::format("Exo_Read::Close_File(): {}: Unable to close file!  Aborting...\n", err));
   }
   if (err > 0) {
     return fmt::format("WARNING: {} issued upon close", err);
@@ -94,63 +92,63 @@ template <typename INT> std::string ExoII_Read<INT>::Close_File()
   return "";
 }
 
-template <typename INT> double ExoII_Read<INT>::Time(int time_num) const
+template <typename INT> double Exo_Read<INT>::Time(int time_num) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(time_num > 0 && time_num <= Num_Times())(time_num)(Num_Times());
   return times[time_num - 1];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::Global_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::Global_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < global_vars.size());
   return global_vars[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::Nodal_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::Nodal_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < nodal_vars.size());
   return nodal_vars[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::Element_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::Element_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < elmt_vars.size());
   return elmt_vars[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::Element_Att_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::Element_Att_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < elmt_atts.size());
   return elmt_atts[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::NS_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::NS_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < ns_vars.size());
   return ns_vars[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::SS_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::SS_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < ss_vars.size());
   return ss_vars[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::EB_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::EB_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < eb_vars.size());
   return eb_vars[index];
 }
 
-template <typename INT> const std::string &ExoII_Read<INT>::FB_Var_Name(int index) const
+template <typename INT> const std::string &Exo_Read<INT>::FB_Var_Name(int index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(index >= 0 && (unsigned)index < fb_vars.size());
@@ -158,14 +156,14 @@ template <typename INT> const std::string &ExoII_Read<INT>::FB_Var_Name(int inde
 }
 
 template <typename INT>
-Exo_Block<INT> *ExoII_Read<INT>::Get_Element_Block_by_Index(size_t block_index) const
+Exo_Block<INT> *Exo_Read<INT>::Get_Element_Block_by_Index(size_t block_index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(block_index < num_elmt_blocks);
   return &eblocks[block_index];
 }
 
-template <typename INT> Exo_Block<INT> *ExoII_Read<INT>::Get_Element_Block_by_Id(size_t id) const
+template <typename INT> Exo_Block<INT> *Exo_Read<INT>::Get_Element_Block_by_Id(size_t id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_elmt_blocks; i++) {
@@ -177,7 +175,7 @@ template <typename INT> Exo_Block<INT> *ExoII_Read<INT>::Get_Element_Block_by_Id
 }
 
 template <typename INT>
-Exo_Block<INT> *ExoII_Read<INT>::Get_Element_Block_by_Name(const std::string &name) const
+Exo_Block<INT> *Exo_Read<INT>::Get_Element_Block_by_Name(const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_elmt_blocks; i++) {
@@ -189,7 +187,7 @@ Exo_Block<INT> *ExoII_Read<INT>::Get_Element_Block_by_Name(const std::string &na
 }
 
 template <typename INT>
-Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Index(size_t block_index) const
+Assembly<INT> *Exo_Read<INT>::Get_Assembly_by_Index(size_t block_index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(block_index < num_assemblies);
@@ -197,7 +195,7 @@ Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Index(size_t block_index) const
 }
 
 template <typename INT>
-Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Name(const std::string &name) const
+Assembly<INT> *Exo_Read<INT>::Get_Assembly_by_Name(const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_assemblies; i++) {
@@ -208,7 +206,7 @@ Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Name(const std::string &name) co
   return nullptr;
 }
 
-template <typename INT> Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Id(size_t set_id) const
+template <typename INT> Assembly<INT> *Exo_Read<INT>::Get_Assembly_by_Id(size_t set_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_assemblies; i++) {
@@ -220,7 +218,7 @@ template <typename INT> Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Id(size_
 }
 
 template <typename INT>
-Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Index(EXOTYPE type, size_t block_index) const
+Exo_Entity *Exo_Read<INT>::Get_Entity_by_Index(EXOTYPE type, size_t block_index) const
 {
   SMART_ASSERT(Check_State());
 
@@ -235,7 +233,7 @@ Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Index(EXOTYPE type, size_t block_inde
   }
 }
 
-template <typename INT> Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Id(EXOTYPE type, size_t id) const
+template <typename INT> Exo_Entity *Exo_Read<INT>::Get_Entity_by_Id(EXOTYPE type, size_t id) const
 {
   SMART_ASSERT(Check_State());
   switch (type) {
@@ -287,7 +285,7 @@ template <typename INT> Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Id(EXOTYPE ty
 }
 
 template <typename INT>
-Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Name(EXOTYPE type, const std::string &name) const
+Exo_Entity *Exo_Read<INT>::Get_Entity_by_Name(EXOTYPE type, const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   switch (type) {
@@ -338,7 +336,7 @@ Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Name(EXOTYPE type, const std::string 
   return nullptr;
 }
 
-template <typename INT> Node_Set<INT> *ExoII_Read<INT>::Get_Node_Set_by_Id(size_t set_id) const
+template <typename INT> Node_Set<INT> *Exo_Read<INT>::Get_Node_Set_by_Id(size_t set_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_node_sets; i++) {
@@ -350,7 +348,7 @@ template <typename INT> Node_Set<INT> *ExoII_Read<INT>::Get_Node_Set_by_Id(size_
 }
 
 template <typename INT>
-Node_Set<INT> *ExoII_Read<INT>::Get_Node_Set_by_Name(const std::string &name) const
+Node_Set<INT> *Exo_Read<INT>::Get_Node_Set_by_Name(const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_node_sets; i++) {
@@ -361,7 +359,7 @@ Node_Set<INT> *ExoII_Read<INT>::Get_Node_Set_by_Name(const std::string &name) co
   return nullptr;
 }
 
-template <typename INT> Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Id(size_t set_id) const
+template <typename INT> Side_Set<INT> *Exo_Read<INT>::Get_Side_Set_by_Id(size_t set_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_side_sets; i++) {
@@ -373,7 +371,7 @@ template <typename INT> Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Id(size_
 }
 
 template <typename INT>
-Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Name(const std::string &name) const
+Side_Set<INT> *Exo_Read<INT>::Get_Side_Set_by_Name(const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_side_sets; i++) {
@@ -384,8 +382,7 @@ Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Name(const std::string &name) co
   return nullptr;
 }
 
-template <typename INT>
-Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Id(size_t block_id) const
+template <typename INT> Edge_Block<INT> *Exo_Read<INT>::Get_Edge_Block_by_Id(size_t block_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_edge_blocks; i++) {
@@ -397,7 +394,7 @@ Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Id(size_t block_id) const
 }
 
 template <typename INT>
-Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Name(const std::string &name) const
+Edge_Block<INT> *Exo_Read<INT>::Get_Edge_Block_by_Name(const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_edge_blocks; i++) {
@@ -408,8 +405,7 @@ Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Name(const std::string &name
   return nullptr;
 }
 
-template <typename INT>
-Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Id(size_t block_id) const
+template <typename INT> Face_Block<INT> *Exo_Read<INT>::Get_Face_Block_by_Id(size_t block_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_face_blocks; i++) {
@@ -421,7 +417,7 @@ Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Id(size_t block_id) const
 }
 
 template <typename INT>
-Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Name(const std::string &name) const
+Face_Block<INT> *Exo_Read<INT>::Get_Face_Block_by_Name(const std::string &name) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_face_blocks; i++) {
@@ -433,7 +429,7 @@ Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Name(const std::string &name
 }
 
 template <typename INT>
-std::string ExoII_Read<INT>::Load_Element_Block_Description(size_t block_index) const
+std::string Exo_Read<INT>::Load_Element_Block_Description(size_t block_index) const
 {
   SMART_ASSERT(Check_State());
   if (!Open()) {
@@ -448,7 +444,7 @@ std::string ExoII_Read<INT>::Load_Element_Block_Description(size_t block_index) 
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Load_Element_Block_Descriptions() const
+template <typename INT> std::string Exo_Read<INT>::Load_Element_Block_Descriptions() const
 {
   SMART_ASSERT(Check_State());
   if (!Open()) {
@@ -461,7 +457,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Element_Block_Descript
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Free_Element_Block(size_t block_index) const
+template <typename INT> std::string Exo_Read<INT>::Free_Element_Block(size_t block_index) const
 {
   SMART_ASSERT(Check_State());
 
@@ -473,7 +469,7 @@ template <typename INT> std::string ExoII_Read<INT>::Free_Element_Block(size_t b
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Free_Element_Blocks() const
+template <typename INT> std::string Exo_Read<INT>::Free_Element_Blocks() const
 {
   SMART_ASSERT(Check_State());
 
@@ -485,14 +481,14 @@ template <typename INT> std::string ExoII_Read<INT>::Free_Element_Blocks() const
   return "";
 }
 
-template <typename INT> size_t ExoII_Read<INT>::Block_Id(size_t block_index) const
+template <typename INT> size_t Exo_Read<INT>::Block_Id(size_t block_index) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(block_index < num_elmt_blocks);
   return eblocks[block_index].Id();
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Load_Node_Map()
+template <typename INT> std::string Exo_Read<INT>::Load_Node_Map()
 {
   SMART_ASSERT(Check_State());
 
@@ -521,7 +517,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Node_Map()
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Free_Node_Map()
+template <typename INT> std::string Exo_Read<INT>::Free_Node_Map()
 {
   SMART_ASSERT(Check_State());
 
@@ -531,7 +527,7 @@ template <typename INT> std::string ExoII_Read<INT>::Free_Node_Map()
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Load_Element_Map()
+template <typename INT> std::string Exo_Read<INT>::Load_Element_Map()
 {
   SMART_ASSERT(Check_State());
 
@@ -560,7 +556,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Element_Map()
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Free_Element_Map()
+template <typename INT> std::string Exo_Read<INT>::Free_Element_Map()
 {
   SMART_ASSERT(Check_State());
 
@@ -570,7 +566,7 @@ template <typename INT> std::string ExoII_Read<INT>::Free_Element_Map()
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Load_Nodal_Coordinates()
+template <typename INT> std::string Exo_Read<INT>::Load_Nodal_Coordinates()
 {
   SMART_ASSERT(Check_State());
 
@@ -608,7 +604,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Nodal_Coordinates()
   return "";
 }
 
-template <typename INT> void ExoII_Read<INT>::Free_Nodal_Coordinates()
+template <typename INT> void Exo_Read<INT>::Free_Nodal_Coordinates()
 {
   SMART_ASSERT(Check_State());
   delete[] nodes;
@@ -616,7 +612,7 @@ template <typename INT> void ExoII_Read<INT>::Free_Nodal_Coordinates()
 }
 
 template <typename INT>
-std::string ExoII_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index)
+std::string Exo_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index)
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(time_step_num > 0 && time_step_num <= Num_Times());
@@ -639,13 +635,13 @@ std::string ExoII_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index
     int err =
         ex_get_var(file_id, cur_time, EX_NODAL, var_index + 1, 0, num_nodes, results[var_index]);
     if (err < 0) {
-      Error("ExoII_Read::Load_Nodal_Results(): Failed to get "
+      Error("Exo_Read::Load_Nodal_Results(): Failed to get "
             "nodal variable values!  Aborting...\n");
     }
     else if (err > 0) {
       delete[] results[var_index];
       results[var_index] = nullptr;
-      return fmt::format("ExoII_Read::Load_Nodal_Results(): WARNING:  "
+      return fmt::format("Exo_Read::Load_Nodal_Results(): WARNING:  "
                          "Exodus issued warning \"{}\" on call to ex_get_var()!"
                          "  I'm not going to keep what it gave me for values.",
                          err);
@@ -658,8 +654,8 @@ std::string ExoII_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index
 }
 
 template <typename INT>
-const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proportion,
-                                                 int var_index) const // Interpolated results.
+const double *Exo_Read<INT>::Get_Nodal_Results(int t1, int t2, double proportion,
+                                               int var_index) const // Interpolated results.
 {
   static std::vector<double> st_results;
   static std::vector<double> st_results2;
@@ -679,7 +675,7 @@ const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proporti
 
   int err = ex_get_var(file_id, t1, EX_NODAL, var_index + 1, 0, num_nodes, st_results.data());
   if (err < 0) {
-    Error("ExoII_Read::Get_Nodal_Results(): Failed to get "
+    Error("Exo_Read::Get_Nodal_Results(): Failed to get "
           "nodal variable values!  Aborting...\n");
   }
 
@@ -690,7 +686,7 @@ const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proporti
 
     err = ex_get_var(file_id, t2, EX_NODAL, var_index + 1, 0, num_nodes, st_results2.data());
     if (err < 0) {
-      Error("ExoII_Read::Load_Nodal_Results(): Failed to get "
+      Error("Exo_Read::Load_Nodal_Results(): Failed to get "
             "nodal variable values!  Aborting...\n");
     }
 
@@ -702,7 +698,7 @@ const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proporti
   return st_results.data();
 }
 
-template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results()
+template <typename INT> void Exo_Read<INT>::Free_Nodal_Results()
 {
   SMART_ASSERT(Check_State());
   if (results) {
@@ -713,7 +709,7 @@ template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results()
   }
 }
 
-template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results(int var_index)
+template <typename INT> void Exo_Read<INT>::Free_Nodal_Results(int var_index)
 {
   SMART_ASSERT(Check_State());
   if (results) {
@@ -724,7 +720,7 @@ template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results(int var_index)
   }
 }
 
-template <typename INT> const double *ExoII_Read<INT>::Get_Nodal_Results(int var_index) const
+template <typename INT> const double *Exo_Read<INT>::Get_Nodal_Results(int var_index) const
 {
   SMART_ASSERT(Check_State());
   if (cur_time == 0) {
@@ -735,7 +731,7 @@ template <typename INT> const double *ExoII_Read<INT>::Get_Nodal_Results(int var
   return results[var_index];
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Load_Global_Results(int time_step_num)
+template <typename INT> std::string Exo_Read<INT>::Load_Global_Results(int time_step_num)
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(time_step_num > 0 && time_step_num <= Num_Times());
@@ -759,11 +755,11 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Global_Results(int tim
   int err = ex_get_var(file_id, time_step_num, EX_GLOBAL, 1, 1, global_vars.size(), global_vals);
 
   if (err < 0) {
-    Error("ExoII_Read::Load_Global_Results(): Failed to get "
+    Error("Exo_Read::Load_Global_Results(): Failed to get "
           "global variable values!  Aborting...\n");
   }
   else if (err > 0) {
-    return fmt::format("ExoII_Read::Load_Global_Results(): WARNING:  "
+    return fmt::format("Exo_Read::Load_Global_Results(): WARNING:  "
                        "Exodus issued warning \"{}\" on call to ex_get_glob_vars()!",
                        err);
   }
@@ -771,7 +767,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Global_Results(int tim
 }
 
 template <typename INT>
-std::string ExoII_Read<INT>::Load_Global_Results(int t1, int t2, double proportion)
+std::string Exo_Read<INT>::Load_Global_Results(int t1, int t2, double proportion)
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(t1 > 0 && t1 <= Num_Times());
@@ -800,14 +796,14 @@ std::string ExoII_Read<INT>::Load_Global_Results(int t1, int t2, double proporti
   int err = ex_get_var(file_id, t1, EX_GLOBAL, 1, 1, global_vars.size(), global_vals);
 
   if (err < 0) {
-    Error("ExoII_Read::Load_Global_Results(): Failed to get "
+    Error("Exo_Read::Load_Global_Results(): Failed to get "
           "global variable values!  Aborting...\n");
   }
 
   if (t2 != t1) {
     err = ex_get_var(file_id, t2, EX_GLOBAL, 1, 1, global_vars.size(), global_vals2);
     if (err < 0) {
-      Error("ExoII_Read::Load_Global_Results(): Failed to get "
+      Error("Exo_Read::Load_Global_Results(): Failed to get "
             "global variable values!  Aborting...\n");
     }
 
@@ -820,7 +816,7 @@ std::string ExoII_Read<INT>::Load_Global_Results(int t1, int t2, double proporti
 }
 
 template <typename INT>
-Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Index(size_t side_set_index) const
+Side_Set<INT> *Exo_Read<INT>::Get_Side_Set_by_Index(size_t side_set_index) const
 {
   SMART_ASSERT(Check_State());
 
@@ -831,8 +827,7 @@ Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Index(size_t side_set_index) con
   return &ssets[side_set_index];
 }
 
-template <typename INT>
-Node_Set<INT> *ExoII_Read<INT>::Get_Node_Set_by_Index(size_t set_index) const
+template <typename INT> Node_Set<INT> *Exo_Read<INT>::Get_Node_Set_by_Index(size_t set_index) const
 {
   SMART_ASSERT(Check_State());
 
@@ -844,7 +839,7 @@ Node_Set<INT> *ExoII_Read<INT>::Get_Node_Set_by_Index(size_t set_index) const
 }
 
 template <typename INT>
-Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Index(size_t edge_block_index) const
+Edge_Block<INT> *Exo_Read<INT>::Get_Edge_Block_by_Index(size_t edge_block_index) const
 {
   SMART_ASSERT(Check_State());
 
@@ -856,7 +851,7 @@ Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Index(size_t edge_block_inde
 }
 
 template <typename INT>
-Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Index(size_t face_block_index) const
+Face_Block<INT> *Exo_Read<INT>::Get_Face_Block_by_Index(size_t face_block_index) const
 {
   SMART_ASSERT(Check_State());
 
@@ -872,7 +867,7 @@ Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Index(size_t face_block_inde
 // This function converts an Exodus global element number (1-offset) into
 // its block index (0-offset) and block element index (0-offset).
 template <typename INT>
-std::pair<int, size_t> ExoII_Read<INT>::Global_to_Block_Local(size_t global_elmt_num) const
+std::pair<int, size_t> Exo_Read<INT>::Global_to_Block_Local(size_t global_elmt_num) const
 {
   SMART_ASSERT(Check_State());
 
@@ -894,7 +889,7 @@ std::pair<int, size_t> ExoII_Read<INT>::Global_to_Block_Local(size_t global_elmt
   return std::make_pair(block_index, global_elmt_num - total - 1);
 }
 
-template <typename INT> int ExoII_Read<INT>::Check_State() const
+template <typename INT> int Exo_Read<INT>::Check_State() const
 {
   SMART_ASSERT(file_id >= -1);
   SMART_ASSERT(db_version >= 0.0);
@@ -919,7 +914,7 @@ template <typename INT> int ExoII_Read<INT>::Check_State() const
   return 1;
 }
 
-template <typename INT> std::string ExoII_Read<INT>::File_Name(const char *fname)
+template <typename INT> std::string Exo_Read<INT>::File_Name(const char *fname)
 {
   SMART_ASSERT(Check_State());
 
@@ -934,7 +929,7 @@ template <typename INT> std::string ExoII_Read<INT>::File_Name(const char *fname
   return "";
 }
 
-template <typename INT> std::string ExoII_Read<INT>::Open_File(const char *fname)
+template <typename INT> std::string Exo_Read<INT>::Open_File(const char *fname)
 {
   SMART_ASSERT(Check_State());
 
@@ -981,7 +976,7 @@ template <typename INT> std::string ExoII_Read<INT>::Open_File(const char *fname
   return "";
 }
 
-template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
+template <typename INT> void Exo_Read<INT>::Get_Init_Data()
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(file_id >= 0);
@@ -1384,5 +1379,5 @@ namespace {
     }
   }
 } // namespace
-template class ExoII_Read<int>;
-template class ExoII_Read<int64_t>;
+template class Exo_Read<int>;
+template class Exo_Read<int64_t>;

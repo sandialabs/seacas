@@ -20,7 +20,7 @@ using EXOTYPE = int;
 using EXOTYPE = int;
 #endif
 
-template <typename INT> class ExoII_Read;
+template <typename INT> class Exo_Read;
 
 class Exo_Entity
 {
@@ -92,5 +92,5 @@ private:
                                        // to arrays of attributes (length num_entity).
   std::vector<std::string> attributeNames{};
 
-  template <typename INT> friend class ExoII_Read;
+  template <typename INT> friend class Exo_Read;
 };

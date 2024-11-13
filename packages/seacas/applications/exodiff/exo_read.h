@@ -29,14 +29,14 @@ template <typename INT> class Edge_Block;
 template <typename INT> class Face_Block;
 template <typename INT> class Assembly;
 
-template <typename INT> class ExoII_Read
+template <typename INT> class Exo_Read
 {
 public:
-  ExoII_Read();
-  explicit ExoII_Read(std::string fname);
-  virtual ~ExoII_Read();
-  const ExoII_Read &operator=(const ExoII_Read &) = delete;
-  ExoII_Read(const ExoII_Read &)                  = delete;
+  Exo_Read();
+  explicit Exo_Read(std::string fname);
+  virtual ~Exo_Read();
+  const Exo_Read &operator=(const Exo_Read &) = delete;
+  Exo_Read(const Exo_Read &)                  = delete;
 
   // File operations:
 
@@ -253,7 +253,7 @@ protected:
   void Get_Init_Data(); // Gets bunch of initial data.
 };
 
-template <typename INT> inline INT ExoII_Read<INT>::Node_Map(size_t node_num) const
+template <typename INT> inline INT Exo_Read<INT>::Node_Map(size_t node_num) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(node_num <= num_nodes);
@@ -264,7 +264,7 @@ template <typename INT> inline INT ExoII_Read<INT>::Node_Map(size_t node_num) co
   return 0;
 }
 
-template <typename INT> inline INT ExoII_Read<INT>::Element_Map(size_t elmt_num) const
+template <typename INT> inline INT Exo_Read<INT>::Element_Map(size_t elmt_num) const
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(elmt_num <= num_elmts);

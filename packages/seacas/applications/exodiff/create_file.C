@@ -17,7 +17,7 @@
 #include <cstdio>  // for nullptr
 #include <string>  // for string, char_traits, etc
 #include <vector>  // for vector
-template <typename INT> class ExoII_Read;
+template <typename INT> class Exo_Read;
 
 namespace {
   void build_variable_names(const char *type, std::vector<std::string> &names,
@@ -27,7 +27,7 @@ namespace {
 
   template <typename INT>
   void build_truth_table(EXOTYPE type, const char *label, std::vector<std::string> &names,
-                         size_t num_entity, ExoII_Read<INT> &file1, ExoII_Read<INT> &file2,
+                         size_t num_entity, Exo_Read<INT> &file1, Exo_Read<INT> &file2,
                          const std::vector<std::string> &var_names1,
                          const std::vector<std::string> &var_names2, std::vector<int> &truth_tab,
                          bool quiet_flag, bool *diff_found);
@@ -39,7 +39,7 @@ namespace {
 } // namespace
 
 template <typename INT>
-void Build_Variable_Names(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, bool *diff_found)
+void Build_Variable_Names(Exo_Read<INT> &file1, Exo_Read<INT> &file2, bool *diff_found)
 {
   // Build (and compare) global variable names.
   build_variable_names("global", interFace.glob_var_names, interFace.glob_var,
@@ -85,7 +85,7 @@ void Build_Variable_Names(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, bool *
 }
 
 template <typename INT>
-int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::string &diffile_name,
+int Create_File(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const std::string &diffile_name,
                 bool *diff_found)
 {
   // Multiple modes:
@@ -426,7 +426,7 @@ namespace {
 
   template <typename INT>
   void build_truth_table(EXOTYPE type, const char *label, std::vector<std::string> &names,
-                         size_t num_entity, ExoII_Read<INT> &file1, ExoII_Read<INT> &file2,
+                         size_t num_entity, Exo_Read<INT> &file1, Exo_Read<INT> &file2,
                          const std::vector<std::string> &var_names1,
                          const std::vector<std::string> &var_names2, std::vector<int> &truth_tab,
                          bool quiet_flag, bool *diff_found)
@@ -500,12 +500,11 @@ namespace {
   }
 } // End of namespace
 
-template int  Create_File(ExoII_Read<int> &file1, ExoII_Read<int> &file2,
+template int  Create_File(Exo_Read<int> &file1, Exo_Read<int> &file2,
                           const std::string &diffile_name, bool *diff_found);
-template void Build_Variable_Names(ExoII_Read<int> &file1, ExoII_Read<int> &file2,
-                                   bool *diff_found);
+template void Build_Variable_Names(Exo_Read<int> &file1, Exo_Read<int> &file2, bool *diff_found);
 
-template int  Create_File(ExoII_Read<int64_t> &file1, ExoII_Read<int64_t> &file2,
+template int  Create_File(Exo_Read<int64_t> &file1, Exo_Read<int64_t> &file2,
                           const std::string &diffile_name, bool *diff_found);
-template void Build_Variable_Names(ExoII_Read<int64_t> &file1, ExoII_Read<int64_t> &file2,
+template void Build_Variable_Names(Exo_Read<int64_t> &file1, Exo_Read<int64_t> &file2,
                                    bool *diff_found);
