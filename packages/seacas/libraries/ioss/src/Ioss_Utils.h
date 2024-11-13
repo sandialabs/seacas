@@ -135,6 +135,8 @@ namespace Ioss {
 
     static void copyright(std::ostream &out, const std::string &year_range);
 
+    IOSS_NODISCARD static bool check_valid_change_set_name(const std::string &cs_name, const Ioss::Region &region, int rank = 0);
+
     static void check_dynamic_cast(const void *ptr)
     {
       if (ptr == nullptr) {

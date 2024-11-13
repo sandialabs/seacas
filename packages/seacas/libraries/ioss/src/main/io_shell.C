@@ -85,22 +85,6 @@ namespace {
     return options;
   }
 
-  bool check_valid_change_set_name(const std::string &cs_name, const Ioss::Region &region, int rank)
-  {
-    auto cs_names = region.get_database()->internal_change_set_describe();
-    auto it       = std::find(cs_names.cbegin(), cs_names.cend(), cs_name);
-    if (it == cs_names.cend()) {
-      if (rank == 0) {
-        fmt::print(stderr,
-                   "ERROR: Change set {}, not found in database {}. Valid change sets are:\n"
-                   "       {}\n",
-                   cs_name, region.get_database()->get_filename(), fmt::join(cs_names, ", "));
-      }
-      return false;
-    }
-    return true;
-  }
-
   bool open_change_set(const std::string &cs_name, Ioss::Region &region, int rank)
   {
     bool success = true;
@@ -302,7 +286,7 @@ namespace {
 
       // Change_set specified...  We will read the specified changeSet from the input file
       if (!interFace.changeSetName.empty()) {
-        success = check_valid_change_set_name(interFace.changeSetName, region, rank);
+        success = Ioss::Utils::check_valid_change_set_name(interFace.changeSetName, region, rank);
         if (success) {
           success = open_change_set(interFace.changeSetName, region, rank);
         }

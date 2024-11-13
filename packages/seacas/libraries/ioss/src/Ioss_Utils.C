@@ -173,6 +173,22 @@ void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t len
   copy_string(date_string, date, length + 1);
 }
 
+bool Ioss::Utils::check_valid_change_set_name(const std::string &cs_name, const Ioss::Region &region, int rank)
+  {
+    auto cs_names = region.get_database()->internal_change_set_describe();
+    auto it       = std::find(cs_names.cbegin(), cs_names.cend(), cs_name);
+    if (it == cs_names.cend()) {
+      if (rank == 0) {
+      fmt::print(stderr,
+		 "ERROR: Change set {}, not found in database {}. Valid change sets are:\n"
+		 "       {}\n",
+		 cs_name, region.get_database()->get_filename(), fmt::join(cs_names, ", "));
+      }
+      return false;
+    }
+    return true;
+  }
+
 void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string &name,
                                  const std::string &func)
 {
