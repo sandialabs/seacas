@@ -327,13 +327,6 @@ void SystemInterface::enroll_options()
   options_.enroll("ignore_steps", GetLongOption::NoValue,
                   "Don't compare any transient data; compare mesh only.", nullptr);
   options_.enroll(
-      "x", GetLongOption::MandatoryValue,
-      "Exclude time steps.  Does not consider the time steps given in the list of integers.\n"
-      "\t\tThe format is comma-separated and ranged integers (with no spaces), such as "
-      "\"1,5-9,28\".\n"
-      "\t\tThe first time step is the number '1'.",
-      nullptr);
-  options_.enroll(
       "exclude", GetLongOption::MandatoryValue,
       "Exclude time steps.  Does not consider the time steps given in the list of integers.\n"
       "\t\tThe format is comma-separated and ranged integers (with no spaces), such as "
@@ -496,6 +489,8 @@ void SystemInterface::enroll_options()
                   nullptr);
   options_.enroll("T", GetLongOption::MandatoryValue,
                   "Backward-compatible option for -TimeStepOffset", nullptr);
+  options_.enroll("x", GetLongOption::MandatoryValue, "Backward-compatible option for -exclude",
+		  nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
