@@ -328,6 +328,7 @@ namespace Ioss {
 
     IOSS_NODISCARD std::tuple<std::string, int, double> locate_db_state(double targetTime) const;
 
+    // Reinitialize region data structures
     void reset_region();
 
   protected:

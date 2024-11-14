@@ -70,6 +70,8 @@ namespace Ioss {
 
     virtual bool needs_new_output_file() const;
 
+    virtual void initialize_region();
+
   protected:
     Region      *m_region{nullptr};
     unsigned int m_topologyModification{TOPOLOGY_SAME};
