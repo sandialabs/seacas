@@ -2984,9 +2984,10 @@ namespace Ioss {
     if (!iodatabase->open_internal_change_set(set_name))
       return false;
 
-    if(topologyObserver) {
+    if (topologyObserver) {
       topologyObserver->initialize_region();
-    } else {
+    }
+    else {
       reset_region();
     }
 
@@ -3019,9 +3020,10 @@ namespace Ioss {
     if (!iodatabase->open_internal_change_set(child_group_index))
       return false;
 
-    if(topologyObserver) {
+    if (topologyObserver) {
       topologyObserver->initialize_region();
-    } else {
+    }
+    else {
       reset_region();
     }
 
