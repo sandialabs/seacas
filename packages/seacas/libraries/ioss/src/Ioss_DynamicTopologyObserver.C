@@ -212,4 +212,11 @@ namespace Ioss {
 
   void DynamicTopologyObserver::define_transient() {}
 
+  void DynamicTopologyObserver::initialize_region()
+  {
+    if (nullptr != m_region) {
+      m_region->reset_region();
+    }
+  }
+
 } // namespace Ioss

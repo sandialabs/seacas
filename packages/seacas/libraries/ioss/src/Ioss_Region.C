@@ -2897,7 +2897,8 @@ namespace Ioss {
 
       state++; // For the state we are going to write.
 
-      reset_region();
+      topologyObserver->initialize_region();
+
       DynamicTopologyFileControl fileControl(this);
       fileControl.add_output_database_change_set(state);
 
@@ -2939,7 +2940,8 @@ namespace Ioss {
 
       state++; // For the state we are going to write.
 
-      reset_region();
+      topologyObserver->initialize_region();
+
       DynamicTopologyFileControl fileControl(this);
       fileControl.clone_and_replace_output_database(state);
 
@@ -2982,7 +2984,13 @@ namespace Ioss {
     if (!iodatabase->open_internal_change_set(set_name))
       return false;
 
-    reset_region();
+    if (topologyObserver) {
+      topologyObserver->initialize_region();
+    }
+    else {
+      reset_region();
+    }
+
     iodatabase->release_memory();
 
     Region::set_state(STATE_CLOSED);
@@ -3012,7 +3020,13 @@ namespace Ioss {
     if (!iodatabase->open_internal_change_set(child_group_index))
       return false;
 
-    reset_region();
+    if (topologyObserver) {
+      topologyObserver->initialize_region();
+    }
+    else {
+      reset_region();
+    }
+
     iodatabase->release_memory();
 
     Region::set_state(STATE_CLOSED);
