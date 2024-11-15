@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "util.h"
 
 //! Compare a string against another "master" string, where the string, str,
 //! can be abbreiviated to as little as min_length characters.  Returns true
@@ -30,7 +31,7 @@ std::string extract_token(std::string &s, const char *delimiters = " \t\n\r");
 int count_tokens(const std::string &s, const char *delimiters = " \t\n\r");
 
 //! Runs each string in the vector and returns the maximum size.
-int max_string_length(const std::vector<std::string> &names);
+int max_string_length(const NameList &names);
 
 //! Replaces each character of the string with its lower case equivalent.
 void to_lower(std::string &s);
@@ -42,4 +43,4 @@ char first_character(const std::string &s);
 //! Searches the list of strings for a particular string value.  Letter case
 //! will be ignored if the last argument is true.  Returns the index of the
 //! string in the vector if found, otherwise returns -1.
-int find_string(const std::vector<std::string> &lst, const std::string &s, bool nocase);
+int find_string(const NameList &lst, const std::string &s, bool nocase);

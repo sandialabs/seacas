@@ -6,6 +6,7 @@
 #pragma once
 
 #include "exo_entity.h"
+#include "util.h"
 
 #include <iostream>
 #include <string>
@@ -81,14 +82,14 @@ public:
   size_t                          Num_SS_Vars() const { return ss_vars.size(); }
   size_t                          Num_EB_Vars() const { return eb_vars.size(); }
   size_t                          Num_FB_Vars() const { return fb_vars.size(); }
-  const std::vector<std::string> &Global_Var_Names() const { return global_vars; }
-  const std::vector<std::string> &Nodal_Var_Names() const { return nodal_vars; }
-  const std::vector<std::string> &Element_Var_Names() const { return elmt_vars; }
-  const std::vector<std::string> &Element_Att_Names() const { return elmt_atts; }
-  const std::vector<std::string> &NS_Var_Names() const { return ns_vars; }
-  const std::vector<std::string> &SS_Var_Names() const { return ss_vars; }
-  const std::vector<std::string> &EB_Var_Names() const { return eb_vars; }
-  const std::vector<std::string> &FB_Var_Names() const { return fb_vars; }
+  const NameList &Global_Var_Names() const { return global_vars; }
+  const NameList &Nodal_Var_Names() const { return nodal_vars; }
+  const NameList &Element_Var_Names() const { return elmt_vars; }
+  const NameList &Element_Att_Names() const { return elmt_atts; }
+  const NameList &NS_Var_Names() const { return ns_vars; }
+  const NameList &SS_Var_Names() const { return ss_vars; }
+  const NameList &EB_Var_Names() const { return eb_vars; }
+  const NameList &FB_Var_Names() const { return fb_vars; }
 
   const std::string &Global_Var_Name(int index) const;
   const std::string &Nodal_Var_Name(int index) const;
@@ -197,7 +198,7 @@ protected:
   // GENESIS info:
 
   std::string              title{};
-  std::vector<std::string> coord_names{};
+  NameList coord_names{};
   size_t                   num_nodes{0};
   int                      dimension{0};
   size_t                   num_elmts{0};
@@ -228,14 +229,17 @@ protected:
 
   // RESULTS info:
 
-  std::vector<std::string> global_vars{};
-  std::vector<std::string> nodal_vars{};
-  std::vector<std::string> elmt_vars{};
-  std::vector<std::string> elmt_atts{};
-  std::vector<std::string> ns_vars{};
-  std::vector<std::string> ss_vars{};
-  std::vector<std::string> eb_vars{};
-  std::vector<std::string> fb_vars{};
+  NameList global_vars{};
+  NameList nodal_vars{};
+  NameList elmt_vars{};
+  NameList elmt_atts{};
+  NameList ns_vars{};
+  NameList ss_vars{};
+  NameList eb_vars{};
+  NameList fb_vars{};
+
+  std::vector<int> change_set_ids{};
+  NameList change_set_names{};
 
   double time_scale{1.0};
   double time_offset{0.0};

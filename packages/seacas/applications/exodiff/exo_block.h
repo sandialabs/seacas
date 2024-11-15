@@ -6,6 +6,8 @@
 #pragma once
 
 #include "exo_entity.h"
+#include "util.h"
+
 #include <iostream>
 
 #include <string>

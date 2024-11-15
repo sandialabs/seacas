@@ -1338,7 +1338,7 @@ template <typename INT> void Exo_Read<INT>::Get_Init_Data()
 
 namespace {
   void read_vars(int file_id, EXOTYPE flag, const char *type, int num_vars,
-                 std::vector<std::string> &varlist)
+                 NameList &varlist)
   {
     if (num_vars != 0) {
       int    name_size = ex_inquire_int(file_id, EX_INQ_MAX_READ_NAME_LENGTH);

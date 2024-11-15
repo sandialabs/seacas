@@ -20,21 +20,21 @@
 template <typename INT> class Exo_Read;
 
 namespace {
-  void build_variable_names(const char *type, std::vector<std::string> &names,
+  void build_variable_names(const char *type, NameList &names,
                             std::vector<Tolerance> &tols, const Tolerance &default_tol,
-                            bool do_all_flag, const std::vector<std::string> &var_names1,
-                            const std::vector<std::string> &var_names2, bool *diff_found);
+                            bool do_all_flag, const NameList &var_names1,
+                            const NameList &var_names2, bool *diff_found);
 
   template <typename INT>
-  void build_truth_table(EXOTYPE type, const char *label, std::vector<std::string> &names,
+  void build_truth_table(EXOTYPE type, const char *label, NameList &names,
                          size_t num_entity, Exo_Read<INT> &file1, Exo_Read<INT> &file2,
-                         const std::vector<std::string> &var_names1,
-                         const std::vector<std::string> &var_names2, std::vector<int> &truth_tab,
+                         const NameList &var_names1,
+                         const NameList &var_names2, std::vector<int> &truth_tab,
                          bool quiet_flag, bool *diff_found);
 
-  void output_exodus_names(int file_id, EXOTYPE type, const std::vector<std::string> &names);
-  void output_diff_names(const char *type, const std::vector<std::string> &names);
-  void output_compare_names(const char *type, const std::vector<std::string> &names,
+  void output_exodus_names(int file_id, EXOTYPE type, const NameList &names);
+  void output_diff_names(const char *type, const NameList &names);
+  void output_compare_names(const char *type, const NameList &names,
                             const std::vector<Tolerance> &tol, int num_vars1, int num_vars2);
 } // namespace
 
@@ -261,7 +261,7 @@ int Create_File(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const std::string &d
 }
 
 namespace {
-  void output_exodus_names(int file_id, EXOTYPE type, const std::vector<std::string> &names)
+  void output_exodus_names(int file_id, EXOTYPE type, const NameList &names)
   {
     if (!names.empty()) {
       std::vector<char *> vars(names.size());
@@ -272,7 +272,7 @@ namespace {
     }
   }
 
-  void output_compare_names(const char *type, const std::vector<std::string> &names,
+  void output_compare_names(const char *type, const NameList &names,
                             const std::vector<Tolerance> &tol, int num_vars1, int num_vars2)
   {
     if (!names.empty()) {
@@ -296,7 +296,7 @@ namespace {
     }
   }
 
-  void output_diff_names(const char *type, const std::vector<std::string> &names)
+  void output_diff_names(const char *type, const NameList &names)
   {
     if (!names.empty()) {
       fmt::print("{} variables to be differenced:\n", type);
@@ -309,12 +309,12 @@ namespace {
     }
   }
 
-  void build_variable_names(const char *type, std::vector<std::string> &names,
+  void build_variable_names(const char *type, NameList &names,
                             std::vector<Tolerance> &tols, const Tolerance &default_tol,
-                            bool do_all_flag, const std::vector<std::string> &var_names1,
-                            const std::vector<std::string> &var_names2, bool *diff_found)
+                            bool do_all_flag, const NameList &var_names1,
+                            const NameList &var_names2, bool *diff_found)
   {
-    std::vector<std::string> x_list; // exclusion list
+    NameList x_list; // exclusion list
     for (auto name : names) {
       chop_whitespace(name);
       SMART_ASSERT(!name.empty());
@@ -380,7 +380,7 @@ namespace {
       }
     }
 
-    std::vector<std::string> tmp_list;
+    NameList tmp_list;
     std::vector<Tolerance>   tmp_tols;
     for (size_t n = 0; n < names.size(); ++n) {
       std::string name = names[n];
@@ -425,10 +425,10 @@ namespace {
   }
 
   template <typename INT>
-  void build_truth_table(EXOTYPE type, const char *label, std::vector<std::string> &names,
+  void build_truth_table(EXOTYPE type, const char *label, NameList &names,
                          size_t num_entity, Exo_Read<INT> &file1, Exo_Read<INT> &file2,
-                         const std::vector<std::string> &var_names1,
-                         const std::vector<std::string> &var_names2, std::vector<int> &truth_tab,
+                         const NameList &var_names1,
+                         const NameList &var_names2, std::vector<int> &truth_tab,
                          bool quiet_flag, bool *diff_found)
   {
     if (!names.empty()) {

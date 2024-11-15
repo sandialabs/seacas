@@ -151,7 +151,7 @@ int count_tokens(const std::string &s, const char *delimiters)
   return 0;
 }
 
-int max_string_length(const std::vector<std::string> &names)
+int max_string_length(const NameList &names)
 {
   if (names.empty()) {
     return 0;
@@ -182,7 +182,7 @@ char first_character(const std::string &s)
   return 0;
 }
 
-int find_string(const std::vector<std::string> &lst, const std::string &s, bool nocase)
+int find_string(const NameList &lst, const std::string &s, bool nocase)
 {
   if (nocase) {
     for (unsigned i = 0; i < lst.size(); ++i) {

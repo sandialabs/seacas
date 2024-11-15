@@ -5,6 +5,8 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
+#include "util.h"
+
 #include <exodusII.h>
 #include <iostream>
 #include <string>
@@ -54,7 +56,7 @@ public:
 
   const std::string              &Get_Attribute_Name(int attr_index) const;
   const std::string              &Name() const { return name_; }
-  const std::vector<std::string> &Attribute_Names() const { return attributeNames; }
+  const NameList &Attribute_Names() const { return attributeNames; }
   int                             Find_Attribute_Index(const std::string &name) const;
 
   // Return "Element Block", "Nodeset", "Sideset, depending on underlying type.
@@ -90,7 +92,7 @@ private:
   int                   numAttr{0};    // Total number of attributes in the file.
   std::vector<double *> attributes_{}; // Array of pointers (length numAttr)
                                        // to arrays of attributes (length num_entity).
-  std::vector<std::string> attributeNames{};
+  NameList attributeNames{};
 
   template <typename INT> friend class Exo_Read;
 };
