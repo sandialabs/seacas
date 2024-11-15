@@ -87,6 +87,7 @@ public:
   std::string file2{};
   std::string diff_file{};
   std::string command_file{};
+  std::string change_sets{};
 
   bool quiet_flag{false};     // By default, warnings and other info is produced
   bool show_all_diffs{false}; // Be default, show only maximum diff for each variable;
