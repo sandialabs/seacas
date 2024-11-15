@@ -100,7 +100,7 @@ static int ex_get_nonstandard_ids(int exoid, ex_entity_type obj_type, void_int *
 
 int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
 {
-  int varid = 0;
+  int varid  = 0;
   int status = 0;
 
   const char *varidobj = NULL;

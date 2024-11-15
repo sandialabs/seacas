@@ -41,11 +41,14 @@ public:
 
   // File operations:
 
-  std::string Open_Change_Set(const std::string &name);
-  std::string Open_Change_Set(int index);
-  void        Get_Meta_Data(); // Reads metadata
-  int         Get_Change_Set_Index() const {return current_change_set_index;} 
-  const std::string &Get_Change_Set_Name() const {return change_set_names[current_change_set_index]; }
+  std::string        Open_Change_Set(const std::string &name);
+  std::string        Open_Change_Set(int index);
+  void               Get_Meta_Data(); // Reads metadata
+  int                Get_Change_Set_Index() const { return current_change_set_index; }
+  const std::string &Get_Change_Set_Name() const
+  {
+    return change_set_names[current_change_set_index];
+  }
 
   std::string Close_File();
   std::string File_Name() const { return file_name; }
@@ -76,20 +79,20 @@ public:
   double Time(int time_num) const;
 
   // Change Sets:
-  int            Num_Change_Sets() const { return num_change_sets; }
-  const NameList &Change_Set_Names() const {return change_set_names;}
-  const std::vector<int> &Change_Set_Ids() const {return change_set_ids;}
+  int                     Num_Change_Sets() const { return num_change_sets; }
+  const NameList         &Change_Set_Names() const { return change_set_names; }
+  const std::vector<int> &Change_Set_Ids() const { return change_set_ids; }
 
   // Variables:
 
-  size_t                          Num_Global_Vars() const { return global_vars.size(); }
-  size_t                          Num_Nodal_Vars() const { return nodal_vars.size(); }
-  size_t                          Num_Element_Vars() const { return elmt_vars.size(); }
-  size_t                          Num_Element_Atts() const { return elmt_atts.size(); }
-  size_t                          Num_NS_Vars() const { return ns_vars.size(); }
-  size_t                          Num_SS_Vars() const { return ss_vars.size(); }
-  size_t                          Num_EB_Vars() const { return eb_vars.size(); }
-  size_t                          Num_FB_Vars() const { return fb_vars.size(); }
+  size_t Num_Global_Vars() const { return global_vars.size(); }
+  size_t Num_Nodal_Vars() const { return nodal_vars.size(); }
+  size_t Num_Element_Vars() const { return elmt_vars.size(); }
+  size_t Num_Element_Atts() const { return elmt_atts.size(); }
+  size_t Num_NS_Vars() const { return ns_vars.size(); }
+  size_t Num_SS_Vars() const { return ss_vars.size(); }
+  size_t Num_EB_Vars() const { return eb_vars.size(); }
+  size_t Num_FB_Vars() const { return fb_vars.size(); }
 
   const NameList &Global_Var_Names() const { return global_vars; }
   const NameList &Nodal_Var_Names() const { return nodal_vars; }
@@ -206,22 +209,22 @@ private:
 
   // GENESIS info:
 
-  std::string              title{};
-  NameList coord_names{};
-  size_t                   num_nodes{0};
-  int                      dimension{0};
-  size_t                   num_elmts{0};
-  size_t                   num_faces{0};
-  size_t                   num_edges{0};
-  size_t                   num_elmt_blocks{0};
-  size_t                   num_node_sets{0};
-  size_t                   num_side_sets{0};
-  size_t                   num_edge_blocks{0};
-  size_t                   num_face_blocks{0};
-  size_t                   num_assemblies{0};
-  int                      num_change_sets{0};
-  int                      current_change_set_index{-2};
-  int                      io_word_size{0}; // Note: The "compute word size" is always 8.
+  std::string title{};
+  NameList    coord_names{};
+  size_t      num_nodes{0};
+  int         dimension{0};
+  size_t      num_elmts{0};
+  size_t      num_faces{0};
+  size_t      num_edges{0};
+  size_t      num_elmt_blocks{0};
+  size_t      num_node_sets{0};
+  size_t      num_side_sets{0};
+  size_t      num_edge_blocks{0};
+  size_t      num_face_blocks{0};
+  size_t      num_assemblies{0};
+  int         num_change_sets{0};
+  int         current_change_set_index{-2};
+  int         io_word_size{0}; // Note: The "compute word size" is always 8.
 
   Exo_Block<INT>  *eblocks{nullptr};     // Array.
   Node_Set<INT>   *nsets{nullptr};       // Array.
@@ -248,7 +251,7 @@ private:
   NameList fb_vars{};
 
   std::vector<int> change_set_ids{};
-  NameList change_set_names{};
+  NameList         change_set_names{};
 
   double time_scale{1.0};
   double time_offset{0.0};

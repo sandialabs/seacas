@@ -28,12 +28,11 @@
 #include <vector> // for vector
 
 namespace {
-  void read_vars(int file_id, EXOTYPE flag, const char *type, int num_vars,
-                 NameList &varlist);
+  void read_vars(int file_id, EXOTYPE flag, const char *type, int num_vars, NameList &varlist);
   void query_change_sets(int file_id, NameList &names, bool return_full_names);
 } // namespace
 
-template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(std::move(fname)) 
+template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(std::move(fname))
 {
   int   ws = 0, comp_ws = 8;
   float dumb = 0.0;
@@ -63,14 +62,15 @@ template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(s
   file_id      = err;
   io_word_size = ws;
 
-  // See if file contains change sets... If it does, open the first child change set (assumes all valid data are in change sets...)
+  // See if file contains change sets... If it does, open the first child change set (assumes all
+  // valid data are in change sets...)
   num_change_sets = ex_inquire_int(file_id, EX_INQ_NUM_CHILD_GROUPS);
   if (num_change_sets > 0) {
     change_set_ids.resize(num_change_sets);
     ex_get_group_ids(file_id, nullptr, change_set_ids.data());
 
     query_change_sets(file_id, change_set_names, false);
-    
+
     //    current_change_set_index = 0;
     //    file_id = change_set_ids[current_change_set_index];
   }
@@ -78,43 +78,56 @@ template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(s
 
 template <typename INT> void Exo_Read<INT>::Reset_Meta_Data()
 {
-  delete[] eblocks; eblocks = nullptr;
-  delete[] nsets; nsets = nullptr;
-  delete[] ssets; ssets = nullptr;
-  delete[] nodes; nodes = nullptr;
-  delete[] edge_blocks; edge_blocks = nullptr;
-  delete[] face_blocks; face_blocks = nullptr;
-  delete[] assemblies; assemblies = nullptr;
+  delete[] eblocks;
+  eblocks = nullptr;
+  delete[] nsets;
+  nsets = nullptr;
+  delete[] ssets;
+  ssets = nullptr;
+  delete[] nodes;
+  nodes = nullptr;
+  delete[] edge_blocks;
+  edge_blocks = nullptr;
+  delete[] face_blocks;
+  face_blocks = nullptr;
+  delete[] assemblies;
+  assemblies = nullptr;
 
 #if 1
   if (results) {
     for (unsigned i = 0; i < nodal_vars.size(); ++i) {
       if (results[i]) {
-	delete[] results[i]; results[i] = nullptr;
+        delete[] results[i];
+        results[i] = nullptr;
       }
     }
-    delete[] results; results = nullptr;
+    delete[] results;
+    results = nullptr;
   }
   nodal_vars.clear();
 #endif
-  
-  delete[] global_vals; global_vals = nullptr;
-  delete[] global_vals2; global_vals2 = nullptr;
-  delete[] node_map; node_map = nullptr;
-  delete[] elmt_map; elmt_map = nullptr;
 
-  num_nodes= 0;
-  dimension= 0;
-  num_elmts= 0;
-  num_faces= 0;
-  num_edges= 0;
-  num_elmt_blocks= 0;
-  num_node_sets= 0;
-  num_side_sets= 0;
-  num_edge_blocks= 0;
-  num_face_blocks= 0;
-  num_assemblies= 0;
-  
+  delete[] global_vals;
+  global_vals = nullptr;
+  delete[] global_vals2;
+  global_vals2 = nullptr;
+  delete[] node_map;
+  node_map = nullptr;
+  delete[] elmt_map;
+  elmt_map = nullptr;
+
+  num_nodes       = 0;
+  dimension       = 0;
+  num_elmts       = 0;
+  num_faces       = 0;
+  num_edges       = 0;
+  num_elmt_blocks = 0;
+  num_node_sets   = 0;
+  num_side_sets   = 0;
+  num_edge_blocks = 0;
+  num_face_blocks = 0;
+  num_assemblies  = 0;
+
   global_vars.clear();
   nodal_vars.clear();
   elmt_vars.clear();
@@ -125,7 +138,7 @@ template <typename INT> void Exo_Read<INT>::Reset_Meta_Data()
   fb_vars.clear();
 
   times.clear();
-  cur_time= 0; 
+  cur_time = 0;
 }
 
 template <typename INT> Exo_Read<INT>::~Exo_Read()
@@ -698,8 +711,8 @@ std::string Exo_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index)
   if (cur_time != time_step_num) {
     for (unsigned i = 0; i < nodal_vars.size(); ++i) {
       if (results[i]) {
-	delete[] results[i];
-	results[i] = nullptr;
+        delete[] results[i];
+        results[i] = nullptr;
       }
     }
     cur_time = time_step_num;
@@ -716,12 +729,12 @@ std::string Exo_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index)
     }
     else if (err > 0) {
       if (results[var_index]) {
-	delete[] results[var_index];
-	results[var_index] = nullptr;
-	return fmt::format("Exo_Read::Load_Nodal_Results(): WARNING:  "
-			   "Exodus issued warning \"{}\" on call to ex_get_var()!"
-			   "  I'm not going to keep what it gave me for values.",
-			   err);
+        delete[] results[var_index];
+        results[var_index] = nullptr;
+        return fmt::format("Exo_Read::Load_Nodal_Results(): WARNING:  "
+                           "Exodus issued warning \"{}\" on call to ex_get_var()!"
+                           "  I'm not going to keep what it gave me for values.",
+                           err);
       }
     }
   }
@@ -782,8 +795,8 @@ template <typename INT> void Exo_Read<INT>::Free_Nodal_Results()
   if (results) {
     for (unsigned i = 0; i < nodal_vars.size(); ++i) {
       if (results[i]) {
-	delete[] results[i];
-	results[i] = nullptr;
+        delete[] results[i];
+        results[i] = nullptr;
       }
     }
   }
@@ -1017,12 +1030,12 @@ template <typename INT> std::string Exo_Read<INT>::Open_Change_Set(int index)
 
     if (index >= num_change_sets) {
       return fmt::format("exodiff: ERROR: Index {} is out of range. Valid range: 0 <= index < {}",
-			 index, num_change_sets);
+                         index, num_change_sets);
     }
 
     Reset_Meta_Data();
     current_change_set_index = index;
-    file_id = change_set_ids[index];
+    file_id                  = change_set_ids[index];
   }
   Get_Meta_Data();
 
@@ -1406,15 +1419,15 @@ namespace {
 
     if (group_name[0] != '/') {
       if (return_full_names) {
-	std::fill(group_name.begin(), group_name.end(), '\0');
-	ierr = ex_inquire(file_id, EX_INQ_FULL_GROUP_NAME, &idum, &rdum, group_name.data());
-	if (ierr < 0) {
-	  Error("Unable to query full group name.\n");
-	}
-	names.push_back(std::string(group_name.data()));
+        std::fill(group_name.begin(), group_name.end(), '\0');
+        ierr = ex_inquire(file_id, EX_INQ_FULL_GROUP_NAME, &idum, &rdum, group_name.data());
+        if (ierr < 0) {
+          Error("Unable to query full group name.\n");
+        }
+        names.push_back(std::string(group_name.data()));
       }
       else {
-	names.push_back(std::string(group_name.data()));
+        names.push_back(std::string(group_name.data()));
       }
     }
 
@@ -1430,8 +1443,7 @@ namespace {
     }
   }
 
-  void read_vars(int file_id, EXOTYPE flag, const char *type, int num_vars,
-                 NameList &varlist)
+  void read_vars(int file_id, EXOTYPE flag, const char *type, int num_vars, NameList &varlist)
   {
     if (num_vars != 0) {
       int    name_size = ex_inquire_int(file_id, EX_INQ_MAX_READ_NAME_LENGTH);

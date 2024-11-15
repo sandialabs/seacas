@@ -80,8 +80,8 @@ int exi_check_valid_file_id(int exoid, const char *func)
   }
 #if !defined BUILT_IN_SIERRA
   else {
-    int rootid = exoid & EX_FILE_ID_MASK;
-    struct exi_file_item *file = exi_find_file_item(rootid);
+    int                   rootid = exoid & EX_FILE_ID_MASK;
+    struct exi_file_item *file   = exi_find_file_item(rootid);
 
     if (!file) {
       error = true;
@@ -94,7 +94,7 @@ int exi_check_valid_file_id(int exoid, const char *func)
     if (old_opt & EX_ABORT) {
       ex_opts(EX_VERBOSE | EX_ABORT);
     }
-    int rootid = exoid & EX_FILE_ID_MASK;
+    int  rootid = exoid & EX_FILE_ID_MASK;
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: In \"%s\", the file id %d was not obtained via a call "
@@ -233,7 +233,7 @@ int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  new_file->file_id               =   (unsigned)exoid & EX_FILE_ID_MASK;
+  new_file->file_id               = (unsigned)exoid & EX_FILE_ID_MASK;
   new_file->user_compute_wordsize = *comp_wordsize == 4 ? 0 : 1;
   new_file->int64_status          = int64_status;
   new_file->maximum_name_length   = exi_default_max_name_length;
@@ -287,7 +287,7 @@ void exi_conv_exit(int exoid)
   struct exi_file_item *file = file_list;
   struct exi_file_item *prev = NULL;
 
-  int root_id =   (unsigned)exoid & EX_FILE_ID_MASK;
+  int root_id = (unsigned)exoid & EX_FILE_ID_MASK;
 
   EX_FUNC_ENTER();
   while (file) {

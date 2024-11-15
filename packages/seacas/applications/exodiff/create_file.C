@@ -20,17 +20,16 @@
 template <typename INT> class Exo_Read;
 
 namespace {
-  void build_variable_names(const char *type, NameList &names,
-                            std::vector<Tolerance> &tols, const Tolerance &default_tol,
-                            bool do_all_flag, const NameList &var_names1,
-                            const NameList &var_names2, bool *diff_found);
+  void build_variable_names(const char *type, NameList &names, std::vector<Tolerance> &tols,
+                            const Tolerance &default_tol, bool do_all_flag,
+                            const NameList &var_names1, const NameList &var_names2,
+                            bool *diff_found);
 
   template <typename INT>
-  void build_truth_table(EXOTYPE type, const char *label, NameList &names,
-                         size_t num_entity, Exo_Read<INT> &file1, Exo_Read<INT> &file2,
-                         const NameList &var_names1,
-                         const NameList &var_names2, std::vector<int> &truth_tab,
-                         bool quiet_flag, bool *diff_found);
+  void build_truth_table(EXOTYPE type, const char *label, NameList &names, size_t num_entity,
+                         Exo_Read<INT> &file1, Exo_Read<INT> &file2, const NameList &var_names1,
+                         const NameList &var_names2, std::vector<int> &truth_tab, bool quiet_flag,
+                         bool *diff_found);
 
   void output_exodus_names(int file_id, EXOTYPE type, const NameList &names);
   void output_diff_names(const char *type, const NameList &names);
@@ -309,10 +308,10 @@ namespace {
     }
   }
 
-  void build_variable_names(const char *type, NameList &names,
-                            std::vector<Tolerance> &tols, const Tolerance &default_tol,
-                            bool do_all_flag, const NameList &var_names1,
-                            const NameList &var_names2, bool *diff_found)
+  void build_variable_names(const char *type, NameList &names, std::vector<Tolerance> &tols,
+                            const Tolerance &default_tol, bool do_all_flag,
+                            const NameList &var_names1, const NameList &var_names2,
+                            bool *diff_found)
   {
     NameList x_list; // exclusion list
     for (auto name : names) {
@@ -380,8 +379,8 @@ namespace {
       }
     }
 
-    NameList tmp_list;
-    std::vector<Tolerance>   tmp_tols;
+    NameList               tmp_list;
+    std::vector<Tolerance> tmp_tols;
     for (size_t n = 0; n < names.size(); ++n) {
       std::string name = names[n];
       chop_whitespace(name);
@@ -425,11 +424,10 @@ namespace {
   }
 
   template <typename INT>
-  void build_truth_table(EXOTYPE type, const char *label, NameList &names,
-                         size_t num_entity, Exo_Read<INT> &file1, Exo_Read<INT> &file2,
-                         const NameList &var_names1,
-                         const NameList &var_names2, std::vector<int> &truth_tab,
-                         bool quiet_flag, bool *diff_found)
+  void build_truth_table(EXOTYPE type, const char *label, NameList &names, size_t num_entity,
+                         Exo_Read<INT> &file1, Exo_Read<INT> &file2, const NameList &var_names1,
+                         const NameList &var_names2, std::vector<int> &truth_tab, bool quiet_flag,
+                         bool *diff_found)
   {
     if (!names.empty()) {
       int num_vars = names.size();

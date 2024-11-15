@@ -31,8 +31,7 @@ namespace {
   }
 
   std::string Parse_Variables(std::string xline, std::ifstream &cmd_file, bool &all_flag,
-                              Tolerance &def_tol, NameList &names,
-                              std::vector<Tolerance> &toler);
+                              Tolerance &def_tol, NameList &names, std::vector<Tolerance> &toler);
 
   bool str_equal(const std::string &s1, const std::string &s2)
   {
@@ -280,8 +279,9 @@ void SystemInterface::enroll_options()
   options_.enroll("change_sets", GetLongOption::MandatoryValue,
                   "Specify the change_set(s) to be compared in the two files.\n"
                   "\t\tSeparate change set names/indices with a comma ',';\n"
-		  "\t\tSeparate file1 cs from file2 cs with colon ':' if they are different.\n"
-		  "\t\tCan use 1-based index or names.  Use index 0 or name 'root' if file doesn't have change sets.\n"
+                  "\t\tSeparate file1 cs from file2 cs with colon ':' if they are different.\n"
+                  "\t\tCan use 1-based index or names.  Use index 0 or name 'root' if file doesn't "
+                  "have change sets.\n"
                   "\t\tIf not specified, diff all change sets (if any) in files.",
                   nullptr, nullptr, true);
 
@@ -497,7 +497,7 @@ void SystemInterface::enroll_options()
   options_.enroll("T", GetLongOption::MandatoryValue,
                   "Backward-compatible option for -TimeStepOffset", nullptr);
   options_.enroll("x", GetLongOption::MandatoryValue, "Backward-compatible option for -exclude",
-		  nullptr);
+                  nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -1389,8 +1389,7 @@ void SystemInterface::Parse_Command_File()
 
 namespace {
   std::string Parse_Variables(std::string xline, std::ifstream &cmd_file, bool &all_flag,
-                              Tolerance &def_tol, NameList &names,
-                              std::vector<Tolerance> &toler)
+                              Tolerance &def_tol, NameList &names, std::vector<Tolerance> &toler)
   {
     toler.clear();
     names.clear();
