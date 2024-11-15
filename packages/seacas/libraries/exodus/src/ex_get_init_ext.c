@@ -181,32 +181,28 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   int     status;
   size_t  title_len  = 0;
   nc_type title_type = 0;
-  if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type, &title_len)) != NC_NOERR) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no title in file id %d", rootid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-  }
-
-  /* Check title length to avoid overrunning clients memory space; include
-   * trailing null */
-  if (title_len > 0) {
-    if (title_len > MAX_LINE_LENGTH) {
-      char *title = malloc(title_len + 1);
-      if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, title)) == NC_NOERR) {
-        ex_copy_string(info->title, title, MAX_LINE_LENGTH + 1);
-        info->title[MAX_LINE_LENGTH] = '\0';
+  if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type, &title_len)) == NC_NOERR) {
+    /* Check title length to avoid overrunning clients memory space; include
+     * trailing null */
+    if (title_len > 0) {
+      if (title_len > MAX_LINE_LENGTH) {
+	char *title = malloc(title_len + 1);
+	if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, title)) == NC_NOERR) {
+	  ex_copy_string(info->title, title, MAX_LINE_LENGTH + 1);
+	  info->title[MAX_LINE_LENGTH] = '\0';
+	}
+	free(title);
       }
-      free(title);
-    }
-    else {
-      status                 = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, info->title);
-      info->title[title_len] = '\0';
-    }
-    if (status != NC_NOERR) {
-      char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get title in file id %d", rootid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
+      else {
+	status                 = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, info->title);
+	info->title[title_len] = '\0';
+      }
+      if (status != NC_NOERR) {
+	char errmsg[MAX_ERR_LENGTH];
+	snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get title in file id %d", rootid);
+	ex_err_fn(exoid, __func__, errmsg, status);
+	EX_FUNC_LEAVE(EX_FATAL);
+      }
     }
   }
   else {
