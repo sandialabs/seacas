@@ -323,6 +323,11 @@ namespace {
     }
 
     if (do_all_flag) {
+      // See if the names in `names` are from a previous change set iteration...
+      if (!names.empty() && x_list.empty()) {
+	names.clear();
+	tols.clear();
+      }
       auto length_name = var_names1.size();
       for (size_t n = 0; n < length_name; ++n) {
         const std::string &name = var_names1[n];

@@ -321,8 +321,8 @@ namespace {
         }
       }
       for (int i = 0; i < cs_cnt; i++) {
-        cs1.push_back(i);
-        cs2.push_back(i);
+        cs1.push_back(i+1);
+        cs2.push_back(i+1);
       }
       return std::make_pair(cs1, cs2);
     }
