@@ -5,9 +5,9 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
+#include "util.h"
 #include <string>
 #include <vector>
-#include "util.h"
 
 //! Compare a string against another "master" string, where the string, str,
 //! can be abbreiviated to as little as min_length characters.  Returns true

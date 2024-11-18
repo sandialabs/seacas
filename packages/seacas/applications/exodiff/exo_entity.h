@@ -54,10 +54,10 @@ public:
   const double *Get_Attributes(int attr_index) const;
   void          Free_Attributes();
 
-  const std::string              &Get_Attribute_Name(int attr_index) const;
-  const std::string              &Name() const { return name_; }
-  const NameList &Attribute_Names() const { return attributeNames; }
-  int                             Find_Attribute_Index(const std::string &name) const;
+  const std::string &Get_Attribute_Name(int attr_index) const;
+  const std::string &Name() const { return name_; }
+  const NameList    &Attribute_Names() const { return attributeNames; }
+  int                Find_Attribute_Index(const std::string &name) const;
 
   // Return "Element Block", "Nodeset", "Sideset, depending on underlying type.
   virtual const char *label() const = 0;

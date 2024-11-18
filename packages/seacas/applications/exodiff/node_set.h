@@ -5,8 +5,8 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-#include "util.h"
 #include "exo_entity.h"
+#include "util.h"
 
 template <typename INT> class Exo_Read;
 

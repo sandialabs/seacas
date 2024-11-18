@@ -31,8 +31,7 @@ namespace {
   }
 
   std::string Parse_Variables(std::string xline, std::ifstream &cmd_file, bool &all_flag,
-                              Tolerance &def_tol, NameList &names,
-                              std::vector<Tolerance> &toler);
+                              Tolerance &def_tol, NameList &names, std::vector<Tolerance> &toler);
 
   bool str_equal(const std::string &s1, const std::string &s2)
   {
@@ -490,7 +489,7 @@ void SystemInterface::enroll_options()
   options_.enroll("T", GetLongOption::MandatoryValue,
                   "Backward-compatible option for -TimeStepOffset", nullptr);
   options_.enroll("x", GetLongOption::MandatoryValue, "Backward-compatible option for -exclude",
-		  nullptr);
+                  nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -1375,8 +1374,7 @@ void SystemInterface::Parse_Command_File()
 
 namespace {
   std::string Parse_Variables(std::string xline, std::ifstream &cmd_file, bool &all_flag,
-                              Tolerance &def_tol, NameList &names,
-                              std::vector<Tolerance> &toler)
+                              Tolerance &def_tol, NameList &names, std::vector<Tolerance> &toler)
   {
     toler.clear();
     names.clear();
