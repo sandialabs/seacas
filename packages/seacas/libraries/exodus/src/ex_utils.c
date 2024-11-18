@@ -1120,16 +1120,16 @@ void exi_rm_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr)
   struct exi_obj_stats *last_head_list_ptr = *obj_ptr; /* save last head pointer */
 
   int root_id = exoid & EX_FILE_ID_MASK;
-  while (tmp_ptr) {/* Walk linked list of file ids/vals */
-    if (root_id == (tmp_ptr->exoid & EX_FILE_ID_MASK)) {/* linear search for exodus file id */
-      if (tmp_ptr == *obj_ptr) {     /* Are we at the head of the list? */
-        *obj_ptr = (*obj_ptr)->next; /*   yes, reset ptr to head of list */
+  while (tmp_ptr) {                                      /* Walk linked list of file ids/vals */
+    if (root_id == (tmp_ptr->exoid & EX_FILE_ID_MASK)) { /* linear search for exodus file id */
+      if (tmp_ptr == *obj_ptr) {                         /* Are we at the head of the list? */
+        *obj_ptr = (*obj_ptr)->next;                     /*   yes, reset ptr to head of list */
       }
       else { /*   no, remove this record from chain*/
         last_head_list_ptr->next = tmp_ptr->next;
       }
       struct exi_obj_stats *tmp = tmp_ptr;
-      tmp_ptr = tmp_ptr->next;
+      tmp_ptr                   = tmp_ptr->next;
       free(tmp->id_vals); /* free up memory */
       free(tmp->stat_vals);
       free(tmp);
@@ -1330,16 +1330,16 @@ void exi_rm_file_item(int                    exoid,    /* file id */
   int root_id = exoid & EX_FILE_ID_MASK;
 
   struct exi_list_item *tlist_ptr = *list_ptr;
-  while (tlist_ptr) {                  /* Walk linked list of file ids/vals */
-    if (root_id == (tlist_ptr->exo_id & EX_FILE_ID_MASK)) {  /* linear search for exodus file id */
-      if (tlist_ptr == *list_ptr) {    /* Are we at the head of the list? */
-        *list_ptr = (*list_ptr)->next; /*   yes, reset ptr to head of list */
+  while (tlist_ptr) {                                       /* Walk linked list of file ids/vals */
+    if (root_id == (tlist_ptr->exo_id & EX_FILE_ID_MASK)) { /* linear search for exodus file id */
+      if (tlist_ptr == *list_ptr) {                         /* Are we at the head of the list? */
+        *list_ptr = (*list_ptr)->next;                      /*   yes, reset ptr to head of list */
       }
       else { /*   no, remove this record from chain*/
         last_head_list_ptr->next = tlist_ptr->next;
       }
       struct exi_list_item *temp = tlist_ptr;
-      tlist_ptr = tlist_ptr->next;
+      tlist_ptr                  = tlist_ptr->next;
       free(temp); /* free up memory */
     }
     else {

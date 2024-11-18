@@ -1011,11 +1011,12 @@ template <typename INT> std::string Exo_Read<INT>::Open_Change_Set(const std::st
   const auto &names = Change_Set_Names();
   for (size_t i = 0; i < names.size(); i++) {
     if (no_case_equals(name, names[i])) {
-      return Open_Change_Set(i+1);
+      return Open_Change_Set(i + 1);
     }
   }
-  return fmt::format("Could not find a match for the change set named {}.\nValid change set names are: {}\n",
-		     name, fmt::join(names, ", "));
+  return fmt::format(
+      "Could not find a match for the change set named {}.\nValid change set names are: {}\n", name,
+      fmt::join(names, ", "));
 }
 
 template <typename INT> std::string Exo_Read<INT>::Open_Change_Set(int index)
