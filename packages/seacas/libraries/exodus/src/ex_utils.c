@@ -1063,7 +1063,10 @@ int exi_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 
 /*! this routine returns a pointer to a structure containing the ids of
  * element blocks, node sets, or side sets according to exoid;  if there
- * is not a structure that matches the exoid, one is created
+ * is not a structure that matches the exoid, one is created.
+ *
+ * NOTE: If this file contains `groups` or `change sets`, then each
+ *       group will have its own stat_ptr set of lists...
  * \internal
  */
 
@@ -1102,6 +1105,12 @@ struct exi_obj_stats *exi_get_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr
  * element blocks, node sets, or side sets according to exoid;  this
  * is necessary to clean up because netCDF reuses file ids;  should be
  * called from ex_close
+ *
+ * NOTE: If this file contains `groups` or `change sets`, then each
+ *       group will have its own stat_ptr set of lists.  However,
+ *       this routine is called from ex_close which only closes the
+ *       root id, so we need to iterate the entire list to see if there
+ *       are any subgroups of the root group.
  * \internal
  */
 
@@ -1110,23 +1119,25 @@ void exi_rm_stat_ptr(int exoid, struct exi_obj_stats **obj_ptr)
   struct exi_obj_stats *tmp_ptr            = *obj_ptr;
   struct exi_obj_stats *last_head_list_ptr = *obj_ptr; /* save last head pointer */
 
-  while (tmp_ptr) /* Walk linked list of file ids/vals */
-  {
-    if (exoid == tmp_ptr->exoid) /* linear search for exodus file id */
-    {
+  int root_id = exoid & EX_FILE_ID_MASK;
+  while (tmp_ptr) {/* Walk linked list of file ids/vals */
+    if (root_id == (tmp_ptr->exoid & EX_FILE_ID_MASK)) {/* linear search for exodus file id */
       if (tmp_ptr == *obj_ptr) {     /* Are we at the head of the list? */
         *obj_ptr = (*obj_ptr)->next; /*   yes, reset ptr to head of list */
       }
       else { /*   no, remove this record from chain*/
         last_head_list_ptr->next = tmp_ptr->next;
       }
-      free(tmp_ptr->id_vals); /* free up memory */
-      free(tmp_ptr->stat_vals);
-      free(tmp_ptr);
-      break; /* Quit if found */
+      struct exi_obj_stats *tmp = tmp_ptr;
+      tmp_ptr = tmp_ptr->next;
+      free(tmp->id_vals); /* free up memory */
+      free(tmp->stat_vals);
+      free(tmp);
     }
-    last_head_list_ptr = tmp_ptr;       /* save last head pointer */
-    tmp_ptr            = tmp_ptr->next; /* Loop back if not */
+    else {
+      last_head_list_ptr = tmp_ptr;       /* save last head pointer */
+      tmp_ptr            = tmp_ptr->next; /* Loop back if not */
+    }
   }
 }
 
@@ -1207,6 +1218,9 @@ struct exi_list_item **exi_get_counter_list(ex_entity_type obj_type)
  * \internal
  */
 
+/* NOTE: If this is done for a file which contains `groups` or `change sets`, then
+ * the exoid refers to the specific group id and not the `root_id`...
+ */
 int exi_inc_file_item(int                    exoid,    /* file id */
                       struct exi_list_item **list_ptr) /* ptr to ptr to list_item */
 {
@@ -1300,6 +1314,10 @@ int exi_get_file_item(int                    exoid,    /* file id */
  *       number of files in one application, items must be taken out of the
  *       linked lists in each of the above routines.  these should be called
  *       after ncclose().
+ *
+ * NOTE: this is called from `ex_close` which only closes the root file and
+ *       not each group  or change set within that `root` file. If the file
+ *       contains groups, then we need to check the entire list...
  * \internal
  */
 
@@ -1309,20 +1327,25 @@ void exi_rm_file_item(int                    exoid,    /* file id */
 {
   struct exi_list_item *last_head_list_ptr = *list_ptr; /* save last head pointer */
 
+  int root_id = exoid & EX_FILE_ID_MASK;
+
   struct exi_list_item *tlist_ptr = *list_ptr;
   while (tlist_ptr) {                  /* Walk linked list of file ids/vals */
-    if (exoid == tlist_ptr->exo_id) {  /* linear search for exodus file id */
+    if (root_id == (tlist_ptr->exo_id & EX_FILE_ID_MASK)) {  /* linear search for exodus file id */
       if (tlist_ptr == *list_ptr) {    /* Are we at the head of the list? */
         *list_ptr = (*list_ptr)->next; /*   yes, reset ptr to head of list */
       }
       else { /*   no, remove this record from chain*/
         last_head_list_ptr->next = tlist_ptr->next;
       }
-      free(tlist_ptr); /* free up memory */
-      break;           /* Quit if found */
+      struct exi_list_item *temp = tlist_ptr;
+      tlist_ptr = tlist_ptr->next;
+      free(temp); /* free up memory */
     }
-    last_head_list_ptr = tlist_ptr;       /* save last head pointer */
-    tlist_ptr          = tlist_ptr->next; /* Loop back if not */
+    else {
+      last_head_list_ptr = tlist_ptr;       /* save last head pointer */
+      tlist_ptr          = tlist_ptr->next; /* Loop back if not */
+    }
   }
 }
 
