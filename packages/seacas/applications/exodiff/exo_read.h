@@ -74,14 +74,14 @@ public:
 
   // Variables:
 
-  size_t                          Num_Global_Vars() const { return global_vars.size(); }
-  size_t                          Num_Nodal_Vars() const { return nodal_vars.size(); }
-  size_t                          Num_Element_Vars() const { return elmt_vars.size(); }
-  size_t                          Num_Element_Atts() const { return elmt_atts.size(); }
-  size_t                          Num_NS_Vars() const { return ns_vars.size(); }
-  size_t                          Num_SS_Vars() const { return ss_vars.size(); }
-  size_t                          Num_EB_Vars() const { return eb_vars.size(); }
-  size_t                          Num_FB_Vars() const { return fb_vars.size(); }
+  size_t          Num_Global_Vars() const { return global_vars.size(); }
+  size_t          Num_Nodal_Vars() const { return nodal_vars.size(); }
+  size_t          Num_Element_Vars() const { return elmt_vars.size(); }
+  size_t          Num_Element_Atts() const { return elmt_atts.size(); }
+  size_t          Num_NS_Vars() const { return ns_vars.size(); }
+  size_t          Num_SS_Vars() const { return ss_vars.size(); }
+  size_t          Num_EB_Vars() const { return eb_vars.size(); }
+  size_t          Num_FB_Vars() const { return fb_vars.size(); }
   const NameList &Global_Var_Names() const { return global_vars; }
   const NameList &Nodal_Var_Names() const { return nodal_vars; }
   const NameList &Element_Var_Names() const { return elmt_vars; }
@@ -197,22 +197,22 @@ protected:
 
   // GENESIS info:
 
-  std::string              title{};
-  NameList coord_names{};
-  size_t                   num_nodes{0};
-  int                      dimension{0};
-  size_t                   num_elmts{0};
-  size_t                   num_faces{0};
-  size_t                   num_edges{0};
-  size_t                   num_elmt_blocks{0};
-  size_t                   num_node_sets{0};
-  size_t                   num_side_sets{0};
-  size_t                   num_edge_blocks{0};
-  size_t                   num_face_blocks{0};
-  size_t                   num_assemblies{0};
-  float                    db_version{0.0};
-  float                    api_version{0.0};
-  int                      io_word_size{0}; // Note: The "compute word size" is always 8.
+  std::string title{};
+  NameList    coord_names{};
+  size_t      num_nodes{0};
+  int         dimension{0};
+  size_t      num_elmts{0};
+  size_t      num_faces{0};
+  size_t      num_edges{0};
+  size_t      num_elmt_blocks{0};
+  size_t      num_node_sets{0};
+  size_t      num_side_sets{0};
+  size_t      num_edge_blocks{0};
+  size_t      num_face_blocks{0};
+  size_t      num_assemblies{0};
+  float       db_version{0.0};
+  float       api_version{0.0};
+  int         io_word_size{0}; // Note: The "compute word size" is always 8.
 
   Exo_Block<INT>  *eblocks{nullptr};     // Array.
   Node_Set<INT>   *nsets{nullptr};       // Array.
@@ -239,7 +239,7 @@ protected:
   NameList fb_vars{};
 
   std::vector<int> change_set_ids{};
-  NameList change_set_names{};
+  NameList         change_set_names{};
 
   double time_scale{1.0};
   double time_offset{0.0};
