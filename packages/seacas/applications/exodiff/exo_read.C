@@ -12,6 +12,7 @@
 #include "exodusII.h"   // for ex_init_params, ex_opts, etc
 #include "face_block.h" // for Face_Block
 #include "fmt/ostream.h"
+#include "fmt/ranges.h"
 #include "node_set.h"     // for Node_Set
 #include "side_set.h"     // for Side_Set
 #include "smart_assert.h" // for SMART_ASSERT, Assert, etc
@@ -1003,14 +1004,18 @@ template <typename INT> std::string Exo_Read<INT>::Open_Change_Set(const std::st
 {
   SMART_ASSERT(Check_State());
 
-  // See if this is a valid change set name...
-  if (Open()) {
-    return "exodiff: ERROR: File already open!";
+  if (no_case_equals(name, "root") || no_case_equals(name, "/")) {
+    return Open_Change_Set(0);
   }
 
-  Get_Meta_Data();
-
-  return "";
+  const auto &names = Change_Set_Names();
+  for (size_t i = 0; i < names.size(); i++) {
+    if (no_case_equals(name, names[i])) {
+      return Open_Change_Set(i+1);
+    }
+  }
+  return fmt::format("Could not find a match for the change set named {}.\nValid change set names are: {}\n",
+		     name, fmt::join(names, ", "));
 }
 
 template <typename INT> std::string Exo_Read<INT>::Open_Change_Set(int index)

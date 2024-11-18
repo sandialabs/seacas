@@ -48,7 +48,7 @@ namespace {
   bool mem_stats = false;
 
   bool file_copy(IOShell::Interface &interFace, int rank);
-  bool file_compare(IOShell::Interface &interFace, int rank);
+  bool file_compare(IOShell::Interface &interFace);
 
   Ioss::PropertyManager set_properties(IOShell::Interface &interFace);
   Ioss::MeshCopyOptions set_mesh_copy_options(IOShell::Interface &interFace)
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 
   try {
     if (interFace.compare) {
-      success = file_compare(interFace, rank);
+      success = file_compare(interFace);
     }
     else {
       success = file_copy(interFace, rank);
@@ -528,7 +528,7 @@ namespace {
     return true;
   }
 
-  bool file_compare(IOShell::Interface &interFace, int rank)
+  bool file_compare(IOShell::Interface &interFace)
   {
     Ioss::PropertyManager properties = set_properties(interFace);
     const auto           &inpfile    = interFace.inputFile[0];
