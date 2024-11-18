@@ -760,10 +760,7 @@ const double *Exo_Read<INT>::Get_Nodal_Results(int t1, int t2, double proportion
     return nullptr;
   }
 
-  if (st_results.empty()) {
-    st_results.resize(num_nodes);
-  }
-
+  st_results.resize(num_nodes);
   int err = ex_get_var(file_id, t1, EX_NODAL, var_index + 1, 0, num_nodes, st_results.data());
   if (err < 0) {
     Error("Exo_Read::Get_Nodal_Results(): Failed to get "
@@ -771,10 +768,7 @@ const double *Exo_Read<INT>::Get_Nodal_Results(int t1, int t2, double proportion
   }
 
   if (t1 != t2) {
-    if (st_results2.empty()) {
-      st_results2.resize(num_nodes);
-    }
-
+    st_results2.resize(num_nodes);
     err = ex_get_var(file_id, t2, EX_NODAL, var_index + 1, 0, num_nodes, st_results2.data());
     if (err < 0) {
       Error("Exo_Read::Load_Nodal_Results(): Failed to get "
