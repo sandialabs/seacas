@@ -85,15 +85,14 @@ public:
 
   // Variables:
 
-  size_t Num_Global_Vars() const { return global_vars.size(); }
-  size_t Num_Nodal_Vars() const { return nodal_vars.size(); }
-  size_t Num_Element_Vars() const { return elmt_vars.size(); }
-  size_t Num_Element_Atts() const { return elmt_atts.size(); }
-  size_t Num_NS_Vars() const { return ns_vars.size(); }
-  size_t Num_SS_Vars() const { return ss_vars.size(); }
-  size_t Num_EB_Vars() const { return eb_vars.size(); }
-  size_t Num_FB_Vars() const { return fb_vars.size(); }
-
+  size_t          Num_Global_Vars() const { return global_vars.size(); }
+  size_t          Num_Nodal_Vars() const { return nodal_vars.size(); }
+  size_t          Num_Element_Vars() const { return elmt_vars.size(); }
+  size_t          Num_Element_Atts() const { return elmt_atts.size(); }
+  size_t          Num_NS_Vars() const { return ns_vars.size(); }
+  size_t          Num_SS_Vars() const { return ss_vars.size(); }
+  size_t          Num_EB_Vars() const { return eb_vars.size(); }
+  size_t          Num_FB_Vars() const { return fb_vars.size(); }
   const NameList &Global_Var_Names() const { return global_vars; }
   const NameList &Nodal_Var_Names() const { return nodal_vars; }
   const NameList &Element_Var_Names() const { return elmt_vars; }
