@@ -311,12 +311,18 @@ namespace {
                   "Change set count mismatch file1 does not have change sets, file2 has {}.\n"
                   "         Will compare file1 with the first change set in file2.\n",
                   cs_cnt_2));
+              cs1.push_back(0);
+              cs2.push_back(1);
+              return std::make_pair(cs1, cs2);
             }
             else {
               Warning(fmt::format(
                   "Change set count mismatch file2 does not have change sets, file1 has {}.\n"
                   "         Will compare file2 with the first change set in file1.\n",
                   cs_cnt_1));
+              cs1.push_back(1);
+              cs2.push_back(0);
+              return std::make_pair(cs1, cs2);
             }
           }
           else {
