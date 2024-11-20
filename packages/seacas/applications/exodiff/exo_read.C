@@ -36,46 +36,46 @@ namespace {
 template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(std::move(fname))
 {
   if (!file_name.empty()) {
-  int   ws = 0, comp_ws = 8;
-  float dumb = 0.0;
-  int   mode = EX_READ;
-  if (sizeof(INT) == 8) {
-    mode |= EX_ALL_INT64_API;
-  }
-  auto old_opt = ex_opts(EX_VERBOSE);
-  int  err     = ex_open(file_name.c_str(), mode, &comp_ws, &ws, &dumb);
-  ex_opts(old_opt);
-  if (err < 0) {
-    std::ostringstream oss;
-    fmt::print(oss, "Couldn't open file \"{}\".", file_name);
-
-    // ExodusII library could not open file.  See if a file (exodusII
-    // or not) exists with the specified name.
-    FILE *fid = fopen(file_name.c_str(), "r");
-    if (fid != nullptr) {
-      fmt::print(oss, " File exists, but library could not open.");
-      fclose(fid);
+    int   ws = 0, comp_ws = 8;
+    float dumb = 0.0;
+    int   mode = EX_READ;
+    if (sizeof(INT) == 8) {
+      mode |= EX_ALL_INT64_API;
     }
-    else {
-      fmt::print(oss, " File does not exist.");
+    auto old_opt = ex_opts(EX_VERBOSE);
+    int  err     = ex_open(file_name.c_str(), mode, &comp_ws, &ws, &dumb);
+    ex_opts(old_opt);
+    if (err < 0) {
+      std::ostringstream oss;
+      fmt::print(oss, "Couldn't open file \"{}\".", file_name);
+
+      // ExodusII library could not open file.  See if a file (exodusII
+      // or not) exists with the specified name.
+      FILE *fid = fopen(file_name.c_str(), "r");
+      if (fid != nullptr) {
+        fmt::print(oss, " File exists, but library could not open.");
+        fclose(fid);
+      }
+      else {
+        fmt::print(oss, " File does not exist.");
+      }
+      throw std::runtime_error(oss.str());
     }
-    throw std::runtime_error(oss.str());
-  }
-  file_id      = err;
-  io_word_size = ws;
+    file_id      = err;
+    io_word_size = ws;
 
-  // See if file contains change sets... If it does, open the first child change set (assumes all
-  // valid data are in change sets...)
-  num_change_sets = ex_inquire_int(file_id, EX_INQ_NUM_CHILD_GROUPS);
-  if (num_change_sets > 0) {
-    change_set_ids.resize(num_change_sets);
-    ex_get_group_ids(file_id, nullptr, change_set_ids.data());
+    // See if file contains change sets... If it does, open the first child change set (assumes all
+    // valid data are in change sets...)
+    num_change_sets = ex_inquire_int(file_id, EX_INQ_NUM_CHILD_GROUPS);
+    if (num_change_sets > 0) {
+      change_set_ids.resize(num_change_sets);
+      ex_get_group_ids(file_id, nullptr, change_set_ids.data());
 
-    query_change_sets(file_id, change_set_names, false);
+      query_change_sets(file_id, change_set_names, false);
 
-    //    current_change_set_index = 0;
-    //    file_id = change_set_ids[current_change_set_index];
-  }
+      //    current_change_set_index = 0;
+      //    file_id = change_set_ids[current_change_set_index];
+    }
   }
 }
 

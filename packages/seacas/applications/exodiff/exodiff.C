@@ -246,16 +246,16 @@ namespace {
     auto N = get_number(cs_name);
     if (N < 0) {
       if (no_case_equals(cs_name, "root") || no_case_equals(cs_name, "/")) {
-	return 0;
+        return 0;
       }
       for (size_t i = 0; i < cs_names.size(); i++) {
-	if (no_case_equals(cs_name, cs_names[i])) {
-	  return (int)i + 1;
-	}
+        if (no_case_equals(cs_name, cs_names[i])) {
+          return (int)i + 1;
+        }
       }
       Error(fmt::format(
-			"Could not find a match for the change set named {}.\nValid change set names are: {}\n",
-			cs_name, fmt::join(cs_names, ", ")));
+          "Could not find a match for the change set named {}.\nValid change set names are: {}\n",
+          cs_name, fmt::join(cs_names, ", ")));
     }
     return N;
   }
@@ -304,27 +304,27 @@ namespace {
     // At least one file has change sets...
     if (change_set_spec.empty()) {
       if (cs_cnt_1 != cs_cnt_2) {
-	if (!interFace.summary_flag) {
-        if (cs_cnt_1 == 0 || cs_cnt_2 == 0) {
-          if (cs_cnt_1 == 0) {
-            Warning(fmt::format(
-                "Change set count mismatch file1 does not have change sets, file2 has {}.\n"
-                "         Will compare file1 with the first change set in file2.\n",
-                cs_cnt_2));
+        if (!interFace.summary_flag) {
+          if (cs_cnt_1 == 0 || cs_cnt_2 == 0) {
+            if (cs_cnt_1 == 0) {
+              Warning(fmt::format(
+                  "Change set count mismatch file1 does not have change sets, file2 has {}.\n"
+                  "         Will compare file1 with the first change set in file2.\n",
+                  cs_cnt_2));
+            }
+            else {
+              Warning(fmt::format(
+                  "Change set count mismatch file2 does not have change sets, file1 has {}.\n"
+                  "         Will compare file2 with the first change set in file1.\n",
+                  cs_cnt_1));
+            }
           }
           else {
-            Warning(fmt::format(
-                "Change set count mismatch file2 does not have change sets, file1 has {}.\n"
-                "         Will compare file2 with the first change set in file1.\n",
-                cs_cnt_1));
+            Warning(fmt::format("Change set count mismatch file1 has {}, file2 has {}.\n"
+                                "         Will compare the first {} change sets only.\n",
+                                cs_cnt_1, cs_cnt_2, cs_cnt));
           }
         }
-        else {
-          Warning(fmt::format("Change set count mismatch file1 has {}, file2 has {}.\n"
-                              "         Will compare the first {} change sets only.\n",
-                              cs_cnt_1, cs_cnt_2, cs_cnt));
-        }
-      }
       }
       for (int i = 0; i < cs_cnt; i++) {
         cs1.push_back(i + 1);
@@ -342,11 +342,11 @@ namespace {
         auto cs_list = SLIB::tokenize(tokens[0], ",");
         if (cs_list.size() == 1 && (cs_cnt_1 == 0 || cs_cnt_2 == 0)) {
           // Specifies the cs to compare to a file with no change_sets...
-	  auto &cs_names = cs_cnt_2 == 0 ? file1.Change_Set_Names() : file2.Change_Set_Names();
-          auto N = get_change_set_index(cs_list[0], cs_names);
-	  if (N < 0) {
-	    return std::make_pair(cs1, cs2);
-	  }
+          auto &cs_names = cs_cnt_2 == 0 ? file1.Change_Set_Names() : file2.Change_Set_Names();
+          auto  N        = get_change_set_index(cs_list[0], cs_names);
+          if (N < 0) {
+            return std::make_pair(cs1, cs2);
+          }
 
           if (cs_cnt_1 == 0) {
             cs1.push_back(0);
@@ -382,18 +382,18 @@ namespace {
         }
         for (size_t i = 0; i < cs1_list.size(); i++) {
           auto N1 = get_change_set_index(cs1_list[i], file1.Change_Set_Names());
-	  auto N2 = get_change_set_index(cs2_list[i], file2.Change_Set_Names());
+          auto N2 = get_change_set_index(cs2_list[i], file2.Change_Set_Names());
 
           if (N1 >= 0 && N1 <= cs_cnt_1 && N2 >= 0 && N2 <= cs_cnt_2) {
-	    cs1.push_back(N1);
-	    cs2.push_back(N2);
-	  }
-	  else {
+            cs1.push_back(N1);
+            cs2.push_back(N2);
+          }
+          else {
             Error(fmt::format("At least one change set index is invalid: ({} {}), file1 has {}, "
                               "file2 has {}. Ignoring this entry.\n",
                               N1, N2, cs_cnt_1, cs_cnt_2));
-	  }
-	}
+          }
+        }
       }
     }
     return std::make_pair(cs1, cs2);
@@ -497,7 +497,10 @@ namespace {
 
   template <typename INT> bool exodiff(Exo_Read<INT> &file1, Exo_Read<INT> &file2);
 
-  template <typename INT> std::pair<bool,bool> exodiff_setup(const std::string &file1_name, const std::string &file2_name, INT /* dummy */) {
+  template <typename INT>
+  std::pair<bool, bool> exodiff_setup(const std::string &file1_name, const std::string &file2_name,
+                                      INT /* dummy */)
+  {
     // Open input files.
     Exo_Read<INT> file1(file1_name);
     file1.modify_time_values(interFace.time_value_scale, interFace.time_value_offset);
@@ -508,14 +511,14 @@ namespace {
     SMART_ASSERT(cs1.size() == cs2.size());
 
     bool has_change_sets = !cs1.empty() && (interFace.summary_flag || !cs2.empty());
-    bool diff_flag = false;
+    bool diff_flag       = false;
 
     if (has_change_sets) {
       for (size_t i = 0; i < cs1.size(); i++) {
         file1.Open_Change_Set(cs1[i] - 1);
-	if (!interFace.summary_flag) {
-	  file2.Open_Change_Set(cs2[i] - 1);
-	}
+        if (!interFace.summary_flag) {
+          file2.Open_Change_Set(cs2[i] - 1);
+        }
         diff_flag |= exodiff(file1, file2);
         fmt::print("{:-<80}\n", "");
       }
@@ -523,7 +526,7 @@ namespace {
     else {
       file1.Get_Meta_Data();
       if (!interFace.summary_flag) {
-	file2.Get_Meta_Data();
+        file2.Get_Meta_Data();
       }
       diff_flag |= exodiff(file1, file2);
     }
@@ -598,18 +601,17 @@ int main(int argc, char *argv[])
     int_size = 8;
   }
 
-  
   bool diff_flag       = false;
   bool has_change_sets = false;
   if (int_size == 4) {
     auto diff_change = exodiff_setup(file1_name, file2_name, int(0));
-    diff_flag = diff_change.first;
-    has_change_sets = diff_change.second;
+    diff_flag        = diff_change.first;
+    has_change_sets  = diff_change.second;
   }
   else {
     auto diff_change = exodiff_setup(file1_name, file2_name, int64_t(0));
-    diff_flag = diff_change.first;
-    has_change_sets = diff_change.second;
+    diff_flag        = diff_change.first;
+    has_change_sets  = diff_change.second;
   }
 
   if (has_change_sets) {
