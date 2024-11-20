@@ -35,6 +35,7 @@ namespace {
 
 template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(std::move(fname))
 {
+  if (!file_name.empty()) {
   int   ws = 0, comp_ws = 8;
   float dumb = 0.0;
   int   mode = EX_READ;
@@ -74,6 +75,7 @@ template <typename INT> Exo_Read<INT>::Exo_Read(std::string fname) : file_name(s
 
     //    current_change_set_index = 0;
     //    file_id = change_set_ids[current_change_set_index];
+  }
   }
 }
 
