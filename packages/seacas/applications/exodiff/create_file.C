@@ -323,11 +323,16 @@ namespace {
     }
 
     if (do_all_flag) {
+#if 0
+      // NOTE: This does not work for exodiff using a file to specify tolerances...
+      //       Need a better way of moving from changeset to changeset...
+      
       // See if the names in `names` are from a previous change set iteration...
       if (!names.empty() && x_list.empty()) {
         names.clear();
         tols.clear();
       }
+#endif
       auto length_name = var_names1.size();
       for (size_t n = 0; n < length_name; ++n) {
         const std::string &name = var_names1[n];
