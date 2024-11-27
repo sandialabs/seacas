@@ -516,9 +516,9 @@ namespace {
     auto [cs1, cs2] = create_change_set_list(file1, file2, interFace.change_sets);
     SMART_ASSERT(cs1.size() == cs2.size());
 
-    bool has_change_sets = !cs1.empty() && (interFace.summary_flag || !cs2.empty());
+    bool has_change_sets      = !cs1.empty() && (interFace.summary_flag || !cs2.empty());
     interFace.has_change_sets = has_change_sets;
-    bool diff_flag       = false;
+    bool diff_flag            = false;
 
     if (has_change_sets) {
       for (size_t i = 0; i < cs1.size(); i++) {
