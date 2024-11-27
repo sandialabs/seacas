@@ -517,6 +517,7 @@ namespace {
     SMART_ASSERT(cs1.size() == cs2.size());
 
     bool has_change_sets = !cs1.empty() && (interFace.summary_flag || !cs2.empty());
+    interFace.has_change_sets = has_change_sets;
     bool diff_flag       = false;
 
     if (has_change_sets) {

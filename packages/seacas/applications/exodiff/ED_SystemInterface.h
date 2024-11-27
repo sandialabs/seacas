@@ -138,6 +138,7 @@ public:
   bool eb_var_do_all_flag{false};
   bool fb_var_do_all_flag{false};
 
+  bool has_change_sets{false};
 private:
   void          enroll_options();
   GetLongOption options_{}; //!< Options parsing
