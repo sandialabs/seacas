@@ -108,8 +108,11 @@ namespace {
   {
   public:
     Observer() : Ioss::DynamicTopologyObserver(nullptr) {}
-    Ioss::FileControlOption get_control_option() const { return Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE; }
-    bool needs_new_output_file() const {return false;}
+    Ioss::FileControlOption get_control_option() const
+    {
+      return Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE;
+    }
+    bool needs_new_output_file() const { return false; }
   };
 
 #ifdef SEACAS_HAVE_MPI
@@ -422,10 +425,10 @@ namespace {
           else {
             cs_names = dbi->internal_change_set_describe();
           }
-	  auto observer = std::make_shared<Observer>();
-	  output_region.register_mesh_modification_observer(observer);
+          auto observer = std::make_shared<Observer>();
+          output_region.register_mesh_modification_observer(observer);
 
-	  int steps = 0;
+          int steps = 0;
           for (const auto &cs_name : cs_names) {
             success = region.load_internal_change_set_mesh(cs_name);
             if (!success) {
@@ -434,16 +437,16 @@ namespace {
               }
               return success;
             }
-	    if (steps > 0) {
-	      observer->set_topology_modification(Ioss::TOPOLOGY_UNKNOWN);
-	      output_region.start_new_output_database_entry(steps);
-	      output_region.reset_region();
-	      output_region.get_database()->release_memory();
-	    }
-	    steps++;
-	    if (rank == 0) {
-	      fmt::print(stderr, "Copying change set {}\n", cs_name);
-	    }
+            if (steps > 0) {
+              observer->set_topology_modification(Ioss::TOPOLOGY_UNKNOWN);
+              output_region.start_new_output_database_entry(steps);
+              output_region.reset_region();
+              output_region.get_database()->release_memory();
+            }
+            steps++;
+            if (rank == 0) {
+              fmt::print(stderr, "Copying change set {}\n", cs_name);
+            }
             if (!first) {
               options.ignore_qa_info = true;
             }
