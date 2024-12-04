@@ -22,6 +22,10 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_DataSize.h"
 #include "Ioss_DatabaseIO.h"
+#include "Ioss_DynamicTopology.h"
+#include "Ioss_DynamicTopologyBroker.h"
+#include "Ioss_DynamicTopologyFileControl.h"
+#include "Ioss_DynamicTopologyObserver.h"
 #include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h"
 #include "Ioss_IOFactory.h"
@@ -99,6 +103,14 @@ namespace {
     }
     return success;
   }
+
+  class Observer : public Ioss::DynamicTopologyObserver
+  {
+  public:
+    Observer() : Ioss::DynamicTopologyObserver(nullptr) {}
+    Ioss::FileControlOption get_control_option() const { return Ioss::FileControlOption::CONTROL_AUTO_GROUP_FILE; }
+    bool needs_new_output_file() const {return false;}
+  };
 
 #ifdef SEACAS_HAVE_MPI
   void mpi_finalize()
@@ -410,6 +422,10 @@ namespace {
           else {
             cs_names = dbi->internal_change_set_describe();
           }
+	  auto observer = std::make_shared<Observer>();
+	  output_region.register_mesh_modification_observer(observer);
+
+	  int steps = 0;
           for (const auto &cs_name : cs_names) {
             success = region.load_internal_change_set_mesh(cs_name);
             if (!success) {
@@ -418,17 +434,16 @@ namespace {
               }
               return success;
             }
-            output_region.reset_region();
-            output_region.get_database()->release_memory();
-            success = dbo->create_internal_change_set(cs_name);
-            if (!success) {
-              if (rank == 0) {
-                fmt::print(stderr, "ERROR: Unable to create change set {} in output file.\n",
-                           cs_name);
-              }
-              return success;
-            }
-            fmt::print(stderr, "Copying change set {}\n", cs_name);
+	    if (steps > 0) {
+	      observer->set_topology_modification(Ioss::TOPOLOGY_UNKNOWN);
+	      output_region.start_new_output_database_entry(steps);
+	      output_region.reset_region();
+	      output_region.get_database()->release_memory();
+	    }
+	    steps++;
+	    if (rank == 0) {
+	      fmt::print(stderr, "Copying change set {}\n", cs_name);
+	    }
             if (!first) {
               options.ignore_qa_info = true;
             }

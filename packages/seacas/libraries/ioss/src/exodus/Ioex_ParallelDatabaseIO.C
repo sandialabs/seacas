@@ -408,17 +408,15 @@ namespace Ioex {
 
   void ParallelDatabaseIO::release_memory_nl()
   {
-    free_file_pointer();
-    nodeMap.release_memory();
-    edgeMap.release_memory();
-    faceMap.release_memory();
-    elemMap.release_memory();
+    BaseDatabaseIO::release_memory_nl();
+
     Ioss::Utils::clear(nodeOwningProcessor);
     Ioss::Utils::clear(nodeGlobalImplicitMap);
     Ioss::Utils::clear(elemGlobalImplicitMap);
     nodeGlobalImplicitMapDefined = false;
     elemGlobalImplicitMapDefined = false;
     nodesetOwnedNodes.clear();
+    metaDataWritten = false;
     try {
       decomp.reset();
     }

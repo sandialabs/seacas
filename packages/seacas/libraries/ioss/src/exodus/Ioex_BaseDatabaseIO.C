@@ -655,6 +655,9 @@ namespace Ioex {
       m_exodusFilePtr = exoid;
       success         = true;
     }
+    // QA and Info records are written at "root" level by first "group/database"
+    properties.add(Ioss::Property("OMIT_QA_RECORDS", "YES"));
+    properties.add(Ioss::Property("OMIT_INFO_RECORDS", "YES"));
     return success;
   }
 
