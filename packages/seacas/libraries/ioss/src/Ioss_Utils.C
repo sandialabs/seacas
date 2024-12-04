@@ -384,7 +384,7 @@ std::string Ioss::Utils::local_filename(const std::string &relative_filename,
 }
 
 int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
-                               const std::string &inout)
+                               std::string_view inout)
 {
   if (field.get_name() != "ids") {
     fmt::print(Ioss::WarnOut(), "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(),

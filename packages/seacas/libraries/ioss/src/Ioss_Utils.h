@@ -482,7 +482,7 @@ namespace Ioss {
                            std::vector<Ioss::Field> &fields);
 
     static int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
-                             const std::string &inout);
+                             std::string_view inout);
 
     static void calculate_sideblock_membership(IntVector &face_is_member, const SideBlock *sb,
                                                size_t int_byte_size, const void *element,
