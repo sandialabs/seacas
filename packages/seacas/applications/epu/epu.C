@@ -64,8 +64,7 @@ using StringVector = std::vector<std::string>;
 
 // The main program templated to permit float/double transfer.
 template <typename T, typename INT>
-int epu(Excn::SystemInterface &interFace, int start_part, int part_count, int cycle, T /* dummy */,
-        INT int_size_dummy);
+int epu(Excn::SystemInterface &interFace, int start_part, int part_count, int cycle);
 
 class mpi
 {
@@ -253,12 +252,11 @@ namespace {
   void get_put_coordinate_names(int in, int out, int dimensionality);
   void get_put_assemblies(int in, int out, Excn::Mesh &global);
 
-  template <typename T> void get_put_coordinate_frames(int id, int id_out, T float_or_double);
+  template <typename T> void get_put_coordinate_frames(int id, int id_out);
 
   template <typename T, typename INT>
   void get_put_coordinates(Excn::Mesh &global, int part_count, std::vector<Excn::Mesh> &local_mesh,
-                           const std::vector<std::vector<INT>> &local_node_to_global,
-                           T                                    float_or_double);
+                           const std::vector<std::vector<INT>> &local_node_to_global);
 
   template <typename T, typename INT>
   void get_coordinates(int id, int dimensionality, size_t num_nodes,
@@ -310,7 +308,7 @@ namespace {
   void get_nodesets(int part_count, size_t total_node_count,
                     const std::vector<std::vector<INT>>          &local_node_to_global,
                     std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
-                    std::vector<Excn::NodeSet<INT>> &glob_sets, T float_or_double);
+                    std::vector<Excn::NodeSet<INT>> &glob_sets);
 
   template <typename INT>
   void build_reverse_node_map(std::vector<std::vector<INT>> &local_node_to_global,
@@ -326,15 +324,13 @@ namespace {
                           std::vector<std::vector<Excn::Block>> &blocks,
                           std::vector<Excn::Block>              &glob_blocks,
                           const std::vector<std::vector<INT>>   &local_node_to_global,
-                          const std::vector<std::vector<INT>>   &local_element_to_global,
-                          T                                      float_or_double);
+                          const std::vector<std::vector<INT>>   &local_element_to_global);
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part,
                           std::vector<std::vector<Excn::Block>> &blocks,
                           std::vector<Excn::Block>              &glob_blocks,
-                          const std::vector<std::vector<INT>>   &local_node_to_global,
-                          T /* float_or_double */);
+                          const std::vector<std::vector<INT>>   &local_node_to_global);
 
   template <typename INT>
   void get_edgeblocks(int part_count, const std::vector<Excn::Mesh> &local_mesh,
@@ -346,14 +342,14 @@ namespace {
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
                       std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks,
                       const std::vector<std::vector<INT>>            &local_node_to_global,
-                      const std::vector<std::vector<INT>>            &local_element_to_global,
-                      T /* float_or_double */);
+                      const std::vector<std::vector<INT>>            &local_element_to_global);
+
   template <typename T, typename INT>
   void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
                       std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks,
-                      const std::vector<std::vector<INT>>            &local_node_to_global,
-                      T /* float_or_double */);
+                      const std::vector<std::vector<INT>>            &local_node_to_global);
+
 
   template <typename INT>
   void build_reverse_edge_map(std::vector<std::vector<INT>>                  &local_edge_to_global,
@@ -373,14 +369,14 @@ namespace {
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
                       std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks,
                       const std::vector<std::vector<INT>>            &local_node_to_global,
-                      const std::vector<std::vector<INT>>            &local_element_to_global,
-                      T /* float_or_double */);
+                      const std::vector<std::vector<INT>>            &local_element_to_global);
+
   template <typename T, typename INT>
   void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
                       std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks,
-                      const std::vector<std::vector<INT>>            &local_node_to_global,
-                      T /* float_or_double */);
+                      const std::vector<std::vector<INT>>            &local_node_to_global);
+
 
   template <typename INT>
   void build_reverse_face_map(std::vector<std::vector<INT>>                  &local_face_to_global,
@@ -505,25 +501,22 @@ int main(int argc, char *argv[])
 
       SMART_ASSERT(start_part + part_count <= processor_count);
 
-      if (!ExodusFile::initialize(interFace, start_part, part_count, rank, false)) {
-        throw std::runtime_error("ERROR: (EPU) Problem initializing input and/or output files.\n");
-      }
+      ExodusFile::initialize(interFace, start_part, part_count, rank, false);
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
         if (interFace.int64()) {
-          error = epu(interFace, start_part, part_count, rank, static_cast<float>(0.0),
-                      static_cast<int64_t>(0));
+          error = epu<float, int64_t>(interFace, start_part, part_count, rank);
         }
         else {
-          error = epu(interFace, start_part, part_count, rank, static_cast<float>(0.0), 0);
+          error = epu<float, int>(interFace, start_part, part_count, rank);
         }
       }
       else { // Reals are doubles
         if (interFace.int64()) {
-          error = epu(interFace, start_part, part_count, rank, 0.0, static_cast<int64_t>(0));
+          error = epu<double, int64_t>(interFace, start_part, part_count, rank);
         }
         else {
-          error = epu(interFace, start_part, part_count, rank, 0.0, 0);
+          error = epu<double, int>(interFace, start_part, part_count, rank);
         }
       }
 
@@ -600,26 +593,22 @@ int main(int argc, char *argv[])
         SMART_ASSERT(part_count > 0);
         SMART_ASSERT(start_part + part_count <= processor_count);
 
-        if (!ExodusFile::initialize(interFace, start_part, part_count, cycle, false)) {
-          throw std::runtime_error(
-              "ERROR: (EPU) Problem initializing input and/or output files.\n");
-        }
-
+        ExodusFile::initialize(interFace, start_part, part_count, cycle, false);
+	
         if (ExodusFile::io_word_size() == 4) { // Reals are floats
           if (interFace.int64()) {
-            error = epu(interFace, start_part, part_count, cycle++, static_cast<float>(0.0),
-                        static_cast<int64_t>(0));
+            error = epu<float, int64_t>(interFace, start_part, part_count, cycle++);
           }
           else {
-            error = epu(interFace, start_part, part_count, cycle++, static_cast<float>(0.0), 0);
+            error = epu<float, int>(interFace, start_part, part_count, cycle++);
           }
         }
         else { // Reals are doubles
           if (interFace.int64()) {
-            error = epu(interFace, start_part, part_count, cycle++, 0.0, static_cast<int64_t>(0));
+            error = epu<double, int64_t>(interFace, start_part, part_count, cycle++);
           }
           else {
-            error = epu(interFace, start_part, part_count, cycle++, 0.0, 0);
+            error = epu<double, int>(interFace, start_part, part_count, cycle++);
           }
         }
 
@@ -642,25 +631,21 @@ int main(int argc, char *argv[])
       interFace.step_max(INT_MAX);
       interFace.step_interval(1);
 
-      if (!ExodusFile::initialize(interFace, start_part, part_count, 0, true)) {
-        throw std::runtime_error("ERROR: (EPU) Problem initializing input and/or output files.\n");
-      }
-
+      ExodusFile::initialize(interFace, start_part, part_count, 0, true);
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
         if (interFace.int64()) {
-          error = epu(interFace, start_part, part_count, 0, static_cast<float>(0.0),
-                      static_cast<int64_t>(0));
+          error = epu<float, int64_t>(interFace, start_part, part_count, 0);
         }
         else {
-          error = epu(interFace, start_part, part_count, 0, static_cast<float>(0.0), 0);
+          error = epu<float, int>(interFace, start_part, part_count, 0);
         }
       }
       else { // Reals are doubles
         if (interFace.int64()) {
-          error = epu(interFace, start_part, part_count, 0, 0.0, static_cast<int64_t>(0));
+          error = epu<double, int64_t>(interFace, start_part, part_count, 0);
         }
         else {
-          error = epu(interFace, start_part, part_count, 0, 0.0, 0);
+          error = epu<double, int>(interFace, start_part, part_count, 0);
         }
       }
 
@@ -685,8 +670,7 @@ int main(int argc, char *argv[])
 }
 
 template <typename T, typename INT>
-int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T float_or_double,
-        INT /*unused*/)
+int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
 {
   double execution_time = seacas_timer();
   SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
@@ -943,8 +927,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     // Get Node sets
     if (!interFace.omit_nodesets()) {
       LOG("\n**** GET NODE SETS *****\n");
-      get_nodesets(part_count, global.nodeCount, local_node_to_global, nodesets, glob_nsets,
-                   float_or_double);
+      get_nodesets<T>(part_count, global.nodeCount, local_node_to_global, nodesets, glob_nsets);
       if (global.count(Excn::ObjectType::NSET) != glob_nsets.size()) {
         fmt::print("\nWARNING: Invalid nodesets will not be written to output database.\n");
         global.nodesetCount = glob_nsets.size();
@@ -988,10 +971,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
         }
       }
     }
-    // Create the output file...
-    if (!ExodusFile::create_output(interFace, cycle)) {
-      throw std::runtime_error("ERROR: (EPU) Problem creating output file.\n");
-    }
+
+    ExodusFile::create_output(interFace, cycle);
 
     // EPU assumes IDS are always passed through the API as 64-bit ints.
     SMART_ASSERT(ex_int64_status(ExodusFile::output()) & EX_IDS_INT64_API);
@@ -1008,7 +989,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
 
     // Define metadata for model....
     put_global_info(global);
-    get_put_coordinate_frames(ExodusFile(0), ExodusFile::output(), float_or_double);
+    get_put_coordinate_frames<T>(ExodusFile(0), ExodusFile::output());
 
     Internals<INT> exodus(ExodusFile::output(), ExodusFile::max_name_length());
 
@@ -1060,20 +1041,17 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       ex_update(ExodusFile::output());
 
       if (interFace.map_element_ids()) {
-        put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
-                           local_element_to_global, float_or_double);
-        put_edgeblocks(part_count, start_part, edgeblocks, glob_edgeblocks, local_node_to_global,
-                       local_edge_to_global, float_or_double);
-        put_faceblocks(part_count, start_part, faceblocks, glob_faceblocks, local_node_to_global,
-                       local_face_to_global, float_or_double);
+        put_element_blocks<T>(part_count, start_part, blocks, glob_blocks, local_node_to_global,
+			      local_element_to_global);
+        put_edgeblocks<T>(part_count, start_part, edgeblocks, glob_edgeblocks, local_node_to_global,
+			  local_edge_to_global);
+        put_faceblocks<T>(part_count, start_part, faceblocks, glob_faceblocks, local_node_to_global,
+			  local_face_to_global);
       }
       else {
-        put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
-                           float_or_double);
-        put_edgeblocks(part_count, start_part, edgeblocks, glob_edgeblocks, local_node_to_global,
-                       float_or_double);
-        put_faceblocks(part_count, start_part, faceblocks, glob_faceblocks, local_node_to_global,
-                       float_or_double);
+        put_element_blocks<T>(part_count, start_part, blocks, glob_blocks, local_node_to_global);
+        put_edgeblocks<T>(part_count, start_part, edgeblocks, glob_edgeblocks, local_node_to_global);
+        put_faceblocks<T>(part_count, start_part, faceblocks, glob_faceblocks, local_node_to_global);
       }
     }
 
@@ -1083,7 +1061,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   // 2. Get Coordinate Info.
   if (!interFace.append()) {
     LOG("\n\n**** GET COORDINATE INFO ****\n");
-    get_put_coordinates(global, part_count, local_mesh, local_node_to_global, (T)0.0);
+    get_put_coordinates<T>(global, part_count, local_mesh, local_node_to_global);
     LOG("Wrote coordinate information...\n");
   }
 
@@ -1692,7 +1670,7 @@ namespace {
     }
   }
 
-  template <typename T> void get_put_coordinate_frames(int id, int id_out, T /* float_or_double */)
+  template <typename T> void get_put_coordinate_frames(int id, int id_out)
   {
     int num_frames = ex_inquire_int(id, EX_INQ_COORD_FRAMES);
     if (num_frames <= 0) {
@@ -1811,8 +1789,7 @@ namespace {
 
   template <typename T, typename INT>
   void get_put_coordinates(Mesh &global, int part_count, std::vector<Mesh> &local_mesh,
-                           const std::vector<std::vector<INT>> &local_node_to_global,
-                           T /* float_or_double */)
+                           const std::vector<std::vector<INT>> &local_node_to_global)
   {
     T FillValue = static_cast<T>(FILL_VALUE);
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
@@ -2165,8 +2142,7 @@ namespace {
   void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
                           std::vector<Block>                  &glob_blocks,
                           const std::vector<std::vector<INT>> &local_node_to_global,
-                          const std::vector<std::vector<INT>> &local_element_to_global,
-                          T /* float_or_double */)
+                          const std::vector<std::vector<INT>> &local_element_to_global)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_blocks = glob_blocks.size();
@@ -2295,8 +2271,7 @@ namespace {
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
                           std::vector<Block>                  &glob_blocks,
-                          const std::vector<std::vector<INT>> &local_node_to_global,
-                          T /* float_or_double */)
+                          const std::vector<std::vector<INT>> &local_node_to_global)
   {
     // This variant of `put_element_blocks` is used in the case of
     // `nomap` and uses much less memory (but may be slower).  It
@@ -3227,7 +3202,7 @@ namespace {
   void get_nodesets(int part_count, size_t total_node_count,
                     const std::vector<std::vector<INT>>    &local_node_to_global,
                     std::vector<std::vector<NodeSet<INT>>> &nodesets,
-                    std::vector<NodeSet<INT>>              &glob_sets, T /* float_or_double */)
+                    std::vector<NodeSet<INT>>              &glob_sets)
   {
     // Find number of nodesets in the global model...
     std::set<ex_entity_id> set_ids;
@@ -3850,8 +3825,7 @@ namespace {
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
                       std::vector<EdgeBlock<INT>>              &glob_edgeblocks,
                       const std::vector<std::vector<INT>>      &local_node_to_global,
-                      const std::vector<std::vector<INT>>      &local_edge_to_global,
-                      T /* float_or_double */)
+                      const std::vector<std::vector<INT>>      &local_edge_to_global)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_edgeblocks = glob_edgeblocks.size();
@@ -3995,8 +3969,7 @@ namespace {
   void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
                       std::vector<EdgeBlock<INT>>              &glob_edgeblocks,
-                      const std::vector<std::vector<INT>>      &local_node_to_global,
-                      T /* float_or_double */)
+                      const std::vector<std::vector<INT>>      &local_node_to_global)
   {
     // This variant of `put_edgeblocks` is used in the case of
     // `nomap` and uses much less memory (but may be slower).  It
@@ -4227,8 +4200,7 @@ namespace {
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
                       std::vector<FaceBlock<INT>>              &glob_faceblocks,
                       const std::vector<std::vector<INT>>      &local_node_to_global,
-                      const std::vector<std::vector<INT>>      &local_face_to_global,
-                      T /* float_or_double */)
+                      const std::vector<std::vector<INT>>      &local_face_to_global)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_faceblocks = glob_faceblocks.size();
@@ -4374,8 +4346,7 @@ namespace {
   void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
                       std::vector<FaceBlock<INT>>              &glob_faceblocks,
-                      const std::vector<std::vector<INT>>      &local_node_to_global,
-                      T /* float_or_double */)
+                      const std::vector<std::vector<INT>>      &local_node_to_global)
   {
     // This variant of `put_faceblocks` is used in the case of
     // `nomap` and uses much less memory (but may be slower).  It
