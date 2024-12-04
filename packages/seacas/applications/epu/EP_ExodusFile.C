@@ -36,6 +36,7 @@ int                      Excn::ExodusFile::ioWordSize_     = 0;
 int                      Excn::ExodusFile::cpuWordSize_    = 0;
 int                      Excn::ExodusFile::mode64bit_      = 0;
 int                      Excn::ExodusFile::changeSetCount_ = -1;
+int                      Excn::ExodusFile::activeChangeSet_= 0;
 std::string              Excn::ExodusFile::outputFilename_;
 bool                     Excn::ExodusFile::keepOpen_          = false;
 bool                     Excn::ExodusFile::verifyValidFile_   = false;
@@ -65,12 +66,14 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
     int num_change_sets = ex_inquire_int(fileids_[processor], EX_INQ_NUM_CHILD_GROUPS);
     if (changeSetCount_ < 0) {
       changeSetCount_ = num_change_sets;
+      if (activeChangeSet_ >= changeSetCount_) {
+	auto error = fmt::format("Selected Change set {} exceeds change set count {} - exiting\n", activeChangeSet_+1, changeSetCount_);
+	throw std::runtime_error(error);
+      }
     }
     else {
       if (changeSetCount_ != num_change_sets) {
-	std::ostringstream errmsg;
-	fmt::print(errmsg, "Inconsistent change set count in one or more files - exiting\n");
-	throw std::runtime_error(errmsg.str());
+	throw std::runtime_error("Inconsistent change set count in one or more files - exiting\n");
       }
     }
 
@@ -80,7 +83,7 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
       std::vector<int> change_set_ids;
       change_set_ids.resize(num_change_sets);
       ex_get_group_ids(fileids_[processor], nullptr, change_set_ids.data());
-      fileids_[processor] = change_set_ids[0];
+      fileids_[processor] = change_set_ids[activeChangeSet_];
     }
 
     SMART_ASSERT(io_word_size_var == ioWordSize_);
@@ -186,6 +189,8 @@ void Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
   startPart_      = start_part;           // Which one to start with
   SMART_ASSERT(partCount_ + startPart_ <= processorCount_)(partCount_)(startPart_)(processorCount_);
 
+  activeChangeSet_ = si.selected_change_set() - 1;
+
   // EPU always wants entity (block, set, map) ids as 64-bit quantities...
   mode64bit_ = EX_IDS_INT64_API;
   if (si.int64()) {
@@ -261,6 +266,10 @@ void Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
       int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
       if (changeSetCount_ < 0) {
 	changeSetCount_ = num_change_sets;
+	if (activeChangeSet_ >= changeSetCount_) {
+	  auto error = fmt::format("ERROR: Selected Change set {} exceeds change set count {} - exiting\n", activeChangeSet_+1, changeSetCount_);
+	  throw std::runtime_error(error);
+	}
       }
       else {
 	if (changeSetCount_ != num_change_sets) {
@@ -313,7 +322,7 @@ void Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
 	std::vector<int> change_set_ids;
 	change_set_ids.resize(changeSetCount_);
 	ex_get_group_ids(fileids_[p], nullptr, change_set_ids.data());
-	fileids_[p] = change_set_ids[0];
+	fileids_[p] = change_set_ids[activeChangeSet_];
       }
     }
 

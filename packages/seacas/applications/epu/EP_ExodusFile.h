@@ -47,6 +47,7 @@ namespace Excn {
     static int                      maximumNameLength_;
     static int                      mode64bit_;
     static int                      changeSetCount_;
+    static int                      activeChangeSet_;
     static bool                     keepOpen_;
     static bool                     verifyValidFile_;
   };
