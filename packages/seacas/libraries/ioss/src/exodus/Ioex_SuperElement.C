@@ -147,7 +147,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "cbmap", reinterpret_cast<double *>(data));
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'cbmap' from file '{}'.",
-			     fileName));
+                             fileName));
     }
   }
   else if (field.get_name() == "node_num_map") {
@@ -155,8 +155,8 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "node_num_map", reinterpret_cast<double *>(data));
 
     if (status != 0) {
-      IOSS_ERROR(fmt::format(                 "ERROR: Could not load coordinate data field 'node_num_map' from file '{}'.",
-					      fileName));
+      IOSS_ERROR(fmt::format(
+          "ERROR: Could not load coordinate data field 'node_num_map' from file '{}'.", fileName));
     }
   }
   else if (field.get_name() == "coordx") {
@@ -164,7 +164,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "coordx", reinterpret_cast<double *>(data));
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'coordx' from file '{}'.",
-			     fileName));
+                             fileName));
     }
   }
   else if (field.get_name() == "coordy") {
@@ -172,7 +172,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "coordy", reinterpret_cast<double *>(data));
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'coordy' from file '{}'.",
-			     fileName));
+                             fileName));
     }
   }
   else if (field.get_name() == "coordz") {
@@ -180,7 +180,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "coordz", reinterpret_cast<double *>(data));
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'coordz' from file '{}'.",
-			     fileName));
+                             fileName));
     }
   }
   else if (field.get_name() == "Kr") {
@@ -188,30 +188,31 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "Kr", reinterpret_cast<double *>(data));
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load stiffness matrix field 'Kr' from file '{}'.",
-			     fileName));
+                             fileName));
     }
   }
   else if (field.get_name() == "Mr") {
     assert(num_to_get == numDOF * numDOF);
     int status = nc_get_array(filePtr, "Mr", reinterpret_cast<double *>(data));
     if (status != 0) {
-      IOSS_ERROR(fmt::format("ERROR: Could not load mass matrix field 'Mr' from file '{}'.", fileName));
+      IOSS_ERROR(
+          fmt::format("ERROR: Could not load mass matrix field 'Mr' from file '{}'.", fileName));
     }
   }
   else if (field.get_name() == "InertiaTensor") {
     assert(num_to_get == numDOF * numRBM);
     int status = nc_get_array(filePtr, "InertiaTensor", reinterpret_cast<double *>(data));
     if (status != 0) {
-      IOSS_ERROR(fmt::format(                 "ERROR: Could not load inertia matrix field 'InertialTensor' from file '{}'.",
-					      fileName));
+      IOSS_ERROR(fmt::format(
+          "ERROR: Could not load inertia matrix field 'InertialTensor' from file '{}'.", fileName));
     }
   }
   else if (field.get_name() == "MassInertia") {
     assert(num_to_get == numDOF * numRBM);
     int status = nc_get_array(filePtr, "MassInertia", reinterpret_cast<double *>(data));
     if (status != 0) {
-      IOSS_ERROR(fmt::format("ERROR: Could not mass inertia matrix field 'MassInertia' from file '{}'.",
-			     fileName));
+      IOSS_ERROR(fmt::format(
+          "ERROR: Could not mass inertia matrix field 'MassInertia' from file '{}'.", fileName));
     }
   }
   else {

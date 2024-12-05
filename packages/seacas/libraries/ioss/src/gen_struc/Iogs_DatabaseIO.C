@@ -11,10 +11,10 @@
 #include "gen_struc/Iogs_GeneratedMesh.h" // for GeneratedMesh
 #include <cassert>                        // for assert
 #include <cmath>                          // for sqrt
-#include <iostream>                       // for ostringstream, operator<<, etc
+#include <fmt/format.h>
+#include <iostream> // for ostringstream, operator<<, etc
 #include <stdlib.h>
 #include <string> // for string, operator==, etc
-#include <fmt/format.h>
 
 #include "Ioss_CommSet.h"         // for CommSet
 #include "Ioss_DBUsage.h"         // for DatabaseUsage
@@ -130,7 +130,7 @@ namespace Iogs {
     if (m_generatedMesh == nullptr) {
       if (get_filename() == "external") {
         IOSS_ERROR("ERROR: (gen_struc mesh) 'external' specified for mesh, but "
-		   "getGeneratedMesh was not called to set the external mesh.\n");
+                   "getGeneratedMesh was not called to set the external mesh.\n");
       }
       else {
         m_generatedMesh =

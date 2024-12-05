@@ -128,7 +128,7 @@ namespace Iogn {
     if (m_generatedMesh == nullptr) {
       if (get_filename() == "external") {
         IOSS_ERROR("ERROR: (generated mesh) 'external' specified for mesh, but "
-			       "getGeneratedMesh was not called to set the external mesh.\n");
+                   "getGeneratedMesh was not called to set the external mesh.\n");
       }
       else {
         m_generatedMesh =
@@ -148,13 +148,14 @@ namespace Iogn {
     const int64_t two_billion = 2ll << 30;
     if ((glob_node_count > two_billion || glob_elem_count > two_billion) &&
         int_byte_size_api() == 4) {
-      IOSS_ERROR(fmt::format(                 "ERROR: The node count is {} and the element count is {}.\n"
-                 "       This exceeds the capacity of the 32-bit integers ({})\n"
-                 "       which are being requested by the client.\n"
-                 "       The mesh requires 64-bit integers which can be requested by setting the "
-                 "`INTEGER_SIZE_API=8` property.",
-                 fmt::group_digits(glob_node_count), fmt::group_digits(glob_elem_count),
-					      fmt::group_digits(two_billion)));
+      IOSS_ERROR(fmt::format(
+          "ERROR: The node count is {} and the element count is {}.\n"
+          "       This exceeds the capacity of the 32-bit integers ({})\n"
+          "       which are being requested by the client.\n"
+          "       The mesh requires 64-bit integers which can be requested by setting the "
+          "`INTEGER_SIZE_API=8` property.",
+          fmt::group_digits(glob_node_count), fmt::group_digits(glob_elem_count),
+          fmt::group_digits(two_billion)));
     }
 
     spatialDimension  = 3;

@@ -182,7 +182,7 @@ namespace Ioss {
   {
     if (index >= m_changeSetNames.size()) {
       IOSS_ERROR(fmt::format("Invalid change set index {} with a max value of {}\n", index,
-			     m_changeSetNames.size() - 1));
+                             m_changeSetNames.size() - 1));
     }
   }
 

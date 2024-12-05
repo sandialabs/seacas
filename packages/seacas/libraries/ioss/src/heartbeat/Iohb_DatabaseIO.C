@@ -413,7 +413,7 @@ namespace Iohb {
       }
     }
     else {
-      IOSS_ERROR(                 "ERROR: Can not handle non-TRANSIENT or non-REDUCTION fields on regions.\n");
+      IOSS_ERROR("ERROR: Can not handle non-TRANSIENT or non-REDUCTION fields on regions.\n");
     }
     return num_to_get;
   }

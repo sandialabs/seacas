@@ -55,12 +55,13 @@ namespace Iogs {
   void GeneratedMesh::initialize()
   {
     if (processorCount > numZ) {
-      IOSS_ERROR(fmt::format(                 "ERROR: ({})\n"
-                 "       The number of mesh intervals in the Z direction ({})\n"
-                 "       must be at least as large as the number of processors ({}).\n"
-                 "       The current parameters do not meet that requirement. Execution will "
-                 "terminate.\n",
-					      __func__, numZ, processorCount));
+      IOSS_ERROR(
+          fmt::format("ERROR: ({})\n"
+                      "       The number of mesh intervals in the Z direction ({})\n"
+                      "       must be at least as large as the number of processors ({}).\n"
+                      "       The current parameters do not meet that requirement. Execution will "
+                      "terminate.\n",
+                      __func__, numZ, processorCount));
     }
 
     if (processorCount > 1) {
@@ -117,10 +118,10 @@ namespace Iogs {
     // specified later in the option list, you may not get the
     // desired bounding box.
     if (numX == 0 || numY == 0 || numZ == 0) {
-      IOSS_ERROR(fmt::format(                 "ERROR: ({})\n"
-                 "       All interval counts must be greater than 0.\n"
-                 "       numX = {}, numY = {}, numZ = {}\n",
-					      __func__, numX, numY, numZ));
+      IOSS_ERROR(fmt::format("ERROR: ({})\n"
+                             "       All interval counts must be greater than 0.\n"
+                             "       numX = {}, numY = {}, numZ = {}\n",
+                             __func__, numX, numY, numZ));
     }
 
     double x_range = xmax - xmin;

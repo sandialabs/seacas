@@ -79,10 +79,10 @@ namespace Iogn {
     numZ = std::stoull(tokens[2]);
 
     if (numX <= 0 || numY <= 0 || numZ <= 0) {
-      IOSS_ERROR(fmt::format(                 "ERROR: (Iogn::GeneratedMesh::GeneratedMesh)\n"
-                 "       All interval counts must be greater than 0.\n"
-                 "       numX = {}, numY = {}, numZ = {}\n",
-					      numX, numY, numZ));
+      IOSS_ERROR(fmt::format("ERROR: (Iogn::GeneratedMesh::GeneratedMesh)\n"
+                             "       All interval counts must be greater than 0.\n"
+                             "       numX = {}, numY = {}, numZ = {}\n",
+                             numX, numY, numZ));
     }
     initialize();
     parse_options(groups);
@@ -93,12 +93,13 @@ namespace Iogn {
   void GeneratedMesh::initialize()
   {
     if (processorCount > numZ) {
-      IOSS_ERROR(fmt::format(                 "ERROR: (Iogn::GeneratedMesh::initialize)\n"
-                 "       The number of mesh intervals in the Z direction ({})\n"
-                 "       must be at least as large as the number of processors ({}).\n"
-                 "       The current parameters do not meet that requirement. Execution will "
-                 "terminate.\n",
-					      numZ, processorCount));
+      IOSS_ERROR(
+          fmt::format("ERROR: (Iogn::GeneratedMesh::initialize)\n"
+                      "       The number of mesh intervals in the Z direction ({})\n"
+                      "       must be at least as large as the number of processors ({}).\n"
+                      "       The current parameters do not meet that requirement. Execution will "
+                      "terminate.\n",
+                      numZ, processorCount));
     }
 
     if (processorCount > 1) {
@@ -171,10 +172,10 @@ namespace Iogn {
     // specified later in the option list, you may not get the
     // desired bounding box.
     if (numX == 0 || numY == 0 || numZ == 0) {
-      IOSS_ERROR(fmt::format(                 "ERROR: (Iogn::GeneratedMesh::set_bbox)\n"
-                 "       All interval counts must be greater than 0.\n"
-                 "       numX = {}, numY = {}, numZ = {}\n",
-					      numX, numY, numZ));
+      IOSS_ERROR(fmt::format("ERROR: (Iogn::GeneratedMesh::set_bbox)\n"
+                             "       All interval counts must be greater than 0.\n"
+                             "       numX = {}, numY = {}, numZ = {}\n",
+                             numX, numY, numZ));
     }
 
     double x_range = xmax - xmin;
@@ -222,8 +223,7 @@ namespace Iogn {
           case 'Y': add_shell_block(PY); break;
           case 'z': add_shell_block(MZ); break;
           case 'Z': add_shell_block(PZ); break;
-          default:
-            IOSS_ERROR(fmt::format("ERROR: Unrecognized shell location option '{}'.", opt));
+          default: IOSS_ERROR(fmt::format("ERROR: Unrecognized shell location option '{}'.", opt));
           }
         }
       }
@@ -337,7 +337,7 @@ namespace Iogn {
         createPyramids = true;
         if (processorCount > 1) {
           IOSS_ERROR("ERROR: Pyramid option can currently only be used in a serial run. "
-                             "Parallel not supported yet.\n");
+                     "Parallel not supported yet.\n");
         }
       }
 
@@ -364,7 +364,8 @@ namespace Iogn {
       }
 
       else {
-        IOSS_ERROR(fmt::format("ERROR: Unrecognized option '{}'.  It will be ignored.\n", option[0]));
+        IOSS_ERROR(
+            fmt::format("ERROR: Unrecognized option '{}'.  It will be ignored.\n", option[0]));
       }
     }
   }
@@ -1666,10 +1667,11 @@ namespace Iogn {
       variableCount[Ioss::SIDEBLOCK] = count;
     }
     else {
-      IOSS_ERROR(fmt::format(                 "ERROR: (Iogn::GeneratedMesh::set_variable_count)\n"
-                 "       Unrecognized variable type '{}'. Valid types are:\n"
-                 "       global, element, node, nodal, nodeset, nset, surface, sideset, sset.\n",
-					      type));
+      IOSS_ERROR(fmt::format(
+          "ERROR: (Iogn::GeneratedMesh::set_variable_count)\n"
+          "       Unrecognized variable type '{}'. Valid types are:\n"
+          "       global, element, node, nodal, nodeset, nset, surface, sideset, sset.\n",
+          type));
     }
   }
 

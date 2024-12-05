@@ -314,7 +314,7 @@ void Ioss::ParallelUtils::global_count(const IntVector &local_counts,
   if (!local_counts.empty() && parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       IOSS_ERROR(fmt::format("{} - Attempting mpi while in barrier owned by {}", __func__,
-			     Ioss::SerializeIO::getOwner()));
+                             Ioss::SerializeIO::getOwner()));
     }
     const int success =
         MPI_Allreduce((void *)Data(local_counts), Data(global_counts),
@@ -344,7 +344,7 @@ void Ioss::ParallelUtils::global_count(const Int64Vector &local_counts,
   if (!local_counts.empty() && parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       IOSS_ERROR(fmt::format("{} - Attempting mpi while in barrier owned by {}", __func__,
-			     Ioss::SerializeIO::getOwner()));
+                             Ioss::SerializeIO::getOwner()));
     }
     const int success = MPI_Allreduce((void *)Data(local_counts), Data(global_counts),
                                       static_cast<int>(local_counts.size()), MPI_LONG_LONG_INT,
@@ -382,7 +382,7 @@ T Ioss::ParallelUtils::global_minmax(T                 local_minmax,
   if (parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       IOSS_ERROR(fmt::format("{} - Attempting mpi while in barrier owned by {}", __func__,
-			     Ioss::SerializeIO::getOwner()));
+                             Ioss::SerializeIO::getOwner()));
     }
     static T inbuf[1], outbuf[1];
     inbuf[0] = local_minmax;

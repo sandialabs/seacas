@@ -921,9 +921,10 @@ namespace Ioex {
       for (size_t iel = 0; iel < element.size(); iel++) {
         int64_t elem_id = element[iel];
         if (elem_id <= 0) {
-          IOSS_ERROR(fmt::format(                     "ERROR: In sideset/surface '{}' an element with id {} is specified.  Element "
-                     "ids must be greater than zero. ({})",
-						      surface_name, elem_id, __func__));
+          IOSS_ERROR(fmt::format(
+              "ERROR: In sideset/surface '{}' an element with id {} is specified.  Element "
+              "ids must be greater than zero. ({})",
+              surface_name, elem_id, __func__));
         }
         if (block == nullptr || !block->contains(elem_id)) {
           block = region->get_element_block(elem_id);
@@ -946,7 +947,7 @@ namespace Ioex {
                 "an invalid face index '{}' is specified.\n\tFace indices "
                 "must be between 1 and {}. ({})",
                 surface_name, fmt::group_digits(elem_id), block->topology()->name(), current_side,
-					    block->topology()->number_boundaries(), __func__));
+                block->topology()->number_boundaries(), __func__));
           }
           topo = block->topology()->boundary_type(sides[iel]);
           SMART_ASSERT(topo != nullptr);

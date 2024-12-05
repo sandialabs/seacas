@@ -135,8 +135,9 @@ namespace {
               }
 
               if (!found) {
-                IOSS_ERROR(fmt::format("ERROR: Could not find sub-assembly with id: {} and name: {}",
-				       assembly.id, assembly.name));
+                IOSS_ERROR(
+                    fmt::format("ERROR: Could not find sub-assembly with id: {} and name: {}",
+                                assembly.id, assembly.name));
               }
             }
           }
@@ -532,7 +533,8 @@ namespace Ioex {
     int64_t format = ex_inquire_int(exoid, EX_INQ_FILE_FORMAT);
 
     if (format < 0) {
-      IOSS_ERROR(fmt::format("ERROR: Could not query file format for file '{}'.\n", get_filename()));
+      IOSS_ERROR(
+          fmt::format("ERROR: Could not query file format for file '{}'.\n", get_filename()));
     }
 
     return (NC_FORMAT_NETCDF4 == format);
@@ -555,7 +557,7 @@ namespace Ioex {
     int   ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
     if (ierr < 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not open root group of group named '{}' in file '{}'.\n",
-			     m_groupName, get_filename()));
+                             m_groupName, get_filename()));
     }
 
     m_groupName     = std::string(group_name.data());
@@ -563,7 +565,7 @@ namespace Ioex {
 
     if (m_exodusFilePtr < 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
-			     get_filename()));
+                             get_filename()));
     }
     success = true;
     return success;
@@ -578,8 +580,8 @@ namespace Ioex {
     // Check name for '/' which is not allowed since it is the
     // separator character in a full group path
     if (set_name.find('/') != std::string::npos) {
-      IOSS_ERROR(fmt::format("ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
-			     set_name));
+      IOSS_ERROR(fmt::format(
+          "ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n", set_name));
     }
 
     if (!open_root_group_nl())
@@ -601,7 +603,7 @@ namespace Ioex {
 
     if (m_exodusFilePtr < 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
-			     get_filename()));
+                             get_filename()));
     }
     success = true;
     return success;
@@ -626,15 +628,15 @@ namespace Ioex {
       // Check name for '/' which is not allowed since it is the
       // separator character in a full group path
       if (group_name.find('/') != std::string::npos) {
-        IOSS_ERROR(fmt::format("ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
-			       m_groupName));
+        IOSS_ERROR(fmt::format(
+            "ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n", m_groupName));
       }
 
       m_groupName = group_name;
       exoid       = ex_create_group(exoid, m_groupName.c_str());
       if (exoid < 0) {
-        IOSS_ERROR(fmt::format("ERROR: Could not create group named '{}' in file '{}'.\n", m_groupName,
-			       get_filename()));
+        IOSS_ERROR(fmt::format("ERROR: Could not create group named '{}' in file '{}'.\n",
+                               m_groupName, get_filename()));
       }
       m_exodusFilePtr = exoid;
       success         = true;
@@ -785,11 +787,12 @@ namespace Ioex {
     int step = get_region()->get_current_state();
 
     if (step <= 0) {
-      IOSS_ERROR(fmt::format(                 "ERROR: No currently active state.  The calling code must call "
-                 "Ioss::Region::begin_state(int step)\n"
-                 "       to set the database timestep from which to read the transient data.\n"
-                 "       [{}]\n",
-					      get_filename()));
+      IOSS_ERROR(
+          fmt::format("ERROR: No currently active state.  The calling code must call "
+                      "Ioss::Region::begin_state(int step)\n"
+                      "       to set the database timestep from which to read the transient data.\n"
+                      "       [{}]\n",
+                      get_filename()));
     }
     return step;
   }
@@ -2741,9 +2744,10 @@ namespace Ioex {
         int offset = 1;
         for (const auto &field : attributes) {
           if (block->field_exists(field.get_name())) {
-            IOSS_ERROR(fmt::format(                       "ERROR: In block '{}', attribute '{}' is defined multiple times which is "
-                       "not allowed.\n",
-							  block->name(), field.get_name()));
+            IOSS_ERROR(fmt::format(
+                "ERROR: In block '{}', attribute '{}' is defined multiple times which is "
+                "not allowed.\n",
+                block->name(), field.get_name()));
           }
           block->field_add(field);
           const Ioss::Field &tmp_field = block->get_fieldref(field.get_name());
@@ -2888,9 +2892,9 @@ namespace Ioex {
 
     // Verify that exodus supports the mesh_type...
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-      IOSS_ERROR(fmt::format(                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
-                 "       Only 'Unstructured' is supported at this time.\n",
-					      region->mesh_type_string()));
+      IOSS_ERROR(fmt::format("ERROR: The mesh type is '{}' which Exodus does not support.\n"
+                             "       Only 'Unstructured' is supported at this time.\n",
+                             region->mesh_type_string()));
     }
 
     const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
@@ -3485,7 +3489,7 @@ namespace {
         IOSS_ERROR(fmt::format(
             "INTERNAL ERROR: For block '{}', attribute '{}', the indexing is incorrect.\n"
             "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
-				    block->name(), field_name, __func__));
+            block->name(), field_name, __func__));
       }
 
       for (int i = field_offset; i < field_offset + comp_count; i++) {
