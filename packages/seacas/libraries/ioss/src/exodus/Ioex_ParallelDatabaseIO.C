@@ -95,22 +95,17 @@ namespace {
       return;
     }
     if (nop.empty()) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The use of the 'compose' output option requires the definition of "
+      IOSS_ERROR("ERROR: The use of the 'compose' output option requires the definition of "
                          "the 'owning_processor'"
                          " field prior to the output of nodal data.  This field has not yet been "
                          "defined so output is not possible."
                          " For more information, contact gdsjaar@sandia.gov.\n");
-      IOSS_ERROR(errmsg);
     }
     else if (nop.size() < file_node_count) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: The 'owning_processor' data was defined, but it is not the correct size."
+      IOSS_ERROR(fmt::format(                 "ERROR: The 'owning_processor' data was defined, but it is not the correct size."
                  "  Its size is {}, but it must be at least this size {}."
                  " For more information, contact gdsjaar@sandia.gov.\n",
-                 nop.size(), file_node_count);
-      IOSS_ERROR(errmsg);
+					      nop.size(), file_node_count));
     }
   }
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
@@ -374,13 +369,10 @@ namespace Ioex {
   {
     usingParallelIO = true;
     if (!is_parallel_consistent()) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Parallel IO cannot be used in an application that is not guaranteeing "
+      IOSS_ERROR("ERROR: Parallel IO cannot be used in an application that is not guaranteeing "
                  "parallel consistent calls of the get and put field data functions.\n"
                  "The application created this database with a 'false' setting for the "
                  "isParallelConsistent property.");
-      IOSS_ERROR(errmsg);
     }
 
     if (!is_input()) {
@@ -461,9 +453,7 @@ namespace Ioex {
           *bad_count = std::count_if(status.begin(), status.end(), [](int i) { return i < 0; });
         }
         if (abort_if_error) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Cannot {} file '{}'", open_create, get_filename());
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR(fmt::format("ERROR: Cannot {} file '{}'", open_create, get_filename()));
         }
       }
       return false;
@@ -781,18 +771,14 @@ namespace Ioex {
     int flag;
     MPI_Initialized(&flag);
     if (flag == 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: MPI is not initialized.");
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("ERROR: MPI is not initialized.");
     }
 
     // Make sure all file pointers are valid...
     int fp_min = util().global_minmax(m_exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
     int fp_max = util().global_minmax(m_exodusFilePtr, Ioss::ParallelUtils::DO_MAX);
     if (fp_min != fp_max && fp_min < 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Inconsistent file pointer values.");
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("ERROR: Inconsistent file pointer values.");
     }
     return Ioex::BaseDatabaseIO::free_file_pointer();
   }
@@ -1057,11 +1043,9 @@ namespace Ioex {
     case EX_EDGE_SET: return get_map(edgeMap, edgeCount, 0, 0, EX_EDGE_MAP, EX_INQ_EDGE_MAP);
 
     default:
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "INTERNAL ERROR: Invalid map type. "
+      IOSS_ERROR("INTERNAL ERROR: Invalid map type. "
                          "Something is wrong in the Ioex::ParallelDatabaseIO::get_map() function. "
                          "Please report.\n");
-      IOSS_ERROR(errmsg);
     }
   }
 
@@ -1311,9 +1295,7 @@ namespace Ioex {
 #endif
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Invalid type in get_blocks()");
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("ERROR: Invalid type in get_blocks()");
       }
 
 #if 0
@@ -1796,13 +1778,10 @@ namespace Ioex {
               else if (split_type == Ioss::SPLIT_BY_ELEMENT_BLOCK) {
                 block = get_region()->get_element_block(topo_or_block_name);
                 if (block == nullptr || Ioss::Utils::block_is_omitted(block)) {
-                  std::ostringstream errmsg;
-                  fmt::print(
-                      errmsg,
+                  IOSS_ERROR(fmt::format(
                       "INTERNAL ERROR: Could not find element block '{}'. Something is wrong "
                       "in the Ioex::ParallelDatabaseIO class. Please report.\n",
-                      topo_or_block_name);
-                  IOSS_ERROR(errmsg);
+                      topo_or_block_name));
                 }
                 elem_topo = block->topology();
               }
@@ -2660,9 +2639,7 @@ namespace Ioex {
         }
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Invalid commset type {}", type);
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR(fmt::format("ERROR: Invalid commset type {}", type));
       }
     }
     else if (field.get_name() == "ids") {
@@ -2684,9 +2661,7 @@ namespace Ioex {
     int64_t id           = Ioex::get_id(sb, &ids_);
     int64_t entity_count = sb->entity_count();
     if (num_to_get != entity_count) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Partial field input not yet implemented for side blocks");
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("ERROR: Partial field input not yet implemented for side blocks");
     }
 
     auto &set = decomp->get_decomp_set(EX_SIDE_SET, id);
@@ -2766,13 +2741,10 @@ namespace Ioex {
           for (int64_t iel = 0; iel < 2 * entity_count; iel += 2) {
             int64_t new_id = static_cast<int64_t>(10) * els[iel] + els[iel + 1];
             if (new_id > int_max) {
-              std::ostringstream errmsg;
-              fmt::print(errmsg,
-                         "ERROR: accessing the sideset field 'ids'\n"
+              IOSS_ERROR(fmt::format(                         "ERROR: accessing the sideset field 'ids'\n"
                          "\t\thas exceeded the integer bounds for entity {}, local side id {}.\n"
                          "\t\tTry using 64-bit mode to read the file '{}'.\n",
-                         els[iel], els[iel + 1], get_filename());
-              IOSS_ERROR(errmsg);
+							      els[iel], els[iel + 1], get_filename()));
             }
 
             ids[idx++] = static_cast<int>(new_id);
@@ -3085,10 +3057,8 @@ namespace Ioex {
 
     Ioss::Field::BasicType ioss_type = field.get_type();
     if (ioss_type == Ioss::Field::INTEGER || ioss_type == Ioss::Field::INT64) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "INTERNAL ERROR: Integer attribute fields are not yet handled for read. "
+      IOSS_ERROR("INTERNAL ERROR: Integer attribute fields are not yet handled for read. "
                          "Please report.\n");
-      IOSS_ERROR(errmsg);
     }
 
     std::string    att_name = ge->name() + SEP() + field.get_name();
@@ -3166,9 +3136,7 @@ namespace Ioex {
       int            ierr     = 0;
       auto           var_iter = variables.find(var_name);
       if (var_iter == variables.end()) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Could not find field '{}'\n", var_name);
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR(fmt::format("ERROR: Could not find field '{}'\n", var_name));
       }
       size_t var_index = var_iter->second;
       assert(var_index > 0);
@@ -3205,12 +3173,9 @@ namespace Ioex {
         }
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "IOSS_ERROR: Field storage type must be either integer or double.\n"
+        IOSS_ERROR(fmt::format(                   "IOSS_ERROR: Field storage type must be either integer or double.\n"
                    "       Field '{}' is invalid.\n",
-                   field.get_name());
-        IOSS_ERROR(errmsg);
+						  field.get_name()));
       }
       assert(k == num_entity);
     }
@@ -3242,9 +3207,7 @@ namespace Ioex {
       int  ierr     = 0;
       auto var_iter = m_variables[EX_SIDE_SET].find(var_name);
       if (var_iter == m_variables[EX_SIDE_SET].end()) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Could not find Sideset field '{}'\n", var_name);
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR(fmt::format("ERROR: Could not find Sideset field '{}'\n", var_name));
       }
       size_t var_index = var_iter->second;
       assert(var_index > 0);
@@ -3284,12 +3247,9 @@ namespace Ioex {
         }
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "IOSS_ERROR: Field storage type must be either integer or double.\n"
+        IOSS_ERROR(fmt::format(                   "IOSS_ERROR: Field storage type must be either integer or double.\n"
                    "       Field '{}' is invalid.\n",
-                   field.get_name());
-        IOSS_ERROR(errmsg);
+						  field.get_name()));
       }
       if (i + 1 == comp_count) {
         num_valid_sides = j / comp_count;
@@ -3486,15 +3446,12 @@ namespace Ioex {
       assert(number_sides == 0 || number_distribution_factors / number_sides == nfnodes);
       if (number_sides * nfnodes != number_distribution_factors &&
           number_sides != number_distribution_factors) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "ERROR: SideBlock '{}' has incorrect distribution factor count.\n"
+        IOSS_ERROR(fmt::format(                   "ERROR: SideBlock '{}' has incorrect distribution factor count.\n"
                    "\tThere are {} '{}' sides with {} nodes per side, but there are {}"
                    " distribution factors which is not correct.\n"
                    "\tThere should be either {} or {} distribution factors.\n",
                    sb->name(), number_sides, ftopo->name(), nfnodes, number_distribution_factors,
-                   number_sides, number_sides * nfnodes);
-        IOSS_ERROR(errmsg);
+						  number_sides, number_sides * nfnodes));
       }
       std::string storage = "Real[" + std::to_string(nfnodes) + "]";
       Ioss::Field dist("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH,
@@ -3607,22 +3564,16 @@ namespace Ioex {
       }
 
       if (block == nullptr) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "INTERNAL ERROR: Could not find element block containing element with id {}."
+        IOSS_ERROR(fmt::format(                   "INTERNAL ERROR: Could not find element block containing element with id {}."
                    " Something is wrong in the Ioex::ParallelDatabaseIO class. Please report.\n",
-                   elem_id);
-        IOSS_ERROR(errmsg);
+						  elem_id));
       }
 
       const Ioss::ElementTopology *topo = block->topology()->boundary_type(side_id);
 
       if (topo == nullptr) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "INTERNAL ERROR: Could not find topology of element block boundary. "
+        IOSS_ERROR(                   "INTERNAL ERROR: Could not find topology of element block boundary. "
                    "Something is wrong in the Ioex::ParallelDatabaseIO class. Please report.\n");
-        IOSS_ERROR(errmsg);
       }
 
       int nside_nodes = topo->number_nodes();
@@ -4321,9 +4272,7 @@ namespace Ioex {
 
         auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
         if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Could not find nodal variable '{}'\n", var_name);
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR(fmt::format("ERROR: Could not find nodal variable '{}'\n", var_name));
         }
 
         int var_index = var_iter->second;
@@ -4346,15 +4295,12 @@ namespace Ioex {
         }
 
         if (num_out != static_cast<size_t>(nodeCount)) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
+          IOSS_ERROR(fmt::format(
               "ERROR: Problem outputting nodal variable '{}' with index = {} to file '{}' on "
               "processor {}\n"
               "\tShould have output {} values, but instead only output {} values.\n",
               var_name, var_index, get_filename(), myProcessor, fmt::group_digits(nodeCount),
-              fmt::group_digits(num_out));
-          IOSS_ERROR(errmsg);
+              fmt::group_digits(num_out)));
         }
 
         // Write the variable...
@@ -4438,9 +4384,7 @@ namespace Ioex {
 
         auto var_iter = m_variables[type].find(var_name);
         if (var_iter == m_variables[type].end()) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Could not find field '{}'\n", var_name);
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR(fmt::format("ERROR: Could not find field '{}'\n", var_name));
         }
         int var_index = var_iter->second;
         assert(var_index > 0);
@@ -5025,11 +4969,9 @@ namespace Ioex {
           }
 
           if (!bad_proc.empty()) {
-            std::ostringstream errmsg;
-            fmt::print(errmsg, "ERROR: Negative {} count on {} processor{}:\n\t{}\n\n", label[j],
+            IOSS_ERROR(fmt::format("ERROR: Negative {} count on {} processor{}:\n\t{}\n\n", label[j],
                        bad_proc.size(), bad_proc.size() > 1 ? "s" : "",
-                       Ioss::Utils::format_id_list(bad_proc, ":"));
-            IOSS_ERROR(errmsg);
+				   Ioss::Utils::format_id_list(bad_proc, ":")));
           }
         }
       }
@@ -5060,8 +5002,7 @@ namespace Ioex {
     }
     else { // All other processors; need to abort if negative count
       if (min_val < 0) {
-        std::ostringstream errmsg;
-        IOSS_ERROR(errmsg);
+	IOSS_ERROR("");
       }
     }
   }
@@ -5078,11 +5019,8 @@ namespace Ioex {
     size_t expected_data_size = num_to_get * decomp->int_size();
 
     if (data_size < expected_data_size) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Connectivity data size {} on region {} is less than expected size {}\n\n",
-                 data_size, get_region()->name(), expected_data_size);
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format(                 "ERROR: Connectivity data size {} on region {} is less than expected size {}\n\n",
+					      data_size, get_region()->name(), expected_data_size));
     }
 
     std::vector<size_t> offsets =
@@ -5125,10 +5063,8 @@ namespace Ioex {
 
           auto var_iter = variables.find(var_name);
           if (var_iter == variables.end()) {
-            std::ostringstream errmsg;
-            fmt::print(errmsg, "ERROR: Could not find field '{}' on block '{}'\n", var_name,
-                       entity->name());
-            IOSS_ERROR(errmsg);
+            IOSS_ERROR(fmt::format("ERROR: Could not find field '{}' on block '{}'\n", var_name,
+				   entity->name()));
           }
           size_t var_index = var_iter->second;
           assert(var_index > 0);
@@ -5199,12 +5135,9 @@ namespace Ioex {
             }
           }
           else {
-            std::ostringstream errmsg;
-            fmt::print(errmsg,
-                       "IOSS_ERROR: Field storage type must be either integer or double.\n"
+            IOSS_ERROR(fmt::format(                       "IOSS_ERROR: Field storage type must be either integer or double.\n"
                        "       Field '{}' is invalid.\n",
-                       field.get_name());
-            IOSS_ERROR(errmsg);
+							  field.get_name()));
           }
         }
 
@@ -5232,11 +5165,8 @@ namespace Ioex {
     size_t expected_data_size = get_entity_field_data_size(field_name, elem_blocks);
 
     if (data_size < expected_data_size) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Field {} with data size {} on region {} is less than expected size {}\n\n",
-                 field_name, data_size, get_region()->name(), expected_data_size);
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format(                 "ERROR: Field {} with data size {} on region {} is less than expected size {}\n\n",
+					      field_name, data_size, get_region()->name(), expected_data_size));
     }
 
     return get_entity_transient_field_data(m_variables[EX_ELEM_BLOCK], field_name, elem_blocks,

@@ -135,10 +135,8 @@ namespace {
               }
 
               if (!found) {
-                std::ostringstream errmsg;
-                fmt::print(errmsg, "ERROR: Could not find sub-assembly with id: {} and name: {}",
-                           assembly.id, assembly.name);
-                IOSS_ERROR(errmsg);
+                IOSS_ERROR(fmt::format("ERROR: Could not find sub-assembly with id: {} and name: {}",
+				       assembly.id, assembly.name));
               }
             }
           }
@@ -534,9 +532,7 @@ namespace Ioex {
     int64_t format = ex_inquire_int(exoid, EX_INQ_FILE_FORMAT);
 
     if (format < 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not query file format for file '{}'.\n", get_filename());
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Could not query file format for file '{}'.\n", get_filename()));
     }
 
     return (NC_FORMAT_NETCDF4 == format);
@@ -558,20 +554,16 @@ namespace Ioex {
     float rdum;
     int   ierr = ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
     if (ierr < 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open root group of group named '{}' in file '{}'.\n",
-                 m_groupName, get_filename());
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Could not open root group of group named '{}' in file '{}'.\n",
+			     m_groupName, get_filename()));
     }
 
     m_groupName     = std::string(group_name.data());
     m_exodusFilePtr = ex_inquire_int(exoid, EX_INQ_GROUP_ROOT);
 
     if (m_exodusFilePtr < 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
-                 get_filename());
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
+			     get_filename()));
     }
     success = true;
     return success;
@@ -586,10 +578,8 @@ namespace Ioex {
     // Check name for '/' which is not allowed since it is the
     // separator character in a full group path
     if (set_name.find('/') != std::string::npos) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
-                 set_name);
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
+			     set_name));
     }
 
     if (!open_root_group_nl())
@@ -610,10 +600,8 @@ namespace Ioex {
     ex_get_group_id(exoid, m_groupName.c_str(), &m_exodusFilePtr);
 
     if (m_exodusFilePtr < 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
-                 get_filename());
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
+			     get_filename()));
     }
     success = true;
     return success;
@@ -638,19 +626,15 @@ namespace Ioex {
       // Check name for '/' which is not allowed since it is the
       // separator character in a full group path
       if (group_name.find('/') != std::string::npos) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
-                   m_groupName);
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR(fmt::format("ERROR: Invalid group name '{}' contains a '/' which is not allowed.\n",
+			       m_groupName));
       }
 
       m_groupName = group_name;
       exoid       = ex_create_group(exoid, m_groupName.c_str());
       if (exoid < 0) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Could not create group named '{}' in file '{}'.\n", m_groupName,
-                   get_filename());
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR(fmt::format("ERROR: Could not create group named '{}' in file '{}'.\n", m_groupName,
+			       get_filename()));
       }
       m_exodusFilePtr = exoid;
       success         = true;
@@ -801,14 +785,11 @@ namespace Ioex {
     int step = get_region()->get_current_state();
 
     if (step <= 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: No currently active state.  The calling code must call "
+      IOSS_ERROR(fmt::format(                 "ERROR: No currently active state.  The calling code must call "
                  "Ioss::Region::begin_state(int step)\n"
                  "       to set the database timestep from which to read the transient data.\n"
                  "       [{}]\n",
-                 get_filename());
-      IOSS_ERROR(errmsg);
+					      get_filename()));
     }
     return step;
   }
@@ -1204,10 +1185,7 @@ namespace Ioex {
         get_reduction_field(field, get_region(), data);
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "ERROR: Can not handle non-TRANSIENT or non-REDUCTION fields on regions");
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("ERROR: Can not handle non-TRANSIENT or non-REDUCTION fields on regions");
       }
       return num_to_get;
     }
@@ -1238,14 +1216,11 @@ namespace Ioex {
         ;
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(
-            errmsg,
+        IOSS_ERROR(fmt::format(
             "ERROR: The variable named '{}' is of the wrong type. A region variable must be of type"
             " TRANSIENT or REDUCTION.\n"
             "This is probably an internal error; please notify gdsjaar@sandia.gov",
-            field.get_name());
-        IOSS_ERROR(errmsg);
+            field.get_name()));
       }
       return num_to_get;
     }
@@ -2766,12 +2741,9 @@ namespace Ioex {
         int offset = 1;
         for (const auto &field : attributes) {
           if (block->field_exists(field.get_name())) {
-            std::ostringstream errmsg;
-            fmt::print(errmsg,
-                       "ERROR: In block '{}', attribute '{}' is defined multiple times which is "
+            IOSS_ERROR(fmt::format(                       "ERROR: In block '{}', attribute '{}' is defined multiple times which is "
                        "not allowed.\n",
-                       block->name(), field.get_name());
-            IOSS_ERROR(errmsg);
+							  block->name(), field.get_name()));
           }
           block->field_add(field);
           const Ioss::Field &tmp_field = block->get_fieldref(field.get_name());
@@ -2916,12 +2888,9 @@ namespace Ioex {
 
     // Verify that exodus supports the mesh_type...
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
+      IOSS_ERROR(fmt::format(                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
                  "       Only 'Unstructured' is supported at this time.\n",
-                 region->mesh_type_string());
-      IOSS_ERROR(errmsg);
+					      region->mesh_type_string()));
     }
 
     const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
@@ -3351,9 +3320,7 @@ namespace Ioex {
     std::string currentGroupName     = m_groupName;
 
     if (!open_root_group_nl()) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open root group.\n", m_groupName);
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Could not open root group.\n", m_groupName));
     }
 
     int numChildGroup = num_child_group();
@@ -3376,9 +3343,7 @@ namespace Ioex {
   bool BaseDatabaseIO::open_internal_change_set_nl(int index)
   {
     if (!open_root_group_nl()) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not open root group.\n", m_groupName);
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR(fmt::format("ERROR: Could not open root group.\n", m_groupName));
     }
 
     return open_child_group_nl(index);
@@ -3517,39 +3482,30 @@ namespace {
       }
 
       if (field_offset + comp_count - 1 > attribute_count) {
-        std::ostringstream errmsg;
-        fmt::print(
-            errmsg,
+        IOSS_ERROR(fmt::format(
             "INTERNAL ERROR: For block '{}', attribute '{}', the indexing is incorrect.\n"
             "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
-            block->name(), field_name, __func__);
-        IOSS_ERROR(errmsg);
+				    block->name(), field_name, __func__));
       }
 
       for (int i = field_offset; i < field_offset + comp_count; i++) {
         if (attributes[i] != 0) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
+          IOSS_ERROR(fmt::format(
               "INTERNAL ERROR: For block '{}', attribute '{}', indexes into the same location as a "
               "previous attribute.\n"
               "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
-              block->name(), field_name, __func__);
-          IOSS_ERROR(errmsg);
+              block->name(), field_name, __func__));
         }
         attributes[i] = 1;
       }
     }
 
     if (component_sum > attribute_count) {
-      std::ostringstream errmsg;
-      fmt::print(
-          errmsg,
+      IOSS_ERROR(fmt::format(
           "INTERNAL ERROR: Block '{}' is supposed to have {} attributes, but {} attributes "
           "were counted.\n"
           "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
-          block->name(), attribute_count, component_sum, __func__);
-      IOSS_ERROR(errmsg);
+          block->name(), attribute_count, component_sum, __func__));
     }
 
     // Take care of the easy cases first...
@@ -3558,13 +3514,10 @@ namespace {
       // caught above in the duplicate index check.
       for (int i = 1; i <= attribute_count; i++) {
         if (attributes[i] == 0) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
+          IOSS_ERROR(fmt::format(
               "INTERNAL ERROR: Block '{}' has an incomplete set of attributes.\n"
               "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
-              block->name(), __func__);
-          IOSS_ERROR(errmsg);
+              block->name(), __func__));
         }
       }
       return;
