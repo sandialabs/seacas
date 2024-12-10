@@ -11,35 +11,13 @@
 #include <vector> // for vector
 namespace Excn {
   class Block;
-} // namespace Excn
-namespace Excn {
   class CommunicationMetaData;
-} // namespace Excn
-namespace Excn {
   class Mesh;
-} // namespace Excn
-namespace Excn {
   template <typename INT> class NodeSet;
-} // namespace Excn
-namespace Excn {
   template <typename INT> class SideSet;
-} // namespace Excn
-namespace Excn {
   template <typename INT> class EdgeBlock;
-} // namespace Excn
-namespace Excn {
   template <typename INT> class FaceBlock;
-} // namespace Excn
-namespace Excn {
-} // namespace Excn
-namespace Excn {
-} // namespace Excn
-namespace Excn {
-} // namespace Excn
-namespace Excn {
-} // namespace Excn
-namespace Excn {
-} // namespace Excn
+}
 
 /*!
  * This set of classes provides a thin wrapper around the exodusII
@@ -91,8 +69,8 @@ namespace Excn {
   template <typename INT> class Internals
   {
   public:
-    Internals(int exoid, int maximum_name_length)
-        : exodusFilePtr(exoid), maximumNameLength(maximum_name_length)
+    Internals(int exoid, int maximum_name_length, int change_set_number)
+      : exodusFilePtr(exoid), maximumNameLength(maximum_name_length), changeSetNumber(change_set_number)
     {
     }
 
@@ -131,5 +109,6 @@ namespace Excn {
     int commIndexVar{};
     int elemCommIndexVar{};
     int maximumNameLength{};
+    int changeSetNumber{0};
   };
 } // namespace Excn

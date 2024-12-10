@@ -104,7 +104,7 @@ namespace {
 
   int get_width(int max_value);
 
-  void LOG(const char *message)
+  void LOG(std::string_view message)
   {
     if ((debug_level & 1) != 0u) {
       fmt::print("{}", time_stamp(tsFormat));
@@ -116,14 +116,13 @@ namespace {
 
   [[noreturn]] void exodus_error(int lineno)
   {
-    std::ostringstream errmsg;
-    fmt::print(errmsg,
+    auto errmsg = fmt::format(
                "Exodus error ({}) {} at line {} in file epu.C. Please report to gdsjaar@sandia.gov "
                "if you need help.",
                exerrval, ex_strerror(exerrval), lineno);
 
     ex_err(nullptr, nullptr, EX_PRTLASTMSG);
-    throw std::runtime_error(errmsg.str());
+    throw std::runtime_error(errmsg);
   }
 
   template <typename T> void clear(std::vector<T> &vec)
@@ -679,10 +678,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
     fmt::print("\nIO Word sizes: {} bytes floating point and {} bytes integer.\n", sizeof(T),
                sizeof(INT));
   }
-  int p; // file counter p=0..part_count-1
-
-  auto *mytitle = new char[MAX_LINE_LENGTH + 1];
-  memset(mytitle, '\0', MAX_LINE_LENGTH + 1);
+  std::vector<char> mytitle(MAX_LINE_LENGTH + 1, '\0');
 
   Mesh global;
 
@@ -703,7 +699,20 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   // ******************************************************************
   // 1. Read global info
 
+  bool first_change_set = true;
   int error = 0;
+
+  int cs_count = ExodusFile::get_change_set_count();
+  int cs_start = (cs_count > 0 ? 1 : 0);
+  if (interFace.selected_change_set() > 0) {
+    cs_start = interFace.selected_change_set();
+    cs_count = cs_start;
+  }
+  for (int cs = cs_start; cs <= cs_count; cs++) {
+    ExodusFile::set_active_change_set(cs);
+
+    LOG(fmt::format("\n\n**** PROCESSING CHANGE SET {} of {} ****\n", 
+		    ExodusFile::get_active_change_set(), ExodusFile::get_change_set_count()));
 
   LOG("\n**** READ LOCAL (GLOBAL) INFO ****\n");
   std::string title0;
@@ -726,7 +735,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   // find the first processor which has a non-zero node count to use
   // when we look for the nodal variable count.
   int64_t non_zero_node_count = -1;
-  for (p = 0; p < part_count; p++) {
+  for (int p = 0; p < part_count; p++) {
     ex_init_params exodus{};
     error = ex_get_init_ext(ExodusFile(p), &exodus);
     if (error < 0) {
@@ -751,7 +760,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
     }
 
     if (p == 0) {
-      global.title          = mytitle;
+      global.title          = mytitle.data();
       global.dimensionality = local_mesh[p].dimensionality;
       global.blockCount     = local_mesh[p].count(Excn::ObjectType::EBLK);
       global.nodesetCount   = local_mesh[p].count(Excn::ObjectType::NSET);
@@ -800,8 +809,6 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   if (non_zero_node_count == -1) {
     non_zero_node_count = 0; // No nodes on entire model...
   }
-
-  delete[] mytitle;
 
   if (interFace.omit_edgeblocks()) {
     global.edgeBlockCount = 0;
@@ -972,7 +979,10 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
       }
     }
 
-    ExodusFile::create_output(interFace, cycle);
+    if (first_change_set) {
+      ExodusFile::create_output(interFace, cycle);
+      first_change_set = false;
+    }
 
     // EPU assumes IDS are always passed through the API as 64-bit ints.
     SMART_ASSERT(ex_int64_status(ExodusFile::output()) & EX_IDS_INT64_API);
@@ -991,7 +1001,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
     put_global_info(global);
     get_put_coordinate_frames<T>(ExodusFile(0), ExodusFile::output());
 
-    Internals<INT> exodus(ExodusFile::output(), ExodusFile::max_name_length());
+    Internals<INT> exodus(ExodusFile::output(), ExodusFile::max_name_length(), ExodusFile::get_active_change_set());
 
     if (interFace.append()) {
       bool matches = exodus.check_meta_data(global, glob_blocks, glob_nsets, glob_ssets,
@@ -1007,6 +1017,11 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
 
       exodus.write_meta_data(global, glob_blocks, glob_nsets, glob_ssets, glob_edgeblocks,
                              glob_faceblocks, comm_data);
+
+      if (ExodusFile::get_active_change_set() <= 1) {
+	int id_out = ExodusFile::output();
+	get_put_qa(ExodusFile(0), id_out);
+      }
 
       get_put_assemblies(ExodusFile(0), ExodusFile::output(), global);
 
@@ -1234,14 +1249,13 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   // 10. Get Transient Data
   //     This routine reads in a time dump from an EXODUSII file
 
-  int time_step;
   int num_time_steps = 0;
 
   LOG("\n**** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****\n");
   // Stage I: Get the number_of_time_steps information
 
   bool differ = false;
-  for (p = 0; p < part_count; p++) {
+  for (int p = 0; p < part_count; p++) {
     ExodusFile id(p);
 
     int nts = ex_inquire_int(id, EX_INQ_TIME);
@@ -1345,7 +1359,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
 
   double start_time = seacas_timer();
 
-  for (time_step = ts_min - 1; time_step < ts_max; time_step += ts_step) {
+  for (int time_step = ts_min - 1; time_step < ts_max; time_step += ts_step) {
     time_step_out++;
 
     T time_val = -std::numeric_limits<T>::max();
@@ -1375,7 +1389,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
         exodus_error(__LINE__);
       }
 
-      for (p = 1; p < part_count; p++) {
+      for (int p = 1; p < part_count; p++) {
         ExodusFile idp(p);
         T          proc_time_val = 0.0;
         error                    = ex_get_time(idp, time_step + 1, &proc_time_val);
@@ -1421,7 +1435,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
         // Check global variable consistency...
         if (debug_level & 512) {
           std::vector<T> proc_global_values(global_vars.count(InOut::IN));
-          for (p = 1; p < part_count; p++) {
+          for (int p = 1; p < part_count; p++) {
             ExodusFile idp(p);
             error = ex_get_var(idp, time_step + 1, EX_GLOBAL, 0, 0, global_vars.count(InOut::IN),
                                Data(proc_global_values));
@@ -1466,7 +1480,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
           std::fill(master_values.begin(), master_values.end(), fill_val);
         }
 
-        for (p = 0; p < part_count; p++) {
+        for (int p = 0; p < part_count; p++) {
           ExodusFile id(p);
 
           size_t node_count = local_mesh[p].nodeCount;
@@ -1635,6 +1649,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   }
   if (subcycles > 2) {
     fmt::print("{}/{} ", cycle + 1, subcycles);
+  }
   }
   fmt::print("\n\nTotal Execution Time = {:.2f} seconds, Maximum memory = {} MiBytes.\n******* "
              "END *******\n",
@@ -3194,8 +3209,6 @@ namespace {
                  fmt::group_digits(global.count(Excn::ObjectType::EDBLK)),
                  fmt::group_digits(global.count(Excn::ObjectType::FABLK)));
     }
-    int id_out = ExodusFile::output();
-    get_put_qa(ExodusFile(0), id_out);
   }
 
   template <typename T, typename INT>

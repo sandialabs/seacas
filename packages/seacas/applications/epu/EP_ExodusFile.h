@@ -26,6 +26,10 @@ namespace Excn {
     static void create_output(const SystemInterface &si, int cycle);
     static void close_all();
 
+    static int  set_active_change_set(int cs);
+    static int  get_active_change_set() {return activeChangeSet_;}
+    static int  get_change_set_count() {return changeSetCount_;}
+
     static int output();
     static int io_word_size() { return ioWordSize_; }
     operator int() const;
@@ -48,7 +52,9 @@ namespace Excn {
     static int                      mode64bit_;
     static int                      changeSetCount_;
     static int                      activeChangeSet_;
+    static int                      activeOutputChangeSet_;
     static bool                     keepOpen_;
     static bool                     verifyValidFile_;
+    static bool                     onlySelectedChangeSet_;
   };
 } // namespace Excn
