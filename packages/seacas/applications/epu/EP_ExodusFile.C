@@ -28,17 +28,45 @@
 
 std::vector<int>         Excn::ExodusFile::fileids_;
 std::vector<std::string> Excn::ExodusFile::filenames_;
-int                      Excn::ExodusFile::processorCount_ = 0;
-int                      Excn::ExodusFile::partCount_      = 0;
-int                      Excn::ExodusFile::startPart_      = 0;
-int                      Excn::ExodusFile::outputId_       = -1;
-int                      Excn::ExodusFile::ioWordSize_     = 0;
-int                      Excn::ExodusFile::cpuWordSize_    = 0;
-int                      Excn::ExodusFile::mode64bit_      = 0;
+int                      Excn::ExodusFile::processorCount_  = 0;
+int                      Excn::ExodusFile::partCount_       = 0;
+int                      Excn::ExodusFile::startPart_       = 0;
+int                      Excn::ExodusFile::outputId_        = -1;
+int                      Excn::ExodusFile::ioWordSize_      = 0;
+int                      Excn::ExodusFile::cpuWordSize_     = 0;
+int                      Excn::ExodusFile::mode64bit_       = 0;
+int                      Excn::ExodusFile::changeSetCount_  = -1;
+int                      Excn::ExodusFile::activeChangeSet_ = 0;
 std::string              Excn::ExodusFile::outputFilename_;
-bool                     Excn::ExodusFile::keepOpen_          = false;
-bool                     Excn::ExodusFile::verifyValidFile_   = false;
-int                      Excn::ExodusFile::maximumNameLength_ = 32;
+bool                     Excn::ExodusFile::keepOpen_              = false;
+bool                     Excn::ExodusFile::verifyValidFile_       = false;
+bool                     Excn::ExodusFile::onlySelectedChangeSet_ = false;
+int                      Excn::ExodusFile::maximumNameLength_     = 32;
+
+namespace {
+  void create_output_change_sets()
+  {
+    int save      = Excn::ExodusFile::set_active_change_set(0);
+    int output_id = Excn::ExodusFile::output();
+
+    Excn::ExodusFile::set_active_change_set(1);
+    int               exoid             = Excn::ExodusFile(0);
+    int               group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    std::vector<char> group_name(group_name_length + 1, '\0');
+
+    fmt::print("Output file id = {}\n", output_id);
+    for (int i = 0; i < Excn::ExodusFile::get_change_set_count(); i++) {
+      int   idum;
+      float rdum;
+      // Get name of this group...
+      int ierr = ex_inquire(exoid + i, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
+
+      int cs_id = ex_create_group(output_id, group_name.data());
+      fmt::print("Change set {} is {} with exoid {}\n", i + 1, group_name.data(), cs_id);
+    }
+    Excn::ExodusFile::set_active_change_set(save);
+  }
+} // namespace
 
 Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
 {
@@ -60,6 +88,22 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
     }
     ex_set_max_name_length(fileids_[processor], maximumNameLength_);
 
+    // Check for change_sets...
+    int num_change_sets = ex_inquire_int(fileids_[processor], EX_INQ_NUM_CHILD_GROUPS);
+    if (changeSetCount_ < 0) {
+      changeSetCount_ = num_change_sets;
+      if (activeChangeSet_ >= changeSetCount_) {
+        auto error = fmt::format("Selected Change set {} exceeds change set count {} - exiting\n",
+                                 activeChangeSet_ + 1, changeSetCount_);
+        throw std::runtime_error(error);
+      }
+    }
+    else {
+      if (changeSetCount_ != num_change_sets) {
+        throw std::runtime_error("Inconsistent change set count in one or more files - exiting\n");
+      }
+    }
+
     SMART_ASSERT(io_word_size_var == ioWordSize_);
     SMART_ASSERT(cpu_word_size == cpuWordSize_);
   }
@@ -68,13 +112,13 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
 int Excn::ExodusFile::output()
 {
   SMART_ASSERT(outputId_ >= 0);
-  return outputId_;
+  return outputId_ + (onlySelectedChangeSet_ ? 0 : activeChangeSet_);
 }
 
 Excn::ExodusFile::operator int() const
 {
   SMART_ASSERT(fileids_[myProcessor_] >= 0);
-  return fileids_[myProcessor_];
+  return fileids_[myProcessor_] + activeChangeSet_;
 }
 
 Excn::ExodusFile::~ExodusFile()
@@ -155,13 +199,19 @@ void Excn::ExodusFile::handle_temporary_files(bool delete_them)
   }
 }
 
-bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int part_count,
+void Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int part_count,
                                   int cycle, bool joining_subcycle)
 {
   processorCount_ = si.processor_count(); // Total number processors
   partCount_      = part_count;           // Total parts we are processing
   startPart_      = start_part;           // Which one to start with
   SMART_ASSERT(partCount_ + startPart_ <= processorCount_)(partCount_)(startPart_)(processorCount_);
+
+  activeChangeSet_ = si.selected_change_set();
+  if (si.selected_change_set() > 0) {
+    onlySelectedChangeSet_ = true;
+    ;
+  }
 
   // EPU always wants entity (block, set, map) ids as 64-bit quantities...
   mode64bit_ = EX_IDS_INT64_API;
@@ -231,7 +281,26 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
       int exoid = ex_open(filenames_[p].c_str(), mode, &cpu_word_size, &io_word_size_var, &version);
       if (exoid < 0) {
         fmt::print(stderr, fmt::fg(fmt::color::red), "Cannot open file '{}'\n", filenames_[p]);
-        return false;
+        throw std::runtime_error("ERROR: (EPU) Problem initializing input and/or output files.\n");
+      }
+
+      // Check for change_sets...
+      int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+      if (changeSetCount_ < 0) {
+        changeSetCount_ = num_change_sets;
+        if (activeChangeSet_ >= changeSetCount_) {
+          auto error =
+              fmt::format("ERROR: Selected Change set {} exceeds change set count {} - exiting\n",
+                          activeChangeSet_ + 1, changeSetCount_);
+          throw std::runtime_error(error);
+        }
+      }
+      else {
+        if (changeSetCount_ != num_change_sets) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "Inconsistent change set count in one or more files - exiting\n");
+          throw std::runtime_error(errmsg.str());
+        }
       }
 
       int int64db = ex_int64_status(exoid) & EX_ALL_INT64_DB;
@@ -266,7 +335,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
           ex_open(filenames_[p].c_str(), mode, &cpuWordSize_, &io_word_size_var, &version);
       if (fileids_[p] < 0) {
         fmt::print(stderr, fmt::fg(fmt::color::red), "Cannot open file '{}'\n", filenames_[p]);
-        return false;
+        throw std::runtime_error("ERROR: (EPU) Problem initializing input and/or output files.\n");
       }
       ex_set_max_name_length(fileids_[p], maximumNameLength_);
       SMART_ASSERT(ioWordSize_ == io_word_size_var)(ioWordSize_)(io_word_size_var);
@@ -286,11 +355,29 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     }
     si.set_int64();
   }
-
-  return true;
 }
 
-bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
+// `cs` is the 0-based change-set to select
+int Excn::ExodusFile::set_active_change_set(int cs)
+{
+  int save = activeChangeSet_;
+
+  if (changeSetCount_ < 0) {
+    throw std::runtime_error(
+        "ERROR: (EPU) Cannot set active change set before changes sets have been queried.\n");
+  }
+  if (cs <= changeSetCount_) {
+    activeChangeSet_ = cs;
+  }
+  else {
+    throw std::runtime_error(
+        fmt::format("ERROR: (EPU) Active change set index {} exceeds change set count {}.\n", cs,
+                    changeSetCount_));
+  }
+  return save;
+}
+
+void Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
 // Create output file...
 {
   std::string curdir        = si.cwd();
@@ -316,7 +403,11 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   // Did user specify it via -netcdf4 or -large_model argument...
   int mode = 0;
 
-  if (si.compress_data() > 0 || si.szip()) {
+  if (changeSetCount_ > 1 && !onlySelectedChangeSet_) {
+    mode |= EX_NETCDF4;
+    mode |= EX_NOCLASSIC;
+  }
+  else if (si.compress_data() > 0 || si.szip()) {
     // Force netcdf-4 if compression is specified...
     mode |= EX_NETCDF4;
   }
@@ -350,7 +441,7 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   }
   if (outputId_ < 0) {
     fmt::print(stderr, fmt::fg(fmt::color::red), "Cannot open file '{}'\n", outputFilename_);
-    return false;
+    throw std::runtime_error("ERROR: (EPU) Problem creating output file.\n");
   }
 
   if (si.compress_data() > 0 || si.szip()) {
@@ -374,9 +465,16 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
     }
   }
 
+  // Check whether input file(s) have changesets.  If they do and the `selected_change_set` is
+  // not `0`, then we are combining all change sets on the input to the output.  Create them
+  // now...
+  if (changeSetCount_ > 1 && !onlySelectedChangeSet_) {
+    // Get the names of the change sets on the input file and create them on output file...
+    create_output_change_sets();
+  }
+
   // EPU Can add a name of "processor_id_epu" which is 16 characters long.
   // Make sure maximumNameLength_ is at least that long...
-
   if (maximumNameLength_ < 16) {
     maximumNameLength_ = 16;
   }
@@ -387,5 +485,4 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
     fmt::print("IO Word sizes: {} bytes floating point and {} bytes integer.\n", ioWordSize_,
                int_size);
   }
-  return true;
 }
