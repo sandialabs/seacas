@@ -180,7 +180,7 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("quantize_nsd", GetLongOption::MandatoryValue,
                   "Use the lossy quantize compression method.\n"
-		  "\t\tValue specifies number of digits to retain (1..15) [exodus only]",
+                  "\t\tValue specifies number of digits to retain (1..15) [exodus only]",
                   nullptr, nullptr, true);
 
   options_.enroll("append", GetLongOption::NoValue,
@@ -271,7 +271,7 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("sum_shared_nodes", GetLongOption::NoValue,
                   "[Rare, special case]\n"
-		  "\t\tThe nodal results data on all shared nodes (nodes on processor boundaries)\n"
+                  "\t\tThe nodal results data on all shared nodes (nodes on processor boundaries)\n"
                   "\t\twill be the sum of the individual nodal results data on each shared node.\n"
                   "\t\tThe default behavior assumes that the values are equal.",
                   nullptr);

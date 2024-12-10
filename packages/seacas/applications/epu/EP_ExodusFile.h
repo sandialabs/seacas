@@ -26,9 +26,9 @@ namespace Excn {
     static void create_output(const SystemInterface &si, int cycle);
     static void close_all();
 
-    static int  set_active_change_set(int cs);
-    static int  get_active_change_set() {return activeChangeSet_;}
-    static int  get_change_set_count() {return changeSetCount_;}
+    static int set_active_change_set(int cs);
+    static int get_active_change_set() { return activeChangeSet_; }
+    static int get_change_set_count() { return changeSetCount_; }
 
     static int output();
     static int io_word_size() { return ioWordSize_; }

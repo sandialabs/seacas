@@ -422,14 +422,14 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
   int map_type = get_type(exodusFilePtr, EX_MAPS_INT64_DB);
 
   std::string errmsg;
-  int status;
+  int         status;
 
   if (changeSetNumber <= 1) {
     // define some attributes...
     int rootid = exodusFilePtr & EX_FILE_ID_MASK;
 
-    status = nc_put_att_text(rootid, NC_GLOBAL, ATT_TITLE, mesh.title.length() + 1,
-				 mesh.title.c_str());
+    status =
+        nc_put_att_text(rootid, NC_GLOBAL, ATT_TITLE, mesh.title.length() + 1, mesh.title.c_str());
     if (status != NC_NOERR) {
       errmsg = fmt::format("Error: failed to define title attribute to file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
@@ -443,11 +443,11 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
       int current_len = 0;
       status = nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &current_len);
       if (status != NC_NOERR) {
-	ex_opts(EX_VERBOSE);
-	errmsg = fmt::format("Error: failed to define ATT_MAX_NAME_LENGTH attribute to file id {}",
-			     exodusFilePtr);
-	ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-	return EX_FATAL;
+        ex_opts(EX_VERBOSE);
+        errmsg = fmt::format("Error: failed to define ATT_MAX_NAME_LENGTH attribute to file id {}",
+                             exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return EX_FATAL;
       }
     }
 
@@ -458,7 +458,8 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
     status = nc_def_dim(rootid, DIM_STR_NAME, maximumNameLength + 1, &namestrdim);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to define name string length in file id {}", exodusFilePtr);
+      errmsg =
+          fmt::format("Error: failed to define name string length in file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }

@@ -17,7 +17,7 @@ namespace Excn {
   template <typename INT> class SideSet;
   template <typename INT> class EdgeBlock;
   template <typename INT> class FaceBlock;
-}
+} // namespace Excn
 
 /*!
  * This set of classes provides a thin wrapper around the exodusII
@@ -70,7 +70,8 @@ namespace Excn {
   {
   public:
     Internals(int exoid, int maximum_name_length, int change_set_number)
-      : exodusFilePtr(exoid), maximumNameLength(maximum_name_length), changeSetNumber(change_set_number)
+        : exodusFilePtr(exoid), maximumNameLength(maximum_name_length),
+          changeSetNumber(change_set_number)
     {
     }
 
