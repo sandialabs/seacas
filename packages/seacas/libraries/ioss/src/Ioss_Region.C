@@ -909,7 +909,7 @@ namespace Ioss {
       }
     }
 
-    if(get_state() == STATE_TRANSIENT) {
+    if (get_state() == STATE_TRANSIENT) {
       // Makes sure we return proper stateCount in case of dynamic topology changes
       update_dynamic_topology();
     }
