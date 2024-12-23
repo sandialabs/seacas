@@ -909,6 +909,11 @@ namespace Ioss {
       }
     }
 
+    if (get_state() == STATE_TRANSIENT) {
+      // Makes sure we return proper stateCount in case of dynamic topology changes
+      update_dynamic_topology();
+    }
+
     if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
         get_database()->usage() == WRITE_RESTART) {
       stateTimes.push_back(time);
