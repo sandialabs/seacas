@@ -13,9 +13,9 @@
 #include "open_file_limit.h"
 #include "smart_assert.h"
 
-#include <fmt/ranges.h>
 #include <fmt/color.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include <climits>
 #include <cstddef>
@@ -64,14 +64,16 @@ namespace {
       // Get name of this group...
       int ierr = ex_inquire(exoid + i, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
       if (ierr != EX_NOERR) {
-	throw std::runtime_error(fmt::format("ERROR: (EPU) Could not get name for group {} in input file - exiting\n", i + 1));
+        throw std::runtime_error(fmt::format(
+            "ERROR: (EPU) Could not get name for group {} in input file - exiting\n", i + 1));
       }
       int cs_id = ex_create_group(output_id, group_name.data());
       if (cs_id <= 0) {
-	throw std::runtime_error(fmt::format("ERROR: (EPU) Could not create group {} in output file.\n", fmt::join(group_name, "")));
+        throw std::runtime_error(fmt::format(
+            "ERROR: (EPU) Could not create group {} in output file.\n", fmt::join(group_name, "")));
       }
       if ((si.debug() & 1024) != 0) {
-	fmt::print("Change set {} is {} with exoid {}\n", i + 1, group_name.data(), cs_id);
+        fmt::print("Change set {} is {} with exoid {}\n", i + 1, group_name.data(), cs_id);
       }
     }
     Excn::ExodusFile::set_active_change_set(save);
@@ -92,7 +94,8 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
     fileids_[processor] =
         ex_open(filenames_[processor].c_str(), mode, &cpu_word_size, &io_word_size_var, &version);
     if (fileids_[processor] < 0) {
-      throw std::runtime_error(fmt::format("ERROR: (EPU) Cannot open file '{}' - exiting\n", filenames_[processor]));
+      throw std::runtime_error(
+          fmt::format("ERROR: (EPU) Cannot open file '{}' - exiting\n", filenames_[processor]));
     }
     ex_set_max_name_length(fileids_[processor], maximumNameLength_);
 
@@ -110,14 +113,16 @@ void Excn::ExodusFile::set_change_set_count(int processor)
   if (changeSetCount_ < 0) {
     changeSetCount_ = num_change_sets;
     if (activeChangeSet_ >= changeSetCount_) {
-      auto error = fmt::format("ERROR: (EPU) Selected Change set {} exceeds change set count {} - exiting\n",
-			       activeChangeSet_ + 1, changeSetCount_);
+      auto error =
+          fmt::format("ERROR: (EPU) Selected Change set {} exceeds change set count {} - exiting\n",
+                      activeChangeSet_ + 1, changeSetCount_);
       throw std::runtime_error(error);
     }
   }
   else {
     if (changeSetCount_ != num_change_sets) {
-      throw std::runtime_error("ERROR: (EPU) Inconsistent change set count in one or more files - exiting\n");
+      throw std::runtime_error(
+          "ERROR: (EPU) Inconsistent change set count in one or more files - exiting\n");
     }
   }
 }
