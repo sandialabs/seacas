@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-, 20242024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-, 20242024,  National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -38,7 +38,7 @@ namespace Excn {
     static void unlink_input_files();
 
   private:
-    static void set_change_set_count(int processor);
+    static void set_change_set_count(int exoid);
 
     int                             myProcessor_;
     static std::vector<std::string> filenames_;

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023, 2024, 2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -100,16 +100,16 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
     ex_set_max_name_length(fileids_[processor], maximumNameLength_);
 
     // Check for change_sets...
-    set_change_set_count(processor);
+    set_change_set_count(fileids_[processor]);
 
     SMART_ASSERT(io_word_size_var == ioWordSize_);
     SMART_ASSERT(cpu_word_size == cpuWordSize_);
   }
 }
 
-void Excn::ExodusFile::set_change_set_count(int processor)
+void Excn::ExodusFile::set_change_set_count(int exoid)
 {
-  int num_change_sets = ex_inquire_int(fileids_[processor], EX_INQ_NUM_CHILD_GROUPS);
+  int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
   if (changeSetCount_ < 0) {
     changeSetCount_ = num_change_sets;
     if (activeChangeSet_ >= changeSetCount_) {
@@ -303,7 +303,7 @@ void Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
       }
 
       // Check for change_sets...
-      set_change_set_count(p);
+      set_change_set_count(exoid);
 
       int int64db = ex_int64_status(exoid) & EX_ALL_INT64_DB;
       if (int64db != 0) {
