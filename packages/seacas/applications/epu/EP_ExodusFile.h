@@ -38,6 +38,8 @@ namespace Excn {
     static void unlink_input_files();
 
   private:
+    static void set_change_set_count(int processor);
+
     int                             myProcessor_;
     static std::vector<std::string> filenames_;
     static std::vector<int>         fileids_;

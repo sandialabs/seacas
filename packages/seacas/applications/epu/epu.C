@@ -758,7 +758,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
       }
 
       if (p == 0) {
-        global.title          = mytitle.data();
+        global.title          = Data(mytitle);
         global.dimensionality = local_mesh[p].dimensionality;
         global.blockCount     = local_mesh[p].count(Excn::ObjectType::EBLK);
         global.nodesetCount   = local_mesh[p].count(Excn::ObjectType::NSET);
