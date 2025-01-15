@@ -46,8 +46,8 @@ else
   fi
   if [ "$COMPILER" == "intel" ]
   then
-      export CC=icc
-      export CXX=icc
+      export CC=icx
+      export CXX=icpx
   fi
   if [ "$COMPILER" == "analyzer" ]
   then
