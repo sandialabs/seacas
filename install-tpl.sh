@@ -590,7 +590,7 @@ if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
-	cgns_version="v4.4.0"
+	cgns_version="v4.5.0"
         echo "${txtgrn}+++ CGNS ${cgns_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/cgns || exit
@@ -763,7 +763,7 @@ if [ "$FMT" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
     then
-        fmt_version="11.0.2"
+        fmt_version="11.1.2"
         echo "${txtgrn}+++ FMT ${fmt_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
@@ -806,7 +806,7 @@ if [ "$KOKKOS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
     then
-        kokkos_version="3.6.00"
+        kokkos_version="4.5.01"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
         cd $ACCESS || exit
         cd TPL/kokkos || exit
@@ -814,9 +814,10 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf kokkos
-            wget --no-check-certificate https://github.com/kokkos/kokkos/archive/${kokkos_version}.tar.gz
-            tar -zxf ${kokkos_version}.tar.gz
-            rm -f ${kokkos_version}.tar.gz
+	    
+            wget --no-check-certificate https://github.com/kokkos/kokkos/releases/download/${kokkos_version}/kokkos-${kokkos_version}.tar.gz
+            tar -zxf kokkos-${kokkos_version}.tar.gz
+            rm -f kokkos-${kokkos_version}.tar.gz
             ln -s kokkos-${kokkos_version} kokkos
         fi
 
@@ -977,7 +978,7 @@ if [ "$CATCH2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
     then
-        catch2_version="v3.7.0"
+        catch2_version="v3.8.0"
         echo "${txtgrn}+++ Catch2 ${catch2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/catch2 || exit
