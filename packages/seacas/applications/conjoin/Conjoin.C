@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -418,7 +418,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   SMART_ASSERT(sizeof(T) == Excn::ExodusFile::io_word_size());
 
   const T alive      = interFace.alive_value();
-  size_t  part_count = interFace.inputFiles_.size();
+  size_t  part_count = Excn::ExodusFile::part_count();
 
   std::array<char, MAX_LINE_LENGTH + 1> mytitle{};
 
@@ -1733,7 +1733,7 @@ namespace {
         fmt::print(
             stderr,
             "WARNING: Duplicate node ids were found. Their ids have been renumbered to remove "
-            "duplicates. If the part meshes should be identical, maybe use the "
+            "duplicates.\n\tIf the part meshes should be identical, maybe use the "
             "--ignore_coordinate option.\n");
       }
     }
