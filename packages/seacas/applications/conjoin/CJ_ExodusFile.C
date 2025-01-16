@@ -85,7 +85,7 @@ void Excn::ExodusFile::close_all()
   else {
     for (auto &elem : fileids_) {
       if (elem > 0) {
-	ex_close(elem);
+        ex_close(elem);
       }
       elem = -1;
     }
@@ -109,15 +109,15 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
     fmt::print("Single file mode... (Max open = {})\n\n", max_files);
   }
 
-  float version = 0.0;
-  int overall_max_name_length = 32;
+  float version                 = 0.0;
+  int   overall_max_name_length = 32;
 
   if (si.inputFiles_.size() == 1) {
     // The file should contain multiple change sets which will be concatenated...
-    int cpu_word_size = sizeof(double);
-    int io_wrd_size   = sizeof(double);
-    std::string name = si.inputFiles_[0];
-    int exoid = ex_open(name.c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
+    int         cpu_word_size = sizeof(double);
+    int         io_wrd_size   = sizeof(double);
+    std::string name          = si.inputFiles_[0];
+    int         exoid = ex_open(name.c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
     if (exoid < 0) {
       fmt::print(stderr, "ERROR: Cannot open file '{}'\n", name);
       return false;
@@ -125,13 +125,16 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
 
     int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     if (num_change_sets <= 1) {
-      fmt::print(stderr, "WARNING: File '{}' does not contain change sets and only a single file was specified.\n\tNothing to be done.  Exiting\n", name);
+      fmt::print(stderr,
+                 "WARNING: File '{}' does not contain change sets and only a single file was "
+                 "specified.\n\tNothing to be done.  Exiting\n",
+                 name);
       return false;
     }
     usingChangeSets_ = true;
 
     if (io_wrd_size < static_cast<int>(sizeof(float))) {
-        io_wrd_size = sizeof(float);
+      io_wrd_size = sizeof(float);
     }
 
     ioWordSize_  = io_wrd_size;
@@ -151,7 +154,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
     fileids_.resize(num_change_sets, exoid);
 
     // Get names of change sets...
-    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    int               group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
     std::vector<char> group_name(group_name_length + 1, '\0');
 
     for (int i = 1; i <= num_change_sets; i++) {
@@ -160,12 +163,13 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
       // Get name of this group...
       int ierr = ex_inquire(exoid + i, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
       if (ierr != EX_NOERR) {
-	fmt::print(stderr, "ERROR: Could not get name for group {} in input file '{}'\n", i+1, name);
-	return false;
+        fmt::print(stderr, "ERROR: Could not get name for group {} in input file '{}'\n", i + 1,
+                   name);
+        return false;
       }
-      filenames_[i-1] = std::string(group_name.data());
-      fileids_[i-1] = exoid + i;
-      fmt::print("Part {}: '{}'\n", i, filenames_[i-1]);
+      filenames_[i - 1] = std::string(group_name.data());
+      fileids_[i - 1]   = exoid + i;
+      fmt::print("Part {}: '{}'\n", i, filenames_[i - 1]);
     }
   }
   else {
@@ -178,50 +182,49 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
 
       filenames_[p] = name;
 
-    if (p == 0) {
-      int cpu_word_size = sizeof(float);
-      int io_wrd_size   = 0;
-      int exoid = ex_open(filenames_[p].c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
-      if (exoid < 0) {
-        fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filenames_[p]);
-        return false;
+      if (p == 0) {
+        int cpu_word_size = sizeof(float);
+        int io_wrd_size   = 0;
+        int exoid = ex_open(filenames_[p].c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
+        if (exoid < 0) {
+          fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filenames_[p]);
+          return false;
+        }
+
+        int name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+        if (name_length > overall_max_name_length) {
+          overall_max_name_length = name_length;
+        }
+
+        if (((ex_int64_status(exoid) & EX_ALL_INT64_DB) != 0) || si.ints_64_bit()) {
+          exodusMode_ = EX_ALL_INT64_API;
+        }
+
+        ex_close(exoid);
+
+        if (io_wrd_size < static_cast<int>(sizeof(float))) {
+          io_wrd_size = sizeof(float);
+        }
+
+        ioWordSize_  = io_wrd_size;
+        cpuWordSize_ = io_wrd_size;
       }
 
-      int name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      if (name_length > overall_max_name_length) {
-        overall_max_name_length = name_length;
+      if (keepOpen_ || p == 0) {
+        int io_wrd_size = 0;
+        int mode        = EX_READ | exodusMode_;
+
+        fileids_[p] = ex_open(filenames_[p].c_str(), mode, &cpuWordSize_, &io_wrd_size, &version);
+        if (fileids_[p] < 0) {
+          fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filenames_[p]);
+          return false;
+        }
+
+        SMART_ASSERT(ioWordSize_ == io_wrd_size)(ioWordSize_)(io_wrd_size);
       }
 
-      if (((ex_int64_status(exoid) & EX_ALL_INT64_DB) != 0) || si.ints_64_bit()) {
-        exodusMode_ = EX_ALL_INT64_API;
-      }
-
-      ex_close(exoid);
-
-      if (io_wrd_size < static_cast<int>(sizeof(float))) {
-        io_wrd_size = sizeof(float);
-      }
-
-      ioWordSize_  = io_wrd_size;
-      cpuWordSize_ = io_wrd_size;
-
+      fmt::print("Part {}: '{}'\n", p + 1, name);
     }
-
-    if (keepOpen_ || p == 0) {
-      int io_wrd_size = 0;
-      int mode        = EX_READ | exodusMode_;
-
-      fileids_[p] = ex_open(filenames_[p].c_str(), mode, &cpuWordSize_, &io_wrd_size, &version);
-      if (fileids_[p] < 0) {
-        fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filenames_[p]);
-        return false;
-      }
-
-      SMART_ASSERT(ioWordSize_ == io_wrd_size)(ioWordSize_)(io_wrd_size);
-    }
-
-    fmt::print("Part {}: '{}'\n", p + 1, name);
-  }
   }
 
   maximumNameLength_ = overall_max_name_length;
