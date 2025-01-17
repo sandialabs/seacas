@@ -157,6 +157,48 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
     FINAL_PASS_REGULAR_EXPRESSION
   )
 
+  IF (TPL_Netcdf_PARALLEL)
+  TRIBITS_ADD_ADVANCED_TEST(
+    io_shell_cs_decompose_compose
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${SPLIT_ARG} ${IOSHELL_ARG} splits.g
+       NUM_MPI_PROCS 1
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits.g_1 splits.g_2 splits.g_3 splits.g_4  grouped.g
+       NUM_MPI_PROCS 1
+    TEST_3 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} grouped.g joined.g
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
+    TEST_4 EXEC exodiff ARGS -pedantic grouped.g joined.g
+       DIRECTORY ../../../../applications/exodiff
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    COMM mpi serial
+    XHOSTTYPE Windows
+    FINAL_PASS_REGULAR_EXPRESSION
+  )
+
+  TRIBITS_ADD_ADVANCED_TEST(
+    io_shell_cs_decompose_epu
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${SPLIT_ARG} ${IOSHELL_ARG} splits.g
+       NUM_MPI_PROCS 1
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits.g_1 splits.g_2 splits.g_3 splits.g_4  grouped1.g
+       NUM_MPI_PROCS 1
+    TEST_3 EXEC io_shell ARGS ${DECOMP_ARG} grouped1.g decomped.g
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
+    TEST_4 EXEC epu ARGS -auto decomped.g
+       DIRECTORY ../../../../applications/epu
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    TEST_5 EXEC exodiff ARGS -pedantic grouped1.g decomped.g
+       DIRECTORY ../../../../applications/exodiff
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS 1
+    COMM mpi serial
+    XHOSTTYPE Windows
+    FINAL_PASS_REGULAR_EXPRESSION
+  )
+endif()
+
 if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASConjoin)
   # Use io_shell to generate several files with each timestep in a separate file
   # Then join those sepearte files into a single file with each in a separate changeset
