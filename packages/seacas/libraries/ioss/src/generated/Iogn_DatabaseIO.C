@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -575,7 +575,8 @@ namespace Iogn {
   {
     auto time_step_count = m_generatedMesh->timestep_count();
     for (int i = 0; i < time_step_count; i++) {
-      get_region()->add_state(i);
+      double time = m_generatedMesh->timestep_initial() + i * m_generatedMesh->timestep_interval();
+      get_region()->add_state(time);
     }
   }
 
@@ -586,7 +587,8 @@ namespace Iogn {
     int time_step_count = m_generatedMesh->timestep_count();
     timesteps.reserve(time_step_count);
     for (int i = 0; i < time_step_count; i++) {
-      timesteps.push_back(i);
+      double time = m_generatedMesh->timestep_initial() + i * m_generatedMesh->timestep_interval();
+      timesteps.push_back(time);
     }
 
     return timesteps;

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -42,6 +42,8 @@ namespace {
                        "\tvariables:type,count,...  "
                        "type=global|element|node|nodal|nodeset|nset|sideset|sset|surface\n"
                        "\ttimes:count (number of timesteps to generate)\n"
+                       "\ttinit:t0 (start time, default 0.0)\n"
+                       "\ttdelta:delta (delta between timesteps, default 1.0)\n"
                        "\tshow -- show mesh parameters\n"
                        "\thelp -- show this list\n\n");
   }
@@ -327,6 +329,14 @@ namespace Iogn {
 
       else if (option[0] == "times" || option[0] == "steps") {
         timestepCount = std::stoull(option[1]);
+      }
+
+      else if (option[0] == "tinit") {
+        timestepInitial = std::stod(option[1]);
+      }
+
+      else if (option[0] == "tdelta") {
+        timestepInterval = std::stod(option[1]);
       }
 
       else if (option[0] == "tets") {
