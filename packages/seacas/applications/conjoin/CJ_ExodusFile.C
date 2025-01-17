@@ -219,11 +219,14 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
           fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filenames_[p]);
           return false;
         }
-	int num_change_sets = ex_inquire_int(fileids_[p], EX_INQ_NUM_CHILD_GROUPS);
-	if (num_change_sets > 1) {
-          fmt::print(stderr, "ERROR: Cannot (yet) handle multiple input files containing change sets.\n\tFile '{}' contains {} change sets.\n", filenames_[p], num_change_sets);
-	  return false;
-	}
+        int num_change_sets = ex_inquire_int(fileids_[p], EX_INQ_NUM_CHILD_GROUPS);
+        if (num_change_sets > 1) {
+          fmt::print(stderr,
+                     "ERROR: Cannot (yet) handle multiple input files containing change "
+                     "sets.\n\tFile '{}' contains {} change sets.\n",
+                     filenames_[p], num_change_sets);
+          return false;
+        }
 
         SMART_ASSERT(ioWordSize_ == io_wrd_size)(ioWordSize_)(io_wrd_size);
       }

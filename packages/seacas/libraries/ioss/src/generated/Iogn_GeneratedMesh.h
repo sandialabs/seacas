@@ -327,7 +327,7 @@ namespace Iogn {
      */
     IOSS_NODISCARD int64_t shell_element_count_proc(ShellLocation /*loc*/) const;
 
-    IOSS_NODISCARD int timestep_count() const { return timestepCount; }
+    IOSS_NODISCARD int    timestep_count() const { return timestepCount; }
     IOSS_NODISCARD double timestep_initial() const { return timestepInitial; }
     IOSS_NODISCARD double timestep_interval() const { return timestepInterval; }
     /**

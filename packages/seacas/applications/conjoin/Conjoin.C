@@ -2097,9 +2097,9 @@ namespace {
 
         // Get the ids for these
         ids.resize(ns_count);
-	if (ns_count > 0) {
-	  ex_get_ids(id, EX_NODE_SET, Data(ids));
-	}
+        if (ns_count > 0) {
+          ex_get_ids(id, EX_NODE_SET, Data(ids));
+        }
 
         for (int iset = 0; iset < ns_count; iset++) {
           if (ids[iset] != 0) {
@@ -2145,9 +2145,9 @@ namespace {
 
         // Get the ids again so we can map current order back to file order...
         int ns_count = ex_inquire_int(id, EX_INQ_NODE_SETS);
-	if (ns_count > 0) {
-	  ex_get_ids(id, EX_NODE_SET, Data(ids));
-	}
+        if (ns_count > 0) {
+          ex_get_ids(id, EX_NODE_SET, Data(ids));
+        }
 
         for (int i = 0; i < ns_count; i++) {
           nodesets[p][i].id = ids[i];
@@ -2319,9 +2319,9 @@ namespace {
 
         // Get the ids for these
         ids.resize(ss_count);
-	if (ss_count > 0) {
-	  ex_get_ids(id, EX_SIDE_SET, Data(ids));
-	}
+        if (ss_count > 0) {
+          ex_get_ids(id, EX_SIDE_SET, Data(ids));
+        }
 
         for (int i = 0; i < ss_count; i++) {
           if (ids[i] != 0) {
@@ -2368,9 +2368,9 @@ namespace {
 
         // Get the ids again so we can map current order back to file order...
         int ss_count = ex_inquire_int(id, EX_INQ_SIDE_SETS);
-	if (ss_count > 0) {
-	  ex_get_ids(id, EX_SIDE_SET, Data(ids));
-	}
+        if (ss_count > 0) {
+          ex_get_ids(id, EX_SIDE_SET, Data(ids));
+        }
 
         for (int i = 0; i < ss_count; i++) {
           sets[p][i].id = ids[i];
