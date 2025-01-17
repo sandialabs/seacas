@@ -154,8 +154,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
     fileids_.resize(num_change_sets, exoid);
 
     // Get names of change sets...
-    int               group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
-    group_name_length = std::max(32, group_name_length);
+    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    group_name_length     = std::max(32, group_name_length);
     std::vector<char> group_name(group_name_length + 1, '\0');
 
     for (int i = 1; i <= num_change_sets; i++) {
