@@ -52,6 +52,11 @@ Excn::ExodusFile::ExodusFile(size_t which) : myLocation_(which)
   }
 }
 
+bool Excn::ExodusFile::ints_64_bit() 
+{
+  return exodusMode_ & EX_ALL_INT64_API;
+}
+
 int Excn::ExodusFile::output()
 {
   SMART_ASSERT(outputId_ >= 0);

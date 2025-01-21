@@ -24,6 +24,7 @@ namespace Excn {
     static size_t part_count() { return filenames_.size(); }
     static bool   initialize(const SystemInterface &si);
     static bool   create_output(const SystemInterface &si);
+    static bool   ints_64_bit();
     static void   close_all();
 
     static int output();

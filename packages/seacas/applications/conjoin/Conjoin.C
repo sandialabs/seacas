@@ -379,10 +379,7 @@ int          main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
 
-    int int_byte_size = 4;
-    if (interFace.ints_64_bit()) {
-      int_byte_size = 8;
-    }
+    int int_byte_size = Excn::ExodusFile::ints_64_bit() ? 8 : 4;
 
     if (Excn::ExodusFile::io_word_size() == 4) {
       if (int_byte_size == 4) {
