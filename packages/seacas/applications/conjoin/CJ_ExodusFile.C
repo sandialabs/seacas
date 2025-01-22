@@ -129,13 +129,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
     }
 
     int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
-    if (num_change_sets <= 1) {
-      fmt::print(stderr,
-                 "WARNING: File '{}' does not contain change sets and only a single file was "
-                 "specified.\n\tNothing to be done.  Exiting\n",
-                 name);
-      return false;
-    }
+    if (num_change_sets > 1) {
     usingChangeSets_ = true;
 
     if (io_wrd_size < static_cast<int>(sizeof(float))) {
@@ -178,7 +172,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
       fmt::print("Part {}: '{}'\n", i, filenames_[i - 1]);
     }
   }
-  else {
+  }
+  if (!usingChangeSets_) {
     // create exo names
     filenames_.resize(si.inputFiles_.size());
     fileids_.resize(si.inputFiles_.size(), -1);
