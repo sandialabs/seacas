@@ -215,14 +215,17 @@ int F2C(exopen, EXOPEN)(char *path, int *mode, int *cpu_word_size, int *io_word_
   int idexo = ex_open(name, *mode, cpu_word_size, io_word_size, version);
   free(name);
 
-  /* 
-   * See if file contains change sets.  If it does, then offset `idexo` to point to the first change set.
+  /*
+   * See if file contains change sets.  If it does, then offset `idexo` to point to the first change
+   * set.
    */
-  
+
   if (idexo != EX_FATAL) {
     int num_change_sets = ex_inquire_int(idexo, EX_INQ_NUM_CHILD_GROUPS);
     if (num_change_sets >= 1) {
-      fprintf(stderr, " WARNING: Input database contains %d change sets.  Reading from first change set.\n", num_change_sets);
+      fprintf(stderr,
+              " WARNING: Input database contains %d change sets.  Reading from first change set.\n",
+              num_change_sets);
       idexo++;
     }
     *ierr = 0;

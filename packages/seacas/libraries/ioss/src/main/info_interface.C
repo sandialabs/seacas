@@ -146,10 +146,10 @@ void Info::Interface::enroll_options()
                   nullptr, nullptr, true);
 
 #endif
-  options_.enroll(
-      "list_change_sets", Ioss::GetLongOption::NoValue,
-      "Print a list of the names of all change_sets (previously groups) in this file and then exit.",
-      nullptr);
+  options_.enroll("list_change_sets", Ioss::GetLongOption::NoValue,
+                  "Print a list of the names of all change_sets (previously groups) in this file "
+                  "and then exit.",
+                  nullptr);
   options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
                   "[deprecated] Use --list_change_sets", nullptr);
 
