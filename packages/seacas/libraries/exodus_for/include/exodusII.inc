@@ -1,6 +1,6 @@
                                 ! -*- mode: fortran -*-
 !
-! Copyright(C) 1999-2020 National Technology & Engineering Solutions
+! Copyright(C) 1999-2020, 2025 National Technology & Engineering Solutions
 ! of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 ! NTESS, the U.S. Government retains certain rights in this software.
 !
@@ -91,95 +91,155 @@
         parameter (EX_OPT_INTEGER_SIZE_DB  = 6)    ! (query only)
 !
 !  --INQUIRE FLAGS
-        integer EX_INQ_FILE_TYPE, EX_INQ_API_VERS, EX_INQ_DB_VERS
-        integer EX_INQ_TITLE, EX_INQ_DIM, EX_INQ_NODES
-        integer EX_INQ_ELEM, EX_INQ_ELEM_BLK, EX_INQ_NODE_SETS
-        integer EX_INQ_NS_NODE_LEN, EX_INQ_SIDE_SETS
-        integer EX_INQ_SS_NODE_LEN, EX_INQ_SS_ELEM_LEN, EX_INQ_QA
-        integer EX_INQ_INFO, EX_INQ_TIME, EX_INQ_EB_PROP
-        integer EX_INQ_NS_PROP, EX_INQ_SS_PROP, EX_INQ_NS_DF_LEN
-        integer EX_INQ_SS_DF_LEN, EX_INQ_LIB_VERS
-        integer EX_INQ_EM_PROP, EX_INQ_NM_PROP, EX_INQ_ELEM_MAP
-        integer EX_INQ_NODE_MAP, EX_INQ_EDGE
-        integer EX_INQ_EDGE_BLK, EX_INQ_EDGE_SETS, EX_INQ_ES_LEN
-        integer EX_INQ_ES_DF_LEN, EX_INQ_EDGE_PROP
-        integer EX_INQ_ES_PROP, EX_INQ_FACE, EX_INQ_FACE_BLK
-        integer EX_INQ_FACE_SETS, EX_INQ_FS_LEN
-        integer EX_INQ_FS_DF_LEN, EX_INQ_FACE_PROP, EX_INQ_FS_PROP
-        integer EX_INQ_ELEM_SETS, EX_INQ_ELS_LEN
-        integer EX_INQ_ELS_DF_LEN, EX_INQ_ELS_PROP, EX_INQ_EDGE_MAP
-        integer EX_INQ_FACE_MAP, EX_INQ_COORD_FRAMES
-        integer EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH
-        integer EX_INQ_DB_MAX_USED_NAME_LENGTH
-        integer EX_INQ_MAX_READ_NAME_LENGTH
-        integer EX_INQ_DB_FLOAT_SIZE, EX_INQ_NUM_CHILD_GROUPS
-        integer EX_INQ_GROUP_PARENT, EX_INQ_GROUP_ROOT
-        integer EX_INQ_GROUP_NAME_LEN, EX_INQ_GROUP_NAME
-        integer EX_INQ_FULL_GROUP_NAME_LEN, EX_INQ_FULL_GROUP_NAME
-        integer EX_INQ_THREADSAFE, EX_INQ_INVALID
+        integer EX_INQ_FILE_TYPE
+        integer EX_INQ_API_VERS                   
+        integer EX_INQ_DB_VERS                    
+        integer EX_INQ_TITLE                      
+        integer EX_INQ_DIM                        
+        integer EX_INQ_NODES                      
+        integer EX_INQ_ELEM                       
+        integer EX_INQ_ELEM_BLK                   
+        integer EX_INQ_NODE_SETS                  
+        integer EX_INQ_NS_NODE_LEN                
+        integer EX_INQ_SIDE_SETS                  
+        integer EX_INQ_SS_NODE_LEN                
+        integer EX_INQ_SS_ELEM_LEN                
+        integer EX_INQ_QA                         
+        integer EX_INQ_INFO                       
+        integer EX_INQ_TIME                       
+        integer EX_INQ_EB_PROP                    
+        integer EX_INQ_NS_PROP                    
+        integer EX_INQ_SS_PROP                    
+        integer EX_INQ_NS_DF_LEN                  
+        integer EX_INQ_SS_DF_LEN                  
+        integer EX_INQ_LIB_VERS                   
+        integer EX_INQ_EM_PROP                    
+        integer EX_INQ_NM_PROP                    
+        integer EX_INQ_ELEM_MAP                   
+        integer EX_INQ_NODE_MAP                   
+        integer EX_INQ_EDGE                       
+        integer EX_INQ_EDGE_BLK                   
+        integer EX_INQ_EDGE_SETS                  
+        integer EX_INQ_ES_LEN                     
+        integer EX_INQ_ES_DF_LEN                  
+        integer EX_INQ_EDGE_PROP                  
+        integer EX_INQ_ES_PROP                    
+        integer EX_INQ_FACE                       
+        integer EX_INQ_FACE_BLK                   
+        integer EX_INQ_FACE_SETS                  
+        integer EX_INQ_FS_LEN                     
+        integer EX_INQ_FS_DF_LEN                  
+        integer EX_INQ_FACE_PROP                  
+        integer EX_INQ_FS_PROP                    
+        integer EX_INQ_ELEM_SETS                  
+        integer EX_INQ_ELS_LEN                    
+        integer EX_INQ_ELS_DF_LEN                 
+        integer EX_INQ_ELS_PROP                   
+        integer EX_INQ_EDGE_MAP                   
+        integer EX_INQ_FACE_MAP                   
+        integer EX_INQ_COORD_FRAMES               
+        integer EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH 
+        integer EX_INQ_DB_MAX_USED_NAME_LENGTH    
+        integer EX_INQ_MAX_READ_NAME_LENGTH       
+        integer EX_INQ_DB_FLOAT_SIZE
+        integer EX_INQ_NUM_CHILD_GROUPS
+        integer EX_INQ_GROUP_PARENT
+        integer EX_INQ_GROUP_ROOT
+        integer EX_INQ_GROUP_NAME_LEN
+        integer EX_INQ_GROUP_NAME
+        integer EX_INQ_FULL_GROUP_NAME_LEN
+        integer EX_INQ_FULL_GROUP_NAME    
+        integer EX_INQ_THREADSAFE         
+        integer EX_INQ_ASSEMBLY           
+        integer EX_INQ_BLOB               
+        integer EX_INQ_NUM_NODE_VAR       
+        integer EX_INQ_NUM_EDGE_BLOCK_VAR 
+        integer EX_INQ_NUM_FACE_BLOCK_VAR 
+        integer EX_INQ_NUM_ELEM_BLOCK_VAR 
+        integer EX_INQ_NUM_NODE_SET_VAR   
+        integer EX_INQ_NUM_EDGE_SET_VAR   
+        integer EX_INQ_NUM_FACE_SET_VAR   
+        integer EX_INQ_NUM_ELEM_SET_VAR   
+        integer EX_INQ_NUM_SIDE_SET_VAR   
+        integer EX_INQ_NUM_GLOBAL_VAR     
+        integer EX_INQ_FILE_FORMAT        
+        integer EX_INQ_INVALID            
 
-        parameter (EX_INQ_FILE_TYPE    = 1) !   inquire EXODUS file type
-        parameter (EX_INQ_API_VERS     = 2) !   inquire API version number
-        parameter (EX_INQ_DB_VERS      = 3) !   inquire database version number
-        parameter (EX_INQ_TITLE        = 4) !   inquire database title
-        parameter (EX_INQ_DIM          = 5) !   inquire number of dimensions
-        parameter (EX_INQ_NODES        = 6) !   inquire number of nodes
-        parameter (EX_INQ_ELEM         = 7) !   inquire number of elements
-        parameter (EX_INQ_ELEM_BLK     = 8) !   inquire number of element blocks
-        parameter (EX_INQ_NODE_SETS    = 9) !   inquire number of node sets
-        parameter (EX_INQ_NS_NODE_LEN  = 10) !  inquire length of node set node list
-        parameter (EX_INQ_SIDE_SETS    = 11) !  inquire number of side sets
-        parameter (EX_INQ_SS_NODE_LEN  = 12) !  inquire length of side set node list
-        parameter (EX_INQ_SS_ELEM_LEN  = 13) !  inquire length of side set element list
-        parameter (EX_INQ_QA           = 14) !  inquire number of QA records
-        parameter (EX_INQ_INFO         = 15) !  inquire number of info records
-        parameter (EX_INQ_TIME         = 16) !  inquire number of time steps in the database
-        parameter (EX_INQ_EB_PROP      = 17) !  inquire number of element block properties
-        parameter (EX_INQ_NS_PROP      = 18) !  inquire number of node set properties
-        parameter (EX_INQ_SS_PROP      = 19) !  inquire number of side set properties
-        parameter (EX_INQ_NS_DF_LEN    = 20) !  inquire length of node set distribution factor list
-        parameter (EX_INQ_SS_DF_LEN    = 21) !  inquire length of side set distribution factor list
-        parameter (EX_INQ_LIB_VERS     = 22) !  inquire API Lib vers number
-        parameter (EX_INQ_EM_PROP      = 23) !  inquire number of element map properties
-        parameter (EX_INQ_NM_PROP      = 24) !  inquire number of node map properties
-        parameter (EX_INQ_ELEM_MAP     = 25) !  inquire number of element maps
-        parameter (EX_INQ_NODE_MAP     = 26) !  inquire number of node maps
-        parameter (EX_INQ_EDGE         = 27) !  inquire number of edges
-        parameter (EX_INQ_EDGE_BLK     = 28) !  inquire number of edge blocks
-        parameter (EX_INQ_EDGE_SETS    = 29) !  inquire number of edge sets
-        parameter (EX_INQ_ES_LEN       = 30) !  inquire length of concat edge set edge list
-        parameter (EX_INQ_ES_DF_LEN    = 31) !  inquire length of concat edge set dist factor list
-        parameter (EX_INQ_EDGE_PROP    = 32) !  inquire number of properties stored per edge block
-        parameter (EX_INQ_ES_PROP      = 33) !  inquire number of properties stored per edge set
-        parameter (EX_INQ_FACE         = 34) !  inquire number of faces
-        parameter (EX_INQ_FACE_BLK     = 35) !  inquire number of face blocks
-        parameter (EX_INQ_FACE_SETS    = 36) !  inquire number of face sets
-        parameter (EX_INQ_FS_LEN       = 37) !  inquire length of concat face set face list
-        parameter (EX_INQ_FS_DF_LEN    = 38) !  inquire length of concat face set dist factor list
-        parameter (EX_INQ_FACE_PROP    = 39) !  inquire number of properties stored per face block
-        parameter (EX_INQ_FS_PROP      = 40) !  inquire number of properties stored per face set
-        parameter (EX_INQ_ELEM_SETS    = 41) !  inquire number of element sets
-        parameter (EX_INQ_ELS_LEN      = 42) !  inquire length of concat element set element list
-        parameter (EX_INQ_ELS_DF_LEN   = 43) !  inquire length of concat element set dist factor list
-        parameter (EX_INQ_ELS_PROP     = 44) !  inquire number of properties stored per elem set
-        parameter (EX_INQ_EDGE_MAP     = 45) !  inquire number of edge maps
-        parameter (EX_INQ_FACE_MAP     = 46) !  inquire number of face maps
-        parameter (EX_INQ_COORD_FRAMES = 47) !  inquire number of coordinate frames
-        parameter (EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH = 48) !inquire size of MAX_NAME_LENGTH dimension on database
-        parameter (EX_INQ_DB_MAX_USED_NAME_LENGTH = 49) !  inquire size of MAX_NAME_LENGTH dimension on database
-        parameter (EX_INQ_MAX_READ_NAME_LENGTH    = 50) !  inquire client-specified max size of returned names
-        parameter (EX_INQ_DB_FLOAT_SIZE           = 51) !  inquire size of floating-point values stored on database
-        parameter (EX_INQ_NUM_CHILD_GROUPS        = 52) !  inquire number of groups contained in this (exoid) group
-        parameter (EX_INQ_GROUP_PARENT            = 53) !  inquire id of parent of this (exoid) group; returns exoid if at root
-        parameter (EX_INQ_GROUP_ROOT              = 54) !  inquire id of root group "/" of this (exoid) group; returns exoid if at root
-        parameter (EX_INQ_GROUP_NAME_LEN          = 55) !  inquire length of name of group exoid
-        parameter (EX_INQ_GROUP_NAME              = 56) !  inquire name of group exoid. "/" returned for root group
-        parameter (EX_INQ_FULL_GROUP_NAME_LEN     = 57) !  inquire length of full path name of this (exoid) group
-        parameter (EX_INQ_FULL_GROUP_NAME         = 58) !  inquire full "/"-separated path name of this (exoid) group
-        parameter (EX_INQ_THREADSAFE              = 59) !  Returns 1 if library is thread-safe; 0 otherwise
-        parameter (EX_INQ_INVALID                 = -1)
+        parameter (EX_INQ_FILE_TYPE                  = 1)  ! EXODUS file type (deprecated) */
+        parameter (EX_INQ_API_VERS                   = 2)  ! API version number (float) */
+        parameter (EX_INQ_DB_VERS                    = 3)  ! database version number (float) */
+        parameter (EX_INQ_TITLE                      = 4)  ! database title. MAX_LINE_LENGTH+1 char* size */
+        parameter (EX_INQ_DIM                        = 5)  ! number of dimensions */
+        parameter (EX_INQ_NODES                      = 6)  ! number of nodes    */
+        parameter (EX_INQ_ELEM                       = 7)  ! number of elements */
+        parameter (EX_INQ_ELEM_BLK                   = 8)  ! number of element blocks */
+        parameter (EX_INQ_NODE_SETS                  = 9)  ! number of node sets*/
+        parameter (EX_INQ_NS_NODE_LEN                = 10) ! length of node set node list */
+        parameter (EX_INQ_SIDE_SETS                  = 11) ! number of side sets*/
+        parameter (EX_INQ_SS_NODE_LEN                = 12) ! length of side set node list */
+        parameter (EX_INQ_SS_ELEM_LEN                = 13) ! length of side set element list */
+        parameter (EX_INQ_QA                         = 14) ! number of QA records */
+        parameter (EX_INQ_INFO                       = 15) ! number of info records */
+        parameter (EX_INQ_TIME                       = 16) ! number of time steps in the database */
+        parameter (EX_INQ_EB_PROP                    = 17) ! number of element block properties */
+        parameter (EX_INQ_NS_PROP                    = 18) ! number of node set properties */
+        parameter (EX_INQ_SS_PROP                    = 19) ! number of side set properties */
+        parameter (EX_INQ_NS_DF_LEN                  = 20) ! length of node set distribution factor list*/
+        parameter (EX_INQ_SS_DF_LEN                  = 21) ! length of side set distribution factor list*/
+        parameter (EX_INQ_LIB_VERS                   = 22) ! API Lib vers number (float) */
+        parameter (EX_INQ_EM_PROP                    = 23) ! number of element map properties */
+        parameter (EX_INQ_NM_PROP                    = 24) ! number of node map properties */
+        parameter (EX_INQ_ELEM_MAP                   = 25) ! number of element maps */
+        parameter (EX_INQ_NODE_MAP                   = 26) ! number of node maps*/
+        parameter (EX_INQ_EDGE                       = 27) ! number of edges    */
+        parameter (EX_INQ_EDGE_BLK                   = 28) ! number of edge blocks */
+        parameter (EX_INQ_EDGE_SETS                  = 29) ! number of edge sets   */
+        parameter (EX_INQ_ES_LEN                     = 30) ! length of concat edge set edge list       */
+        parameter (EX_INQ_ES_DF_LEN                  = 31) ! length of concat edge set dist factor list*/
+        parameter (EX_INQ_EDGE_PROP                  = 32) ! number of properties stored per edge block    */
+        parameter (EX_INQ_ES_PROP                    = 33) ! number of properties stored per edge set      */
+        parameter (EX_INQ_FACE                       = 34) ! number of faces */
+        parameter (EX_INQ_FACE_BLK                   = 35) ! number of face blocks */
+        parameter (EX_INQ_FACE_SETS                  = 36) ! number of face sets */
+        parameter (EX_INQ_FS_LEN                     = 37) ! length of concat face set face list */
+        parameter (EX_INQ_FS_DF_LEN                  = 38) ! length of concat face set dist factor list*/
+        parameter (EX_INQ_FACE_PROP                  = 39) ! number of properties stored per face block */
+        parameter (EX_INQ_FS_PROP                    = 40) ! number of properties stored per face set */
+        parameter (EX_INQ_ELEM_SETS                  = 41) ! number of element sets */
+        parameter (EX_INQ_ELS_LEN                    = 42) ! length of concat element set element list       */
+        parameter (EX_INQ_ELS_DF_LEN                 = 43) ! length of concat element set dist factor list*/
+        parameter (EX_INQ_ELS_PROP                   = 44) ! number of properties stored per elem set      */
+        parameter (EX_INQ_EDGE_MAP                   = 45) ! number of edge maps                     */
+        parameter (EX_INQ_FACE_MAP                   = 46) ! number of face maps                     */
+        parameter (EX_INQ_COORD_FRAMES               = 47) ! number of coordinate frames */
+        parameter (EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH = 48) ! size of MAX_NAME_LENGTH dimension on database */
+        parameter (EX_INQ_DB_MAX_USED_NAME_LENGTH    = 49) ! size of MAX_NAME_LENGTH dimension on database */
+        parameter (EX_INQ_MAX_READ_NAME_LENGTH       = 50) ! client-specified max size of returned names */
+        parameter (EX_INQ_DB_FLOAT_SIZE    = 51) ! size of floating-point values stored on database */
+        parameter (EX_INQ_NUM_CHILD_GROUPS = 52) ! number of groups contained in this (exoid) group */
+        parameter (EX_INQ_GROUP_PARENT     = 53) ! id of parent of this (exoid) group; returns exoid if at root */
+        parameter (EX_INQ_GROUP_ROOT = 54) ! id of root group "/" of this (exoid) group; returns exoid if at root */
+        parameter (EX_INQ_GROUP_NAME_LEN = 55) ! length of name of group exoid */
+        parameter (EX_INQ_GROUP_NAME = 56) ! name of group exoid. "/" returned for root group (char* GROUP_NAME_LEN+1 size) */
+        parameter (EX_INQ_FULL_GROUP_NAME_LEN = 57) ! length of full path name of this (exoid) group */
+        parameter (EX_INQ_FULL_GROUP_NAME     = 58) ! full "/"-separated path name of this (exoid) group */
+        parameter (EX_INQ_THREADSAFE          = 59) ! Returns 1 if library is thread-safe; 0 otherwise */
+        parameter (EX_INQ_ASSEMBLY            = 60) ! number of assemblies */
+        parameter (EX_INQ_BLOB                = 61) ! number of blobs */
+        parameter (EX_INQ_NUM_NODE_VAR        = 62) ! number of nodal variables */
+        parameter (EX_INQ_NUM_EDGE_BLOCK_VAR  = 63) ! number of edge block variables */
+        parameter (EX_INQ_NUM_FACE_BLOCK_VAR  = 64) ! number of face block variables */
+        parameter (EX_INQ_NUM_ELEM_BLOCK_VAR  = 65) ! number of element block variables */
+        parameter (EX_INQ_NUM_NODE_SET_VAR    = 66) ! number of node set variables */
+        parameter (EX_INQ_NUM_EDGE_SET_VAR    = 67) ! number of edge set variables */
+        parameter (EX_INQ_NUM_FACE_SET_VAR    = 68) ! number of face set variables */
+        parameter (EX_INQ_NUM_ELEM_SET_VAR    = 69) ! number of element set variables */
+        parameter (EX_INQ_NUM_SIDE_SET_VAR    = 70) ! number of sideset variables */
+        parameter (EX_INQ_NUM_GLOBAL_VAR      = 71) ! number of global variables */
+        parameter (EX_INQ_FILE_FORMAT         = 72) ! netCDF file format */
+        parameter (EX_INQ_INVALID             = -1)
 
-      integer EXTYPE, EXVERS, EXDBVR, EXTITL, EXDIM, EXNODE
+        integer EXTYPE, EXVERS, EXDBVR, EXTITL, EXDIM, EXNODE
       integer  EXELEM, EXELBL, EXNODS, EXSIDS, EXQA,  EXINFO
       integer  EXTIMS, EXSSNL, EXSSEL, EXNSNL, EXNEBP, EXNNSP
       integer  EXNSSP, EXNSDF, EXSSDF, EXLBVR, EXNEMP, EXNNMP
@@ -260,10 +320,9 @@
       parameter (EXSSET = 3)   ! EXSSPR - side set property code
       parameter (EXEMAP = 4)   ! EXEMAP - element map property code
       parameter (EXNMAP = 5)   ! EXNMAP - node map property code
-
+!
 !     Define values for type
 !
-
       integer EX_NODAL, EX_NODE_BLOCK, EX_NODE_SET, EX_EDGE_BLOCK
       integer EX_EDGE_SET, EX_FACE_BLOCK, EX_FACE_SET, EX_ELEM_BLOCK
       integer EX_ELEM_SET, EX_SIDE_SET, EX_ELEM_MAP, EX_NODE_MAP
@@ -304,7 +363,6 @@
       parameter (EXCFREC = 1)     ! Rectangular
       parameter (EXCFCYL = 2)     ! Cylindrical
       parameter (EXCFSPH = 3)     ! Spherical
-
 !
 !     Define error return codes
 !
@@ -327,3 +385,7 @@
       parameter (EXNULL = -1006)   ! EXNULL - null entity found
       parameter (EXPMSG = -1000)   ! EXPMSG - message print code - no error implied
       parameter (EXLMSG = -1001)   ! EXLMSG - print last error message msg code
+
+      integer EX_FILE_ID_MASK
+      parameter (EX_FILE_ID_MASK = 4294901760) ! xFFFF0000
+      
