@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2022, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -93,7 +93,8 @@ C .. Get filename from command line.  If not specified, emit error message
       if (narg .eq. 0) then
         CALL PRTERR ('FATAL', 'Filename not specified.')
         CALL PRTERR ('CMDSPEC',
-     *    'Syntax is: "explore [-[no]map node|element|all] filename"')
+     *    'Syntax is: "explore [-[no]map node|element|all]' //
+     $    ' [-change_set #] filename"')
         CALL PRTERR ('CMDSPEC',
      *    'Documentation: https://sandialabs.github.io' //
      $       '/seacas-docs/sphinx/html/index.html#explore')
@@ -143,6 +144,22 @@ C     HOWEVER, in the transition time do not map either unless requested...
           else if (option(:lo) .eq. '-check' .or.
      *      option(:lo) .eq. '--check') then
             check = .TRUE.
+          else if (option(:lo) .eq. '-change_set' .or.
+     *      option(:lo) .eq. '--change_set') then
+C ... Convert `value` to an integer.
+            read (value(:lv), '(i10)') nchange
+            write (*,99) nchange
+ 99         format(1x,'NOTE: Selecting change set ', i3)
+C ... Check that file contains at least that many change sets...
+            ndbr = iand(ndb, EX_FILE_ID_MASK)
+            call exinq(ndbr, EX_INQ_NUM_CHILD_GROUPS,
+     $           idum, rdum, cdum, ierr)
+            if (nchange .gt. idum) then
+               write (*,*) 'ERROR: Selected change set', nchange,
+     $              'but there are only ', idum, ' change sets in file.'
+            else
+               ndb = ndbr + nchange
+            end if
           end if
         end do
       end if
