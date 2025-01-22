@@ -201,7 +201,7 @@ endif()
 
 if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASConjoin)
   # Use io_shell to generate several files with each timestep in a separate file
-  # Then join those sepearte files into a single file with each in a separate changeset
+  # Then join those separate files into a single file with each in a separate changeset
   # Then use conjoin to "squash" the changesets into a single "normal" file
   # Compare this file with the same file generated without using changesets...
   TRIBITS_ADD_ADVANCED_TEST(
@@ -222,7 +222,7 @@ if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASConjoin)
   )
 
   # Use io_shell to generate multiple files with different geometry, but similar variable names
-  # Then join those sepearte files into a single file with each in a separate changeset
+  # Then join those separate files into a single file with each in a separate changeset
   # Then use conjoin to "squash" the changesets into a single "normal" file
   # Then use conjoin to "squash" the individual files into a single "normal" file
   # Compare the two conjoin outputs...

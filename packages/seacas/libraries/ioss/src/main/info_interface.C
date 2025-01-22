@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -148,7 +148,7 @@ void Info::Interface::enroll_options()
 #endif
   options_.enroll(
       "list_change_sets", Ioss::GetLongOption::NoValue,
-      "Print a list of the names of all change_sets (previosly groups) in this file and then exit.",
+      "Print a list of the names of all change_sets (previously groups) in this file and then exit.",
       nullptr);
   options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
                   "[deprecated] Use --list_change_sets", nullptr);
