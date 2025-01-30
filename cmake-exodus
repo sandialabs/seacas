@@ -18,25 +18,26 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 function check_valid()
 {
-    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
-	echo "YES"
-	return 1
+    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ] || [ "${!1}" == "yes" ] || [ "${!1}" == "on" ]; then
+        echo "YES"
+        return 0
     fi
-    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
-	echo "NO"
-	return 1
+    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ] || [ "${!1}" == "no" ] || [ "${!1}" == "off" ]; then
+        echo "NO"
+        return 0
     fi
-    echo "Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF"
+    printf "\n${txtred}ERROR: Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF\n\n${txtrst}" >& 2
     exit 1
 }
 
 FORTRAN=${FORTRAN:-YES}
-FORTRAN=$(check_valid FORTRAN)
+FORTRAN=$(check_valid FORTRAN) || exit
 
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
+NETCDF_PATH=${NETCDF_PATH:-${NETCDF_ROOT}}
 NETCDF_PATH=${NETCDF_PATH:-${INSTALL_PATH}}
 PNETCDF_PATH=${PNETCDF_PATH:-${INSTALL_PATH}}
 HDF5_PATH=${HDF5_PATH:-${INSTALL_PATH}}
@@ -59,7 +60,7 @@ then
     fi
 fi
 
-MPI=$(check_valid MPI)
+MPI=$(check_valid MPI) || exit
 echo "${txtgrn}MPI set to ${MPI}${txtrst}"
 
 if [ "${MPI}" == "NO" ]
@@ -73,8 +74,8 @@ then
       CXX=g++
       CC=gcc
       FC=gfortran
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "gnubrew" ]
@@ -83,8 +84,8 @@ then
       CXX=g++-${VER}
       CC=gcc-${VER}
       FC=gfortran-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "gnumacport" ]
@@ -93,8 +94,8 @@ then
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "clangmacport" ]
@@ -103,8 +104,8 @@ then
       CXX=clang++-mp-${VER}.0
       CC=clang-mp-${VER}.0
       FC=gfortran
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "nvidia" ]
@@ -119,17 +120,17 @@ then
       CXX=clang++
       CC=clang
       FC=${FC:-gfortran}
-      CFLAGS="-Wall -Wunused -pedantic"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icpc
-      CC=icc
-      FC=ifort
+      CXX=icpx
+      CC=icx
+      FC=ifx
       CFLAGS="-Wall -Wunused"
-      CXXFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wextra  -Wunused -DFMT_HEADER_ONLY"
   fi
 
   # When building:  "scan-build make -j8"
@@ -154,15 +155,16 @@ fi
 MODERN=${MODERN:-NO}
 if [ "${MODERN}" == "YES" ]
 then
-    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+#    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+    MODERN_ARG="-DNetcdf_FORCE_MODERN:BOOL=ON -DCGNS_FORCE_MODERN:BOOL=ON"
 else
-    MODERN_ARG=""
+    MODERN_ARG="-D HDF5_NO_SYSTEM_PATHS=YES"
 fi
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
 
 CRAY="${CRAY:-NO}"
-CRAY=$(check_valid CRAY)
+CRAY=$(check_valid CRAY) || exit
 
 if [ "${CRAY}" == "YES" ]
 then
@@ -170,7 +172,7 @@ then
 else
     SHARED="${SHARED:-YES}"
 fi
-SHARED=$(check_valid SHARED)
+SHARED=$(check_valid SHARED) || exit
 
 if [ "${CRAY}" == "YES" ] && [ "${SHARED}" == "NO" ]
 then
@@ -190,22 +192,21 @@ BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
 if [ ! -z ${DEBUG+x} ]
 then
-    if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ]
+    if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ] || [ "${DEBUG}" == "on" ] || [ "${DEBUG}" == "yes" ]
     then
 	BUILD_TYPE="DEBUG"
-    elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ]
+    elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ] || [ "${DEBUG}" == "off" ] || [ "${DEBUG}" == "no" ]
     then
 	BUILD_TYPE="RELEASE"
     else
-	echo "ERROR: Invalid value for DEBUG ('$DEBUG'). Must be 'ON', 'OFF', 'YES', 'NO'."
+	echo "\nERROR: Invalid value for DEBUG ('$DEBUG') -- Must be ON, YES, NO, or OFF\n" >& 2
 	exit
     fi
 fi
 
-
-### Set to YES to enable the building of a thread-safe version of the Exodus and IOSS libraries.
+### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
-THREADSAFE=$(check_valid THREADSAFE)
+THREADSAFE=$(check_valid THREADSAFE) || exit
 
 if [ "$THREADSAFE" == "YES" ] ; then
   THREAD_SAFE_OPT="-DTPL_Pthread_LIBRARIES=-lpthread"
@@ -284,7 +285,7 @@ fi
 FC=${FC:-gfortran}
 
 EXTRA_WARNINGS=${EXTRA_WARNINGS:-NO}
-EXTRA_WARNINGS=$(check_valid EXTRA_WARNINGS)
+EXTRA_WARNINGS=$(check_valid EXTRA_WARNINGS) || exit
 
 SANITIZER=${SANITIZER:-NO}
 
@@ -298,9 +299,9 @@ if [ "$SANITIZER" != "NO" ] ; then
 #sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
 #sanitizer=cfi         #: control flow integrity checks. Requires -flto.
 #sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
-SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
+OPT_SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
 if [ "$SANITIZER" == "integer" ] ; then
-  SANITIZE="$SANITIZE -fno-sanitize=unsigned-integer-overflow"
+  OPT_SANITIZE="$OPT_SANITIZE -fno-sanitize=unsigned-integer-overflow"
 fi
 fi
 
@@ -344,9 +345,9 @@ cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${SANITIZE}" \
--D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${SANITIZE}" \
--D CMAKE_Fortran_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${SANITIZE}" \
+-D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${OPT_SANITIZE}" \
+-D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${OPT_SANITIZE}" \
+-D CMAKE_Fortran_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${OPT_SANITIZE}" \
 -D Seacas_ENABLE_STRONG_C_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D Seacas_ENABLE_STRONG_CXX_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
@@ -376,7 +377,9 @@ ${DARWIN_OPT} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
+-D netCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
+-D HDF5_DIR:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=YES \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 \
