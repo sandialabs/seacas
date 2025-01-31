@@ -157,6 +157,7 @@ C ... Check that file contains at least that many change sets...
             if (nchange .gt. idum) then
                write (*,*) 'ERROR: Selected change set', nchange,
      $              'but there are only ', idum, ' change sets in file.'
+               goto 110
             else
                ndb = ndbr + nchange
             end if
