@@ -39,7 +39,11 @@ FORTRAN=$(check_valid FORTRAN) || exit
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
 NETCDF_PATH=${NETCDF_PATH:-${NETCDF_ROOT}}
 NETCDF_PATH=${NETCDF_PATH:-${INSTALL_PATH}}
+
+PNETCDF_PATH=${PNETCDF_PATH:-${PNETCDF_ROOT}}
 PNETCDF_PATH=${PNETCDF_PATH:-${INSTALL_PATH}}
+
+HDF5_PATH=${HDF5_PATH:-${HDF5_ROOT}}
 HDF5_PATH=${HDF5_PATH:-${INSTALL_PATH}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
