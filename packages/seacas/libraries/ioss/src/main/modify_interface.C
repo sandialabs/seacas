@@ -22,7 +22,8 @@ void Modify::Interface::enroll_options()
 {
   options_.usage("[options] basename");
 
-  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit", nullptr);
+  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit",
+                  nullptr);
 
   options_.enroll("db_type", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Database Type: generated"
@@ -40,8 +41,8 @@ void Modify::Interface::enroll_options()
 #endif
                   ".",
                   "unknown");
-  options_.enroll("in_type", Ioss::GetLongOption::OptType::MandatoryValue, "(alias for db_type)", nullptr,
-                  nullptr, true);
+  options_.enroll("in_type", Ioss::GetLongOption::OptType::MandatoryValue, "(alias for db_type)",
+                  nullptr, nullptr, true);
 
   options_.enroll("allow_modifications", Ioss::GetLongOption::OptType::NoValue,
                   "By default, io_modify will only allow creation of new assemblies.\n"
@@ -50,10 +51,11 @@ void Modify::Interface::enroll_options()
                   "\t\tThis will cause the database to be rewritten. Without this option, it is "
                   "updated in place.",
                   nullptr, nullptr, true);
-  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit", nullptr);
-
-  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue, "Show copyright and license data.",
+  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
                   nullptr);
+
+  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue,
+                  "Show copyright and license data.", nullptr);
 }
 
 bool Modify::Interface::parse_options(int argc, char **argv)

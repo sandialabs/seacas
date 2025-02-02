@@ -172,9 +172,11 @@ void SystemInterface::enroll_options()
       "\t\twould read every other entry on the row and every other row. (for debugging)",
       "1");
 
-  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit", nullptr);
+  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit",
+                  nullptr);
 
-  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit", nullptr);
+  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
+                  nullptr);
 
   options_.enroll("debug", Ioss::GetLongOption::OptType::MandatoryValue,
                   "debug level (values are or'd)\n"
@@ -188,8 +190,8 @@ void SystemInterface::enroll_options()
                   "\t\t 128 = Verbose sideset generation information.",
                   "0");
 
-  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue, "Show copyright and license data.",
-                  nullptr);
+  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue,
+                  "Show copyright and license data.", nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)

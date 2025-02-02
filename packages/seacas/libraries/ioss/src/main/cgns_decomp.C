@@ -181,9 +181,10 @@ namespace {
     explicit Interface(std::string app_version) : version(std::move(app_version))
     {
       options_.usage("[options] input_file");
-      options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit", nullptr);
-      options_.enroll("processors", Ioss::GetLongOption::OptType::MandatoryValue, "Number of processors.",
+      options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit",
                       nullptr);
+      options_.enroll("processors", Ioss::GetLongOption::OptType::MandatoryValue,
+                      "Number of processors.", nullptr);
       options_.enroll("ordinal", Ioss::GetLongOption::OptType::MandatoryValue,
                       "Ordinal not to split 0(i), 1(j), 2(k), 3(ij), 4(ik), or 5(jk).", nullptr);
       options_.enroll("line_decomposition", Ioss::GetLongOption::OptType::MandatoryValue,
@@ -203,7 +204,8 @@ namespace {
                       "What is printed: z=zone-proc assignment, h=histogram, w=work-per-processor, "
                       "c=comm map, v=verbose.",
                       "zhwc");
-      options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit", nullptr);
+      options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
+                      nullptr);
     }
     Ioss::GetLongOption options_;
     int                 proc_count{0};

@@ -28,7 +28,8 @@ void IOShell::Interface::enroll_options()
 {
   options_.usage("[options] input_file[s] output_file");
 
-  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit", nullptr);
+  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit",
+                  nullptr);
 
   options_.enroll("in_type", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Database type for input file: generated"
@@ -89,8 +90,8 @@ void IOShell::Interface::enroll_options()
                   "Do not read the global face id map (if any) from the input database.", nullptr,
                   nullptr, true);
 
-  options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue, "Use 64-bit integers on output database",
-                  nullptr);
+  options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue,
+                  "Use 64-bit integers on output database", nullptr);
 
   options_.enroll("32-bit", Ioss::GetLongOption::OptType::NoValue,
                   "Use 32-bit integers on output database."
@@ -368,9 +369,10 @@ void IOShell::Interface::enroll_options()
                   "POINTER");
 #endif
 
-  options_.enroll("debug", Ioss::GetLongOption::OptType::NoValue, "turn on debugging output", nullptr);
-  options_.enroll("detect_nans", Ioss::GetLongOption::OptType::NoValue, "check all real field data for NaNs",
+  options_.enroll("debug", Ioss::GetLongOption::OptType::NoValue, "turn on debugging output",
                   nullptr);
+  options_.enroll("detect_nans", Ioss::GetLongOption::OptType::NoValue,
+                  "check all real field data for NaNs", nullptr);
 
   options_.enroll("quiet", Ioss::GetLongOption::OptType::NoValue, "minimize output", nullptr);
 
@@ -393,10 +395,11 @@ void IOShell::Interface::enroll_options()
   options_.enroll("reverse", Ioss::GetLongOption::OptType::NoValue,
                   "define CGNS zones in reverse order. Used for testing (TEST)", nullptr);
 
-  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit", nullptr);
-
-  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue, "Show copyright and license data.",
+  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
                   nullptr);
+
+  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue,
+                  "Show copyright and license data.", nullptr);
 }
 
 bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)

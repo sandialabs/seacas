@@ -36,7 +36,7 @@ namespace Ioss {
           nullptr};          // If optional value and value not entered, assign opt_value to value
       Cell   *next{nullptr}; // pointer to the next cell
       OptType type{OptType::NoValue}; // option type
-      bool    extra_line{false}; // True if `usage()` should output extra line at end of entry
+      bool    extra_line{false};      // True if `usage()` should output extra line at end of entry
 
       Cell() = default;
     };

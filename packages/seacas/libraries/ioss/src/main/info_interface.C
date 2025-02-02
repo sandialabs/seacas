@@ -25,7 +25,8 @@ void Info::Interface::enroll_options()
 {
   options_.usage("[options] basename");
 
-  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit", nullptr);
+  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit",
+                  nullptr);
 
   options_.enroll("configuration", Ioss::GetLongOption::OptType::NoValue,
                   "Show configuration of IOSS library (TPL versions)", nullptr);
@@ -46,8 +47,8 @@ void Info::Interface::enroll_options()
 #endif
                   ".",
                   "unknown");
-  options_.enroll("in_type", Ioss::GetLongOption::OptType::MandatoryValue, "(alias for db_type)", nullptr,
-                  nullptr, true);
+  options_.enroll("in_type", Ioss::GetLongOption::OptType::MandatoryValue, "(alias for db_type)",
+                  nullptr, nullptr, true);
 
   options_.enroll("summary", Ioss::GetLongOption::OptType::NoValue,
                   "Only output counts of nodes, elements, and entities", nullptr);
@@ -163,10 +164,11 @@ void Info::Interface::enroll_options()
   options_.enroll("query_timesteps_only", Ioss::GetLongOption::OptType::NoValue,
                   "Only read and output the timestep data on the file", nullptr);
   options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue, "Use 64-bit integers", nullptr);
-  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit", nullptr);
-
-  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue, "Show copyright and license data.",
+  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
                   nullptr);
+
+  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue,
+                  "Show copyright and license data.", nullptr);
 }
 
 bool Info::Interface::parse_options(int argc, char **argv)

@@ -23,11 +23,14 @@ void Skinner::Interface::enroll_options()
 {
   options_.usage("[options] input_file[s] output_file");
 
-  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit", nullptr);
+  options_.enroll("help", Ioss::GetLongOption::OptType::NoValue, "Print this summary and exit",
+                  nullptr);
 
-  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit", nullptr);
+  options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
+                  nullptr);
 
-  options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue, "True if using 64-bit integers", nullptr);
+  options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue, "True if using 64-bit integers",
+                  nullptr);
   options_.enroll("in_type", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Database type for input file: generated"
 #if defined(SEACAS_HAVE_PAMGEN)
@@ -151,13 +154,14 @@ void Skinner::Interface::enroll_options()
                   nullptr, nullptr, true);
 #endif
 
-  options_.enroll("debug", Ioss::GetLongOption::OptType::NoValue, "turn on debugging output", nullptr);
+  options_.enroll("debug", Ioss::GetLongOption::OptType::NoValue, "turn on debugging output",
+                  nullptr);
 
   options_.enroll("statistics", Ioss::GetLongOption::OptType::NoValue,
                   "output parallel io timing statistics", nullptr);
 
-  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue, "Show copyright and license data.",
-                  nullptr);
+  options_.enroll("copyright", Ioss::GetLongOption::OptType::NoValue,
+                  "Show copyright and license data.", nullptr);
 }
 
 bool Skinner::Interface::parse_options(int argc, char **argv)
