@@ -224,7 +224,7 @@ int F2C(exopen, EXOPEN)(char *path, int *mode, int *cpu_word_size, int *io_word_
     int num_change_sets = ex_inquire_int(idexo, EX_INQ_NUM_CHILD_GROUPS);
     if (num_change_sets >= 1) {
       fprintf(stderr,
-              " WARNING: Input database contains %d change sets.  Reading from first change set.\n",
+              " *** WARNING: Input database contains %d change sets.  Unless otherwise specified, reading from first change set.\n",
               num_change_sets);
       idexo++;
     }

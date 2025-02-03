@@ -157,17 +157,21 @@ C ... Convert `value` to an integer.
             CALL get_argument(iarg+1,value,  lv)
             iarg = iarg + 2
             read (value(:lv), '(i10)') nchange
-            write (*,99) nchange
- 99         format(1x,'NOTE: Selecting change set ', i3)
 C ... Check that file contains at least that many change sets...
             ndbr = iand(ndbin, EX_FILE_ID_MASK)
             call exinq(ndbr, EX_INQ_NUM_CHILD_GROUPS,
      $           idum, rdum, cdum, ierr)
             if (nchange .gt. idum) then
-               write (*,*) 'ERROR: Selected change set', nchange,
+               write (SCRATCH,*) 'Selected change set', nchange,
      $              'but there are only ', idum, ' change sets in file.'
+               call sqzstr(scratch, lscratch)
+               call PRTERR('CMDERR', SCRATCH(:LSCRATCH))
                goto 60
             else
+               write (scratch,99) nchange
+ 99            format(1x,'NOTE: Selecting change set ', i3)
+               call sqzstr(scratch, lscratch)
+               call PRTERR('CMDSPEC', scratch(:lscratch))
                ndbin = ndbr + nchange
             end if
           else
