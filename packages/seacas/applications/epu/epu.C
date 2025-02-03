@@ -1348,7 +1348,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
 
       time_step_out = nstep;
     }
-    
+
     ts_max = std::min(ts_max, num_time_steps);
     if (ts_min <= ts_max) {
       if (debug_level & 1) {
