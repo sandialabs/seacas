@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1272,7 +1272,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
         if (nts != num_time_steps) {
           differ = true;
         }
-        num_time_steps = num_time_steps < nts ? num_time_steps : nts;
+        num_time_steps = std::min(num_time_steps, nts);
       }
     }
     if (differ) {
@@ -1348,8 +1348,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
 
       time_step_out = nstep;
     }
-
-    ts_max = ts_max < num_time_steps ? ts_max : num_time_steps;
+    
+    ts_max = std::min(ts_max, num_time_steps);
     if (ts_min <= ts_max) {
       if (debug_level & 1) {
         fmt::print("{}", time_stamp(tsFormat));
