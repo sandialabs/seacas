@@ -39,7 +39,7 @@ exit 1
 
 function show_device {
  echo " "
- tempA=`find ${ACCESSBIN} -name ${codename}_\* |sed -e s:${ACCESSBIN}/${codename}_::`
+ tempA=`find ${ACCESS_BIN} -name ${codename}${sep}\* |sed -e s:${ACCESS_BIN}/${codename}${sep}::`
  echo "Standard options for 'device':"
  echo "${txtgrn}" $tempA "${txtrst}"
  echo " "
@@ -80,8 +80,10 @@ function abspath() {
 }
 
 codename=blot
-ACCESSBIN="`dirname \"$0\"`"
-ACCESSBIN="`( cd \"${ACCESSBIN}\" && pwd )`"
+ACCESS_BIN="`dirname \"$0\"`"
+ACCESS_BIN="`( cd \"${ACCESS_BIN}\" && pwd )`"
+
+sep='_'
 
 # Text color variables
 if [[ $TERM == *"xterm"* ]] || [[ $TERM == "screen" ]]; then
@@ -209,9 +211,9 @@ then
     export DUAL_FILENAME="${filename}.cps"
 fi
 
-if [ ! -x "${ACCESSBIN}/${codename}_${device}" ]
+if [ ! -x "${ACCESS_BIN}/${codename}${sep}${device}" ]
 then
-   echo "${txtred}ERROR: ${ACCESSBIN}/${codename}_${device} does not exist.${txtrst}"
+   echo "${txtred}ERROR: ${ACCESS_BIN}/${codename}${sep}${device} does not exist.${txtrst}"
    echo "    Contact gdsjaar@sandia.gov if you need this device;"
    echo "    otherwise use one of the supported devices:"
    show_device
@@ -221,8 +223,8 @@ fi
 # Set filename to absolute path
 abspath ${FOR011}
 
-# Run the code, --
-if ${ACCESSBIN}/${codename}_${device} ${ps_option} ${nomap_option} ${caption} ${cs_option} -basename ${filename} ${FOR011}
+# Run the code
+if ${ACCESS_BIN}/${codename}${sep}${device} ${ps_option} ${nomap_option} ${caption} ${cs_option} -basename ${filename} ${FOR011}
 then
   echo "${txtgrn}BLOT Successful Execution${txtrst}"
 fi
@@ -237,4 +239,3 @@ fi
 
 # Remove temporary files
 if [ -e Blot.90.$$ ] ; then rm -f Blot.90.$$ ; fi
-

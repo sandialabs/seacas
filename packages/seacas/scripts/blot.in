@@ -11,7 +11,6 @@ set -o pipefail
 
 if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
 
-
 function usage {
 USAGE="Usage: blot [-help] [--options option] [--] filename [device]"
    echo ""
@@ -77,6 +76,7 @@ function abspath() {
             FOR011=`echo "$(pwd)/$1"`
         fi
     fi
+    return 0
 }
 
 codename=blot
@@ -95,7 +95,6 @@ else
 fi
 sep=@SEPARATOR@
 
-# Text color variables
 # Text color variables
 if [[ $TERM == *"xterm"* ]] || [[ $TERM == "screen" ]]; then
     txtund=$(tput sgr 0 1)    # Underline
