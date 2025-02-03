@@ -136,7 +136,7 @@ export EXT04=NO
 
 GETOPT=${ACCESS_BIN}/getopt.seacas
 
-TEMP=`${GETOPT} -o aoidhbps -a --long nomap:,ps_option:,device:,input:,hardcopy:,basename:,change_set:,aprepro,help,show_filename -n 'blot' -- "$@"`
+TEMP=`${GETOPT} -o acoidhbps -a --long nomap:,ps_option:,device:,input:,hardcopy:,basename:,change_set:,aprepro,help,show_filename -n 'blot' -- "$@"`
 
 if [ $? != 0 ] ; then usage ; exit 1 ; fi
 
@@ -148,34 +148,34 @@ cs_option=${cs_option:-""}
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 while true ; do
-	case "$1" in
-	    -h|--help)
-	      usage ; shift ;;
-	    -i|--input)
-	      export FOR007="$2" ; shift 2
-	      export EXT04="YES"
-	      if [ ! -e "${FOR007}" ]
-	      then
-		echo "${txtred}ERROR: Input file '$FOR007' does not exist.${txtrst}"
+        case "$1" in
+            -h|--help)
+              usage ; shift ;;
+            -i|--input)
+              export FOR007="$2" ; shift 2
+              export EXT04="YES"
+              if [ ! -e "${FOR007}" ]
+              then
+                echo "${txtred}ERROR: Input file '$FOR007' does not exist.${txtrst}"
                 usage
-	      fi
-	      ;;
-	   -p|--ps_option)
-	     ps_option="$2" ; shift 2
+              fi
+              ;;
+           -p|--ps_option)
+             ps_option="$2" ; shift 2
              if [ "${ps_option}" == "list" ] || [ "${ps_option}" == "help" ]
-	     then
+             then
                 show_ps_option
-	        exit 0
+                exit 0
              fi
-	     ;;
+             ;;
            -d|--device)
              device="$2" ; shift 2
             if [ "${device}" == "list" ] || [ "${device}" == "help" ]
-	    then
+            then
                show_device
-	       exit 0
+               exit 0
             fi
-	    ;;
+            ;;
            -b|--basename|--hardcopy)
               filename="$2" ; shift 2 ;;
            -c|--change_set)
@@ -183,12 +183,12 @@ while true ; do
            --nomap)
               nomap_option="-nomap $2" ; shift 2 ;;
            -a|--aprepro)
-	      aprepro="true" ; shift ;;
+              aprepro="true" ; shift ;;
            -s|--show_filename)
-	      caption="--show_filename" ; shift ;;
-	    --) shift ; break ;;
-	    *) echo "${txtred}ERROR: unrecognized option $1${txtrst}" ; shift ;;
-	esac
+              caption="--show_filename" ; shift ;;
+            --) shift ; break ;;
+            *) echo "${txtred}ERROR: unrecognized option $1${txtrst}" ; shift ;;
+        esac
 done
 
 if [ $# -eq 0 ] ; then
@@ -197,10 +197,10 @@ if [ $# -eq 0 ] ; then
 else
     if [ -e "$1" ]
     then
-	export FOR011=$1
+        export FOR011=$1
     else
         echo "${txtred}ERROR: Exodus database '$1' does not exist.${txtrst}"
-	usage
+        usage
     fi
     shift
 fi
