@@ -80,7 +80,7 @@ namespace {
                "   -v5   output version 5 mat file {}\n"
                "   -v73  output version 7.3 mat file (hdf5-based) {}\n"
                "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
-	       "   -change_set cs_#  Read from change set #.\n"
+               "   -change_set cs_#  Read from change set #.\n"
                " ** note **\n"
                "Binary files are written by default on all platforms.\n",
                v5default, v7default);
@@ -1079,13 +1079,17 @@ int main(int argc, char *argv[])
   int num_change_sets = ex_inquire_int(exo_file, EX_INQ_NUM_CHILD_GROUPS);
   if (num_change_sets > 0) {
     if (cs_index == 0) {
-      fmt::print(stderr, "WARNING: Exodus database contains {} change sets.\n         Setting to read from first change set since `-change_set #` option not specified.\n\n", 
-		 num_change_sets);
+      fmt::print(stderr,
+                 "WARNING: Exodus database contains {} change sets.\n         Setting to read from "
+                 "first change set since `-change_set #` option not specified.\n\n",
+                 num_change_sets);
       exo_file++;
     }
     else if (cs_index > num_change_sets) {
-      fmt::print(stderr, "ERROR: The selected change set ({}) exceeds the number of change sets ({}) on the exodus database.\n",
-		 cs_index, num_change_sets);
+      fmt::print(stderr,
+                 "ERROR: The selected change set ({}) exceeds the number of change sets ({}) on "
+                 "the exodus database.\n",
+                 cs_index, num_change_sets);
       exit(1);
     }
     else {
@@ -1096,8 +1100,10 @@ int main(int argc, char *argv[])
   }
   else if (cs_index > 0) {
     // Error, selected change set, but there are none.
-    fmt::print(stderr, "ERROR: Change set {} was selected, but the exodus database does not contain change sets.\n",
-	       cs_index, num_change_sets);
+    fmt::print(stderr,
+               "ERROR: Change set {} was selected, but the exodus database does not contain change "
+               "sets.\n",
+               cs_index, num_change_sets);
     exit(1);
   }
 
@@ -1106,8 +1112,8 @@ int main(int argc, char *argv[])
 
   /* read database parameters */
   std::array<char, MAX_LINE_LENGTH + 1> line;
-  ex_get_init(exo_file, line.data(), &num_axes, &num_nodes, &num_elements, &num_blocks, &num_node_sets,
-              &num_side_sets);
+  ex_get_init(exo_file, line.data(), &num_axes, &num_nodes, &num_elements, &num_blocks,
+              &num_node_sets, &num_side_sets);
   num_info_lines = ex_inquire_int(exo_file, EX_INQ_INFO);
   num_time_steps = ex_inquire_int(exo_file, EX_INQ_TIME);
   ex_get_variable_param(exo_file, EX_GLOBAL, &num_global_vars);

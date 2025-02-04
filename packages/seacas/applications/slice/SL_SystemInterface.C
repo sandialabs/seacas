@@ -454,7 +454,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (processorCount_ <= 1) {
     fmt::print(stderr,
-	       "\nERROR: The `-processors` argument must be greater than 1.\n       The entered value of {} is not valid.\n", processorCount_);
+               "\nERROR: The `-processors` argument must be greater than 1.\n       The entered "
+               "value of {} is not valid.\n",
+               processorCount_);
     return false;
   }
   return true;

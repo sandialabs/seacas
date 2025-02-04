@@ -17,8 +17,8 @@
 
 #include "exodusII.h"
 #include "netcdf.h"
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
   int c4 = getc(fid);
   fclose(fid);
 
-  bool netcdf_based    = false;
-  bool hdf5_based      = false;
+  bool netcdf_based = false;
+  bool hdf5_based   = false;
   if (c1 == 'C' && c2 == 'D' && c3 == 'F') {
     netcdf_based = true;
   }
@@ -79,13 +79,13 @@ int main(int argc, char *argv[])
     exit(NOT_NETCDF);
   }
   float version;
-  int CPU_word_size = 0; /* float or double */
-  int IO_word_size  = 0; /* use what is stored in file */
+  int   CPU_word_size = 0; /* float or double */
+  int   IO_word_size  = 0; /* use what is stored in file */
 
   int exoid = ex_open(filename, EX_READ, /* access mode = READ */
-		      &CPU_word_size,    /* CPU word size */
-		      &IO_word_size,     /* IO word size */
-		      &version);         /* Exodus library version */
+                      &CPU_word_size,    /* CPU word size */
+                      &IO_word_size,     /* IO word size */
+                      &version);         /* Exodus library version */
 
   if (exoid < 0) {
     if (netcdf_based) {
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
   }
 
   /* Determine netcdf file version... */
-  int   nc_format       = 0;
+  int nc_format = 0;
   nc_inq_format(exoid, &nc_format);
   if (nc_format == NC_FORMAT_CLASSIC) {
     fprintf(stderr, "\t\tNetCDF Variant is 'classic'\n");
@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
 
   size_t k = strlen(cversion);
   size_t j = 0;
-  for (;  j < k; j++) {
+  for (; j < k; j++) {
     if (cversion[j] == '.') {
       break;
     }
