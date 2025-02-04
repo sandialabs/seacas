@@ -42,7 +42,7 @@ static void exi_get_entity_count(int exoid, ex_init_params *info)
     nc_inq_dim(exoid, dimids[dimid], dim_nm, &dim_sz);
 #else
     nc_inq_dim(exoid, dimid, dim_nm, &dim_sz);
-#endif    
+#endif
     /* For assemblies, we check for a dim starting with "num_entity_assembly" */
     if (strncmp(dim_nm, "num_entity_assembly", 19) == 0) {
       info->num_assembly++;
