@@ -95,7 +95,7 @@ namespace Ioss {
 
   void NamedSuffixVariableType::print() const
   {
-    fmt::print("\tVariableType '{}' named '{}' with {} components\n\t\tSuffices: {}\n", 
+    fmt::print("\tVariableType '{}' named '{}' with {} components\n\t\tSuffices: {}\n",
                type_string(), name(), component_count(), fmt::join(suffixList, ", "));
   }
 

@@ -416,7 +416,7 @@ namespace {
         for (const auto &block : blocks) {
           fmt::print("{}  ", block);
         }
-	fmt::print("\n");
+        fmt::print("\n");
       }
       Ioss::Utils::info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ", "\n\t",
                                interFace.field_details());
