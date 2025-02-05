@@ -33,44 +33,46 @@
 #endif
 
 namespace {
-int check_change_sets(int exoid, int &selected_change_set)
-{
-  // First, see if the file contains change sets...
-  int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
-  
-  if (num_change_sets == 0) {
-    if (selected_change_set > 0) {
+  int check_change_sets(int exoid, int &selected_change_set)
+  {
+    // First, see if the file contains change sets...
+    int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+
+    if (num_change_sets == 0) {
+      if (selected_change_set > 0) {
+        fmt::print(stderr,
+                   "ERROR: Reading from change set {} was specified, but the file contains no "
+                   "change sets.\n",
+                   num_change_sets);
+        return 0;
+      }
+      return exoid;
+    }
+
+    // File contains change sets...
+    if (selected_change_set == 0) {
+      fmt::print(
+          stderr,
+          "\nWARNING: Exodus database contains {} change sets.\n         Setting to read from "
+          "first change set since `-change_set #` option not specified.\n\n",
+          num_change_sets);
+      selected_change_set = 1;
+      return exoid + selected_change_set;
+    }
+
+    if (selected_change_set > num_change_sets) {
       fmt::print(stderr,
-		 "ERROR: Reading from change set {} was specified, but the file contains no change sets.\n",
-		 num_change_sets);
+                 "ERROR: Change set {} was specified for reading, but mesh only contains {} change "
+                 "sets.\n",
+                 selected_change_set, num_change_sets);
       return 0;
     }
-    return exoid;
-  }
-
-  // File contains change sets...
-  if (selected_change_set == 0) {
-    fmt::print(stderr,
-	       "\nWARNING: Exodus database contains {} change sets.\n         Setting to read from "
-	       "first change set since `-change_set #` option not specified.\n\n",
-	       num_change_sets);
-    selected_change_set = 1;
+    // Contains change sets and selected change set is in range...
+    fmt::print(stderr, "NOTE: Mesh data will be read from change set {} of {}\n",
+               selected_change_set, num_change_sets);
     return exoid + selected_change_set;
   }
-
-  if (selected_change_set > num_change_sets) {
-      fmt::print(stderr,
-		 "ERROR: Change set {} was specified for reading, but mesh only contains {} change sets.\n",
-		 selected_change_set, num_change_sets);
-      return 0;
-  }
-  // Contains change sets and selected change set is in range...
-  fmt::print(stderr,
-	     "NOTE: Mesh data will be read from change set {} of {}\n",
-	     selected_change_set, num_change_sets);
-  return exoid + selected_change_set;
-}
-}
+} // namespace
 extern int read_mesh_file_name(const char *filename);
 
 template <typename T, typename INT>
@@ -84,12 +86,12 @@ int main(int argc, char *argv[])
   const char *salsa_cmd_file;
   int         c;
 
-  double g_start_t    = second();
-  bool   force_64_bit = false;
-  int    start_proc   = 0;
-  int    num_proc     = 0;
-  int    subcycles    = 0;
-  int    cycle        = -1;
+  double g_start_t           = second();
+  bool   force_64_bit        = false;
+  int    start_proc          = 0;
+  int    num_proc            = 0;
+  int    subcycles           = 0;
+  int    cycle               = -1;
   int    selected_change_set = 0;
 
   while ((c = getopt(argc, argv, "64Vhp:r:s:n:S:c:C:")) != -1) {
@@ -172,14 +174,12 @@ int main(int argc, char *argv[])
 
   int exoid = ex_open(ExoFile.c_str(), EX_READ, &cpu_ws, &io_ws, &version);
   if (exoid <= 0) {
-    fmt::print(stderr,
-               "{} ERROR: Could not open the mesh file '{}'!\n",
-               yo, ExoFile);
+    fmt::print(stderr, "{} ERROR: Could not open the mesh file '{}'!\n", yo, ExoFile);
     exit(1);
   }
 
   // Determine whether there are any change sets in file.
-  // If there are, check whether user specified a specific 
+  // If there are, check whether user specified a specific
   // change set index and set to that one (if valid), or
   // if not specified, set to the first.
   exoid = check_change_sets(exoid, selected_change_set);
@@ -200,48 +200,48 @@ int main(int argc, char *argv[])
     if (int64api != 0) {
       NemSpread<float, int64_t> spreader;
       spreader.selected_change_set = selected_change_set;
-      spreader.io_ws        = io_ws;
-      spreader.int64db      = int64db;
-      spreader.int64api     = int64api;
-      spreader.force64db    = force_64_bit;
-      spreader.Proc_Info[4] = start_proc;
-      spreader.Proc_Info[5] = num_proc;
-      status                = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
+      spreader.io_ws               = io_ws;
+      spreader.int64db             = int64db;
+      spreader.int64api            = int64api;
+      spreader.force64db           = force_64_bit;
+      spreader.Proc_Info[4]        = start_proc;
+      spreader.Proc_Info[5]        = num_proc;
+      status                       = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
     }
     else {
       NemSpread<float, int> spreader;
       spreader.selected_change_set = selected_change_set;
-      spreader.io_ws        = io_ws;
-      spreader.int64db      = int64db;
-      spreader.int64api     = int64api;
-      spreader.force64db    = force_64_bit;
-      spreader.Proc_Info[4] = start_proc;
-      spreader.Proc_Info[5] = num_proc;
-      status                = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
+      spreader.io_ws               = io_ws;
+      spreader.int64db             = int64db;
+      spreader.int64api            = int64api;
+      spreader.force64db           = force_64_bit;
+      spreader.Proc_Info[4]        = start_proc;
+      spreader.Proc_Info[5]        = num_proc;
+      status                       = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
     }
   }
   else {
     if (int64api != 0) {
       NemSpread<double, int64_t> spreader;
       spreader.selected_change_set = selected_change_set;
-      spreader.io_ws        = io_ws;
-      spreader.int64db      = int64db;
-      spreader.int64api     = int64api;
-      spreader.force64db    = force_64_bit;
-      spreader.Proc_Info[4] = start_proc;
-      spreader.Proc_Info[5] = num_proc;
-      status                = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
+      spreader.io_ws               = io_ws;
+      spreader.int64db             = int64db;
+      spreader.int64api            = int64api;
+      spreader.force64db           = force_64_bit;
+      spreader.Proc_Info[4]        = start_proc;
+      spreader.Proc_Info[5]        = num_proc;
+      status                       = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
     }
     else {
       NemSpread<double, int> spreader;
       spreader.selected_change_set = selected_change_set;
-      spreader.io_ws        = io_ws;
-      spreader.int64db      = int64db;
-      spreader.int64api     = int64api;
-      spreader.force64db    = force_64_bit;
-      spreader.Proc_Info[4] = start_proc;
-      spreader.Proc_Info[5] = num_proc;
-      status                = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
+      spreader.io_ws               = io_ws;
+      spreader.int64db             = int64db;
+      spreader.int64api            = int64api;
+      spreader.force64db           = force_64_bit;
+      spreader.Proc_Info[4]        = start_proc;
+      spreader.Proc_Info[5]        = num_proc;
+      status                       = nem_spread(spreader, salsa_cmd_file, subcycles, cycle);
     }
   }
   double g_end_t = second() - g_start_t;

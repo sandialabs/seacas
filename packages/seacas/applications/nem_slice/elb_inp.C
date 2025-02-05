@@ -51,46 +51,48 @@ namespace {
     return filename;
   }
 
-int check_change_sets(int exoid, int &selected_change_set)
-{
-  // First, see if the file contains change sets...
-  int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
-  
-  if (num_change_sets == 0) {
-    if (selected_change_set > 0) {
-      fmt::print(stderr,
-		 "ERROR: Reading from change set {} was specified, but the file contains no change sets.\n",
-		 num_change_sets);
+  int check_change_sets(int exoid, int &selected_change_set)
+  {
+    // First, see if the file contains change sets...
+    int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
 
-      Gen_Error(0, "fatal: no change sets in mesh database");
-      return 0;
+    if (num_change_sets == 0) {
+      if (selected_change_set > 0) {
+        fmt::print(stderr,
+                   "ERROR: Reading from change set {} was specified, but the file contains no "
+                   "change sets.\n",
+                   num_change_sets);
+
+        Gen_Error(0, "fatal: no change sets in mesh database");
+        return 0;
+      }
+      return exoid;
     }
-    return exoid;
-  }
 
-  // File contains change sets...
-  if (selected_change_set == 0) {
-    fmt::print(stderr,
-	       "\nWARNING: Exodus database contains {} change sets.\n         Setting to read from "
-	       "first change set since `-change_set #` option not specified.\n\n",
-	       num_change_sets);
-    selected_change_set = 1;
-    return exoid + selected_change_set;
-  }
+    // File contains change sets...
+    if (selected_change_set == 0) {
+      fmt::print(
+          stderr,
+          "\nWARNING: Exodus database contains {} change sets.\n         Setting to read from "
+          "first change set since `-change_set #` option not specified.\n\n",
+          num_change_sets);
+      selected_change_set = 1;
+      return exoid + selected_change_set;
+    }
 
-  if (selected_change_set > num_change_sets) {
+    if (selected_change_set > num_change_sets) {
       fmt::print(stderr,
-		 "ERROR: Change set {} was specified for reading, but mesh only contains {} change sets.\n",
-		 selected_change_set, num_change_sets);
+                 "ERROR: Change set {} was specified for reading, but mesh only contains {} change "
+                 "sets.\n",
+                 selected_change_set, num_change_sets);
       Gen_Error(0, "fatal: selected change set does not exist in mesh database");
       return 0;
+    }
+    // Contains change sets and selected change set is in range...
+    fmt::print(stderr, "NOTE: Mesh data will be read from change set {} of {}\n",
+               selected_change_set, num_change_sets);
+    return exoid + selected_change_set;
   }
-  // Contains change sets and selected change set is in range...
-  fmt::print(stderr,
-	     "NOTE: Mesh data will be read from change set {} of {}\n",
-	     selected_change_set, num_change_sets);
-  return exoid + selected_change_set;
-}
 } // namespace
 /*****************************************************************************/
 /*****************************************************************************/
@@ -1385,7 +1387,7 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
   }
 
   // Determine whether there are any change sets in file.
-  // If there are, check whether user specified a specific 
+  // If there are, check whether user specified a specific
   // change set index and set to that one (if valid), or
   // if not specified, set to the first.
   exid_inp = check_change_sets(exid_inp, problem->selected_change_set);
@@ -1860,7 +1862,7 @@ namespace {
                "\t -l <load bal description> -s <eigen solver specs>\n"
                "\t -w <weighting options> -g <group list> -f]\n"
                "\t [-a <ascii file>] [-c change_set_#] exoII_file\n\n"
-	       " -C index\tSpecify which change set to read from (1-based index)\n"
+               " -C index\tSpecify which change set to read from (1-based index)\n"
                " -32\t\tforce use of 32-bit integers\n"
                " -64\t\tforce use of 64-bit integers\n"
                " -n\t\tperform a nodal based load balance\n"
