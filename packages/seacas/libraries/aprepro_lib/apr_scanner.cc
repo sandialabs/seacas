@@ -3045,7 +3045,7 @@ void yyFlexLexer::yyensure_buffer_stack(void)
     return;
   }
 
-  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max))-1) {
+  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1) {
 
     /* Increase the buffer to prepare for a possible push. */
     int grow_size = 8 /* arbitrary grow size */;
