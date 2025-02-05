@@ -234,7 +234,8 @@ namespace SEAMS {
   const str_cd_init string_cd_fncts[] = {
 #if defined(EXODUS_SUPPORT)
       {"exodus_meta", do_exodus_meta_cd, "exodus_meta(filename, cs_index)",
-       "Creates several variables and arrays related to the exodus metadata in the `cs_indexth` change set in file. "},
+       "Creates several variables and arrays related to the exodus metadata in the `cs_indexth` "
+       "change set in file. "},
 #endif
       {nullptr, nullptr, nullptr, nullptr}};
 

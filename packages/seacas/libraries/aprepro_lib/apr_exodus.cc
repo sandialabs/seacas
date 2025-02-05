@@ -13,11 +13,11 @@
 #include "apr_util.h"
 #include "aprepro_parser.h"
 
+#include "fmt/format.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
-#include "fmt/format.h"
 
 namespace {
   std::string LowerCase(std::string name);
@@ -72,7 +72,7 @@ namespace {
     for (int i = 0; i < num_children; i++) {
       ex_inquire(rootid + 1 + i, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
       if (i > 0) {
-	cs_names += ",";
+        cs_names += ",";
       }
       cs_names += group_name.data();
     }
@@ -104,27 +104,32 @@ namespace SEAMS {
     }
 
     // See if the file contains change sets.  If it does, open the first one.
-    int num_change_sets = ex_inquire_int(exo, EX_INQ_NUM_CHILD_GROUPS);
+    int num_change_sets   = ex_inquire_int(exo, EX_INQ_NUM_CHILD_GROUPS);
     int active_change_set = 0;
     if (num_change_sets >= 1) {
       if (cs_idx == 0) {
-	cs_idx = 1;
-	aprepro->warning(fmt::format("Input database contains {} change sets. Rreading from change set {}.", num_change_sets, cs_idx));
+        cs_idx = 1;
+        aprepro->warning(
+            fmt::format("Input database contains {} change sets. Rreading from change set {}.",
+                        num_change_sets, cs_idx));
       }
       if (cs_idx <= num_change_sets) {
-	active_change_set = cs_idx;
-	exo+= cs_idx;
-	get_change_set_names(exo, aprepro);
+        active_change_set = cs_idx;
+        exo += cs_idx;
+        get_change_set_names(exo, aprepro);
       }
       else {
-        yyerror(*aprepro, fmt::format("Specified change set index {} exceeds count {}", cs_idx, num_change_sets));
-	return -1;
+        yyerror(*aprepro, fmt::format("Specified change set index {} exceeds count {}", cs_idx,
+                                      num_change_sets));
+        return -1;
       }
     }
     if (cs_idx > 0) {
-      aprepro->warning(fmt::format("Input database does not contain change sets, but a change set index {} was specified.  Ignoring.", cs_idx));
+      aprepro->warning(fmt::format("Input database does not contain change sets, but a change set "
+                                   "index {} was specified.  Ignoring.",
+                                   cs_idx));
     }
-    
+
     aprepro->add_variable("ex_version", version);
     aprepro->add_variable("ex_change_set_count", num_change_sets);
     aprepro->add_variable("ex_active_change_set", active_change_set);
@@ -459,10 +464,7 @@ namespace SEAMS {
     return "";
   }
 
-  const char *do_exodus_meta(char *filename)
-  {
-    return do_exodus_meta_cd(filename, 0);
-  }
+  const char *do_exodus_meta(char *filename) { return do_exodus_meta_cd(filename, 0); }
 
 } // namespace SEAMS
 
