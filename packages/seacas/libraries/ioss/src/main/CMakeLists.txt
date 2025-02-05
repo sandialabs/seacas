@@ -160,14 +160,14 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
   IF (TPL_Netcdf_PARALLEL)
   TRIBITS_ADD_ADVANCED_TEST(
     io_shell_cs_decompose_compose
-    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${SPLIT_ARG} ${IOSHELL_ARG} splits.g
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${SPLIT_ARG} ${IOSHELL_ARG} splits_cs.g
        NUM_MPI_PROCS 1
-    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits.g_1 splits.g_2 splits.g_3 splits.g_4  grouped.g
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits_cs.g_1 splits_cs.g_2 splits_cs.g_3 splits_cs.g_4  grouped_cs.g
        NUM_MPI_PROCS 1
-    TEST_3 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} grouped.g joined.g
+    TEST_3 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} grouped_cs.g joined_cs.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS ${NPROCS}
-    TEST_4 EXEC exodiff ARGS -pedantic grouped.g joined.g
+    TEST_4 EXEC exodiff ARGS -pedantic grouped_cs.g joined_cs.g
        DIRECTORY ../../../../applications/exodiff
        NOEXEPREFIX NOEXESUFFIX
        NUM_MPI_PROCS 1
@@ -178,18 +178,18 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
 
   TRIBITS_ADD_ADVANCED_TEST(
     io_shell_cs_decompose_epu
-    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${SPLIT_ARG} ${IOSHELL_ARG} splits.g
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS ${SPLIT_ARG} ${IOSHELL_ARG} splits_epu.g
        NUM_MPI_PROCS 1
-    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits.g_1 splits.g_2 splits.g_3 splits.g_4  grouped1.g
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell ARGS splits_epu.g_1 splits_epu.g_2 splits_epu.g_3 splits_epu.g_4  grouped1_epu.g
        NUM_MPI_PROCS 1
-    TEST_3 EXEC io_shell ARGS ${DECOMP_ARG} grouped1.g decomped.g
+    TEST_3 EXEC io_shell ARGS ${DECOMP_ARG} grouped1_epu.g decomped_epu.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS ${NPROCS}
-    TEST_4 EXEC epu ARGS -auto decomped.g
+    TEST_4 EXEC epu ARGS -auto decomped_epu.g
        DIRECTORY ../../../../applications/epu
        NOEXEPREFIX NOEXESUFFIX
        NUM_MPI_PROCS 1
-    TEST_5 EXEC exodiff ARGS -pedantic grouped1.g decomped.g
+    TEST_5 EXEC exodiff ARGS -pedantic grouped1_epu.g decomped_epu.g
        DIRECTORY ../../../../applications/exodiff
        NOEXEPREFIX NOEXESUFFIX
        NUM_MPI_PROCS 1
