@@ -386,6 +386,6 @@
       parameter (EXPMSG = -1000)   ! EXPMSG - message print code - no error implied
       parameter (EXLMSG = -1001)   ! EXLMSG - print last error message msg code
 
-      integer EX_FILE_ID_MASK
-      parameter (EX_FILE_ID_MASK = 4294901760) ! xFFFF0000
-      
+      integer, parameter :: lk = selected_int_kind(15)
+      integer*8 EX_FILE_ID_MASK
+      parameter (EX_FILE_ID_MASK = 4294901760_lk) ! xFFFF0000
