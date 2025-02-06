@@ -83,7 +83,7 @@ namespace {
 namespace SEAMS {
   extern SEAMS::Aprepro *aprepro;
 
-  int open_exodus_file(char *filename, int cs_idx)
+  int open_exodus_file(char *filename, int cs_idx, bool do_all_cs_defines)
   {
     int   cpu = sizeof(double);
     int   io  = 0;
@@ -107,11 +107,13 @@ namespace SEAMS {
     int num_change_sets   = ex_inquire_int(exo, EX_INQ_NUM_CHILD_GROUPS);
     int active_change_set = 0;
     if (num_change_sets >= 1) {
-      if (cs_idx == 0) {
-        cs_idx = 1;
-        aprepro->warning(
-            fmt::format("Input database contains {} change sets. Rreading from change set {}.",
-                        num_change_sets, cs_idx));
+      if (do_all_cs_defines) {
+	if (cs_idx == 0) {
+	  cs_idx = 1;
+	  aprepro->warning(
+			   fmt::format("Input database contains {} change sets. Rreading from change set {}.",
+				       num_change_sets, cs_idx));
+	}
       }
       if (cs_idx <= num_change_sets) {
         active_change_set = cs_idx;
@@ -124,16 +126,34 @@ namespace SEAMS {
         return -1;
       }
     }
-    if (cs_idx > 0) {
-      aprepro->warning(fmt::format("Input database does not contain change sets, but a change set "
-                                   "index {} was specified.  Ignoring.",
-                                   cs_idx));
+    else {
+      if (cs_idx > 0) {
+	aprepro->warning(fmt::format("Input database does not contain change sets, but a change set "
+				     "index {} was specified.  Ignoring.",
+				     cs_idx));
+      }
     }
 
-    aprepro->add_variable("ex_version", version);
     aprepro->add_variable("ex_change_set_count", num_change_sets);
-    aprepro->add_variable("ex_active_change_set", active_change_set);
+    if (do_all_cs_defines) {
+      aprepro->add_variable("ex_active_change_set", active_change_set);
+      aprepro->add_variable("ex_version", version);
+    }
     return exo;
+  }
+
+  const char *do_exodus_query_change_sets(char *filename)
+  {
+    // This will open the file and determine whether there are any change sets on the file.
+    // It will define the `ex_change_set_count`, and `ex_change_set_names` variables.
+
+    // Open the specified exodusII file, read the info records
+    // then parse them as input to aprepro.
+    int exoid = open_exodus_file(filename, 0, false);
+    if (exoid > 0) {
+      ex_close(exoid);
+    }
+    return "";
   }
 
   const char *do_exodus_info(char *filename, char *prefix)
@@ -142,7 +162,7 @@ namespace SEAMS {
 
     // Open the specified exodusII file, read the info records
     // then parse them as input to aprepro.
-    int exoid = open_exodus_file(filename, 0);
+    int exoid = open_exodus_file(filename, 0, true);
     if (exoid <= 0) {
       return "";
     }
@@ -188,7 +208,7 @@ namespace SEAMS {
 
     // Open the specified exodusII file, read the info records
     // then parse them as input to aprepro.
-    int exoid = open_exodus_file(filename, 0);
+    int exoid = open_exodus_file(filename, 0, true);
     if (exoid <= 0) {
       return "";
     }
@@ -239,7 +259,7 @@ namespace SEAMS {
     // Open the specified exodusII file, read the metadata and set
     // variables for each item.
     // Examples include "node_count", "element_count", ...
-    int exoid = open_exodus_file(filename, (int)cs_index);
+    int exoid = open_exodus_file(filename, (int)cs_index, true);
     if (exoid <= 0) {
       return "";
     }

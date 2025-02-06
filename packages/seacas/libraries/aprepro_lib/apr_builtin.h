@@ -129,6 +129,7 @@ namespace SEAMS {
   const char *do_exodus_info(char *filename, char *prefix);
   const char *do_exodus_meta(char *filename);
   const char *do_exodus_meta_cd(char *filename, double cs_index);
+  const char *do_exodus_query_change_sets(char *filename);
 #endif
 
   array *do_csv_array(const char *filename, double skip);
