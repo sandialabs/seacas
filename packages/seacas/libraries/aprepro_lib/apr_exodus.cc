@@ -108,12 +108,12 @@ namespace SEAMS {
     int active_change_set = 0;
     if (num_change_sets >= 1) {
       if (do_all_cs_defines) {
-	if (cs_idx == 0) {
-	  cs_idx = 1;
-	  aprepro->warning(
-			   fmt::format("Input database contains {} change sets. Rreading from change set {}.",
-				       num_change_sets, cs_idx));
-	}
+        if (cs_idx == 0) {
+          cs_idx = 1;
+          aprepro->warning(
+              fmt::format("Input database contains {} change sets. Rreading from change set {}.",
+                          num_change_sets, cs_idx));
+        }
       }
       if (cs_idx <= num_change_sets) {
         active_change_set = cs_idx;
@@ -128,9 +128,10 @@ namespace SEAMS {
     }
     else {
       if (cs_idx > 0) {
-	aprepro->warning(fmt::format("Input database does not contain change sets, but a change set "
-				     "index {} was specified.  Ignoring.",
-				     cs_idx));
+        aprepro->warning(
+            fmt::format("Input database does not contain change sets, but a change set "
+                        "index {} was specified.  Ignoring.",
+                        cs_idx));
       }
     }
 

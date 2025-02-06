@@ -228,7 +228,8 @@ namespace SEAMS {
       {"exodus_meta", do_exodus_meta, "exodus_meta(filename)",
        "Creates several variables and arrays related to the exodus metadata in the specified "
        "file. "},
-      {"exodus_query_change_sets", do_exodus_query_change_sets, "exodus_query_change_sets(filename)",
+      {"exodus_query_change_sets", do_exodus_query_change_sets,
+       "exodus_query_change_sets(filename)",
        "Open the file and determine whether there are any change sets on the file."
        "It will define the `ex_change_set_count`, and `ex_change_set_names` variables."},
 #endif
