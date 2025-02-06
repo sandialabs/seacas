@@ -61,7 +61,7 @@ namespace {
         fmt::print(stderr,
                    "ERROR: Reading from change set {} was specified, but the file contains no "
                    "change sets.\n",
-                   num_change_sets);
+                   selected_change_set);
 
         Gen_Error(0, "fatal: no change sets in mesh database");
         return 0;

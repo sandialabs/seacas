@@ -43,7 +43,7 @@ namespace {
         fmt::print(stderr,
                    "ERROR: Reading from change set {} was specified, but the file contains no "
                    "change sets.\n",
-                   num_change_sets);
+                   selected_change_set);
         return 0;
       }
       return exoid;
