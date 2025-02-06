@@ -159,7 +159,7 @@ function execute_loadbalance {
     LAUNCH=$7
     decomp_type=$8
     weighting=$9
-    change_set_index=$10
+    change_set_index=${10}
 
     nemesis=$basename.$suffix_mesh.nem
     genesis=$basename.$suffix_mesh
