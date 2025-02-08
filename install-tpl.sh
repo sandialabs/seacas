@@ -537,7 +537,8 @@ then
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
 #   net_version="v4.9.1"
-    net_version="v4.9.2"
+#    net_version="v4.9.2"
+    net_version="v4.9.3"
 #   net_version="v4.8.1"
 #   net_version="main"
 
