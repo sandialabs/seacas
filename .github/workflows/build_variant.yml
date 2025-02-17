@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
-        hdf5: [ V110 ]
+        hdf5: [ V114 ]
         netcdf: [ 4.9.3 ]
         cgns: [ 4.4.0 ]
     steps:
@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        hdf5: [ V110 ]
+        hdf5: [ V114 ]
         netcdf: [ 4.9.3 ]
         cgns: [ 4.4.0 ]
         config:
