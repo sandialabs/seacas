@@ -52,7 +52,7 @@ static char *cur_string = &ret_string[0];
 
 #ifndef _MSC_VER
 #if NC_HAS_HDF5
-extern int NC4_hdf5get_libversion(unsigned*,unsigned*,unsigned*);
+extern int NC4_hdf5get_libversion(unsigned *, unsigned *, unsigned *);
 #endif
 #endif
 
