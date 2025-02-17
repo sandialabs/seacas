@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -403,8 +403,10 @@ namespace Iogn {
                  "\tNodeSet Count         = {:12}\n"
                  "\tSideSet Count         = {:12}\n"
                  "\tTimestep Count        = {:12}\n\n",
-                 numX, numY, numZ, sclX, numX, offX, offX, offX + numX * sclX, sclY, numY, offY,
-                 offY, offY + numY * sclY, sclZ, numZ, offZ, offZ, offZ + numZ * sclZ,
+                 numX, numY, numZ, 
+		 sclX, numX, offX, offX, offX + numX * sclX, 
+		 sclY, numY, offY, offY, offY + numY * sclY, 
+		 sclZ, numZ, offZ, offZ, offZ + numZ * sclZ,
                  fmt::group_digits(node_count()), fmt::group_digits(element_count()),
                  fmt::group_digits(block_count()), fmt::group_digits(nodeset_count()),
                  fmt::group_digits(sideset_count()), fmt::group_digits(timestep_count()));
@@ -413,7 +415,7 @@ namespace Iogn {
         fmt::print(Ioss::OUTPUT(), "\tRotation Matrix: \n\t");
         for (const auto &elem : rotmat) {
           for (double jj : elem) {
-            fmt::print(Ioss::OUTPUT(), "{:14.e}\t", jj);
+            fmt::print(Ioss::OUTPUT(), fmt::runtime("{:14.e}\t"), jj);
           }
           fmt::print(Ioss::OUTPUT(), "\n\t");
         }
