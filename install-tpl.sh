@@ -552,7 +552,7 @@ then
         git clone --depth 1 --branch ${net_version} https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-    if [ net_version == "main" ]
+    if [ "$net_version" == "v4.9.3" ]
     then
 	PREFIX="NETCDF_"
     fi
