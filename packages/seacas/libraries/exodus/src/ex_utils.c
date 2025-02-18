@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -50,9 +50,14 @@ struct exi_obj_stats *exoII_ass = NULL;
 static char  ret_string[10 * (MAX_VAR_NAME_LENGTH + 1)];
 static char *cur_string = &ret_string[0];
 
-#ifndef _MSC_VER
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
+#define WINDOWS__ 1
+#endif
+
+#ifndef WINDOWS__
 #if NC_HAS_HDF5
-extern int H5get_libversion(unsigned *, unsigned *, unsigned *);
+extern int NC4_hdf5get_libversion(unsigned *, unsigned *, unsigned *);
 #endif
 #endif
 
@@ -96,11 +101,11 @@ const char *ex_config(void)
 #if NC_HAS_CDF5
   j += snprintf(buffer + j, buffer_size - j, "\t\tCDF5 enabled\n");
 #endif
-#ifndef _MSC_VER
+#ifndef WINDOWS__
 #if NC_HAS_HDF5
   {
     unsigned major, minor, release;
-    H5get_libversion(&major, &minor, &release);
+    NC4_hdf5get_libversion(&major, &minor, &release);
     j += snprintf(buffer + j, buffer_size - j, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor,
                   release);
   }

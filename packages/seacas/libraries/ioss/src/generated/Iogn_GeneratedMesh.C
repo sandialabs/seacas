@@ -405,7 +405,7 @@ namespace Iogn {
         fmt::print(Ioss::OUTPUT(), "\tRotation Matrix: \n\t");
         for (const auto &elem : rotmat) {
           for (double jj : elem) {
-            fmt::print(Ioss::OUTPUT(), "{:14.e}\t", jj);
+            fmt::print(Ioss::OUTPUT(), fmt::runtime("{:14.e}\t"), jj);
           }
           fmt::print(Ioss::OUTPUT(), "\n\t");
         }
