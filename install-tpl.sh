@@ -242,7 +242,7 @@ if [ "$NEEDS_SZIP" == "YES" ]
 then
 if [ "$USE_AEC" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_SZIP" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
     then
         echo "${txtgrn}+++ SZIP (via libaec library)${txtrst}"
         szip_version="1.0.4"
@@ -284,7 +284,7 @@ then
         echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
     fi
 else
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_SZIP" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
     then
         echo "${txtgrn}+++ SZIP${txtrst}"
         szip_version="2.1.1"
@@ -331,7 +331,7 @@ fi
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libz.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_ZLIB" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libz.${LD_EXT} ]
     then
         if [ "$USE_ZLIB_NG" == "YES" ]
         then
@@ -413,7 +413,7 @@ fi
 # =================== BUILD HDF5 ===============
 if [ "$HDF5" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_HDF5" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
     then
 	hdf_suffix=""
 	if [ "${H5VERSION}" == "V110" ]; then
@@ -485,7 +485,7 @@ fi
 if [ "$PNETCDF" == "YES" ] && [ "$MPI" == "YES" ]
 then
     # PnetCDF currently only builds static library...
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_PNETCDF" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.14.0"
@@ -534,10 +534,11 @@ fi
 # =================== INSTALL NETCDF ===============
 if [ "$NETCDF" == "YES" ]
 then
-if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
+if [ "$FORCE" == "YES" ] || [ "$FORCE_NETCDF" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
 #   net_version="v4.9.1"
-    net_version="v4.9.2"
+#    net_version="v4.9.2"
+    net_version="v4.9.3"
 #   net_version="v4.8.1"
 #   net_version="main"
 
@@ -551,7 +552,7 @@ then
         git clone --depth 1 --branch ${net_version} https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-    if [ net_version == "main" ]
+    if [ "$net_version" == "v4.9.3" ]
     then
 	PREFIX="NETCDF_"
     fi
@@ -588,7 +589,7 @@ fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_CGNS" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
 	cgns_version="v4.5.0"
         echo "${txtgrn}+++ CGNS ${cgns_version} ${txtrst}"
@@ -635,7 +636,7 @@ fi
 # =================== INSTALL METIS  ===============
 if [ "$METIS" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_METIS" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
     then
         echo "${txtgrn}+++ Metis${txtrst}"
         cd $ACCESS || exit
@@ -677,7 +678,7 @@ fi
 # =================== INSTALL PARMETIS  ===============
 if [ "$PARMETIS" == "YES" ] && [ "$MPI" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_PARMETIS" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
     then
         echo "${txtgrn}+++ ParMETIS${txtrst}"
         cd $ACCESS || exit
@@ -721,7 +722,7 @@ then
     check_exec autoconf
 
     matio_version="v1.5.28"
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_MATIO" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO ${matio_version} ${txtrst}"
         cd $ACCESS || exit
@@ -761,7 +762,7 @@ fi
 # =================== INSTALL FMT ===============
 if [ "$FMT" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_FMT" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
     then
         fmt_version="11.1.2"
         echo "${txtgrn}+++ FMT ${fmt_version} ${txtrst}"
@@ -804,7 +805,7 @@ fi
 # =================== INSTALL KOKKOS  ===============
 if [ "$KOKKOS" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_KOKKOS" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
     then
         kokkos_version="4.5.01"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
@@ -850,7 +851,7 @@ fi
 # =================== INSTALL ADIOS2  ===============
 if [ "$ADIOS2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_ADIOS2" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
 	adios2_version="v2.10.1"
         echo "${txtgrn}+++ ADIOS2 ${adios2_version} ${txtrst}"
@@ -892,7 +893,7 @@ fi
 # =================== INSTALL CATALYST2  ===============
 if [ "$CATALYST2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_CATALYST2" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
     then
         catalyst2_version="v2.0.0"
         echo "${txtgrn}+++ Catalyst2 ${catalyst2_version} ${txtrst}"
@@ -934,7 +935,7 @@ fi
 # =================== INSTALL gtest  ===============
 if [ "$GTEST" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_GTEST" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
     then
         gtest_version="release-1.11.0"
         echo "${txtgrn}+++ gtest ${gtest_version} ${txtrst}"
@@ -976,7 +977,7 @@ fi
 # =================== INSTALL catch2  ===============
 if [ "$CATCH2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_CATCH2" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
     then
         catch2_version="v3.8.0"
         echo "${txtgrn}+++ Catch2 ${catch2_version} ${txtrst}"
@@ -1018,7 +1019,7 @@ fi
 # =================== INSTALL PARALLEL  ===============
 if [ "$GNU_PARALLEL" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
+    if [ "$FORCE" == "YES" ] || [ "$FORCE_GNU_PARALLEL" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
     then
         echo "${txtgrn}+++ GNU Parallel${txtrst}"
         cd $ACCESS || exit
@@ -1057,7 +1058,7 @@ fi
 # =================== INSTALL BOOST ===============
 if [ "$BOOST" == "YES" ]
 then
-  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/boost ]
+  if [ "$FORCE" == "YES" ] || [ "$FORCE_BOOST" == "YES" ] || ! [ -e $INSTALL_PATH/include/boost ]
   then
     # FAODEL Requires Boost... For now, just download and install
     echo "${txtgrn}+++ Installing Boost as dependency of Faodel${txtrst}"
@@ -1084,7 +1085,7 @@ fi
 # =================== INSTALL FAODEL ===============
 if [ "$FAODEL" == "YES" ]
 then
-  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.${LD_EXT} ]
+  if [ "$FORCE" == "YES" ] || [ "$FORCE_FAODEL" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.${LD_EXT} ]
   then
     faodel_base="faodel"
     echo "${txtgrn}+++ Faodel${txtrst}"
@@ -1126,7 +1127,7 @@ fi
 if [ "$FAODEL" == "YES" ]
 then
   # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
-  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
+  if [ "$FORCE" == "YES" ] || [ "$FORCE_FAODEL" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
   then
     echo "${txtgrn}+++ Cereal${txtrst}"
     cd $ACCESS || exit
