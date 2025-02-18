@@ -178,7 +178,8 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
      file(STRINGS "${inc_path}/matio_pubconf.h" matio_default_version REGEX " MAT_FT_DEFAULT ")
      string(REGEX MATCH "4|73" default_version "${matio_default_version}")
      if (default_version EQUAL 73)
-        add_package_dependency(Matio DEPENDS_ON HDF5)
+        add_library(MATIO::HDF5 INTERFACE IMPORTED)
+
      endif()
     endif()
 
