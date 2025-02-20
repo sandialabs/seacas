@@ -331,61 +331,84 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
-  /* inquire previously defined dimensions  */
-  size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
-  char *int_names = NULL;
-  if (!(int_names = calloc(num_names * name_length, 1))) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to allocate memory for internal int_names "
-             "array in file id %d",
-             exoid);
-    ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
-    EX_FUNC_LEAVE(EX_FATAL);
+#if defined(PARALLEL_AWARE_EXODUS)
+  /* For parallel-io (all ranks writing to single file), we only
+     want/need to output the names on a single rank since all ranks
+     have the same set of names.  This avoids issues with multiple
+     ranks writing same data to the same data space which can/has
+     caused issues.  It should be ok, but this seems more robust.
+
+     Calling code passes valid data on rank 0; all other ranks have `names == NULL`
+  */
+  int rootid = exoid & EX_FILE_ID_MASK;
+  if (exi_is_parallel(rootid)) {
+    nc_var_par_access(rootid, varid, NC_INDEPENDENT);
   }
+#endif
 
-  size_t idx          = 0;
-  int    max_name_len = 0;
-  int    found_name   = 0;
-  for (size_t i = 0; i < num_names; i++) {
-    if (names != NULL && *names != NULL && *names[i] != '\0') {
-      found_name = 1;
-      ex_copy_string(&int_names[idx], names[i], name_length);
-      size_t length = strlen(names[i]) + 1;
-      if (length > (size_t)name_length) {
-        fprintf(stderr,
-                "Warning: The %s %s name '%s' is too long.\n\tIt will "
-                "be truncated from %d to %d characters. [Called from %s]\n",
-                ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
-                (int)name_length - 1, routine);
-        length = name_length;
-      }
+  if (names != NULL) {
+    /* inquire previously defined dimensions  */
+    size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
-      if (length > (size_t)max_name_len) {
-        max_name_len = length;
-      }
+    char *int_names = NULL;
+    if (!(int_names = calloc(num_names * name_length, 1))) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate memory for internal int_names "
+               "array in file id %d",
+               exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
-    idx += name_length;
-  }
 
-  int status;
-  if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+    size_t idx          = 0;
+    int    max_name_len = 0;
+    int    found_name   = 0;
+    for (size_t i = 0; i < num_names; i++) {
+      if (*names != NULL && *names[i] != '\0') {
+        found_name = 1;
+        ex_copy_string(&int_names[idx], names[i], name_length);
+        size_t length = strlen(names[i]) + 1;
+        if (length > (size_t)name_length) {
+          fprintf(stderr,
+                  "Warning: The %s %s name '%s' is too long.\n\tIt will "
+                  "be truncated from %d to %d characters. [Called from %s]\n",
+                  ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
+                  (int)name_length - 1, routine);
+          length = name_length;
+        }
+
+        if (length > (size_t)max_name_len) {
+          max_name_len = length;
+        }
+      }
+      idx += name_length;
+    }
+
+    int status;
+    if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+      free(int_names);
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
+               ex_name_of_object(obj_type), exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
+    if (found_name) {
+
+      /* Update the maximum_name_length attribute on the file. */
+      exi_update_max_name_length(exoid, max_name_len - 1);
+    }
     free(int_names);
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-             ex_name_of_object(obj_type), exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
   }
-
-  if (found_name) {
-
-    /* Update the maximum_name_length attribute on the file. */
-    exi_update_max_name_length(exoid, max_name_len - 1);
+  /* PnetCDF applies setting to entire file, so put back to collective... */
+#if defined(PARALLEL_AWARE_EXODUS)
+  if (exi_is_parallel(rootid)) {
+    nc_var_par_access(rootid, varid, NC_COLLECTIVE);
   }
-  free(int_names);
-
+#endif
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
