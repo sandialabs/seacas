@@ -351,7 +351,6 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   if (exi_parallel_rank(rootid) == 0) {
 #endif
 
-
     char *int_names = NULL;
     if (!(int_names = calloc(num_names * name_length, 1))) {
       char errmsg[MAX_ERR_LENGTH];
@@ -397,15 +396,15 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
     if (names != NULL && *names != NULL && *names[i] != '\0') {
       size_t length = strlen(names[i]);
       if (length > (size_t)name_length - 1) {
-	fprintf(stderr,
-		"Warning: The %s %s name '%s' is too long.\n\tIt will "
-		"be truncated from %d to %d characters. [Called from %s]\n",
-		ex_name_of_object(obj_type), subtype, names[i], (int)length,
-		(int)name_length - 1, routine);
-	length = name_length - 1;
+        fprintf(stderr,
+                "Warning: The %s %s name '%s' is too long.\n\tIt will "
+                "be truncated from %d to %d characters. [Called from %s]\n",
+                ex_name_of_object(obj_type), subtype, names[i], (int)length, (int)name_length - 1,
+                routine);
+        length = name_length - 1;
       }
       if (length > max_name_len) {
-	max_name_len = length;
+        max_name_len = length;
       }
     }
   }
