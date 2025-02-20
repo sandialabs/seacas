@@ -332,6 +332,9 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  /* inquire previously defined dimensions  */
+  size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
+
 #if defined(PARALLEL_AWARE_EXODUS)
   /* For parallel-io (all ranks writing to single file), we only
      want/need to output the names on a single rank since all ranks
@@ -348,8 +351,6 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   if (exi_parallel_rank(rootid) == 0) {
 #endif
 
-    /* inquire previously defined dimensions  */
-    size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
     char *int_names = NULL;
     if (!(int_names = calloc(num_names * name_length, 1))) {
@@ -364,24 +365,9 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
 
     size_t idx          = 0;
     int    max_name_len = 0;
-    int    found_name   = 0;
     for (size_t i = 0; i < num_names; i++) {
       if (names != NULL && *names != NULL && *names[i] != '\0') {
-        found_name = 1;
         ex_copy_string(&int_names[idx], names[i], name_length);
-        size_t length = strlen(names[i]) + 1;
-        if (length > (size_t)name_length) {
-          fprintf(stderr,
-                  "Warning: The %s %s name '%s' is too long.\n\tIt will "
-                  "be truncated from %d to %d characters. [Called from %s]\n",
-                  ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
-                  (int)name_length - 1, routine);
-          length = name_length;
-        }
-
-        if (length > (size_t)max_name_len) {
-          max_name_len = length;
-        }
       }
       idx += name_length;
     }
@@ -396,11 +382,6 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    if (found_name) {
-
-      /* Update the maximum_name_length attribute on the file. */
-      exi_update_max_name_length(exoid, max_name_len - 1);
-    }
     free(int_names);
 
     /* PnetCDF applies setting to entire file, so put back to collective... */
@@ -410,6 +391,26 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
     nc_var_par_access(rootid, varid, NC_COLLECTIVE);
   }
 #endif
+
+  size_t max_name_len = 0;
+  for (size_t i = 0; i < num_names; i++) {
+    if (names != NULL && *names != NULL && *names[i] != '\0') {
+      size_t length = strlen(names[i]);
+      if (length > (size_t)name_length - 1) {
+	fprintf(stderr,
+		"Warning: The %s %s name '%s' is too long.\n\tIt will "
+		"be truncated from %d to %d characters. [Called from %s]\n",
+		ex_name_of_object(obj_type), subtype, names[i], (int)length,
+		(int)name_length - 1, routine);
+	length = name_length - 1;
+      }
+      if (length > max_name_len) {
+	max_name_len = length;
+      }
+    }
+  }
+  /* Update the maximum_name_length attribute on the file. */
+  exi_update_max_name_length(exoid, max_name_len);
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
