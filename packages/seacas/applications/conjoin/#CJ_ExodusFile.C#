@@ -52,7 +52,10 @@ Excn::ExodusFile::ExodusFile(size_t which) : myLocation_(which)
   }
 }
 
-bool Excn::ExodusFile::ints_64_bit() { return exodusMode_ & EX_ALL_INT64_API; }
+bool Excn::ExodusFile::ints_64_bit() 
+{
+  return exodusMode_ & EX_ALL_INT64_API;
+}
 
 int Excn::ExodusFile::output()
 {
@@ -127,50 +130,51 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
 
     int num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     if (num_change_sets > 1) {
-      usingChangeSets_ = true;
+    usingChangeSets_ = true;
 
-      if (io_wrd_size < static_cast<int>(sizeof(float))) {
-        io_wrd_size = sizeof(float);
+    if (io_wrd_size < static_cast<int>(sizeof(float))) {
+      io_wrd_size = sizeof(float);
+    }
+
+    ioWordSize_  = io_wrd_size;
+    cpuWordSize_ = io_wrd_size;
+
+    if (((ex_int64_status(exoid) & EX_ALL_INT64_DB) != 0) || si.ints_64_bit()) {
+      exodusMode_ = EX_ALL_INT64_API;
+    }
+
+    int name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+    if (name_length > overall_max_name_length) {
+      overall_max_name_length = name_length;
+    }
+
+    // create exo names
+    filenames_.resize(num_change_sets);
+    fileids_.resize(num_change_sets, exoid);
+
+    // Get names of change sets...
+    int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
+    group_name_length     = std::max(32, group_name_length);
+    std::vector<char> group_name(group_name_length + 1, '\0');
+
+    for (int i = 1; i <= num_change_sets; i++) {
+      int   idum = 0;
+      float rdum = 0.0;
+      // Get name of this group...
+      int ierr = ex_inquire(exoid + i, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
+      if (ierr != EX_NOERR) {
+        fmt::print(stderr, "ERROR: Could not get name for group {} in input file '{}'\n", i + 1,
+                   name);
+        return false;
       }
-
-      ioWordSize_  = io_wrd_size;
-      cpuWordSize_ = io_wrd_size;
-
-      if (((ex_int64_status(exoid) & EX_ALL_INT64_DB) != 0) || si.ints_64_bit()) {
-        exodusMode_ = EX_ALL_INT64_API;
-      }
-
-      int name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      if (name_length > overall_max_name_length) {
-        overall_max_name_length = name_length;
-      }
-
-      // create exo names
-      filenames_.resize(num_change_sets);
-      fileids_.resize(num_change_sets, exoid);
-
-      // Get names of change sets...
-      int group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
-      group_name_length     = std::max(32, group_name_length);
-      std::vector<char> group_name(group_name_length + 1, '\0');
-
-      for (int i = 1; i <= num_change_sets; i++) {
-        int   idum = 0;
-        float rdum = 0.0;
-        // Get name of this group...
-        int ierr = ex_inquire(exoid + i, EX_INQ_GROUP_NAME, &idum, &rdum, group_name.data());
-        if (ierr != EX_NOERR) {
-          fmt::print(stderr, "ERROR: Could not get name for group {} in input file '{}'\n", i + 1,
-                     name);
-          return false;
-        }
-        filenames_[i - 1] = std::string(group_name.data());
-        fileids_[i - 1]   = exoid + i;
-        fmt::print("Part {}: '{}'\n", i, filenames_[i - 1]);
-      }
+      filenames_[i - 1] = std::string(group_name.data());
+      fileids_[i - 1]   = exoid + i;
+      fmt::print("Part {}: '{}'\n", i, filenames_[i - 1]);
     }
   }
-  if (!usingChangeSets_) {
+  }
+  
+  if (!usingChangeSets_) { 
     // create exo names
     filenames_.resize(si.inputFiles_.size());
     fileids_.resize(si.inputFiles_.size(), -1);

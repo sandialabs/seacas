@@ -323,12 +323,9 @@ namespace {
       auto               face_topo = eb->topology()->face_type(0);
       std::string        topo      = "shell";
       if (face_topo == nullptr) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "ERROR: Block '{}' with topology '{}' does not have"
-                   " a unique face topology.\nThis is not supported at this time.\n",
-                   name, eb->topology()->name());
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR(fmt::format("ERROR: Block '{}' with topology '{}' does not have"
+                               " a unique face topology.\nThis is not supported at this time.\n",
+                               name, eb->topology()->name()));
       }
       if (face_topo->name() == "tri3") {
         topo = "trishell";
