@@ -482,8 +482,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   /* initialize floating point and integer size conversion. */
   int rank = 0;
   MPI_Comm_rank(comm, &rank);
-  if (exi_conv_init(exoid, comp_ws, io_ws, file_wordsize, int64_status, rank, 1, is_hdf5, is_pnetcdf,
-                    mode & EX_WRITE) != EX_NOERR) {
+  if (exi_conv_init(exoid, comp_ws, io_ws, file_wordsize, int64_status, rank, 1, is_hdf5,
+                    is_pnetcdf, mode & EX_WRITE) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);

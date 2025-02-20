@@ -192,7 +192,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   }
 
   int rank = 0;
-  status = exi_populate_header(exoid, canon_path, my_mode, rank, is_parallel, comp_ws, io_ws);
+  status   = exi_populate_header(exoid, canon_path, my_mode, rank, is_parallel, comp_ws, io_ws);
   if (status != EX_NOERR) {
     free(canon_path);
     EX_FUNC_LEAVE(status);

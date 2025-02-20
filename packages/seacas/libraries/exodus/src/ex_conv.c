@@ -108,7 +108,8 @@ int exi_check_valid_file_id(int exoid, const char *func)
 }
 
 int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                  int int64_status, int mpi_rank, bool is_parallel, bool is_hdf5, bool is_pnetcdf, bool is_write)
+                  int int64_status, int mpi_rank, bool is_parallel, bool is_hdf5, bool is_pnetcdf,
+                  bool is_write)
 {
   char                  errmsg[MAX_ERR_LENGTH];
   struct exi_file_item *new_file = NULL;
@@ -578,7 +579,7 @@ int exi_is_parallel(int exoid)
 /*!
  * \ingroup Utilities exi_parallel_rank() returns the mpi rank for the
  * current file *IF* the file was opened in parallel; otherwise
- * (file-per-rank or serial), it will return 0.  
+ * (file-per-rank or serial), it will return 0.
  *
  * NOTE that in this
  * case parallel assumes the output of a single file, not a parallel

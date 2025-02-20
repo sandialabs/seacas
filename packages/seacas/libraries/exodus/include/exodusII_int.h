@@ -787,8 +787,8 @@ EXODUS_EXPORT char *exi_name_red_var_of_object(ex_entity_type /*obj_type*/, int 
 EXODUS_EXPORT char *exi_name_of_map(ex_entity_type /*map_type*/, int /*map_index*/);
 
 EXODUS_EXPORT int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                                int int64_status, int mpi_rank, bool is_parallel, bool is_hdf5, bool is_pnetcdf,
-                                bool is_write);
+                                int int64_status, int mpi_rank, bool is_parallel, bool is_hdf5,
+                                bool is_pnetcdf, bool is_write);
 
 EXODUS_EXPORT void exi_conv_exit(int exoid);
 
@@ -885,8 +885,8 @@ EXODUS_EXPORT int  exi_persist_leavedef(int         exoid,    /* NemesisI file I
 
 EXODUS_EXPORT int exi_check_version(int run_version);
 EXODUS_EXPORT int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version);
-EXODUS_EXPORT int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank, int is_parallel,
-                                      int *comp_ws, int *io_ws);
+EXODUS_EXPORT int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank,
+                                      int is_parallel, int *comp_ws, int *io_ws);
 
 EXODUS_EXPORT int exi_get_block_param(int exoid, ex_entity_id id, int ndim,
                                       struct exi_elem_blk_parm *elem_blk_parm);

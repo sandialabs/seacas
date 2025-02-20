@@ -348,62 +348,62 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   if (exi_parallel_rank(rootid) == 0) {
 #endif
 
-  /* inquire previously defined dimensions  */
-  size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
+    /* inquire previously defined dimensions  */
+    size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
-  char *int_names = NULL;
-  if (!(int_names = calloc(num_names * name_length, 1))) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to allocate memory for internal int_names "
-             "array in file id %d",
-             exoid);
-    ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
-    EX_FUNC_LEAVE(EX_FATAL);
-  }
-
-  size_t idx          = 0;
-  int    max_name_len = 0;
-  int    found_name   = 0;
-  for (size_t i = 0; i < num_names; i++) {
-    if (names != NULL && *names != NULL && *names[i] != '\0') {
-      found_name = 1;
-      ex_copy_string(&int_names[idx], names[i], name_length);
-      size_t length = strlen(names[i]) + 1;
-      if (length > (size_t)name_length) {
-        fprintf(stderr,
-                "Warning: The %s %s name '%s' is too long.\n\tIt will "
-                "be truncated from %d to %d characters. [Called from %s]\n",
-                ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
-                (int)name_length - 1, routine);
-        length = name_length;
-      }
-
-      if (length > (size_t)max_name_len) {
-        max_name_len = length;
-      }
+    char *int_names = NULL;
+    if (!(int_names = calloc(num_names * name_length, 1))) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate memory for internal int_names "
+               "array in file id %d",
+               exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
-    idx += name_length;
-  }
 
-  int status;
-  if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+    size_t idx          = 0;
+    int    max_name_len = 0;
+    int    found_name   = 0;
+    for (size_t i = 0; i < num_names; i++) {
+      if (names != NULL && *names != NULL && *names[i] != '\0') {
+        found_name = 1;
+        ex_copy_string(&int_names[idx], names[i], name_length);
+        size_t length = strlen(names[i]) + 1;
+        if (length > (size_t)name_length) {
+          fprintf(stderr,
+                  "Warning: The %s %s name '%s' is too long.\n\tIt will "
+                  "be truncated from %d to %d characters. [Called from %s]\n",
+                  ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
+                  (int)name_length - 1, routine);
+          length = name_length;
+        }
+
+        if (length > (size_t)max_name_len) {
+          max_name_len = length;
+        }
+      }
+      idx += name_length;
+    }
+
+    int status;
+    if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+      free(int_names);
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
+               ex_name_of_object(obj_type), exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
+    if (found_name) {
+
+      /* Update the maximum_name_length attribute on the file. */
+      exi_update_max_name_length(exoid, max_name_len - 1);
+    }
     free(int_names);
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-             ex_name_of_object(obj_type), exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
-  }
 
-  if (found_name) {
-
-    /* Update the maximum_name_length attribute on the file. */
-    exi_update_max_name_length(exoid, max_name_len - 1);
-  }
-  free(int_names);
-
-  /* PnetCDF applies setting to entire file, so put back to collective... */
+    /* PnetCDF applies setting to entire file, so put back to collective... */
 #if defined(PARALLEL_AWARE_EXODUS)
   }
   if (exi_is_parallel(rootid)) {
@@ -2314,8 +2314,8 @@ int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   \internal
   \undoc
 */
-int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank, int is_parallel, int *comp_ws,
-                        int *io_ws)
+int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank, int is_parallel,
+                        int *comp_ws, int *io_ws)
 {
   int  status;
   int  old_fill;
@@ -2373,8 +2373,8 @@ int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank, i
     is_hdf5 = true;
   }
 
-  if (exi_conv_init(exoid, comp_ws, io_ws, 0, int64_status, my_rank, is_parallel, is_hdf5, is_pnetcdf,
-                    my_mode & EX_WRITE) != EX_NOERR) {
+  if (exi_conv_init(exoid, comp_ws, io_ws, 0, int64_status, my_rank, is_parallel, is_hdf5,
+                    is_pnetcdf, my_mode & EX_WRITE) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);
