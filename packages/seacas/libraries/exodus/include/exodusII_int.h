@@ -1,6 +1,6 @@
 /*
 
- * Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023, 2024, 2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -706,6 +706,7 @@ struct exi_file_item
                                 gzip, 4..32 and even for szip; -131072..22 for zstd, NetCDF-4 only */
   unsigned int assembly_count;
   unsigned int blob_count;
+  unsigned int mpi_rank; /**< Only valid if `is_parallel` is true */
 
   unsigned int persist_define_mode : 10; /**< Stay in define mode until exi_persist_leavedef is
                                             called. Set by exi_persist_redef... */
@@ -786,7 +787,7 @@ EXODUS_EXPORT char *exi_name_red_var_of_object(ex_entity_type /*obj_type*/, int 
 EXODUS_EXPORT char *exi_name_of_map(ex_entity_type /*map_type*/, int /*map_index*/);
 
 EXODUS_EXPORT int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                                int int64_status, bool is_parallel, bool is_hdf5, bool is_pnetcdf,
+                                int int64_status, int mpi_rank, bool is_parallel, bool is_hdf5, bool is_pnetcdf,
                                 bool is_write);
 
 EXODUS_EXPORT void exi_conv_exit(int exoid);
@@ -795,6 +796,7 @@ EXODUS_EXPORT nc_type nc_flt_code(int exoid);
 EXODUS_EXPORT int     exi_comp_ws(int exoid);
 EXODUS_EXPORT int     exi_get_cpu_ws(void);
 EXODUS_EXPORT int     exi_is_parallel(int exoid);
+EXODUS_EXPORT int     exi_parallel_rank(int exoid);
 
 EXODUS_EXPORT struct exi_list_item **exi_get_counter_list(ex_entity_type obj_type);
 EXODUS_EXPORT int  exi_get_file_item(int /*exoid*/, struct exi_list_item  **/*list_ptr*/);
@@ -883,7 +885,7 @@ EXODUS_EXPORT int  exi_persist_leavedef(int         exoid,    /* NemesisI file I
 
 EXODUS_EXPORT int exi_check_version(int run_version);
 EXODUS_EXPORT int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version);
-EXODUS_EXPORT int exi_populate_header(int exoid, const char *path, int my_mode, int is_parallel,
+EXODUS_EXPORT int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank, int is_parallel,
                                       int *comp_ws, int *io_ws);
 
 EXODUS_EXPORT int exi_get_block_param(int exoid, ex_entity_id id, int ndim,

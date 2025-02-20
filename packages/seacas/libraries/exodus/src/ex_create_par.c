@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023, 2024, 2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -227,7 +227,9 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  status = exi_populate_header(exoid, canon_path, my_mode, is_parallel, comp_ws, io_ws);
+  int rank = 0;
+  MPI_Comm_rank(comm, &rank);
+  status = exi_populate_header(exoid, canon_path, my_mode, rank, is_parallel, comp_ws, io_ws);
   if (status != EX_NOERR) {
     free(canon_path);
     EX_FUNC_LEAVE(status);

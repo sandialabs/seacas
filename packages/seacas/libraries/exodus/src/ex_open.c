@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -417,7 +417,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
   }
 
   /* initialize floating point and integer size conversion. */
-  if (exi_conv_init(exoid, comp_ws, io_ws, file_wordsize, int64_status, false, false, false,
+  if (exi_conv_init(exoid, comp_ws, io_ws, file_wordsize, int64_status, 0, false, false, false,
                     mode & EX_WRITE) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d named %s", exoid,

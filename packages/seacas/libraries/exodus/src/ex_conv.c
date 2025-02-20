@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021, 2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2024, 2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -108,7 +108,7 @@ int exi_check_valid_file_id(int exoid, const char *func)
 }
 
 int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                  int int64_status, bool is_parallel, bool is_hdf5, bool is_pnetcdf, bool is_write)
+                  int int64_status, int mpi_rank, bool is_parallel, bool is_hdf5, bool is_pnetcdf, bool is_write)
 {
   char                  errmsg[MAX_ERR_LENGTH];
   struct exi_file_item *new_file = NULL;
@@ -573,6 +573,30 @@ int exi_is_parallel(int exoid)
   }
   /* Stored as 1 for parallel, 0 for serial or file-per-processor */
   EX_FUNC_LEAVE(file->is_parallel);
+}
+
+/*!
+ * \ingroup Utilities exi_parallel_rank() returns the mpi rank for the
+ * current file *IF* the file was opened in parallel; otherwise
+ * (file-per-rank or serial), it will return 0.  
+ *
+ * NOTE that in this
+ * case parallel assumes the output of a single file, not a parallel
+ * run using file-per-processor.  \param exoid integer which uniquely
+ * identifies the file of interest.
+ */
+int exi_parallel_rank(int exoid)
+{
+  EX_FUNC_ENTER();
+  struct exi_file_item *file = exi_find_file_item(exoid);
+
+  if (!file) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
+    ex_err(__func__, errmsg, EX_BADFILEID);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+  EX_FUNC_LEAVE(file->is_parallel ? file->mpi_rank : 0);
 }
 
 /*!

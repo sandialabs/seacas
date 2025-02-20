@@ -331,6 +331,23 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
+
+#if defined(PARALLEL_AWARE_EXODUS)
+  /* For parallel-io (all ranks writing to single file), we only
+     want/need to output the names on a single rank since all ranks
+     have the same set of names.  This avoids issues with multiple
+     ranks writing same data to the same data space which can/has
+     caused issues.  It should be ok, but this seems more robust.
+
+     Calling code passes valid data on rank 0; all other ranks have `names == NULL`
+  */
+  int rootid = exoid & EX_FILE_ID_MASK;
+  if (exi_is_parallel(rootid)) {
+    nc_var_par_access(rootid, varid, NC_INDEPENDENT);
+  }
+  if (exi_parallel_rank(rootid) == 0) {
+#endif
+
   /* inquire previously defined dimensions  */
   size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
@@ -386,6 +403,13 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   }
   free(int_names);
 
+  /* PnetCDF applies setting to entire file, so put back to collective... */
+#if defined(PARALLEL_AWARE_EXODUS)
+  }
+  if (exi_is_parallel(rootid)) {
+    nc_var_par_access(rootid, varid, NC_COLLECTIVE);
+  }
+#endif
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
@@ -2290,7 +2314,7 @@ int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   \internal
   \undoc
 */
-int exi_populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws,
+int exi_populate_header(int exoid, const char *path, int my_mode, int my_rank, int is_parallel, int *comp_ws,
                         int *io_ws)
 {
   int  status;
@@ -2349,7 +2373,7 @@ int exi_populate_header(int exoid, const char *path, int my_mode, int is_paralle
     is_hdf5 = true;
   }
 
-  if (exi_conv_init(exoid, comp_ws, io_ws, 0, int64_status, is_parallel, is_hdf5, is_pnetcdf,
+  if (exi_conv_init(exoid, comp_ws, io_ws, 0, int64_status, my_rank, is_parallel, is_hdf5, is_pnetcdf,
                     my_mode & EX_WRITE) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
