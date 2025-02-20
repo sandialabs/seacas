@@ -244,6 +244,7 @@ int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->quantize_nsd          = 0;
   new_file->shuffle               = 0;
   new_file->file_type             = filetype - 1;
+  new_file->mpi_rank              = mpi_rank;
   new_file->is_parallel           = is_parallel;
   new_file->is_hdf5               = is_hdf5;
   new_file->is_pnetcdf            = is_pnetcdf;
