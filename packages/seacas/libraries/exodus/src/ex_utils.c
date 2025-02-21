@@ -354,15 +354,15 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   }
   /* Update the maximum_name_length attribute on the file. */
   exi_update_max_name_length(exoid, max_name_len);
-  
+
   max_name_len++;
   char *int_names = NULL;
   if (!(int_names = calloc(num_names * max_name_len, 1))) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
-	     "ERROR: failed to allocate memory for internal int_names "
-	     "array in file id %d",
-	     exoid);
+             "ERROR: failed to allocate memory for internal int_names "
+             "array in file id %d",
+             exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -375,8 +375,7 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
     idx += max_name_len;
   }
 
-    
-  int my_rank = exi_parallel_rank(exoid);
+  int    my_rank  = exi_parallel_rank(exoid);
   size_t start[2] = {0, 0};
   size_t count[2] = {num_names, max_name_len};
   if (my_rank != 0) {
@@ -389,13 +388,13 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
     free(int_names);
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-	     ex_name_of_object(obj_type), exoid);
+             ex_name_of_object(obj_type), exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
-  
+
   free(int_names);
-  
+
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
