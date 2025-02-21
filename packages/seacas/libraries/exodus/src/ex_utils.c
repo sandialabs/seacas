@@ -333,74 +333,19 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   }
 
   /* inquire previously defined dimensions  */
-  size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
-
-#if defined(PARALLEL_AWARE_EXODUS)
-  /* For parallel-io (all ranks writing to single file), we only
-     want/need to output the names on a single rank since all ranks
-     have the same set of names.  This avoids issues with multiple
-     ranks writing same data to the same data space which can/has
-     caused issues.  It should be ok, but this seems more robust.
-
-     Calling code passes valid data on rank 0; all other ranks have `names == NULL`
-  */
-  int rootid = exoid & EX_FILE_ID_MASK;
-  if (exi_is_parallel(rootid)) {
-    nc_var_par_access(rootid, varid, NC_INDEPENDENT);
-  }
-  if (exi_parallel_rank(rootid) == 0) {
-#endif
-
-    char *int_names = NULL;
-    if (!(int_names = calloc(num_names * name_length, 1))) {
-      char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to allocate memory for internal int_names "
-               "array in file id %d",
-               exoid);
-      ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-
-    size_t idx = 0;
-    for (size_t i = 0; i < num_names; i++) {
-      if (names != NULL && *names != NULL && *names[i] != '\0') {
-        ex_copy_string(&int_names[idx], names[i], name_length);
-      }
-      idx += name_length;
-    }
-
-    int status;
-    if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
-      free(int_names);
-      char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-               ex_name_of_object(obj_type), exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-
-    free(int_names);
-
-    /* PnetCDF applies setting to entire file, so put back to collective... */
-#if defined(PARALLEL_AWARE_EXODUS)
-  }
-  if (exi_is_parallel(rootid)) {
-    nc_var_par_access(rootid, varid, NC_COLLECTIVE);
-  }
-#endif
+  size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);
 
   size_t max_name_len = 0;
   for (size_t i = 0; i < num_names; i++) {
     if (names != NULL && *names != NULL && *names[i] != '\0') {
       size_t length = strlen(names[i]);
-      if (length > (size_t)name_length - 1) {
+      if (length > name_length) {
         fprintf(stderr,
                 "Warning: The %s %s name '%s' is too long.\n\tIt will "
                 "be truncated from %d to %d characters. [Called from %s]\n",
-                ex_name_of_object(obj_type), subtype, names[i], (int)length, (int)name_length - 1,
+                ex_name_of_object(obj_type), subtype, names[i], (int)length, (int)name_length,
                 routine);
-        length = name_length - 1;
+        length = name_length;
       }
       if (length > max_name_len) {
         max_name_len = length;
@@ -409,6 +354,48 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
   }
   /* Update the maximum_name_length attribute on the file. */
   exi_update_max_name_length(exoid, max_name_len);
+  
+  max_name_len++;
+  char *int_names = NULL;
+  if (!(int_names = calloc(num_names * max_name_len, 1))) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+	     "ERROR: failed to allocate memory for internal int_names "
+	     "array in file id %d",
+	     exoid);
+    ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  size_t idx = 0;
+  for (size_t i = 0; i < num_names; i++) {
+    if (names != NULL && *names != NULL && *names[i] != '\0') {
+      ex_copy_string(&int_names[idx], names[i], max_name_len);
+    }
+    idx += max_name_len;
+  }
+
+    
+  int my_rank = exi_parallel_rank(exoid);
+  size_t start[2] = {0, 0};
+  size_t count[2] = {num_names, max_name_len};
+  if (my_rank != 0) {
+    // In parallel, only rank 0 writes...
+    count[0] = 0;
+    count[1] = 0;
+  }
+  int status;
+  if ((status = nc_put_vara_text(exoid, varid, start, count, int_names)) != NC_NOERR) {
+    free(int_names);
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
+	     ex_name_of_object(obj_type), exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+  
+  free(int_names);
+  
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
