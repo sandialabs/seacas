@@ -363,7 +363,6 @@ int exi_put_names(int exoid, int varid, size_t num_names, char *const *names,
     }
 
     size_t idx          = 0;
-    int    max_name_len = 0;
     for (size_t i = 0; i < num_names; i++) {
       if (names != NULL && *names != NULL && *names[i] != '\0') {
         ex_copy_string(&int_names[idx], names[i], name_length);
