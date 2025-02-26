@@ -322,14 +322,16 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
    * non-zero node count.
    */
 
-  int int_size = ex_int64_status(exoid) & EX_IDS_INT64_DB ? 8 : 4;
-  size_t twoGiB = 1ul << 31;
+  int    int_size = ex_int64_status(exoid) & EX_IDS_INT64_DB ? 8 : 4;
+  size_t twoGiB   = 1ul << 31;
 
   if (model->num_nodes > 0) {
     // If file is using 32-bit integers, check what node count is in range...
     if (int_size == 4 && model->num_nodes >= twoGiB) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: File is using 32-bit integers, but the node count exceeds the integer capacity (%" PRId64 ") in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: File is using 32-bit integers, but the node count exceeds the integer "
+               "capacity (%" PRId64 ") in file id %d",
                model->num_nodes, exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       goto error_ret;
@@ -357,7 +359,9 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
     if (int_size == 4 && model->num_elem >= twoGiB) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: File is using 32-bit integers, but the element count exceeds the integer capacity (%" PRId64 ") in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: File is using 32-bit integers, but the element count exceeds the integer "
+               "capacity (%" PRId64 ") in file id %d",
                model->num_elem, exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       goto error_ret;
