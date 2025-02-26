@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 
   /* Determine number of dims and vars -- useful in debugging incorrect NC_MAX_DIMS|VARS in netcdf.h
    */
-#if NC_HAS_NC4
+#if NC_HAS_HDF5
   {
     int ndims = 0;
     int nvars = 0;
