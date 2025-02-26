@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2025 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -2550,15 +2550,13 @@ namespace Ioex {
                      name_length, maximumNameLength, get_filename());
         }
       }
-      int  ierr          = 0;
-      bool i_write_names = !using_parallel_io() || myProcessor == 0;
+      int ierr = 0;
       if (reduction) {
-        ierr = ex_put_reduction_variable_names(get_file_pointer(), type, var_count,
-                                               i_write_names ? Data(var_names) : nullptr);
+        ierr =
+            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, Data(var_names));
       }
       else {
-        ierr = ex_put_variable_names(get_file_pointer(), type, var_count,
-                                     i_write_names ? Data(var_names) : nullptr);
+        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, Data(var_names));
       }
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -3233,8 +3231,6 @@ namespace Ioex {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
 
-    bool i_write_names = !using_parallel_io() || myProcessor == 0;
-
     if (node_map_cnt > 0) {
       char **names = Ioex::get_name_array(node_map_cnt, maximumNameLength);
       auto  *node_block =
@@ -3253,7 +3249,7 @@ namespace Ioex {
           }
         }
       }
-      ex_put_names(get_file_pointer(), EX_NODE_MAP, i_write_names ? names : nullptr);
+      ex_put_names(get_file_pointer(), EX_NODE_MAP, names);
       Ioex::delete_name_array(names, node_map_cnt);
     }
 
@@ -3286,7 +3282,7 @@ namespace Ioex {
           }
         }
       }
-      ex_put_names(get_file_pointer(), EX_ELEM_MAP, i_write_names ? names : nullptr);
+      ex_put_names(get_file_pointer(), EX_ELEM_MAP, names);
       Ioex::delete_name_array(names, elem_map_cnt);
     }
 
