@@ -121,9 +121,9 @@ const char *ex_config(void)
   j += snprintf(buffer + j, buffer_size - j, "\t\tZstd Compression NOT enabled\n");
 #endif
 #if NC_HAS_QUANTIZE == 1
-  j += snprintf(buffer + j, buffer_size - j, "\t\tQuanization support enabled\n");
+  j += snprintf(buffer + j, buffer_size - j, "\t\tQuantization support enabled\n");
 #else
-  j += snprintf(buffer + j, buffer_size - j, "\t\tQuanization support NOT enabled\n");
+  j += snprintf(buffer + j, buffer_size - j, "\t\tQuantization support NOT enabled\n");
 #endif
 #endif
 #endif
