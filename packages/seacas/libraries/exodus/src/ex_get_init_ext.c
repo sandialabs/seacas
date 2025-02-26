@@ -26,7 +26,7 @@
 
 static void exi_get_entity_count(int exoid, ex_init_params *info)
 {
-  int ndims                = 0;
+  int ndims = 0;
 #if NC_HAS_HDF5
   int include_parent_group = 0; // Only want dims in current group
   nc_inq_dimids(exoid, &ndims, NULL, include_parent_group);
