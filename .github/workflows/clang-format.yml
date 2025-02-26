@@ -41,7 +41,7 @@ jobs:
       with:
         source: 'packages/seacas'
         exclude: 'packages/seacas/doc-source'
-        extensions: 'c,C,h,cpp,hpp'
+        extensions: 'c,C,cc,h,cpp,hpp'
         clangFormatVersion: 18
         inplace: True
         style: file
