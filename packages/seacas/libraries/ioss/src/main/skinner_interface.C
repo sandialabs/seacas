@@ -17,7 +17,10 @@
 #include "skinner_interface.h"
 #include "tokenize.h"
 
-Skinner::Interface::Interface() { enroll_options(); }
+Skinner::Interface::Interface(std::string app_version) : version(std::move(app_version))
+{
+  enroll_options();
+}
 
 void Skinner::Interface::enroll_options()
 {
@@ -194,7 +197,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("version") != nullptr) {
-    // Version is printed up front, just exit...
+    fmt::print(stderr, "skinner\tVersion: {}\n", version);
     exit(0);
   }
 

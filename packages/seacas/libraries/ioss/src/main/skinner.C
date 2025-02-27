@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 
   codename = Ioss::FileInfo(argv[0]).basename();
 
-  Skinner::Interface interFace;
+  Skinner::Interface interFace(version);
   bool               success = interFace.parse_options(argc, argv);
   if (!success) {
     return EXIT_FAILURE;
