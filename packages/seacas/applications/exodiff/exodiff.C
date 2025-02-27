@@ -627,7 +627,6 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-
   if (has_change_sets) {
     if (diff_flag) {
       DIFF_OUT("exodiff: At least one change set is different\n");

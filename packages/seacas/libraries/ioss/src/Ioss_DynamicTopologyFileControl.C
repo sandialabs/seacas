@@ -91,8 +91,7 @@ namespace {
 
 namespace Ioss {
 
-  DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region)
-      : m_region(region)
+  DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region) : m_region(region)
   {
     if (nullptr == region) {
       std::ostringstream errmsg;
@@ -100,13 +99,13 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
 
-    // If we are checking for `region == nullptr` above, we cannot 
+    // If we are checking for `region == nullptr` above, we cannot
     // do these initializations above and must do them here...
-    m_fileCyclicCount = region->get_file_cyclic_count();
+    m_fileCyclicCount  = region->get_file_cyclic_count();
     m_ifDatabaseExists = region->get_if_database_exists_behavior();
-    m_dbChangeCount = region->get_topology_change_count();
-    m_ioDB   = region->get_property("base_filename").get_string();
-    m_dbType = region->get_property("database_type").get_string();
+    m_dbChangeCount    = region->get_topology_change_count();
+    m_ioDB             = region->get_property("base_filename").get_string();
+    m_dbType           = region->get_property("database_type").get_string();
   }
 
   const ParallelUtils &DynamicTopologyFileControl::util() const
