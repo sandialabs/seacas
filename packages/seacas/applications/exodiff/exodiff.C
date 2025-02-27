@@ -1,4 +1,4 @@
-// Copyright(C) 1999-, 20242024 National Technology & Engineering Solutions
+// Copyright(C) 1999-, 20242024, ,  National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -610,16 +610,23 @@ int main(int argc, char *argv[])
 
   bool diff_flag       = false;
   bool has_change_sets = false;
-  if (int_size == 4) {
-    auto diff_change = exodiff_setup(file1_name, file2_name, int(0));
-    diff_flag        = diff_change.first;
-    has_change_sets  = diff_change.second;
+  try {
+    if (int_size == 4) {
+      auto diff_change = exodiff_setup(file1_name, file2_name, int(0));
+      diff_flag        = diff_change.first;
+      has_change_sets  = diff_change.second;
+    }
+    else {
+      auto diff_change = exodiff_setup(file1_name, file2_name, int64_t(0));
+      diff_flag        = diff_change.first;
+      has_change_sets  = diff_change.second;
+    }
   }
-  else {
-    auto diff_change = exodiff_setup(file1_name, file2_name, int64_t(0));
-    diff_flag        = diff_change.first;
-    has_change_sets  = diff_change.second;
+  catch (std::exception &e) {
+    fmt::print(stderr, "\n{}\n\nEXODIFF terminated due to exception\n", e.what());
+    exit(EXIT_FAILURE);
   }
+
 
   if (has_change_sets) {
     if (diff_flag) {
