@@ -52,9 +52,6 @@
 #
 # ************************************************************************
 # @HEADER
-if (${CMAKE_VERSION} GREATER "3.13")
-     cmake_policy(SET CMP0074 NEW)
-endif()
 
 find_package(Matio REQUIRED)
 TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( Matio
