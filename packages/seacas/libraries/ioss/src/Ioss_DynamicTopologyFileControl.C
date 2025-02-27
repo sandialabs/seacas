@@ -1,4 +1,4 @@
-// Copyright(C) 2024 National Technology & Engineering Solutions
+// Copyright(C) 2024, 2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -92,9 +92,7 @@ namespace {
 namespace Ioss {
 
   DynamicTopologyFileControl::DynamicTopologyFileControl(Region *region)
-      : m_region(region), m_fileCyclicCount(region->get_file_cyclic_count()),
-        m_ifDatabaseExists(region->get_if_database_exists_behavior()),
-        m_dbChangeCount(region->get_topology_change_count())
+      : m_region(region)
   {
     if (nullptr == region) {
       std::ostringstream errmsg;
@@ -102,6 +100,11 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
 
+    // If we are checking for `region == nullptr` above, we cannot 
+    // do these initializations above and must do them here...
+    m_fileCyclicCount = region->get_file_cyclic_count();
+    m_ifDatabaseExists = region->get_if_database_exists_behavior();
+    m_dbChangeCount = region->get_topology_change_count();
     m_ioDB   = region->get_property("base_filename").get_string();
     m_dbType = region->get_property("database_type").get_string();
   }
