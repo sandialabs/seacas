@@ -2859,7 +2859,7 @@ namespace Ioss {
       state++; // For the state we are going to write.
 
       if (topologyObserver) {
-	topologyObserver->initialize_region();
+        topologyObserver->initialize_region();
       }
 
       DynamicTopologyFileControl fileControl(this);
