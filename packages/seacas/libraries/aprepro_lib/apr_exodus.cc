@@ -38,7 +38,8 @@ namespace {
     }
   }
 
-  void add_name(int exoid, ex_entity_type ent_type, int64_t id, std::vector<char> &name, std::string &names)
+  void add_name(int exoid, ex_entity_type ent_type, int64_t id, std::vector<char> &name,
+                std::string &names)
   {
     std::string str_name;
     ex_get_name(exoid, ent_type, id, name.data());
@@ -314,7 +315,7 @@ namespace SEAMS {
     int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
     ex_set_max_name_length(exoid, max_name_length);
     std::vector<char> name(max_name_length + 1);
-    std::string str_name;
+    std::string       str_name;
 
     if (info.num_elem_blk > 0) {
       auto array_data       = aprepro->make_array(info.num_elem_blk, 1);

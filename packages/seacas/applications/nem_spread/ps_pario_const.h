@@ -25,8 +25,8 @@ struct Parallel_IO
 {
   int Dsk_List_Cnt{};
 
-  std::vector<int>  Dsk_List{};
-  int **RDsk_List{nullptr};
+  std::vector<int> Dsk_List{};
+  int            **RDsk_List{nullptr};
 
   int Num_Dsk_Ctrlrs{};  /* The number of disk controllers.     */
   int Num_Dsks_PCtrlr{}; /* The number of disks per controller. */
