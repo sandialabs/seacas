@@ -1014,7 +1014,6 @@ int main(int argc, char *argv[])
       }
       j--;
       continue;
-      continue;
     }
     // Unrecognized option...
     fmt::print(stderr, "ERROR: Unrecognized option: '{}'\n", argv[j]);

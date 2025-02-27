@@ -38,15 +38,15 @@ namespace {
     }
   }
 
-  void add_name(int exoid, ex_entity_type ent_type, int64_t id, char *name, std::string &names)
+  void add_name(int exoid, ex_entity_type ent_type, int64_t id, std::vector<char> &name, std::string &names)
   {
     std::string str_name;
-    ex_get_name(exoid, ent_type, id, name);
+    ex_get_name(exoid, ent_type, id, name.data());
     if (name[0] == '\0') {
       str_name = entity_type_name(ent_type) + std::to_string(id);
     }
     else {
-      str_name = name;
+      str_name = name.data();
     }
 
     if (names.length() > 0) {
@@ -313,7 +313,7 @@ namespace SEAMS {
     // -- 'ex_sideset_info'
     int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
     ex_set_max_name_length(exoid, max_name_length);
-    char       *name = new char[max_name_length + 1];
+    std::vector<char> name(max_name_length + 1);
     std::string str_name;
 
     if (info.num_elem_blk > 0) {
@@ -366,7 +366,7 @@ namespace SEAMS {
       for (int64_t i = 0; i < info.num_assembly; i++) {
         ex_assembly assembly;
         assembly.id          = ids[i];
-        assembly.name        = new char[max_name_length + 1];
+        assembly.name        = name.data();
         assembly.entity_list = nullptr;
 
         ex_get_assembly(exoid, &assembly);
@@ -460,11 +460,11 @@ namespace SEAMS {
     if (num_global > 0) {
       std::string names;
       for (int i = 0; i < num_global; i++) {
-        ex_get_variable_name(exoid, EX_GLOBAL, i + 1, name);
+        ex_get_variable_name(exoid, EX_GLOBAL, i + 1, name.data());
         if (i > 0) {
           names += ",";
         }
-        names += name;
+        names += name.data();
       }
       aprepro->add_variable("ex_global_var_names", names);
 
@@ -480,7 +480,6 @@ namespace SEAMS {
       aprepro->add_variable("ex_global_var_value", glo_array_data);
     }
 
-    delete[] name;
     ex_close(exoid);
     return "";
   }
