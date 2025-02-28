@@ -19,9 +19,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION ${TRIBITS_CMAKE_MINIMUM_REQUIRED} FATAL_ERROR)
 # not in an include file :-(
 PROJECT(${PROJECT_NAME} NONE)
 
-if (${CMAKE_VERSION} GREATER_EQUAL "3.12")
-     cmake_policy(SET CMP0074 NEW)
-endif()
+# This can be removed after the minimum CMake is set to >= 3.27
+cmake_policy(SET CMP0144 NEW)
 
 #
 # B) Pull in the TriBITS system and execute
