@@ -7,6 +7,7 @@ endif()
 TRIBITS_INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+message("installing shared exodus to: ${CMAKE_INSTALL_LIBDIR}")
 
 FILE(GLOB SOURCES src/ex_*.c)
 
@@ -50,6 +51,7 @@ if (SEACASExodus_ENABLE_SHARED)
       # This keeps the library out of the `all_libs` targets...
       set_target_properties(exodus_shared PROPERTIES TRIBITS_TESTONLY_LIB TRUE)
       set_target_properties(exodus_shared PROPERTIES OUTPUT_NAME exodus)
+      message("installing shared exodus to: ${CMAKE_INSTALL_LIBDIR}")
       INSTALL(TARGETS exodus_shared DESTINATION ${CMAKE_INSTALL_LIBDIR})
    endif()
 endif()
@@ -72,8 +74,9 @@ if (SEACASExodus_ENABLE_STATIC)
 
    # For backwards compatibility, the C exodus library was called libexoIIv2c.a
    # Create a symbolic link from libexodus.a to libexoIIv2c.a -- do only for static lib
-   InstallSymLink(libexodus.a ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/libexoIIv2c.a)
+   InstallSymLink(libexodus.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2c.a)
 endif()
+message("installing shared exodus to: ${CMAKE_INSTALL_LIBDIR}")
 
 if (${CMAKE_PROJECT_NAME} STREQUAL "Seacas")
    # add a target to generate API documentation with Doxygen
@@ -88,6 +91,7 @@ if (${CMAKE_PROJECT_NAME} STREQUAL "Seacas")
      endif(DOXYGEN_FOUND)
    endif()
 endif()
+message("installing shared exodus to: ${CMAKE_INSTALL_LIBDIR}")
 
 TRIBITS_ADD_TEST_DIRECTORIES(test)
 
