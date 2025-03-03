@@ -69,8 +69,8 @@ namespace {
 
   void usage()
   {
-    const auto *v5default = MAT_FT_DEFAULT == MAT_FT_MAT5 ? "[default]" : "";
-    const auto *v7default = MAT_FT_DEFAULT == MAT_FT_MAT73 ? "[default]" : "";
+    const auto *v5default = (MAT_FT_DEFAULT == MAT_FT_MAT5 ? "[default]" : "");
+    const auto *v7default = (MAT_FT_DEFAULT == MAT_FT_MAT73 ? "[default]" : "");
     fmt::print("exo2mat [options] exodus_file_name.\n"
                "   the exodus_file_name is required (exodus only).\n"
                "   Options:\n"
@@ -79,11 +79,11 @@ namespace {
                "   -c    use cell arrays for transient variables.\n"
                "   -v5   output version 5 mat file {}\n"
                "   -v73  output version 7.3 mat file (hdf5-based) {}\n"
-               "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
+               "   -v7.3 output version 7.3 mat file (hdf5-based) {}\n"
                "   -change_set cs_#  Read from change set #.\n"
                " ** note **\n"
                "Binary files are written by default on all platforms.\n",
-               v5default, v7default);
+               v5default, v7default, v7default);
   }
 
   /* put a string into an m file. If the string has

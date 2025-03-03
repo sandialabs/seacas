@@ -281,7 +281,7 @@ namespace {
                                std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                                std::vector<std::vector<Excn::SideSet<INT>>> &sidesets);
 
-  bool case_compare(const std::string &s1, const std::string &s2);
+  bool case_compare(std::string_view s1, std::string_view s2);
 
   template <typename T>
   void verify_set_position_mapping(const std::string &type, size_t part_count,
@@ -2532,7 +2532,7 @@ namespace {
                  const_cast<INT *>(&glob_sset.sides[0]));
       if (glob_sset.dfCount > 0) {
         ex_put_set_dist_fact(exoid, EX_SIDE_SET, glob_sset.id,
-                             reinterpret_cast<void *>(Data(glob_sset.distFactors)));
+                             static_cast<void *>(Data(glob_sset.distFactors)));
       }
     }
 
@@ -2762,7 +2762,7 @@ namespace {
     }
   }
 
-  bool case_compare(const std::string &s1, const std::string &s2)
+  bool case_compare(std::string_view s1, std::string_view s2)
   {
     return (s1.size() == s2.size()) &&
            std::equal(s1.begin(), s1.end(), s2.begin(),

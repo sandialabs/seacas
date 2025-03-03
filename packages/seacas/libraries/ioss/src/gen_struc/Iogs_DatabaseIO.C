@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024, 2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -13,7 +13,7 @@
 #include <cmath>                          // for sqrt
 #include <fmt/format.h>
 #include <iostream> // for ostringstream, operator<<, etc
-#include <stdlib.h>
+#include <cstdlib>
 #include <string> // for string, operator==, etc
 
 #include "Ioss_CommSet.h"         // for CommSet
@@ -529,7 +529,7 @@ namespace Iogs {
         std::string elem_topo_name = "unknown";
         int64_t     number_faces   = m_generatedMesh->sideset_side_count_proc(ifs + 1);
 
-        auto sd_block =
+        auto *sd_block =
             new Ioss::SideBlock(this, sd_block_name, side_topo_name, elem_topo_name, number_faces);
         sideset->add(sd_block);
         sd_block->property_add(Ioss::Property("id", ifs + 1));
@@ -553,7 +553,7 @@ namespace Iogs {
           std::string elem_topo_name = "unknown";
           int64_t     number_faces   = m_generatedMesh->sideset_side_count_proc(ifs + 1);
 
-          auto sd_block = new Ioss::SideBlock(this, sd_block_name, side_topo_name, elem_topo_name,
+          auto *sd_block = new Ioss::SideBlock(this, sd_block_name, side_topo_name, elem_topo_name,
                                               number_faces);
           sideset->add(sd_block);
           sd_block->property_add(Ioss::Property("id", ifs + 1));

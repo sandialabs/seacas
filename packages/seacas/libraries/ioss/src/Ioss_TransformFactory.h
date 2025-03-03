@@ -1,4 +1,4 @@
-// Copyright(C) 2022, 2023, 2024 National Technology & Engineering Solutions
+// Copyright(C) 2022, 2023, 2024, 2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -31,7 +31,7 @@ namespace Ioss {
 
   protected:
     explicit TransformFactory(const std::string &type);
-    virtual Ioss::Transform *make(const std::string &) const = 0;
+    IOSS_NODISCARD virtual Ioss::Transform *make(const std::string &) const = 0;
     static void              alias(const std::string &base, const std::string &syn);
 
   private:

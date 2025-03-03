@@ -228,7 +228,6 @@ void Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
   activeChangeSet_ = si.selected_change_set();
   if (si.selected_change_set() > 0) {
     onlySelectedChangeSet_ = true;
-    ;
   }
 
   // EPU always wants entity (block, set, map) ids as 64-bit quantities...

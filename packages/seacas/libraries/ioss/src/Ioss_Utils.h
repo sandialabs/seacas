@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -261,7 +261,7 @@ namespace Ioss {
      * fmt::print("{:{}d}", number, number_width(number,false))
      * ```
      */
-    IOSS_NODISCARD inline static int number_width(const size_t number, bool use_commas = false)
+    IOSS_NODISCARD static constexpr int number_width(const size_t number, bool use_commas = false)
     {
       if (number == 0) {
         return 1;
@@ -273,7 +273,7 @@ namespace Ioss {
       return width;
     }
 
-    IOSS_NODISCARD inline static int power_2(int count)
+    IOSS_NODISCARD static constexpr int power_2(int count)
     {
       // Return the power of two which is equal to or greater than `count`
       // count = 15 -> returns 16
