@@ -421,7 +421,7 @@ then
 	elif [ "${H5VERSION}" == "V112" ]; then
             hdf_version="hdf5-1_12_3"
 	elif [ "${H5VERSION}" == "V114" ]; then
-            hdf_version="hdf5_1.14.4.3"
+            hdf_version="hdf5_1.14.6"
 	elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
 	else
@@ -488,24 +488,24 @@ then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_PNETCDF" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.14.0"
+        pnetcdf_version="1.14.0"
         pnet_base="pnetcdf"
         cd $ACCESS || exit
         cd TPL/pnetcdf || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
-            rm -rf ${pnet_base}-${pnet_version}
-            rm -f ${pnet_base}-${pnet_version}.tar.gz
-            wget --no-check-certificate https://parallel-netcdf.github.io/Release/${pnet_base}-${pnet_version}.tar.gz
-            tar -xzf ${pnet_base}-${pnet_version}.tar.gz
-            rm -f ${pnet_base}-${pnet_version}.tar.gz
+            rm -rf ${pnet_base}-${pnetcdf_version}
+            rm -f ${pnet_base}-${pnetcdf_version}.tar.gz
+            wget --no-check-certificate https://parallel-netcdf.github.io/Release/${pnet_base}-${pnetcdf_version}.tar.gz
+            tar -xzf ${pnet_base}-${pnetcdf_version}.tar.gz
+            rm -f ${pnet_base}-${pnetcdf_version}.tar.gz
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd ${pnet_base}-${pnet_version} || exit
+            cd ${pnet_base}-${pnetcdf_version} || exit
             CRAY=${CRAY} BB=${BB} DEBUG=${DEBUG} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
@@ -536,23 +536,23 @@ if [ "$NETCDF" == "YES" ]
 then
 if [ "$FORCE" == "YES" ] || [ "$FORCE_NETCDF" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
-#   net_version="v4.9.1"
-#    net_version="v4.9.2"
-    net_version="v4.9.3"
-#   net_version="v4.8.1"
-#   net_version="main"
+#   netcdf_version="v4.9.1"
+#    netcdf_version="v4.9.2"
+    netcdf_version="v4.9.3"
+#   netcdf_version="v4.8.1"
+#   netcdf_version="main"
 
-    echo "${txtgrn}+++ NetCDF ${net_version} ${txtrst}"
+    echo "${txtgrn}+++ NetCDF ${netcdf_version} ${txtrst}"
     cd $ACCESS || exit
     cd TPL/netcdf || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
         echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf netcdf-c
-        git clone --depth 1 --branch ${net_version} https://github.com/Unidata/netcdf-c netcdf-c
+        git clone --depth 1 --branch ${netcdf_version} https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-    if [ "$net_version" == "v4.9.3" ]
+    if [ "$netcdf_version" == "v4.9.3" ]
     then
 	PREFIX="NETCDF_"
     fi
@@ -764,7 +764,7 @@ if [ "$FMT" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_FMT" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
     then
-        fmt_version="11.1.2"
+        fmt_version="11.1.4"
         echo "${txtgrn}+++ FMT ${fmt_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
