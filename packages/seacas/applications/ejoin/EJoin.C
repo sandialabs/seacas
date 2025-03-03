@@ -45,8 +45,8 @@
 #endif
 
 namespace {
-  const std::string  tsFormat    = "[%H:%M:%S] ";
-  unsigned int debug_level = 0;
+  const std::string tsFormat    = "[%H:%M:%S] ";
+  unsigned int      debug_level = 0;
 
   bool valid_variable(const std::string &variable, size_t id, const StringIdVector &variable_list);
   bool check_variable_mismatch(const std::string &type, const StringIdVector &variable_list,
@@ -63,7 +63,8 @@ namespace {
   bool define_sset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
                           const StringIdVector &variable_list);
   void define_nodal_nodeset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
-                                   const StringIdVector &variable_list, const SystemInterface &interFace);
+                                   const StringIdVector  &variable_list,
+                                   const SystemInterface &interFace);
 
   template <typename INT>
   void output_nodeblock(Ioss::Region &output_region, RegionVector &part_mesh,
@@ -806,7 +807,8 @@ namespace {
   }
 
   void define_nodal_nodeset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
-                                   const StringIdVector &variable_list, const SystemInterface &interFace)
+                                   const StringIdVector  &variable_list,
+                                   const SystemInterface &interFace)
   {
     // This routine does not check that all variables in `variable_list` have been
     // found since the checking has already been done in define_nodal_fields.
@@ -1622,7 +1624,7 @@ namespace {
       return false;
     }
 
-    for (const auto & [var_name, var_id] : variable_list) {
+    for (const auto &[var_name, var_id] : variable_list) {
       if (var_name == variable) {
         if (id == 0 || id == var_id || var_id == 0) {
           return true;

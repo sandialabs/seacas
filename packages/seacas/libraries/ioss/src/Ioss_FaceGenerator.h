@@ -139,7 +139,10 @@ namespace Ioss {
     void clear(const ElementBlock *block);
 
     //! Given a local node id (0-based), return the hashed value.
-    IOSS_NODISCARD size_t node_id_hash(size_t local_node_id) const { return hashIds_[local_node_id]; }
+    IOSS_NODISCARD size_t node_id_hash(size_t local_node_id) const
+    {
+      return hashIds_[local_node_id];
+    }
 
     void progress(const std::string &output) const;
 

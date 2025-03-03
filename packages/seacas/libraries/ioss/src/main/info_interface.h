@@ -34,10 +34,10 @@ namespace Info {
     IOSS_NODISCARD bool query_timesteps_only() const { return queryTimeOnly_; }
     IOSS_NODISCARD bool field_details() const { return fieldDetails_; }
 
-    IOSS_NODISCARD int         surface_split_scheme() const { return surfaceSplitScheme_; }
-    IOSS_NODISCARD char        field_suffix_separator() const { return fieldSuffixSeparator_; }
-    IOSS_NODISCARD bool        use_generic_names() const { return useGenericNames_; }
-    IOSS_NODISCARD bool        disable_field_recognition() const { return disableFieldRecognition_; }
+    IOSS_NODISCARD int  surface_split_scheme() const { return surfaceSplitScheme_; }
+    IOSS_NODISCARD char field_suffix_separator() const { return fieldSuffixSeparator_; }
+    IOSS_NODISCARD bool use_generic_names() const { return useGenericNames_; }
+    IOSS_NODISCARD bool disable_field_recognition() const { return disableFieldRecognition_; }
     IOSS_NODISCARD std::string decomp_method() const { return decompMethod_; }
     IOSS_NODISCARD std::string filename() const { return filename_; }
     IOSS_NODISCARD std::string type() const { return filetype_; }

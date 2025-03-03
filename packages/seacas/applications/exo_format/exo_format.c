@@ -205,10 +205,10 @@ int main(int argc, char *argv[])
   if (nc_format != NC_FORMAT_NETCDF4 && nc_format != NC_FORMAT_NETCDF4_CLASSIC) {
     MPI_Init(&argc, &argv);
     int ncid = -1;
-    ncmpi_open(MPI_COMM_SELF, filename, NC_NOWRITE, MPI_INFO_NULL,  &ncid);
+    ncmpi_open(MPI_COMM_SELF, filename, NC_NOWRITE, MPI_INFO_NULL, &ncid);
 
     if (ncid >= 0) {
-      MPI_Offset size = 0;
+      MPI_Offset size   = 0;
       MPI_Offset extent = 0;
       ncmpi_inq_header_size(ncid, &size);
       ncmpi_inq_header_extent(ncid, &extent);

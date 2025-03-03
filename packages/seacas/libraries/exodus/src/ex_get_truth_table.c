@@ -36,11 +36,11 @@
 
 int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var, int *var_tab)
 {
-  int    dimid = 0;
-  int    varid = 0;
-  int    tabid = 0;
-  int    status = 0;
-  int status1 = 0;
+  int    dimid      = 0;
+  int    varid      = 0;
+  int    tabid      = 0;
+  int    status     = 0;
+  int    status1    = 0;
   size_t num_var_db = 0;
   char   errmsg[MAX_ERR_LENGTH];
 

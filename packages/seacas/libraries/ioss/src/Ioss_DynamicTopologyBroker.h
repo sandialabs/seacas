@@ -36,9 +36,10 @@ namespace Ioss {
     void remove_model(const std::string &model_name);
     void clear_models();
 
-    IOSS_NODISCARD std::shared_ptr<DynamicTopologyNotifier> get_notifier(const std::string &model_name) const;
+    IOSS_NODISCARD std::shared_ptr<DynamicTopologyNotifier>
+                   get_notifier(const std::string &model_name) const;
     IOSS_NODISCARD std::vector<std::shared_ptr<DynamicTopologyObserver>>
-    get_observers(const std::string &model_name) const;
+                   get_observers(const std::string &model_name) const;
 
     void register_observer(const std::string                       &model_name,
                            std::shared_ptr<DynamicTopologyObserver> observer);

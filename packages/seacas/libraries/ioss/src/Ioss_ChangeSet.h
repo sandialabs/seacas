@@ -87,7 +87,7 @@ namespace Ioss {
 
     virtual void clear_change_sets();
 
-    IOSS_NODISCARD DatabaseIO                         *get_database() const;
+    IOSS_NODISCARD DatabaseIO          *get_database() const;
     IOSS_NODISCARD const ParallelUtils &util() const;
 
     Ioss::DatabaseIO *m_database{nullptr};

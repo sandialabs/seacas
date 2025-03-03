@@ -32,7 +32,7 @@ namespace Ioss {
   protected:
     explicit TransformFactory(const std::string &type);
     IOSS_NODISCARD virtual Ioss::Transform *make(const std::string &) const = 0;
-    static void              alias(const std::string &base, const std::string &syn);
+    static void                             alias(const std::string &base, const std::string &syn);
 
   private:
     static TransformFactoryMap &registry();

@@ -39,7 +39,7 @@
 int ex_put_variable_name(int exoid, ex_entity_type obj_type, int var_num, const char *var_name)
 {
   int         status = 0;
-  int         varid = 0;
+  int         varid  = 0;
   char        errmsg[MAX_ERR_LENGTH];
   const char *vname = NULL;
 

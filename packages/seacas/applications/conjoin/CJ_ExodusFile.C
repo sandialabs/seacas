@@ -111,7 +111,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
     fmt::print("Single file mode... (Max open = {})\n\n", max_files);
   }
 
-  float version                 = 0.0;
+  float   version                 = 0.0;
   int64_t overall_max_name_length = 32;
 
   if (si.inputFiles_.size() == 1) {
@@ -151,7 +151,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
 
       // Get names of change sets...
       auto group_name_length = ex_inquire_int(exoid, EX_INQ_GROUP_NAME_LEN);
-      group_name_length     = std::max(int64_t(32), group_name_length);
+      group_name_length      = std::max(int64_t(32), group_name_length);
       std::vector<char> group_name(group_name_length + 1, '\0');
 
       for (int i = 1; i <= num_change_sets; i++) {

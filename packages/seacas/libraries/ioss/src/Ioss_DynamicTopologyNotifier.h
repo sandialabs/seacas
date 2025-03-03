@@ -34,12 +34,16 @@ namespace Ioss {
 
     IOSS_NODISCARD std::string name() const { return m_modelName; }
 
-    IOSS_NODISCARD const std::vector<std::shared_ptr<DynamicTopologyObserver>> &get_observers() const
+    IOSS_NODISCARD const std::vector<std::shared_ptr<DynamicTopologyObserver>>                      &
+    get_observers() const
     {
       return m_observers;
     }
 
-    IOSS_NODISCARD std::vector<std::shared_ptr<DynamicTopologyObserver>> &get_observers() { return m_observers; }
+    IOSS_NODISCARD std::vector<std::shared_ptr<DynamicTopologyObserver>> &get_observers()
+    {
+      return m_observers;
+    }
 
     void register_observer(std::shared_ptr<DynamicTopologyObserver> observer);
 

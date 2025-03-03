@@ -40,7 +40,7 @@ namespace Ioss {
     IOSS_NODISCARD virtual unsigned int get_topology_modification() const;
 
     IOSS_NODISCARD virtual unsigned int get_cumulative_topology_modification() const;
-    virtual void         set_cumulative_topology_modification(unsigned int type);
+    virtual void                        set_cumulative_topology_modification(unsigned int type);
 
     IOSS_NODISCARD int get_cumulative_topology_modification_field();
 
@@ -56,20 +56,23 @@ namespace Ioss {
       return std::string("CUMULATIVE_TOPOLOGY_MODIFICATION");
     }
 
-    void    register_region(Region *region);
+    void                   register_region(Region *region);
     IOSS_NODISCARD Region *get_region() const { return m_region; }
 
-    void                     register_notifier(DynamicTopologyNotifier *notifier);
+    void                                    register_notifier(DynamicTopologyNotifier *notifier);
     IOSS_NODISCARD DynamicTopologyNotifier *get_notifier() const { return m_notifier; }
 
     virtual void define_model();
     virtual void write_model();
     virtual void define_transient();
 
-    IOSS_NODISCARD virtual FileControlOption get_control_option() const { return FileControlOption::CONTROL_NONE; }
+    IOSS_NODISCARD virtual FileControlOption get_control_option() const
+    {
+      return FileControlOption::CONTROL_NONE;
+    }
 
     IOSS_NODISCARD virtual bool needs_new_output_file() const;
-    
+
     virtual void initialize_region();
 
   protected:

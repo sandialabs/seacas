@@ -14,7 +14,7 @@ namespace Ioss {
   std::string CompositeVariableType::composite_name(const std::string &base, int copies)
   {
     static const std::string SEPARATOR("*");
-    std::string        name = base;
+    std::string              name = base;
     name += SEPARATOR;
     name += std::to_string(copies);
     return name;
