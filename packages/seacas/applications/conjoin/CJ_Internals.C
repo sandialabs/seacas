@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-, 20242024,  National Technology & Engineering Solutions
+ * Copyright(C) 1999-, 20242024, ,  National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -977,7 +977,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, Data(ids));
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)Data(ids));
     }
     else {
       // Have entity_id (long long), need ints...
