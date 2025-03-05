@@ -265,20 +265,17 @@ namespace Ioex {
     }
 #endif
 
-    bool do_timer = false;
-    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
-    double t_begin = ((do_timer && isParallel) ? Ioss::Utils::timer() : 0);
+    double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
 
     int app_opt_val = ex_opts(EX_VERBOSE);
     m_exodusFilePtr = ex_open(decoded_filename().c_str(), EX_READ | mode, &cpu_word_size,
                               &io_word_size, &version);
 
-    if (do_timer && isParallel) {
+    if (timeFileOpenCloseFlush) {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-        fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
-                   decoded_filename());
+	fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration, decoded_filename());
       }
     }
 
@@ -340,6 +337,7 @@ namespace Ioex {
     }
 #endif
     int app_opt_val = ex_opts(EX_VERBOSE);
+    double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
     if (fileExists) {
       m_exodusFilePtr = ex_open(decoded_filename().c_str(), EX_WRITE | mode, &cpu_word_size,
                                 &io_word_size, &version);
@@ -361,6 +359,13 @@ namespace Ioex {
       }
       m_exodusFilePtr =
           ex_create(decoded_filename().c_str(), mode, &cpu_word_size, &dbRealWordSize);
+    }
+    if (timeFileOpenCloseFlush) {
+      double t_end    = Ioss::Utils::timer();
+      double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+      if (myProcessor == 0) {
+	fmt::print(Ioss::DebugOut(), "File {} Time = {} ({})\n", fileExists ? "Open" : "Create", duration, decoded_filename());
+      }
     }
 
     is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -266,6 +266,8 @@ namespace Ioex {
 
     // See if there are any properties that need to (or can) be
     // handled prior to opening/creating database...
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", timeFileOpenCloseFlush);
+    
     if (properties.exists("FILE_TYPE")) {
       std::string type = properties.get("FILE_TYPE").get_string();
       type             = Ioss::Utils::lowercase(type);
@@ -437,15 +439,11 @@ namespace Ioex {
   int BaseDatabaseIO::free_file_pointer() const
   {
     if (m_exodusFilePtr != -1) {
-      bool do_timer = false;
-      if (isParallel) {
-        Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
-      }
-      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+      double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
 
       ex_close(m_exodusFilePtr);
       close_dw();
-      if (do_timer && isParallel) {
+      if (timeFileOpenCloseFlush) {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
@@ -2571,8 +2569,16 @@ namespace Ioex {
   void BaseDatabaseIO::flush_database_nl() const
   {
     if (!is_input()) {
+      double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
       if (isParallel || myProcessor == 0) {
         ex_update(get_file_pointer());
+      }
+      if (timeFileOpenCloseFlush) {
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          fmt::print(Ioss::DebugOut(), "File Flush Time = {} ({})\n", duration, get_filename());
+        }
       }
     }
   }

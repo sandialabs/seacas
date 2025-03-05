@@ -5,7 +5,7 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -527,15 +527,13 @@ namespace Ioex {
     }
 #endif
 
-    bool do_timer = false;
-    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
-    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
 
     int app_opt_val = ex_opts(EX_VERBOSE);
     m_exodusFilePtr = ex_open_par(filename.c_str(), EX_READ | mode, &cpu_word_size, &io_word_size,
                                   &version, util().communicator(), info);
 
-    if (do_timer) {
+    if (timeFileOpenCloseFlush) {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
@@ -624,9 +622,7 @@ namespace Ioex {
     (void)chdir(path.c_str());
 #endif
 
-    bool do_timer = false;
-    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
-    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
 
     if (fileExists) {
       m_exodusFilePtr = ex_open_par(filename.c_str(), EX_WRITE | mode, &cpu_word_size,
@@ -666,7 +662,7 @@ namespace Ioex {
                                       util().communicator(), info);
     }
 
-    if (do_timer) {
+    if (timeFileOpenCloseFlush) {
       double      t_end       = Ioss::Utils::timer();
       double      duration    = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       std::string open_create = fileExists ? "Open" : "Create";
