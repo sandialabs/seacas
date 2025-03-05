@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 #endif
 
   Info::Interface interFace(version);
-  bool success = interFace.parse_options(argc, argv);
+  bool            success = interFace.parse_options(argc, argv);
   if (!success) {
     exit(EXIT_FAILURE);
   }

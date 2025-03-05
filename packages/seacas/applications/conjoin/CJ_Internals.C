@@ -311,8 +311,8 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   int varid = 0;
   {
     std::array dim{timedim};
-    if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, static_cast<nc_flt_code>(exodusFilePtr), 1,
-                             Data(dim), &varid)) != NC_NOERR) {
+    if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, static_cast<nc_flt_code>(exodusFilePtr),
+                             1, Data(dim), &varid)) != NC_NOERR) {
       std::string errmsg = fmt::format(
           "Error: failed to define whole time step variable in file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);

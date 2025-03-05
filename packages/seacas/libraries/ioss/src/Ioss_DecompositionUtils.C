@@ -505,7 +505,8 @@ namespace Ioss {
       avg_work = static_cast<double>(total_work) / static_cast<double>(proc_count);
       for (size_t i = 0; i < work_per_rank.size(); i++) {
         int star_cnt =
-            static_cast<double>(work_per_rank[i] - min_work) / (max_work - min_work) * delta + min_star;
+            static_cast<double>(work_per_rank[i] - min_work) / (max_work - min_work) * delta +
+            min_star;
         std::string stars(star_cnt, '*');
         auto tmp = fmt::format(fmt::runtime("\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n"), i,
                                proc_width, fmt::group_digits(work_per_rank[i]), work_width,

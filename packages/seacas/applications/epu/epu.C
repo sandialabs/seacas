@@ -2443,8 +2443,9 @@ namespace {
     // the elements back to their original location. Since the elements are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_element_map.size() == global_element_map.size();
-    bool is_contiguous = global_element_map.empty() ||
-      (static_cast<size_t>(global_element_map.back()) == global_element_map.size());
+    bool is_contiguous =
+        global_element_map.empty() ||
+        (static_cast<size_t>(global_element_map.back()) == global_element_map.size());
     if (rank == 0) {
       fmt::print("Element id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2620,8 +2621,8 @@ namespace {
     // the edges back to their original location. Since the edges are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_edge_map.size() == global_edge_map.size();
-    bool is_contiguous =
-      global_edge_map.empty() || (static_cast<size_t>(global_edge_map.back()) == global_edge_map.size());
+    bool is_contiguous = global_edge_map.empty() ||
+                         (static_cast<size_t>(global_edge_map.back()) == global_edge_map.size());
     if (rank == 0) {
       fmt::print("Edge id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2797,8 +2798,8 @@ namespace {
     // the faces back to their original location. Since the faces are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_face_map.size() == global_face_map.size();
-    bool is_contiguous =
-      global_face_map.empty() || (static_cast<size_t>(global_face_map.back()) == global_face_map.size());
+    bool is_contiguous = global_face_map.empty() ||
+                         (static_cast<size_t>(global_face_map.back()) == global_face_map.size());
     if (rank == 0) {
       fmt::print("Face id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2968,8 +2969,8 @@ namespace {
     // the nodes back to their original location. Since the nodes are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
-    bool is_contiguous =
-      global_node_map.empty() || (static_cast<size_t>(global_node_map.back()) == global_node_map.size());
+    bool is_contiguous = global_node_map.empty() ||
+                         (static_cast<size_t>(global_node_map.back()) == global_node_map.size());
     if (rank == 0) {
       fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -3393,7 +3394,7 @@ namespace {
         // output nodeset
         // NOTE: global_node above is 1-based.
         glob_sets[ns].nodeCount =
-	  std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), static_cast<INT>(0));
+            std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), static_cast<INT>(0));
         glob_sets[ns].nodeSetNodes.resize(glob_sets[ns].entity_count());
         glob_sets[ns].dfCount = glob_sets[ns].nodeCount;
 

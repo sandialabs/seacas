@@ -706,7 +706,7 @@ std::string Exo_Read<INT>::Load_Nodal_Results(int time_step_num, size_t var_inde
 {
   SMART_ASSERT(Check_State());
   SMART_ASSERT(time_step_num > 0 && time_step_num <= Num_Times());
-  SMART_ASSERT(var_index>= 0 && var_index < nodal_vars.size());
+  SMART_ASSERT(var_index >= 0 && var_index < nodal_vars.size());
 
   if (!Open()) {
     return "WARNING:  File not open!";

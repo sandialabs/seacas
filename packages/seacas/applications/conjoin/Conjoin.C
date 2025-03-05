@@ -68,7 +68,7 @@ namespace {
   static const T tolerance = 100.0 * std::numeric_limits<T>::epsilon();
   return std::fabs(v1 - v2) <= std::fabs(v1+v2)*tolerance;
 #else
-  return static_cast<float>(v1) == static_cast<float>(v2);
+    return static_cast<float>(v1) == static_cast<float>(v2);
 #endif
   }
 } // namespace
@@ -1666,8 +1666,9 @@ namespace {
     // the nodes back to their original location. Since the nodes are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
-    INT  max_id        = global_node_map[global->nodeCount - 1].id;
-    bool is_contiguous = static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
+    INT  max_id = global_node_map[global->nodeCount - 1].id;
+    bool is_contiguous =
+        static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
     fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
 
     // Create the map that maps from a local part node to the
@@ -1773,8 +1774,9 @@ namespace {
     // the nodes back to their original location. Since the nodes are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
-    INT  max_id        = global_node_map[global->nodeCount - 1];
-    bool is_contiguous = static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
+    INT  max_id = global_node_map[global->nodeCount - 1];
+    bool is_contiguous =
+        static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
     fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
 
     // Create the map that maps from a local part node to the
@@ -2443,8 +2445,8 @@ namespace {
               for (size_t i = 0; i < sets[p][lss].sideCount; i++) {
                 size_t global_elem =
                     local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
-                elem_side[offset + i] =
-		  std::make_pair(static_cast<INT>(global_elem), static_cast<INT>(sets[p][lss].sides[i]));
+                elem_side[offset + i] = std::make_pair(static_cast<INT>(global_elem),
+                                                       static_cast<INT>(sets[p][lss].sides[i]));
               }
               offset += sets[p][lss].sideCount;
               break;
@@ -2479,8 +2481,8 @@ namespace {
                 for (size_t i = 0; i < sets[p][lss].sideCount; i++) {
                   size_t global_elem =
                       local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
-                  std::pair<INT, INT> es =
-		    std::make_pair(static_cast<INT>(global_elem), static_cast<INT>(sets[p][lss].sides[i]));
+                  std::pair<INT, INT> es = std::make_pair(static_cast<INT>(global_elem),
+                                                          static_cast<INT>(sets[p][lss].sides[i]));
 
                   auto   iter = std::lower_bound(elem_side.begin(), elem_side.end(), es);
                   size_t pos  = iter - elem_side.begin();

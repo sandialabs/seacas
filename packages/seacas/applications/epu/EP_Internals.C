@@ -281,7 +281,8 @@ int Excn::Internals<INT>::write_meta_data(const Mesh &mesh, const std::vector<Bl
 
       for (int i = 0; i < mesh.blockCount; i++) {
         if (blocks[i].attributeCount > 0) {
-          SMART_ASSERT(static_cast<size_t>(blocks[i].attributeCount) == blocks[i].attributeNames.size());
+          SMART_ASSERT(static_cast<size_t>(blocks[i].attributeCount) ==
+                       blocks[i].attributeNames.size());
           for (int j = 0; j < blocks[i].attributeCount; j++) {
             std::memset(names[j], '\0', name_size + 1);
             if (!blocks[i].attributeNames[j].empty()) {
@@ -852,7 +853,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
     //  NOTE: exi_inc_file_item is used to find the number of node sets
     // for a specific file and returns that value incremented.
     int cur_num_node_sets =
-      static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_NODE_SET)));
+        static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_NODE_SET)));
 
     if (nodesets[i].nodeCount == 0) {
       continue;
@@ -1003,7 +1004,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
     //  NOTE: exi_inc_file_item is used to find the number of side sets
     // for a specific file and returns that value incremented.
     int cur_num_side_sets =
-      static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_SIDE_SET)));
+        static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_SIDE_SET)));
 
     if (sidesets[i].sideCount == 0) {
       continue;
@@ -1180,7 +1181,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
     //  NOTE: exi_inc_file_item is used to find the number of edge blocks
     // for a specific file and returns that value incremented.
     int cur_num_edge_blocks =
-      static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_EDGE_BLOCK)));
+        static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_EDGE_BLOCK)));
 
     if (edgeblocks[i].edgeCount == 0) {
       continue;
@@ -1317,7 +1318,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
     //  NOTE: exi_inc_file_item is used to find the number of face blocks
     // for a specific file and returns that value incremented.
     int cur_num_face_blocks =
-      static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_FACE_BLOCK)));
+        static_cast<int>(exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_FACE_BLOCK)));
 
     if (faceblocks[i].faceCount == 0) {
       continue;
@@ -1433,7 +1434,7 @@ namespace {
     }
 
     if (sizeof(INT) == sizeof(int64_t)) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int*)Data(array));
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)Data(array));
     }
     else {
       status = nc_put_var_int(exoid, var_id, Data(array));

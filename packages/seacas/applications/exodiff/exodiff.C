@@ -2279,7 +2279,8 @@ bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
               std::string buf = fmt::format(
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
                   name_length(), interFace.ss_var[e_idx].abrstr(), vals1[ind1], vals2[ind2], d,
-                  sset1->Id(), id_map[sset1->Side_Id(e).first - 1], static_cast<int>(sset1->Side_Id(e).second));
+                  sset1->Id(), id_map[sset1->Side_Id(e).first - 1],
+                  static_cast<int>(sset1->Side_Id(e).second));
               DIFF_OUT(buf);
             }
           }
@@ -2426,12 +2427,13 @@ bool diff_sideset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
           if (interFace.show_all_diffs) {
             double d = interFace.ss_df_tol.Delta(v1, v2);
             if (d > interFace.ss_df_tol.value) {
-              diff_flag       = true;
-              std::string buf = fmt::format(
-                  "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}"
-                  ".{}-{})",
-                  name, length_name, interFace.ss_df_tol.abrstr(), v1, v2, d, sset1->Id(),
-                  id_map[sset1->Side_Id(e).first - 1], static_cast<int>(sset1->Side_Id(e).second), static_cast<int>(i) + 1);
+              diff_flag = true;
+              std::string buf =
+                  fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}"
+                              ".{}-{})",
+                              name, length_name, interFace.ss_df_tol.abrstr(), v1, v2, d,
+                              sset1->Id(), id_map[sset1->Side_Id(e).first - 1],
+                              static_cast<int>(sset1->Side_Id(e).second), static_cast<int>(i) + 1);
               DIFF_OUT(buf);
             }
           }
