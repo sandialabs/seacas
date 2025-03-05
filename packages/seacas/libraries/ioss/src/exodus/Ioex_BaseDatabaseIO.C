@@ -266,8 +266,9 @@ namespace Ioex {
 
     // See if there are any properties that need to (or can) be
     // handled prior to opening/creating database...
-    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", timeFileOpenCloseFlush);
-    
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE",
+                                         timeFileOpenCloseFlush);
+
     if (properties.exists("FILE_TYPE")) {
       std::string type = properties.get("FILE_TYPE").get_string();
       type             = Ioss::Utils::lowercase(type);

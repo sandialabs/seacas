@@ -275,7 +275,8 @@ namespace Ioex {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-	fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration, decoded_filename());
+        fmt::print(Ioss::DebugOut(), "Input File Open Time = {} ({})\n", duration,
+                   decoded_filename());
       }
     }
 
@@ -336,8 +337,8 @@ namespace Ioex {
       mode |= EX_DISKLESS;
     }
 #endif
-    int app_opt_val = ex_opts(EX_VERBOSE);
-    double t_begin = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
+    int    app_opt_val = ex_opts(EX_VERBOSE);
+    double t_begin     = (timeFileOpenCloseFlush ? Ioss::Utils::timer() : 0);
     if (fileExists) {
       m_exodusFilePtr = ex_open(decoded_filename().c_str(), EX_WRITE | mode, &cpu_word_size,
                                 &io_word_size, &version);
@@ -364,7 +365,8 @@ namespace Ioex {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-	fmt::print(Ioss::DebugOut(), "File {} Time = {} ({})\n", fileExists ? "Open" : "Create", duration, decoded_filename());
+        fmt::print(Ioss::DebugOut(), "File {} Time = {} ({})\n", fileExists ? "Open" : "Create",
+                   duration, decoded_filename());
       }
     }
 
