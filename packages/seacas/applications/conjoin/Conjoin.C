@@ -68,7 +68,7 @@ namespace {
   static const T tolerance = 100.0 * std::numeric_limits<T>::epsilon();
   return std::fabs(v1 - v2) <= std::fabs(v1+v2)*tolerance;
 #else
-    return (float)v1 == (float)v2;
+  return static_cast<float>(v1) == static_cast<float>(v2);
 #endif
   }
 } // namespace
@@ -651,7 +651,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
       fmt::print("{}", time_stamp(tsFormat));
     }
 
-    error += get_put_coordinates(global, part_count, local_mesh, (T)0);
+    error += get_put_coordinates(global, part_count, local_mesh, static_cast<T>(0));
 
     if (debug_level & 1) {
       fmt::print("{}", time_stamp(tsFormat));
@@ -819,11 +819,11 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
         fmt::print("{}Global Variables...\n", time_stamp(tsFormat));
       }
       error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_GLOBAL, 0, 0,
-                          global_vars.count(), (void *)Data(global_values));
+                          global_vars.count(), static_cast<void *>(Data(global_values)));
       // Map ...
       for (int ig = 0; ig < global_vars.count(Excn::InOut::IN_); ig++) {
         if (global_vars.index_[ig] > 0) {
-          SMART_ASSERT(ig < (int)global_values.size());
+          SMART_ASSERT(ig < static_cast<int>(global_values.size()));
           output_global_values[global_vars.index_[ig] - 1] = global_values[ig];
         }
       }
@@ -1350,7 +1350,7 @@ namespace {
             for (size_t n = 0; n < npe; n++) {
               size_t node = part_loc_node_to_global[local_linkage[pos++] - 1];
               if (debug_level & 4) {
-                SMART_ASSERT(block_linkage[global_pos] == (int)node + 1 ||
+                SMART_ASSERT(block_linkage[global_pos] == static_cast<int>(node) + 1 ||
                              block_linkage[global_pos] == 0);
               }
               block_linkage[global_pos++] = node + 1;
@@ -1667,7 +1667,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
     INT  max_id        = global_node_map[global->nodeCount - 1].id;
-    bool is_contiguous = (int64_t)max_id == static_cast<int64_t>(global_node_map.size());
+    bool is_contiguous = static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
     fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
 
     // Create the map that maps from a local part node to the
@@ -1774,7 +1774,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
     INT  max_id        = global_node_map[global->nodeCount - 1];
-    bool is_contiguous = (int64_t)max_id == static_cast<int64_t>(global_node_map.size());
+    bool is_contiguous = static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
     fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
 
     // Create the map that maps from a local part node to the
@@ -2048,7 +2048,7 @@ namespace {
     int  num_vars;
     auto id = Excn::ExodusFile(p);
     ex_get_variable_param(id, vars.type(), &num_vars);
-    if ((size_t)num_vars != vars.index_.size() - extra) {
+    if (static_cast<size_t>(num_vars) != vars.index_.size() - extra) {
       fmt::print("ERROR: Part mesh {} has a different number of {} variables ({}) than the root "
                  "part mesh ({}) which is not allowed.\n",
                  p, vars.label(), num_vars, vars.index_.size() - extra);
@@ -2207,7 +2207,7 @@ namespace {
       for (size_t ns = 0; ns < set_ids.size(); ns++) {
 
         std::vector<INT> glob_ns_nodes(total_node_count + 1);
-        std::fill(glob_ns_nodes.begin(), glob_ns_nodes.end(), (INT)0);
+        std::fill(glob_ns_nodes.begin(), glob_ns_nodes.end(), static_cast<INT>(0));
 
         size_t lns = glob_sets[ns].position_;
         for (size_t p = 0; p < part_count; p++) {
@@ -2444,7 +2444,7 @@ namespace {
                 size_t global_elem =
                     local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
                 elem_side[offset + i] =
-                    std::make_pair((INT)global_elem, (INT)sets[p][lss].sides[i]);
+		  std::make_pair(static_cast<INT>(global_elem), static_cast<INT>(sets[p][lss].sides[i]));
               }
               offset += sets[p][lss].sideCount;
               break;
@@ -2480,7 +2480,7 @@ namespace {
                   size_t global_elem =
                       local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
                   std::pair<INT, INT> es =
-                      std::make_pair((INT)global_elem, (INT)sets[p][lss].sides[i]);
+		    std::make_pair(static_cast<INT>(global_elem), static_cast<INT>(sets[p][lss].sides[i]));
 
                   auto   iter = std::lower_bound(elem_side.begin(), elem_side.end(), es);
                   size_t pos  = iter - elem_side.begin();
@@ -3001,7 +3001,7 @@ namespace {
   {
     size_t max_ent = local_mesh[0].count(Excn::ObjectType::NODE);
     for (size_t p = 1; p < part_count; p++) {
-      if ((size_t)local_mesh[p].count(Excn::ObjectType::NODE) > max_ent) {
+      if (static_cast<size_t>(local_mesh[p].count(Excn::ObjectType::NODE)) > max_ent) {
         max_ent = local_mesh[p].count(Excn::ObjectType::NODE);
       }
     }

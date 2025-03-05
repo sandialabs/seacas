@@ -1,4 +1,4 @@
-// Copyright(C) 1999-, 20242024, ,  National Technology & Engineering Solutions
+// Copyright(C) 1999-, 20242024, , , , , , ,  National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -250,7 +250,7 @@ namespace {
       }
       for (size_t i = 0; i < cs_names.size(); i++) {
         if (no_case_equals(cs_name, cs_names[i])) {
-          return (int)i + 1;
+          return static_cast<int>(i) + 1;
         }
       }
       Error(fmt::format(
@@ -2279,7 +2279,7 @@ bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
               std::string buf = fmt::format(
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
                   name_length(), interFace.ss_var[e_idx].abrstr(), vals1[ind1], vals2[ind2], d,
-                  sset1->Id(), id_map[sset1->Side_Id(e).first - 1], (int)sset1->Side_Id(e).second);
+                  sset1->Id(), id_map[sset1->Side_Id(e).first - 1], static_cast<int>(sset1->Side_Id(e).second));
               DIFF_OUT(buf);
             }
           }
@@ -2317,7 +2317,7 @@ bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
             "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
             name_length(), interFace.ss_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
             max_diff.diff, max_diff.blk, id_map[sset->Side_Id(max_diff.id).first - 1],
-            (int)sset->Side_Id(max_diff.id).second);
+            static_cast<int>(sset->Side_Id(max_diff.id).second));
         DIFF_OUT(buf);
       }
       else {
@@ -2431,7 +2431,7 @@ bool diff_sideset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}"
                   ".{}-{})",
                   name, length_name, interFace.ss_df_tol.abrstr(), v1, v2, d, sset1->Id(),
-                  id_map[sset1->Side_Id(e).first - 1], (int)sset1->Side_Id(e).second, (int)i + 1);
+                  id_map[sset1->Side_Id(e).first - 1], static_cast<int>(sset1->Side_Id(e).second), static_cast<int>(i) + 1);
               DIFF_OUT(buf);
             }
           }
@@ -2462,7 +2462,7 @@ bool diff_sideset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
           fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
                       length_name, interFace.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2,
                       max_diff.diff, max_diff.blk, id_map[sset->Side_Id(max_diff.id).first - 1],
-                      (int)sset->Side_Id(max_diff.id).second);
+                      static_cast<int>(sset->Side_Id(max_diff.id).second));
       DIFF_OUT(buf);
     }
     else {

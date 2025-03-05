@@ -208,7 +208,7 @@ namespace {
   template <typename INT> bool is_sequential(std::vector<INT> &map)
   {
     for (size_t i = 0; i < map.size(); i++) {
-      if (map[i] != (INT)i + 1) {
+      if (map[i] != static_cast<INT>(i) + 1) {
         return false;
       }
     }
@@ -536,9 +536,9 @@ int main(int argc, char *argv[])
         // if that value > max_open_file, then use square root.
         // if that is still too large, just do no subcycles... and implement
         // a recursive subcycling capability at some point...
-        int sub_cycle_count = (int)(std::pow(processor_count, 1.0 / 3) + 0.9);
+        int sub_cycle_count = static_cast<int>((std::pow(processor_count, 1.0 / 3) + 0.9));
         if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) > max_open_file) {
-          sub_cycle_count = (int)std::sqrt(processor_count);
+          sub_cycle_count = static_cast<int>(std::sqrt(processor_count));
         }
 
         if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
@@ -1429,7 +1429,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
           // Map ...
           for (int ig = 0; ig < global_vars.count(InOut::IN); ig++) {
             if (global_vars.index_[ig] > 0) {
-              SMART_ASSERT(ig < (int)global_values.size());
+              SMART_ASSERT(ig < static_cast<int>(global_values.size()));
               output_global_values[global_vars.index_[ig] - 1] = global_values[ig];
             }
           }
@@ -1927,7 +1927,7 @@ namespace {
     }
 
     std::array<INT, 1> ids{1};
-    std::array<INT, 1> cnts{(INT)gnodes.size()};
+    std::array<INT, 1> cnts{static_cast<INT>(gnodes.size())};
     error = ex_put_cmap_params(ExodusFile::output(), Data(ids), Data(cnts), nullptr, nullptr,
                                output_processor);
     if (error < 0) {
@@ -2124,7 +2124,7 @@ namespace {
           glob_blocks[b].elementCount += temp_block.num_entry;
           glob_blocks[b].nodesPerElement = temp_block.num_nodes_per_entry;
           glob_blocks[b].attributeCount  = temp_block.num_attribute;
-          glob_blocks[b].position_       = (int)b;
+          glob_blocks[b].position_       = static_cast<int>(b);
           copy_string(glob_blocks[b].elType, temp_block.topology);
         }
 
@@ -2444,7 +2444,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_element_map.size() == global_element_map.size();
     bool is_contiguous = global_element_map.empty() ||
-                         ((size_t)global_element_map.back() == global_element_map.size());
+      (static_cast<size_t>(global_element_map.back()) == global_element_map.size());
     if (rank == 0) {
       fmt::print("Element id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2621,7 +2621,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_edge_map.size() == global_edge_map.size();
     bool is_contiguous =
-        global_edge_map.empty() || ((size_t)global_edge_map.back() == global_edge_map.size());
+      global_edge_map.empty() || (static_cast<size_t>(global_edge_map.back()) == global_edge_map.size());
     if (rank == 0) {
       fmt::print("Edge id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2798,7 +2798,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_face_map.size() == global_face_map.size();
     bool is_contiguous =
-        global_face_map.empty() || ((size_t)global_face_map.back() == global_face_map.size());
+      global_face_map.empty() || (static_cast<size_t>(global_face_map.back()) == global_face_map.size());
     if (rank == 0) {
       fmt::print("Face id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2969,7 +2969,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
     bool is_contiguous =
-        global_node_map.empty() || ((size_t)global_node_map.back() == global_node_map.size());
+      global_node_map.empty() || (static_cast<size_t>(global_node_map.back()) == global_node_map.size());
     if (rank == 0) {
       fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -3393,14 +3393,14 @@ namespace {
         // output nodeset
         // NOTE: global_node above is 1-based.
         glob_sets[ns].nodeCount =
-            std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), (INT)0);
+	  std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), static_cast<INT>(0));
         glob_sets[ns].nodeSetNodes.resize(glob_sets[ns].entity_count());
         glob_sets[ns].dfCount = glob_sets[ns].nodeCount;
 
         // distFactors is a vector of 'char' to allow storage of either float or double.
         glob_sets[ns].distFactors.resize(glob_sets[ns].dfCount * ExodusFile::io_word_size());
 
-        T     *glob_df = (T *)(Data(glob_sets[ns].distFactors));
+        T     *glob_df = (T *)Data(glob_sets[ns].distFactors);
         size_t j       = 0;
         for (size_t i = 1; i <= total_node_count; i++) {
           if (glob_ns_nodes[i] == 1) {
@@ -3804,7 +3804,7 @@ namespace {
           glob_edgeblocks[b].edgeCount += temp_block.num_entry;
           glob_edgeblocks[b].nodesPerEdge   = temp_block.num_nodes_per_entry;
           glob_edgeblocks[b].attributeCount = temp_block.num_attribute;
-          glob_edgeblocks[b].position_      = (int)b;
+          glob_edgeblocks[b].position_      = static_cast<int>(b);
           copy_string(glob_edgeblocks[b].elType, temp_block.topology);
         }
 
@@ -4179,7 +4179,7 @@ namespace {
           glob_faceblocks[b].faceCount += temp_block.num_entry;
           glob_faceblocks[b].nodesPerFace   = temp_block.num_nodes_per_entry;
           glob_faceblocks[b].attributeCount = temp_block.num_attribute;
-          glob_faceblocks[b].position_      = (int)b;
+          glob_faceblocks[b].position_      = static_cast<int>(b);
           copy_string(glob_faceblocks[b].elType, temp_block.topology);
         }
 

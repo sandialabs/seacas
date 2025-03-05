@@ -384,7 +384,7 @@ namespace {
         sdims[0]        = 1;
         sdims[1]        = names[i].length();
         cell_element[j] = Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, sdims,
-                                        (void *)names[i].c_str(), MAT_F_DONT_COPY_DATA);
+                                        names[i].c_str(), MAT_F_DONT_COPY_DATA);
         Mat_VarSetCell(cell_array, j, cell_element[j]);
         j++;
 
@@ -489,7 +489,7 @@ namespace {
         dims[1]      = std::strlen(Data(name));
         size_t index = num_field * i + 0;
         cell_element[index] =
-            Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, (void *)Data(name), 0);
+	  Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, Data(name), 0);
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
         dims[0]             = 1;
@@ -503,7 +503,7 @@ namespace {
         dims[1] = types[i].length();
         index   = num_field * i + 2;
         cell_element[index] =
-            Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, (void *)types[i].c_str(), 0);
+	  Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, types[i].c_str(), 0);
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
         dims[0] = num_node_per_elem[i];
@@ -624,7 +624,7 @@ namespace {
           dims[1]      = std::strlen(Data(name));
           size_t index = 4 * i + 0;
           cell_element[index] =
-              Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, (void *)Data(name), 0);
+	    Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, Data(name), 0);
           Mat_VarSetCell(cell_array, index, cell_element[index]);
 
           dims[0]             = 1;
@@ -743,7 +743,7 @@ namespace {
           dims[1]      = std::strlen(Data(name));
           size_t index = 7 * i + 0;
           cell_element[index] =
-              Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, (void *)Data(name), 0);
+              Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, Data(name), 0);
           Mat_VarSetCell(cell_array, index, cell_element[index]);
 
           dims[0]             = 1;
@@ -1220,7 +1220,7 @@ int main(int argc, char *argv[])
         sdims[0]        = 1;
         sdims[1]        = gnames[i].length();
         cell_element[j] = Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, sdims,
-                                        (void *)gnames[i].c_str(), MAT_F_DONT_COPY_DATA);
+                                        gnames[i].c_str(), MAT_F_DONT_COPY_DATA);
         Mat_VarSetCell(cell_array, j, cell_element[j]);
         j++;
 
@@ -1274,7 +1274,7 @@ int main(int argc, char *argv[])
         sdims[0]        = 1;
         sdims[1]        = nnames[i].length();
         cell_element[j] = Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, sdims,
-                                        (void *)nnames[i].c_str(), MAT_F_DONT_COPY_DATA);
+                                        nnames[i].c_str(), MAT_F_DONT_COPY_DATA);
         Mat_VarSetCell(cell_array, j, cell_element[j]);
         j++;
 
