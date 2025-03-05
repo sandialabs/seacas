@@ -32,10 +32,6 @@
 #define NOT_NETCDF   2
 #define NOT_EXODUSII 3
 
-#if NC_HAS_PNETCDF
-#include "pnetcdf.h"
-#endif
-
 int main(int argc, char *argv[])
 {
   /* Determine if filename was given */
@@ -200,28 +196,6 @@ int main(int argc, char *argv[])
   if (ex_close(exoid) == -1) {
     printf("ex_close failed");
   }
-
-#if NC_HAS_PNETCDF
-  if (nc_format != NC_FORMAT_NETCDF4 && nc_format != NC_FORMAT_NETCDF4_CLASSIC) {
-    MPI_Init(&argc, &argv);
-    int ncid = -1;
-    ncmpi_open(MPI_COMM_SELF, filename, NC_NOWRITE, MPI_INFO_NULL, &ncid);
-
-    if (ncid >= 0) {
-      MPI_Offset size   = 0;
-      MPI_Offset extent = 0;
-      ncmpi_inq_header_size(ncid, &size);
-      ncmpi_inq_header_extent(ncid, &extent);
-      fprintf(stderr, "\t\tHeader size    = %lld\n", size);
-      fprintf(stderr, "\t\tHeader extent  = %lld\n\n", extent);
-      ncmpi_close(ncid);
-    }
-    MPI_Finalize();
-  }
-  else {
-    fprintf(stderr, "\t\tHeader size and extent not meaningful for netcdf-4 files.\n\n");
-  }
-#endif
 
   version += 0.00005F;
   char cversion[9];
