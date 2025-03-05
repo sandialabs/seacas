@@ -100,6 +100,7 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
 if (TPL_ENABLE_MPI)
+  set(COMPOSE_ARG --compose)
   IF (TPL_Netcdf_PARALLEL)
     set(DECOMP_ARG --rcb)
     set(JOIN_ARG   --compose --netcdf4)
@@ -108,9 +109,14 @@ if (TPL_ENABLE_MPI)
     set(NPROCS_BUG 1)
     set(SERIALIZE_ARG --serialize_io_size=2)
   else()
+    set(COMPOSE_ARG )
     set(NPROCS 1)
     set(NPROCS_BUG 1)
   endif()
+else()
+    set(COMPOSE_ARG )
+    set(JOIN_ARG )
+    set(PJOIN_ARG )
 endif()
 
 if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
@@ -254,6 +260,22 @@ endif()
 
 if (TPL_ENABLE_MPI)
   IF (TPL_Netcdf_PARALLEL)
+    TRIBITS_ADD_ADVANCED_TEST(exodus_fpp_serialize
+       TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${SERIALIZE_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32-ser.g
+          NOEXEPREFIX NOEXESUFFIX
+          NUM_MPI_PROCS ${NPROCS}
+       TEST_1 EXEC io_shell ARGS ${JOIN_ARG} ${SERIALIZE_ARG} 8-block32-ser.g 8-block-32-serj.g
+          NOEXEPREFIX NOEXESUFFIX
+          NUM_MPI_PROCS ${NPROCS}
+       TEST_2 EXEC exodiff ARGS -map -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-32-serj.g
+          DIRECTORY ../../../../applications/exodiff
+          NOEXEPREFIX NOEXESUFFIX
+          NUM_MPI_PROCS 1
+    COMM mpi
+    XHOSTTYPE Windows
+    )
+  endif()
+
   TRIBITS_ADD_ADVANCED_TEST(create_path_fpp
      TEST_0 CMND rm ARGS -rf create_path_test_directory
      TEST_1 EXEC io_shell ARGS --in_type generated 100x100x100 create_path_test_directory/1/2/3/4/5/tmp.g
@@ -345,7 +367,6 @@ IF (SEACASIoss_ENABLE_THREADSAFE)
     FINAL_PASS_REGULAR_EXPRESSION
   )
   endif()
-ENDIF()
 ENDIF()
 
 IF (TPL_ENABLE_Pamgen OR Trilinos_ENABLE_Pamgen)
@@ -449,7 +470,7 @@ TRIBITS_ADD_TEST(
 
 TRIBITS_ADD_TEST(
   io_shell 
-  ARGS "${DECOMP_ARG} ${JOIN_ARG} --out_type=null --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
+  ARGS "${DECOMP_ARG}  --out_type=null --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
   NAME generated_to_null
   NOEXEPREFIX NOEXESUFFIX
   COMM mpi serial
@@ -458,7 +479,7 @@ TRIBITS_ADD_TEST(
 IF (ENABLE_ExoNull)
 TRIBITS_ADD_TEST(
   io_shell
-  ARGS "${DECOMP_ARG} ${JOIN_ARG} --out_type=exonull --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
+  ARGS "${DECOMP_ARG} ${COMPOSE} --out_type=exonull --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
   NAME generated_to_exonull
   NOEXEPREFIX NOEXESUFFIX
   COMM mpi serial
@@ -466,12 +487,12 @@ TRIBITS_ADD_TEST(
 ENDIF()
 
 if (TPL_ENABLE_MPI)
-  set(EXTERNAL "--compose=external")
+  set(EXTERNAL --compose=external)
 endif()
 
 TRIBITS_ADD_TEST(
   io_shell 
-  ARGS "${DECOMP_ARG} ${JOIN_ARG} ${EXTERNAL} --out_type=null --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
+  ARGS "${DECOMP_ARG} ${COMPOSE_ARG} ${EXTERNAL} --out_type=null --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
   NAME generated_to_null_fpp
   NOEXEPREFIX NOEXESUFFIX
   COMM mpi serial
@@ -480,7 +501,7 @@ TRIBITS_ADD_TEST(
 IF (ENABLE_ExoNull)
 TRIBITS_ADD_TEST(
   io_shell 
-  ARGS "${DECOMP_ARG} ${JOIN_ARG} ${EXTERNAL} --out_type=exonull --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
+  ARGS "${DECOMP_ARG} ${COMPOSE_ARG} ${EXTERNAL} --out_type=exonull --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
   NAME generated_to_exonull_fpp
   NOEXEPREFIX NOEXESUFFIX
   COMM mpi serial
