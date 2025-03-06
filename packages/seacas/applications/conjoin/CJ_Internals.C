@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-, 20242024, , ,  National Technology & Engineering Solutions
+ * Copyright(C) 1999-, 20242024, , , ,  National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -311,8 +311,8 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   int varid = 0;
   {
     std::array dim{timedim};
-    if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, static_cast<nc_flt_code>(exodusFilePtr),
-                             1, Data(dim), &varid)) != NC_NOERR) {
+    if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, nc_flt_code(exodusFilePtr), 1,
+                             Data(dim), &varid)) != NC_NOERR) {
       std::string errmsg = fmt::format(
           "Error: failed to define whole time step variable in file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
