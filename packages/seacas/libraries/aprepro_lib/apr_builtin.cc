@@ -92,6 +92,15 @@ namespace SEAMS {
 #define min(x, y) (x) < (y) ? (x) : (y)
 #endif
 
+  const char* do_use_legacy_output_format()
+  {
+    SEAMS::symrec *ptr = aprepro->getsym("_FORMAT");
+    if (ptr != nullptr) {
+      ptr->value.svar = "%.10g";
+    }
+    return (nullptr);
+  }
+
   double do_time()
   {
     time_t timer = time(nullptr);

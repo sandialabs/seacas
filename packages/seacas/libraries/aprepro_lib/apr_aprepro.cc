@@ -33,8 +33,8 @@
 #endif
 
 namespace {
-  const std::string version_short{"6.36"};
-  const std::string version_date{"(2025/02/05)"};
+  const std::string version_short{"6.37"};
+  const std::string version_date{"(2025/03/06)"};
   const std::string version_string = version_short + " " + version_date;
 
   void output_copyright();
@@ -580,42 +580,49 @@ namespace SEAMS {
         ptr->value.svar = "";
       }
     }
+    else if (match_option(option, "legacy_output_format", "L", 6)) {
+      symrec *ptr = getsym("_FORMAT");
+      if (ptr != nullptr) {
+        ptr->value.svar = "%.10g";
+      }
+    }
 
     else if (match_option(option, "help", "h", 3)) {
       std::cerr
           << "\nAprepro version " << version() << "\n"
           << "\nUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n"
-          << "          --debug or -d: Dump all variables, debug loops/if/endif and keep temporary "
+          << "            --debug or -d: Dump all variables, debug loops/if/endif and keep temporary "
              "files\n"
-          << "       --dumpvars or -D: Dump all variables at end of run        \n"
-          << "  --dumpvars_json or -J: Dump all variables at end of run in json format\n"
-          << "        --version or -v: Print version number to stderr          \n"
-          << "      --immutable or -X: All variables are immutable--cannot be modified\n"
-          << "   --errors_fatal or -f: Exit program with nonzero status if errors are "
+          << "         --dumpvars or -D: Dump all variables at end of run        \n"
+          << "    --dumpvars_json or -J: Dump all variables at end of run in json format\n"
+          << "          --version or -v: Print version number to stderr          \n"
+          << "        --immutable or -X: All variables are immutable--cannot be modified\n"
+          << "     --errors_fatal or -f: Exit program with nonzero status if errors are "
              "encountered\n"
-          << " --errors_and_warnings_fatal or -F: Exit program with nonzero status if "
+          << "   --errors_and_warnings_fatal or -F: Exit program with nonzero status if "
              "warnings are encountered\n"
-          << "--require_defined or -R: Treat undefined variable warnings as fatal\n"
-          << "--one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
-          << "    --interactive or -i: Interactive use, no buffering           \n"
-          << "    --include=P or -I=P: Include file or include path            \n"
-          << "                       : If P is path, then optionally prepended to all include "
+          << "  --require_defined or -R: Treat undefined variable warnings as fatal\n"
+          << "  --one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
+          << "      --interactive or -i: Interactive use, no buffering           \n"
+          << "      --include=P or -I=P: Include file or include path            \n"
+          << "                         : If P is path, then optionally prepended to all include "
              "filenames\n"
-          << "                       : If P is file, then processed before processing input file\n"
-          << "                       : variables defined in P will be immutable.\n"
-          << "        --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
-          << "           --help or -h: Print this list                         \n"
-          << "        --message or -M: Print INFO messages                     \n"
-          << "            --info=file: Output INFO messages (e.g. DUMP() output) to file.\n"
-          << "      --nowarning or -W: Do not print WARN messages              \n"
-          << "  --comment=char or -c=char: Change comment character to 'char'  \n"
-          << "    --full_precision -p: Floating point output uses as many digits as needed.\n"
-          << "      --copyright or -C: Print copyright message                 \n"
-          << "   --keep_history or -k: Keep a history of aprepro substitutions.\n"
-          << "                         (not for general interactive use)       \n"
-          << "          --quiet or -q: Do not print the header output line     \n"
-          << "                var=val: Assign value 'val' to variable 'var'    \n"
-          << "                         Use var=\\\"sval\\\" for a string variable. 'var' will be "
+          << "                         : If P is file, then processed before processing input file\n"
+          << "                         : variables defined in P will be immutable.\n"
+          << "          --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
+          << "             --help or -h: Print this list                         \n"
+          << "          --message or -M: Print INFO messages                     \n"
+          << "              --info=file: Output INFO messages (e.g. DUMP() output) to file.\n"
+          << "        --nowarning or -W: Do not print WARN messages              \n"
+          << "--comment=char or -c=char: Change comment character to 'char'  \n"
+          << "      --full_precision -p: Floating point output uses as many digits as needed. [default]\n"
+          << "--legacy_output_format -L: Floating point output uses the legacy `%.10g` format.\n"
+          << "        --copyright or -C: Print copyright message                 \n"
+          << "     --keep_history or -k: Keep a history of aprepro substitutions.\n"
+          << "                           (not for general interactive use)       \n"
+          << "            --quiet or -q: Do not print the header output line     \n"
+          << "                  var=val: Assign value 'val' to variable 'var'    \n"
+          << "                           Use var=\\\"sval\\\" for a string variable. 'var' will be "
              "immutable.\n\n"
           << "\tUnits Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s\n"
           << "\tEnter {DUMP()} for list of user-defined variables\n"
