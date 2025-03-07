@@ -16,7 +16,7 @@ int main(int, char **)
   SEAMS::Aprepro aprepro;
 
   aprepro.ap_options.warning_msg = false;
-  SEAMS::symrec *ptr = aprepro.getsym("_FORMAT");
+  SEAMS::symrec *ptr             = aprepro.getsym("_FORMAT");
   if (ptr != nullptr) {
     ptr->value.svar = "%.10g";
   }
@@ -62,10 +62,8 @@ std::vector<std::string> build_strings()
   strings.emplace_back(R"({cd = tand(180/4)}	{180-4*atand(cd)}	$ tan(180/4))");
   strings.emplace_back(R"()");
   strings.emplace_back(R"(Test max, min, sign, dim, abs)");
-  strings.emplace_back(
-      R"({pmin = min(0.5, 1.0)}	{nmin = min(-0.5, -1.0)} $ Should be 0.5, -1)");
-  strings.emplace_back(
-      R"({pmax = max(0.5, 1.0)}	{nmax = max(-0.5, -1.0)} $ Should be 1.0, -0.5)");
+  strings.emplace_back(R"({pmin = min(0.5, 1.0)}	{nmin = min(-0.5, -1.0)} $ Should be 0.5, -1)");
+  strings.emplace_back(R"({pmax = max(0.5, 1.0)}	{nmax = max(-0.5, -1.0)} $ Should be 1.0, -0.5)");
   strings.emplace_back(R"({zero = 0} {sign(0.5, zero) + sign(0.5, -zero)}	$ Should be 0 1)");
   strings.emplace_back(
       R"({nonzero = 1} {sign(0.5, nonzero) + sign(0.5, -nonzero)} $ Should be 1 0)");

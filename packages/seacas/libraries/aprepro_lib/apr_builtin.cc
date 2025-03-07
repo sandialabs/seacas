@@ -92,7 +92,7 @@ namespace SEAMS {
 #define min(x, y) (x) < (y) ? (x) : (y)
 #endif
 
-  const char* do_use_legacy_output_format()
+  const char *do_use_legacy_output_format()
   {
     SEAMS::symrec *ptr = aprepro->getsym("_FORMAT");
     if (ptr != nullptr) {
