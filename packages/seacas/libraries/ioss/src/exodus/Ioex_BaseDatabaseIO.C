@@ -1795,7 +1795,7 @@ namespace Ioex {
                                                       ex_entity_type type, Ioss::NameList &names)
   {
     std::vector<Ioss::Field> fields;
-    if (!entity->get_database()->get_field_recognition()) {
+    if (!using_parallel_io() || !entity->get_database()->get_field_recognition()) {
       return fields;
     }
     // See if this entity is using enhanced field attributes...

@@ -2311,9 +2311,7 @@ namespace Ioex {
                 for (size_t i = 0; i < ent_proc.size(); i += 2) {
                   int64_t node = ent_proc[i + 0];
                   int64_t proc = ent_proc[i + 1];
-                  if (proc < myProcessor) {
-                    idata[node - 1] = proc;
-                  }
+		  idata[node - 1] = std::min(idata[node - 1], static_cast<int>(proc));
                 }
               }
               else {
@@ -2325,9 +2323,7 @@ namespace Ioex {
                 for (size_t i = 0; i < ent_proc.size(); i += 2) {
                   int node = ent_proc[i + 0];
                   int proc = ent_proc[i + 1];
-                  if (proc < myProcessor) {
-                    idata[node - 1] = proc;
-                  }
+		  idata[node - 1] = std::min(idata[node - 1], proc);
                 }
               }
             }
