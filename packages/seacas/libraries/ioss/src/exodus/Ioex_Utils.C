@@ -16,7 +16,13 @@
 #include <fmt/ostream.h>
 #include <iosfwd>
 #include <netcdf.h>
+#if defined(_WIN32) && !defined(__MINGW32__)
+#include <string.h>
+#define strcasecmp  _stricmp
+#define strncasecmp _strnicmp
+#else
 #include <strings.h>
+#endif
 #include <tokenize.h>
 
 #include "Ioss_BasisVariableType.h"

@@ -67,8 +67,13 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <stdlib.h>
+#if defined(_WIN32) && !defined(__MINGW32__)
 #include <string.h>
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#else
 #include <strings.h>
+#endif
 #include "zoltan.h"
 #include "dr_param_file.h"
 #include "dr_const.h"

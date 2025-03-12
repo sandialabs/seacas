@@ -75,7 +75,13 @@ using namespace std;
 
 #include "zoltan_cpp.h"
 #include "dr_param_fileCPP.h"
+#if defined(_WIN32) && !defined(__MINGW32__)
+#include <string.h>
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#else
 #include <strings.h>
+#endif
 
 static void test_drops(int, MESH_INFO_PTR, PARIO_INFO_PTR, Zoltan &);
 static int Num_Global_Parts;
