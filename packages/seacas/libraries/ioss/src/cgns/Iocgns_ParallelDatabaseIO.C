@@ -3,7 +3,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1209,9 +1209,7 @@ namespace Iocgns {
           for (size_t i = 0; i < ent_proc.size(); i += 2) {
             int64_t node = ent_proc[i + 0];
             int64_t proc = ent_proc[i + 1];
-            if (proc < idata[node - 1]) {
-              idata[node - 1] = proc;
-            }
+	    idata[node - 1] = std::min(idata[node - 1], proc);
           }
         }
         else {
@@ -1226,9 +1224,7 @@ namespace Iocgns {
           for (size_t i = 0; i < ent_proc.size(); i += 2) {
             int node = ent_proc[i + 0];
             int proc = ent_proc[i + 1];
-            if (proc < idata[node - 1]) {
-              idata[node - 1] = proc;
-            }
+	    idata[node - 1] = std::min(idata[node - 1], proc);
           }
         }
       }
