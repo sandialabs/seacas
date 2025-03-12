@@ -59,8 +59,13 @@ double Timer_Callback_Time, Timer_Global_Callback_Time;
 
 #include <stdlib.h>
 #include <stdio.h>
+#if defined(_WIN32) && !defined(__MINGW32__)
 #include <string.h>
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#else
 #include <strings.h>
+#endif
 #include <sys/types.h>
 #include <unistd.h>
 
