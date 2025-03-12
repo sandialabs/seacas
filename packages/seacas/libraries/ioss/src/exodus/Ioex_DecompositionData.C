@@ -1970,7 +1970,7 @@ namespace Ioex {
 
     for (auto &i : global_implicit_map) {
       if (i >= 0) {
-	i += *processor_offset + 1;
+        i += *processor_offset + 1;
       }
     }
 
@@ -2004,11 +2004,11 @@ namespace Ioex {
 
     // Iterate rcv_list and convert global ids to the global-implicit position...
     for (auto &i : rcv_list) {
-      int64_t local_id     = node_map.global_to_local(i) - 1;
+      int64_t local_id = node_map.global_to_local(i) - 1;
       SMART_ASSERT(local_id >= 0)(local_id)(i);
       int64_t rcv_position = global_implicit_map[local_id];
       SMART_ASSERT(rcv_position >= 0)(rcv_position)(local_id)(i);
-      i                    = rcv_position;
+      i = rcv_position;
     }
 
     // Send the data back now...
