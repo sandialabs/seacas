@@ -40,7 +40,7 @@
 #include <string>
 #if defined(_WIN32) && !defined(__MINGW32__)
 #include <string.h>
-#define strcasecmp _stricmp
+#define strcasecmp  _stricmp
 #define strncasecmp _strnicmp
 #else
 #include <strings.h>
