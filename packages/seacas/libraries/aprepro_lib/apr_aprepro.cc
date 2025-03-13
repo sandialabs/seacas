@@ -53,7 +53,8 @@ namespace {
     return value;
   }
 
-  void format_option(std::string_view option, std::string_view short_opt, std::string_view description)
+  void format_option(std::string_view option, std::string_view short_opt,
+                     std::string_view description)
   {
     fmt::print(stderr, fmt::emphasis::bold, "{}", option);
     if (!short_opt.empty()) {
@@ -597,45 +598,61 @@ namespace SEAMS {
     }
 
     else if (match_option(option, "help", "h", 3)) {
-      fmt::print(stderr, 
-		 "\nAprepro version {}\n\n"
-		 "\tUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n\n" , version());
+      fmt::print(stderr,
+                 "\nAprepro version {}\n\n"
+                 "\tUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n\n",
+                 version());
 
-		 format_option("            --debug", "-d", "Dump all variables, debug loops/if/endif and keep temporary files");
-		 format_option("         --dumpvars", "-D", "Dump all variables at end of run        ");
-		 format_option("    --dumpvars_json", "-J", "Dump all variables at end of run in json format");
-		 format_option("          --version", "-v", "Print version number to stderr          ");
-		 format_option("        --immutable", "-X", "All variables are immutable--cannot be modified");
-		 format_option("     --errors_fatal", "-f", "Exit program with nonzero status if errors are encountered");
-		 format_option("--errors_and_warnings_fatal", "-F", "Exit program with nonzero status if warnings are encountered");
-		 format_option("  --require_defined", "-R", "Treat undefined variable warnings as fatal");
-		 format_option("  --one_based_index", "-1", "Array indexing is one-based (default = zero-based)");
-		 format_option("      --interactive", "-i", "Interactive use, no buffering           ");
-		 format_option("      --include=P", "-I=P", "Include file or include path            ");
-		 format_option("                         ","", "If P is path, then optionally prepended to all include filenames");
-		 format_option("                         ","", "If P is file, then processed before processing input file");
-		 format_option("                         ","", "variables defined in P will be immutable.");
-		 format_option("          --exit_on", "-e", "End when 'Exit|EXIT|exit' entered       ");
-		 format_option("             --help", "-h", "Print this list                         ");
-		 format_option("          --message", "-M", "Print INFO messages                     ");
-		 format_option("              --info=file", "", "Output INFO messages (e.g. DUMP() output) to file.");
-		 format_option("        --nowarning", "-W", "Do not print WARN messages              ");
-		 format_option("--comment=char", "-c=char", "Change comment character to 'char'  ");
-		 format_option("   --full_precision", "-p", "Floating point output uses as many digits as needed. [default]");
-		 format_option("--legacy_output_format", "-L", "Floating point output uses the legacy `%.10g` format.");
-		 format_option("        --copyright", "-C", "Print copyright message                 ");
-		 format_option("     --keep_history", "-k", "Keep a history of aprepro substitutions.");
-		 format_option("                         ","", "(not for general interactive use)       ");
-		 format_option("            --quiet", "-q", "Do not print the header output line     ");
-		 format_option("                  var=val","","Assign value 'val' to variable 'var'");
-		 format_option("                         ","","Use var=\\\"sval\\\" for a string variable. 'var' will be immutable.\n");
-		 fmt::print(stderr, "\tUnits Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s\n");
-		 fmt::print(stderr, "\tEnter {} for list of user-defined variables\n", fmt::styled("{{DUMP()}}", fmt::emphasis::bold));
-		 fmt::print(stderr, "\tEnter {} for list of functions recognized by aprepro\n", fmt::styled("{{DUMP_FUNC()}}", fmt::emphasis::bold));
-		 fmt::print(stderr, "\tEnter {} for list of predefined variables in aprepro\n\n", fmt::styled("{{DUMP_PREVAR()}}", fmt::emphasis::bold));
-		 fmt::print(stderr, "\tDocumentation: "
-			    "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#aprepro\n\n"
-			    "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n");
+      format_option("            --debug", "-d",
+                    "Dump all variables, debug loops/if/endif and keep temporary files");
+      format_option("         --dumpvars", "-D", "Dump all variables at end of run        ");
+      format_option("    --dumpvars_json", "-J", "Dump all variables at end of run in json format");
+      format_option("          --version", "-v", "Print version number to stderr          ");
+      format_option("        --immutable", "-X", "All variables are immutable--cannot be modified");
+      format_option("     --errors_fatal", "-f",
+                    "Exit program with nonzero status if errors are encountered");
+      format_option("--errors_and_warnings_fatal", "-F",
+                    "Exit program with nonzero status if warnings are encountered");
+      format_option("  --require_defined", "-R", "Treat undefined variable warnings as fatal");
+      format_option("  --one_based_index", "-1",
+                    "Array indexing is one-based (default = zero-based)");
+      format_option("      --interactive", "-i", "Interactive use, no buffering           ");
+      format_option("      --include=P", "-I=P", "Include file or include path            ");
+      format_option("                         ", "",
+                    "If P is path, then optionally prepended to all include filenames");
+      format_option("                         ", "",
+                    "If P is file, then processed before processing input file");
+      format_option("                         ", "", "variables defined in P will be immutable.");
+      format_option("          --exit_on", "-e", "End when 'Exit|EXIT|exit' entered       ");
+      format_option("             --help", "-h", "Print this list                         ");
+      format_option("          --message", "-M", "Print INFO messages                     ");
+      format_option("              --info=file", "",
+                    "Output INFO messages (e.g. DUMP() output) to file.");
+      format_option("        --nowarning", "-W", "Do not print WARN messages              ");
+      format_option("--comment=char", "-c=char", "Change comment character to 'char'  ");
+      format_option("   --full_precision", "-p",
+                    "Floating point output uses as many digits as needed. [default]");
+      format_option("--legacy_output_format", "-L",
+                    "Floating point output uses the legacy `%.10g` format.");
+      format_option("        --copyright", "-C", "Print copyright message                 ");
+      format_option("     --keep_history", "-k", "Keep a history of aprepro substitutions.");
+      format_option("                         ", "", "(not for general interactive use)       ");
+      format_option("            --quiet", "-q", "Do not print the header output line     ");
+      format_option("                  var=val", "", "Assign value 'val' to variable 'var'");
+      format_option("                         ", "",
+                    "Use var=\\\"sval\\\" for a string variable. 'var' will be immutable.\n");
+      fmt::print(stderr,
+                 "\tUnits Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s\n");
+      fmt::print(stderr, "\tEnter {} for list of user-defined variables\n",
+                 fmt::styled("{{DUMP()}}", fmt::emphasis::bold));
+      fmt::print(stderr, "\tEnter {} for list of functions recognized by aprepro\n",
+                 fmt::styled("{{DUMP_FUNC()}}", fmt::emphasis::bold));
+      fmt::print(stderr, "\tEnter {} for list of predefined variables in aprepro\n\n",
+                 fmt::styled("{{DUMP_PREVAR()}}", fmt::emphasis::bold));
+      fmt::print(stderr,
+                 "\tDocumentation: "
+                 "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#aprepro\n\n"
+                 "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n");
       exit(EXIT_SUCCESS);
     }
     else {
