@@ -595,14 +595,15 @@ namespace Ioss {
     int  num_width = Ioss::Utils::number_width(max_entity, true) + 2;
     int  sb_width  = Ioss::Utils::number_width(max_sb, true) + 2;
 
-    int  change_set_count = -1;
+    int         change_set_count = -1;
     std::string change_set_name  = "unknown";
 
-    // If in file-per-rank parallel and serialize io is enabled, then usually only want summary on single rank.
-    // If called that way, then the following calls will fail since they expect all ranks to call...
+    // If in file-per-rank parallel and serialize io is enabled, then usually only want summary on
+    // single rank. If called that way, then the following calls will fail since they expect all
+    // ranks to call...
     if (!Ioss::SerializeIO::isEnabled()) {
       change_set_count = get_database()->num_internal_change_set();
-      change_set_name = get_internal_change_set_name();
+      change_set_name  = get_internal_change_set_name();
     }
     if (!change_set_name.empty() && change_set_name != "/") {
       change_set_name = ",\t[CS: " + change_set_name + "]";
