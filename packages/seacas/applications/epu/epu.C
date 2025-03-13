@@ -1116,6 +1116,9 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
     Variables edgeblock_vars(Excn::ObjectType::EDBLK);
     Variables faceblock_vars(Excn::ObjectType::FABLK);
 
+    if (glob_blocks.empty()) {
+      interFace.set_processor_id_field(false);
+    }
     element_vars.addProcessorId = interFace.add_processor_id_field();
 
     {
