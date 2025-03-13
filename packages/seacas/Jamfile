@@ -103,6 +103,7 @@ local installed-end-user-files =
   io_info
   io_modify
   shell_to_hex
+  skinner
   slice
   cth_pressure_map
   struc_to_unstruc
@@ -1760,6 +1761,16 @@ exe io_shell
   :
     $(seacas-root)/libraries/ioss/src/main/io_shell.C
     $(seacas-root)/libraries/ioss/src/main/shell_interface.C
+    Ionit
+    /mpi//mpi
+  :
+    <tag>@sierra-exec-tag
+  ;
+
+exe skinner
+  :
+    $(seacas-root)/libraries/ioss/src/main/skinner.C
+    $(seacas-root)/libraries/ioss/src/main/skinner_interface.C
     Ionit
     /mpi//mpi
   :
