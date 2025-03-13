@@ -58,7 +58,7 @@ namespace {
   {
     fmt::print(stderr, fmt::emphasis::bold, "{}", option);
     if (!short_opt.empty()) {
-      fmt::print(stderr, fmt::emphasis::bold, " or {}", short_opt);
+      fmt::print(stderr, " or {}", fmt::styled(short_opt, fmt::emphasis::bold));
     }
     fmt::print(stderr, ":  {}\n", description);
   }
