@@ -1,41 +1,11 @@
 # -*- mode: cmake -*-
 # @HEADER
-# ************************************************************************
-#
+# *****************************************************************************
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016, 2021 Sandia Corporation
 #
-# Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-# the U.S. Government retains certain rights in this software.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the Corporation nor the names of the
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# ************************************************************************
+# Copyright 2013-2016 NTESS and the TriBITS contributors.
+# SPDX-License-Identifier: BSD-3-Clause
+# *****************************************************************************
 # @HEADER
 #
 # Based on the MSTK CGNS Find Module
@@ -44,7 +14,7 @@
 #    Control the search through CGNS_DIR or setting environment variable
 #    CGNS_ROOT to the CGNS installation prefix.
 #
-#    This module does not search default paths!
+#    This module does not search default paths! 
 #
 #    Following variables are set:
 #    CGNS_FOUND            (BOOL)       Flag indicating if CGNS was found
@@ -73,23 +43,23 @@ if (NOT CGNS_ROOT AND CGNS_DIR )
   message(WARNING "The configuration parameter CGNS_DIR is deprecated."
                   " Please use CGNS_ROOT instead to define the CGNS installation")
   set(CGNS_ROOT ${CGNS_DIR})
-endif()
+endif()  
 
 # Add the usual paths for searching using the CGNS_ROOT variable
 if (CGNS_ROOT)
-  list(APPEND _cgns_INCLUDE_SEARCH_DIRS
+  list(APPEND _cgns_INCLUDE_SEARCH_DIRS 
               ${CGNS_ROOT}/include
               ${CGNS_ROOT})
-
-  list(APPEND _cgns_LIBRARY_SEARCH_DIRS
+ 
+  list(APPEND _cgns_LIBRARY_SEARCH_DIRS 
               ${CGNS_ROOT}/lib
               ${CGNS_ROOT})
-
-            list(APPEND _cgns_BINARY_SEARCH_DIRS
+  
+            list(APPEND _cgns_BINARY_SEARCH_DIRS 
               ${CGNS_ROOT}/bin
               ${CGNS_ROOT})
 endif()
-
+ 
 if ( CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )
 
     # Do nothing. Variables are set. No need to search again
@@ -109,7 +79,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
         set(CGNS_LIBRARY_DIR "${CGNS_LIBRARY_DIR}" CACHE PATH "Path to search for CGNS library files")
     endif()
 
-
+    
     # Search for include files
     # Search order preference:
     #  (1) CGNS_INCLUDE_DIR - check existence of path AND if the include files exist
@@ -135,7 +105,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
             set(CGNS_INCLUDE_DIR "CGNS_INCLUDE_DIR-NOTFOUND")
         endif()
 
-    else()
+    else() 
 
         set(cgns_inc_suffixes "include")
         if(CGNS_ROOT)
@@ -151,7 +121,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
             else()
                  message(SEND_ERROR "CGNS_ROOT=${CGNS_ROOT} does not exist")
                  set(CGNS_INCLUDE_DIR "CGNS_INCLUDE_DIR-NOTFOUND")
-            endif()
+            endif()    
 
 
         else()
@@ -169,7 +139,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
         message(SEND_ERROR "Can not locate CGNS include directory")
     endif()
 
-    # Search for libraries
+    # Search for libraries 
     # Search order preference:
     #  (1) CGNS_LIBRARY_DIR - check existence of path AND if the include files exist
     #  (2) CGNS_ROOT/<lib,Lib>
@@ -189,7 +159,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
             set(CGNS_LIBRARY "CGNS_LIBRARY-NOTFOUND")
         endif()
 
-    else()
+    else() 
 
         if(CGNS_ROOT)
 
@@ -204,7 +174,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
             else()
                  message(SEND_ERROR "CGNS_ROOT=${CGNS_ROOT} does not exist")
                  set(CGNS_LIBRARY "CGNS_LIBRARY-NOTFOUND")
-            endif()
+            endif()    
 
 
         else()
@@ -212,54 +182,47 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
             find_library(CGNS_LIBRARY
                          NAMES cgns
                          PATH_SUFFIXES ${cgns_lib_suffixes})
-
+            
         endif()
 
     endif()
 
     if ( NOT CGNS_LIBRARY )
         message(SEND_ERROR "Can not locate CGNS library")
-    endif()
-
+    endif()    
+    
     # Define the LIBRARIES and INCLUDE_DORS
     set(CGNS_INCLUDE_DIRS ${CGNS_INCLUDE_DIR})
     set(CGNS_LIBRARIES    ${CGNS_CXX_LIBRARY} ${CGNS_LIBRARY})
-endif(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )
 
-# Need to find the CGNS types include to check for SCOPING
-set(cgns_types_h "${CGNS_INCLUDE_DIR}/cgnstypes.h" )
-if (EXISTS ${cgns_types_h})
-  file(STRINGS "${cgns_types_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
-  if ("${cg_build_hdf5_string}" STREQUAL "")
-      set(cgns_config_h "${CGNS_INCLUDE_DIR}/cgnsconfig.h" )
-	  if (EXISTS ${cgns_config_h})
-	     file(STRINGS "${cgns_config_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
-	  endif()
-  endif()
-
-  if ("${cg_build_hdf5_string}" STREQUAL "")
-     message(FATAL_ERROR "CGNS Symbol `CG_BUILD_HDF5` not found in `cgnstypes.h` or `cgnsconfig.h` as required.")
-  endif()
-
-  string(REGEX REPLACE "[^0-1]" "" cg_build_hdf5 "${cg_build_hdf5_string}")
-  if ( cg_build_hdf5 EQUAL 1 ) 
-      message(STATUS "CGNS requires HDF5")
+    # Need to find the CGNS config script to check for HDF5
+    set(cgns_config_h "${CGNS_INCLUDE_DIR}/cgnsconfig.h" )
+    if (EXISTS ${cgns_config_h})
+      file(STRINGS "${cgns_config_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
+      string(REGEX REPLACE "[^0-9]" "" cg_build_hdf5 "${cg_build_hdf5_string}")
+      if ( cg_build_hdf5 EQUAL 51 ) # Kluge: define is 1, but the 5 comes from hdf5
+          message(STATUS "CGNS requires HDF5")
+          add_package_dependency(CGNS DEPENDS_ON HDF5)
+      endif()
+    else()
+      message(STATUS "CGNS does not have cgnsconfig.h; assuming CGNS depends on HDF5")     
       add_package_dependency(CGNS DEPENDS_ON HDF5)
-  endif()
+    endif()
 
-  file(STRINGS "${cgns_types_h}" cg_scoping_string REGEX "^#define CG_BUILD_SCOPE")
-  string(REGEX REPLACE "[^0-1]" "" cg_scoping "${cg_scoping_string}")
-  if ( cg_scoping EQUAL 1 )
-      message(STATUS "CGNS Scoping Enabled")
-  else()
-      message(STATUS "CGNS Scoping Not Enabled")
-#      message(SEND_ERROR "CGNS Scoping *Not* Enabled as Required. Rebuild CGNS library with CGNS_ENABLE_SCOPING defined.")
-  endif()
-else()
-  message(SEND_ERROR "CGNS: Could not find cgnstypes.h")
-  message(STATUS "CGNS does not have cgnstypes.h; assuming CGNS depends on HDF5")
-  add_package_dependency(CGNS DEPENDS_ON HDF5)
-endif()
+    # Need to find the CGNS types include to check for SCOPING
+    set(cgns_types_h "${CGNS_INCLUDE_DIR}/cgnstypes.h" )
+    if (EXISTS ${cgns_types_h})
+      file(STRINGS "${cgns_types_h}" cg_scoping_string REGEX "^#define CG_BUILD_SCOPE")
+      string(REGEX REPLACE "[^0-9]" "" cg_scoping "${cg_scoping_string}")
+      if ( cg_scoping EQUAL 1 )
+          message(STATUS "CGNS Scoping Enabled as Required")
+      else()
+          message(SEND_ERROR "CGNS Scoping *Not* Enabled as Required. Rebuild CGNS library with CGNS_ENABLE_SCOPING defined.")
+      endif()
+    else()
+      message(SEND_ERROR "CGNS: Could not find cgnstypes.h")
+    endif()
+endif(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )    
 
 # Search for CGNS tools
 set(_cgns_TOOLS cgnscheck cgnsdiff cgnslist cgnscompress cgnsconvert cgnsnames cgnsupdate)
@@ -297,7 +260,7 @@ if ( NOT CGNS_FIND_QUIETLY )
   message(STATUS "\tCGNS_TOOLS_FOUND       = ${CGNS_TOOLS_FOUND}")
 
 endif()
-# For compatability with TriBITS:
+# For compatibility with TriBITS:
 set(DOCSTR "List of semi-colon separated paths to look for the TPL CGNS")
 
 set(TPL_CGNS_LIBRARIES ${CGNS_LIBRARIES} CACHE PATH ${DOCSTR})
