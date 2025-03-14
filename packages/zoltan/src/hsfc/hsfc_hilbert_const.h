@@ -115,7 +115,7 @@ static const struct Tables z2d = {z_data2d, z_state2d, z_idata2d, z_istate2d};
 static const struct Tables hilbert = {hilbert_data2d, hilbert_state2d, hilbert_idata2d, hilbert_istate2d};
 
 enum Curve2d {Z2D, HILBERT, N_CURVE2D};
-static const struct Tables tables2d[N_CURVE2D] = {z2d, hilbert};
+  static const struct Tables tables2d[N_CURVE2D] = {hilbert, z2d};
 
 // The Z-curve
 static unsigned const int z_data3d [] = {
