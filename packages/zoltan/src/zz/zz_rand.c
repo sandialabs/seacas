@@ -30,7 +30,7 @@ extern "C" {
 
 static unsigned int zidum = ZOLTAN_RAND_INIT;
 
-unsigned int Zoltan_Seed()
+unsigned int Zoltan_Seed(void)
 {
 /* Function that returns the current value of the Zoltan seed. */
   return zidum;

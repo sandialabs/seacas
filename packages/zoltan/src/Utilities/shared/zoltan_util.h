@@ -118,7 +118,7 @@ extern "C" {
 /*****************************************************************************/
 
 void Zoltan_add_back_trace(char *yo);
-void Zoltan_remove_back_trace();
+void Zoltan_remove_back_trace(void);
 void Zoltan_print_trace(int rank);
 
 #define ZOLTAN_PRINT_ERROR(proc,yo,str) { \

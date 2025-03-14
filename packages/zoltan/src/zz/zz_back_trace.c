@@ -51,7 +51,7 @@ char *c;
   *c = '\0';
 }
 
-void Zoltan_remove_back_trace()
+void Zoltan_remove_back_trace(void)
 {
   if (trace_top < 0) return;  /* trace is empty */
 

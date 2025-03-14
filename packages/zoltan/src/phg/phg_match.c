@@ -2350,16 +2350,16 @@ static int pmatching_geom (ZZ *zz,
 
   /* Register new geometric callbacks and parameters */
   if ((Zoltan_Set_Fn(zz2, ZOLTAN_NUM_OBJ_FN_TYPE,
-                     (void (*)()) geometric_get_num_obj,
+                     (void (*)(void)) geometric_get_num_obj,
 		     (void *) hg) == ZOLTAN_FATAL) ||
       (Zoltan_Set_Fn(zz2, ZOLTAN_OBJ_LIST_FN_TYPE,
-                     (void (*)()) geometric_get_obj_list,
+                     (void (*)(void)) geometric_get_obj_list,
 		     (void *) hg) == ZOLTAN_FATAL) ||
       (Zoltan_Set_Fn(zz2, ZOLTAN_NUM_GEOM_FN_TYPE,
-                     (void (*)()) geometric_get_num_geom,
+                     (void (*)(void)) geometric_get_num_geom,
 		     (void *) hg) == ZOLTAN_FATAL) ||
       (Zoltan_Set_Fn(zz2, ZOLTAN_GEOM_MULTI_FN_TYPE,
-                     (void (*)()) geometric_get_geom_multi,
+                     (void (*)(void)) geometric_get_geom_multi,
 		     (void *) hg) == ZOLTAN_FATAL))
   {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo,

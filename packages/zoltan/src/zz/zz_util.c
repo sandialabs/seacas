@@ -275,7 +275,7 @@ static char* zz_mpi_datatype_names[5] =
 "MPI_LONG_LONG"             /* standard */
 };
 
-MPI_Datatype Zoltan_mpi_gno_type()
+MPI_Datatype Zoltan_mpi_gno_type(void)
 {
   int size_short=0, size_int=0, size_long=0, size_long_long=0;
 
@@ -329,7 +329,7 @@ MPI_Datatype Zoltan_mpi_gno_type()
   return zz_mpi_gno_type;
 }
 
-char *Zoltan_mpi_gno_name()
+char *Zoltan_mpi_gno_name(void)
 {
   Zoltan_mpi_gno_type();
   return zz_mpi_gno_name;
@@ -340,7 +340,7 @@ char *Zoltan_mpi_gno_name()
  * Return the number of kilobytes allocated to this process.
  * Return 0 if it is not possible to determine this.
  */
-long Zoltan_get_process_kilobytes()
+long Zoltan_get_process_kilobytes(void)
 {
 #ifdef _WIN32
   return 0;

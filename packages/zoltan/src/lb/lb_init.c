@@ -124,6 +124,7 @@ void Zoltan_LB_Serialize(struct Zoltan_Struct const *zz, char **buf)
   const struct Zoltan_LB_Struct *lb = &(zz->LB);
 
   /* Copy 12 integers; if add more, update Zoltan_LB_Serialize_Size */
+  {
   int *intptr = (int *) bufptr;
   *intptr = lb->Num_Global_Parts; intptr++;
   *intptr = lb->Num_Global_Parts_Param; intptr++;
@@ -138,6 +139,7 @@ void Zoltan_LB_Serialize(struct Zoltan_Struct const *zz, char **buf)
   *intptr = lb->Uniform_Parts; intptr++;
   *intptr = lb->Imb_Tol_Len; intptr++;
   bufptr = (char *) intptr;
+  }
 
   /* Copy LB_Method name */
   strcpy(bufptr, lb->Method_Name);

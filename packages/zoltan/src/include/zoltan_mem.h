@@ -46,11 +46,11 @@ extern "C" {
 #ifdef __STDC__
 extern double *Zoltan_Array_Alloc(char *file, int lineno, int numdim, ...);
 #else
-extern double *Zoltan_Array_Alloc();
+extern double *Zoltan_Array_Alloc(void);
 #endif
 
 extern void    Zoltan_Memory_Debug(int);
-extern int Zoltan_Memory_Get_Debug();
+extern int Zoltan_Memory_Get_Debug(void);
 extern void    Zoltan_Free(void **, char *, int);
 extern double *Zoltan_Calloc(size_t, size_t, char *, int);
 extern double *Zoltan_Malloc(size_t, char *, int);
@@ -62,7 +62,7 @@ extern void    Zoltan_Memory_Reset(int);
 #ifdef __STDC__
 extern void Zoltan_Multifree(char *, int, int n, ...);
 #else
-extern void Zoltan_Multifree();
+extern void Zoltan_Multifree(void);
 #endif
 
 #ifdef __cplusplus

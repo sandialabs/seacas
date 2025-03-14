@@ -630,7 +630,7 @@ int proc = comm->proc;
 int num_procs = comm->num_procs;
 MPI_Comm local_comm = comm->comm;
 double mylo=0.0, mymed=0.0, myhi=0.0;
-int countlo=0, countmed=0, counthi=0, indexmed=-1;
+int countmed=0, indexmed=-1;
 
   if (count) (*count)++;
 
@@ -640,7 +640,6 @@ int countlo=0, countmed=0, counthi=0, indexmed=-1;
     if (dots[i] < candidate) {
       mylo += tmpwgt;
       dotmark[i] = LOPART;
-      countlo++;
     }
     else if (dots[i] == candidate) {
       mymed += tmpwgt;
@@ -651,7 +650,6 @@ int countlo=0, countmed=0, counthi=0, indexmed=-1;
     else{
       myhi += tmpwgt;
       dotmark[i] = HIPART;
-      counthi++;
     }
   }
 

@@ -27,7 +27,7 @@ typedef struct Zoltan_Comm_Obj ZOLTAN_COMM_OBJ;
 
 /* function prototypes */
 
-MPI_Comm zoltan_get_global_comm();
+MPI_Comm zoltan_get_global_comm(void);
 
 int Zoltan_Comm_Create(ZOLTAN_COMM_OBJ**, int, int*, MPI_Comm, int, int*);
 

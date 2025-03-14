@@ -25,7 +25,7 @@ void zoltan_initialize_global_comm(MPI_Comm comm) {
 }
 
 /* Function to get the default communicator */
-MPI_Comm zoltan_get_global_comm() {
+MPI_Comm zoltan_get_global_comm(void) {
   pthread_mutex_lock(&zoltan_global_mpi_lock);
   MPI_Comm comm = Zoltan_Global_MPI_Comm;
   pthread_mutex_unlock(&zoltan_global_mpi_lock);

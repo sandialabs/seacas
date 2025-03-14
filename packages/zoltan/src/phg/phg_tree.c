@@ -27,14 +27,14 @@ extern "C" {
 
 
 /* Internal use only */
-void* Zoltan_PHG_LB_Data_alloc();
+void* Zoltan_PHG_LB_Data_alloc(void);
 int Zoltan_PHG_Timers_copy(ZZ* zz, struct phg_timer_indices* ftimers);
 int Zoltan_PHG_Tree_copy(ZZ* zz, Zoltan_PHG_Tree* ftimers);
 int Zoltan_PHG_Tree_init(Zoltan_PHG_Tree* ftimers);
 
 
 void*
-Zoltan_PHG_LB_Data_alloc()
+Zoltan_PHG_LB_Data_alloc(void)
 {
   Zoltan_PHG_LB_Data * ptr;
 
