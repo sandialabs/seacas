@@ -14,7 +14,7 @@
 
 #include "mpi.h"
 
-int MPI_Irecv (void* message, int count, MPI_Datatype datatype, int source,
+int MPI_Irecv (void* message, int count, MPI_Datatype datatype, int source, 
         int tag, MPI_Comm comm, MPI_Request* request)
 {
   _MPI_COVERAGE();

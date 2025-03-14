@@ -1,48 +1,13 @@
 !! 
 !! @HEADER
-!!
-!!!!**********************************************************************
-!!
+!! *****************************************************************************
 !!  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
-!!                  Copyright 2012 Sandia Corporation
 !!
-!! Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-!! the U.S. Government retains certain rights in this software.
-!!
-!! Redistribution and use in source and binary forms, with or without
-!! modification, are permitted provided that the following conditions are
-!! met:
-!!
-!! 1. Redistributions of source code must retain the above copyright
-!! notice, this list of conditions and the following disclaimer.
-!!
-!! 2. Redistributions in binary form must reproduce the above copyright
-!! notice, this list of conditions and the following disclaimer in the
-!! documentation and/or other materials provided with the distribution.
-!!
-!! 3. Neither the name of the Corporation nor the names of the
-!! contributors may be used to endorse or promote products derived from
-!! this software without specific prior written permission.
-!!
-!! THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-!! EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-!! IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-!! PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-!! CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-!! EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-!! PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-!! PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-!! LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-!! NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-!! SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-!!
-!! Questions? Contact Karen Devine	kddevin@sandia.gov
-!!                    Erik Boman	egboman@sandia.gov
-!!
-!!!!**********************************************************************
-!!
+!! Copyright 2012 NTESS and the Zoltan contributors.
+!! SPDX-License-Identifier: BSD-3-Clause
+!! *****************************************************************************
 !! @HEADER
- !!
+!!
 
 module dr_mm_io
 use zoltan
@@ -210,9 +175,9 @@ type(PARIO_INFO) :: pio_info
   endif ! Proc == 0
 
 ! BCast pertinent info to all procs.
-  call MPI_Bcast(mm_ncol, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-  call MPI_Bcast(mm_nrow, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-  call MPI_Bcast(mm_nnz, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+  call MPI_Bcast(mm_ncol, 1, MPI_INTEGER, 0, zoltan_get_global_comm(), ierr)
+  call MPI_Bcast(mm_nrow, 1, MPI_INTEGER, 0, zoltan_get_global_comm(), ierr)
+  call MPI_Bcast(mm_nnz, 1, MPI_INTEGER, 0, zoltan_get_global_comm(), ierr)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Assume linear distribution of vertices.
@@ -318,7 +283,7 @@ type(PARIO_INFO) :: pio_info
   endif
 
 ! Allocate arrays to receive pins.
-  call MPI_Bcast(pindist, Num_Proc+1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr);
+  call MPI_Bcast(pindist, Num_Proc+1, MPI_INTEGER, 0, zoltan_get_global_comm(), ierr);
   npins = pindist(Proc+1) - pindist(Proc)
   allocate(iidx(0:npins-1),stat=allocstat)
   allocate(jidx(0:npins-1),stat=allocstat)
@@ -330,9 +295,9 @@ type(PARIO_INFO) :: pio_info
     do i = 1, Num_Proc-1
       sendsize = pindist(i+1)-pindist(i)
       call MPI_Send(mm_iidx(pindist(i)), sendsize, MPI_INTEGER, &
-                    i, 1, MPI_COMM_WORLD, ierr)
+                    i, 1, zoltan_get_global_comm(), ierr)
       call MPI_Send(mm_jidx(pindist(i)), sendsize, MPI_INTEGER, &
-                    i, 2, MPI_COMM_WORLD, ierr)
+                    i, 2, zoltan_get_global_comm(), ierr)
     enddo
 !   Copy Proc zero's pins.
     do i = 0, pindist(1)-1
@@ -340,9 +305,9 @@ type(PARIO_INFO) :: pio_info
       jidx(i) = mm_jidx(i)
     enddo
   else
-    call MPI_Recv(iidx, npins, MPI_INTEGER, 0, 1, MPI_COMM_WORLD, &
+    call MPI_Recv(iidx, npins, MPI_INTEGER, 0, 1, zoltan_get_global_comm(), &
                   status, ierr)
-    call MPI_Recv(jidx, npins, MPI_INTEGER, 0, 2, MPI_COMM_WORLD, &
+    call MPI_Recv(jidx, npins, MPI_INTEGER, 0, 2, zoltan_get_global_comm(), &
                   status, ierr)
   endif
      

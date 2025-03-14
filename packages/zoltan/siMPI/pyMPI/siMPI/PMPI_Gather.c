@@ -18,8 +18,8 @@
 #include "mpi.h"
 
 /*==========================================================================*/
-int PMPI_Gather ( void *sendbuf, int sendcount, MPI_Datatype sendtype,
-   void *recvbuf, int recvcount, MPI_Datatype recvtype,
+int PMPI_Gather ( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+   void *recvbuf, int recvcount, MPI_Datatype recvtype, 
    int root, MPI_Comm comm )
 {
   int sendsize, recvsize, retval;
@@ -50,3 +50,4 @@ int PMPI_Gather ( void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return _MPI_NOT_OK;
 }
 /*==========================================================================*/
+

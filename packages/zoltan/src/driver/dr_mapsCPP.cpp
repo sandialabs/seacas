@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include "dr_const.h"
 #include "dr_externs.h"
@@ -74,7 +37,7 @@ struct map_list_head {
 };
 
 static void compare_maps_with_ddirectory_results(int, MESH_INFO_PTR);
-static void sort_and_compare_maps(int, int, MESH_INFO_PTR,
+static void sort_and_compare_maps(int, int, MESH_INFO_PTR, 
   struct map_list_head *, int, int *);
 
 /*****************************************************************************/
@@ -135,13 +98,13 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
 
   /*
    *  Look for off-processor adjacencies.
-   *  Loop over all elements
+   *  Loop over all elements 
    */
 
   num_alloc_maps = MAP_ALLOC;
   mesh->ecmap_id = (int *) malloc(num_alloc_maps * sizeof(int));
   mesh->ecmap_cnt = (int *) malloc(num_alloc_maps * sizeof(int));
-  tmp_maps = (struct map_list_head*) malloc(num_alloc_maps
+  tmp_maps = (struct map_list_head*) malloc(num_alloc_maps 
                                           * sizeof(struct map_list_head));
 
   if (mesh->ecmap_id == NULL || mesh->ecmap_cnt == NULL || tmp_maps == NULL) {
@@ -161,9 +124,9 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
       iadj_proc = elem->adj_proc[j];
 
       if (iadj_proc != proc) {
-        /*
+        /* 
          * Adjacent element is off-processor.
-         * Add this element to the temporary data structure for
+         * Add this element to the temporary data structure for 
          * the appropriate neighboring processor.
          */
         if ((indx = in_list2(iadj_proc, mesh->necmap, mesh->ecmap_id)) == -1) {
@@ -179,7 +142,7 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
                                              num_alloc_maps * sizeof(int));
             tmp_maps = (struct map_list_head *) realloc(tmp_maps,
                                num_alloc_maps * sizeof(struct map_list_head));
-            if (mesh->ecmap_id == NULL || mesh->ecmap_cnt == NULL ||
+            if (mesh->ecmap_id == NULL || mesh->ecmap_cnt == NULL || 
                 tmp_maps == NULL) {
               Gen_Error(0, "Fatal:  insufficient memory");
               DEBUG_TRACE_END(proc, yo);
@@ -193,7 +156,7 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
           map->elem_id  = (int *) malloc(MAP_ALLOC * sizeof(int));
           map->side_id  = (int *) malloc(MAP_ALLOC * sizeof(int));
           map->neigh_id = (ZOLTAN_ID_TYPE *) malloc(MAP_ALLOC * sizeof(ZOLTAN_ID_TYPE));
-          if (map->glob_id == NULL || map->elem_id == NULL ||
+          if (map->glob_id == NULL || map->elem_id == NULL || 
               map->side_id == NULL || map->neigh_id == NULL) {
             Gen_Error(0, "Fatal:  insufficient memory");
             DEBUG_TRACE_END(proc, yo);
@@ -208,12 +171,12 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
         if (mesh->ecmap_cnt[indx] >= map->map_alloc_size) {
           map->map_alloc_size += MAP_ALLOC;
           map->glob_id  = (ZOLTAN_ID_TYPE *) realloc(map->glob_id, map->map_alloc_size * sizeof(ZOLTAN_ID_TYPE));
-          map->elem_id  = (int *) realloc(map->elem_id,
+          map->elem_id  = (int *) realloc(map->elem_id, 
                                           map->map_alloc_size * sizeof(int));
-          map->side_id  = (int *) realloc(map->side_id,
+          map->side_id  = (int *) realloc(map->side_id, 
                                           map->map_alloc_size * sizeof(int));
           map->neigh_id = (ZOLTAN_ID_TYPE *) realloc(map->neigh_id, map->map_alloc_size * sizeof(ZOLTAN_ID_TYPE));
-          if (map->glob_id == NULL || map->elem_id == NULL ||
+          if (map->glob_id == NULL || map->elem_id == NULL || 
               map->side_id == NULL || map->neigh_id == NULL) {
             Gen_Error(0, "Fatal:  insufficient memory");
             DEBUG_TRACE_END(proc, yo);
@@ -232,8 +195,8 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
     }
   }
 
-  /*
-   * If no communication maps, don't need to do anything else.
+  /* 
+   * If no communication maps, don't need to do anything else. 
    */
 
   if (mesh->necmap > 0) {
@@ -265,12 +228,12 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
 
       /*
        * Sort the map so that adjacent processors have the same ordering
-       * for the communication.
+       * for the communication.  
        * Assume the ordering of the lower-numbered processor in the pair
        * of communicating processors.
        */
 
-      if (proc < mesh->ecmap_id[i])
+      if (proc < mesh->ecmap_id[i]) 
         quicksort_pointer_inc_id_id(sindex, map->glob_id, map->neigh_id,
                                     0, mesh->ecmap_cnt[i]-1);
       else
@@ -278,7 +241,7 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
                                     0, mesh->ecmap_cnt[i]-1);
 
       /*
-       * Copy sorted data into elem map arrays.
+       * Copy sorted data into elem map arrays. 
        */
 
       offset = cnt;
@@ -303,7 +266,7 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
   safe_free((void **) &tmp_maps);
   safe_free((void **) &sindex);
 
-  if (Test.DDirectory)
+  if (Test.DDirectory) 
     compare_maps_with_ddirectory_results(proc, mesh);
 
   DEBUG_TRACE_END(proc, yo);
@@ -314,13 +277,13 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
 /******************************************************************************/
 
 static void compare_maps_with_ddirectory_results(
-  int proc,
+  int proc, 
   MESH_INFO_PTR mesh
 )
 {
 /*
- * Routine to demonstrate the use of the Zoltan Distributed Directory
- * to build communication maps.  This functionality essentially duplicates
+ * Routine to demonstrate the use of the Zoltan Distributed Directory 
+ * to build communication maps.  This functionality essentially duplicates 
  * that in build_elem_comm_maps.  It provides a test of the DDirectory,
  * as the maps generated by the directory should match those generated
  * by build_elem_comm_maps.
@@ -376,11 +339,11 @@ Zoltan_Comm *comm;
     }
   }
 
-  /*
-   * Create DDirectory and register all owned elements.
+  /* 
+   * Create DDirectory and register all owned elements. 
    */
 
-  dd = new Zoltan_DD(MPI_COMM_WORLD, 1, 1, 0, 0, 0);
+  dd = new Zoltan_DD(zoltan_get_global_comm(), 1, 1, 0, 0, 0);
 
   ierr = dd->Update(gids, lids, NULL, NULL, num_elems);
 
@@ -404,8 +367,8 @@ Zoltan_Comm *comm;
 
   dd = &ddNew;
 
-  /*
-   * Use the DDirectory to find owners of off-processor neighboring elements.
+  /* 
+   * Use the DDirectory to find owners of off-processor neighboring elements. 
    * Of course, we have this info in ELEM_INFO, but we do the find to test
    * the DDirectory.
    */
@@ -419,8 +382,8 @@ Zoltan_Comm *comm;
   my_gids = nbor_lids + num_nbor;
   ownerlist = (int *) malloc(sizeof(int) * num_nbor);
 
-  /*
-   * Get list of elements whose info is needed.
+  /* 
+   * Get list of elements whose info is needed. 
    */
   cnt = 0;
   for (i = 0; i < num_elems; i++) {
@@ -450,10 +413,10 @@ Zoltan_Comm *comm;
   }
 
   /*
-   * Check for errors
+   * Check for errors 
    */
 
-  MPI_Allreduce(&error, &gerror, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce(&error, &gerror, 1, MPI_INT, MPI_SUM, zoltan_get_global_comm());
 
   if (gerror) {
     Gen_Error(0, "Fatal:  Error returned by DDirectory Test");
@@ -463,8 +426,8 @@ Zoltan_Comm *comm;
     return;
   }
 
-  /*
-   * Use the Communication library to invert this information and build
+  /* 
+   * Use the Communication library to invert this information and build 
    * communication maps.
    * We know what to receive and from where; compute what to send and
    * to whom.
@@ -472,10 +435,10 @@ Zoltan_Comm *comm;
    * testing DDirectory here.
    */
 
-  /*
+  /* 
    * Build list of off-proc elements (and their owners)
    * that this proc wants.
-   * This list includes duplicate entries when an element
+   * This list includes duplicate entries when an element 
    * is a neighbor of > 1 element on this processor.
    */
 
@@ -493,7 +456,7 @@ Zoltan_Comm *comm;
     i_want[j++] = my_gids[i];
   }
 
-  comm = new Zoltan_Comm(num_nbor, ownerlist, MPI_COMM_WORLD, 747,
+  comm = new Zoltan_Comm(num_nbor, ownerlist, zoltan_get_global_comm(), 747, 
                         &num_others);
 
   /*
@@ -510,8 +473,8 @@ printf("Test comm copy functions\n");
 
   comm = &commNew;
 
-  /*
-   * Do communication to determine which of this proc's data is wanted by
+  /* 
+   * Do communication to determine which of this proc's data is wanted by 
    * other procs.
    * This info will determine what is put in this proc's communication maps.
    */
@@ -522,7 +485,7 @@ printf("Test comm copy functions\n");
     return;
   }
 
-  ierr = comm->Do(757, (char *) i_want, want_size * sizeof(ZOLTAN_ID_TYPE),
+  ierr = comm->Do(757, (char *) i_want, want_size * sizeof(ZOLTAN_ID_TYPE), 
                     (char *) others_want);
   if (ierr) {
     Gen_Error(0, "Fatal:  Error returned from Zoltan_Comm::Do");
@@ -531,8 +494,8 @@ printf("Test comm copy functions\n");
 
   free(i_want);
 
-  /*
-   * Find number of maps and the size of the largest map.
+  /*  
+   * Find number of maps and the size of the largest map. 
    * The maps should be grouped by neighboring processor
    * in others_want.
    */
@@ -555,8 +518,8 @@ printf("Test comm copy functions\n");
            "%d != %d\n", proc, num_maps, mesh->necmap);
   }
 
-  /*
-   * For each map,
+  /* 
+   * For each map, 
    *   build a map_list_head for the map;
    *   sort the map_list_head appropriately (as in build_elem_comm_maps);
    *   compare sorted lists with actually communication maps.
@@ -573,12 +536,12 @@ printf("Test comm copy functions\n");
   map.elem_id  = (int *) malloc(max_map_size * sizeof(int));
   map.side_id  = (int *) malloc(max_map_size * sizeof(int));
   map.neigh_id  = (ZOLTAN_ID_TYPE *) malloc(max_map_size * sizeof(ZOLTAN_ID_TYPE));
-
+  
   if (max_map_size > 0 && map.neigh_id == NULL) {
     Gen_Error(0, "Fatal:  insufficient memory");
     return;
   }
-
+  
   if (Debug_Driver > 3) {
     /* For high debug levels, serialize the following section so that
      * output of generated map is serialized (and not junked up).
@@ -595,7 +558,7 @@ printf("Test comm copy functions\n");
     for (k = 0; k < current->adj_len; k++) {
       /* Skip NULL adjacencies (sides that are not adjacent to another elem). */
       if (current->adj[k] == ZOLTAN_ID_INVALID) continue;
-      if (current->adj_proc[k] == nbor_proc &&
+      if (current->adj_proc[k] == nbor_proc && 
           current->adj[k] == others_want[j+3]) {
         map.side_id[map_size] = k + 1;
         map.neigh_id[map_size] = current->adj[k];
@@ -609,7 +572,7 @@ printf("Test comm copy functions\n");
        * Sort and compare the current map.
        */
       sort_and_compare_maps(proc, nbor_proc, mesh, &map, map_size, sindex);
-
+      
       /*
        * Reinitialize data structures for new map.
        */
@@ -622,7 +585,7 @@ printf("Test comm copy functions\n");
      * output of generated map is serialized (and not junked up).
      */
     int nprocs = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+    MPI_Comm_size(zoltan_get_global_comm(), &nprocs);
     print_sync_end(proc, nprocs, 1);
   }
 
@@ -640,9 +603,9 @@ printf("Test comm copy functions\n");
 static void sort_and_compare_maps(
   int proc,
   int nbor_proc,
-  MESH_INFO_PTR mesh,
-  struct map_list_head *map,
-  int map_size,
+  MESH_INFO_PTR mesh, 
+  struct map_list_head *map, 
+  int map_size, 
   int *sindex
 )
 {
@@ -669,10 +632,10 @@ int indx;
   if (proc < nbor_proc)
     quicksort_pointer_inc_id_id(sindex, map->glob_id, map->neigh_id,
                                 0, map_size-1);
-  else
+  else 
     quicksort_pointer_inc_id_id(sindex, map->neigh_id, map->glob_id,
                                 0, map_size-1);
-
+  
   /*
    * Compute offset into mesh communication maps for the given nbor proc.
    */
@@ -702,7 +665,7 @@ int indx;
     j = sindex[i];
     if (map->elem_id[j] != mesh->ecmap_elemids[i+cnt]) {
       printf("%d DDirectory Test: Different element IDs for nbor_proc %d: "
-             "%d != %d\n", proc, nbor_proc, map->elem_id[j],
+             "%d != %d\n", proc, nbor_proc, map->elem_id[j], 
              mesh->ecmap_elemids[i+cnt]);
     }
   }
@@ -711,7 +674,7 @@ int indx;
     j = sindex[i];
     if (map->side_id[j] != mesh->ecmap_sideids[i+cnt]) {
       printf("%d DDirectory Test: Different side IDs for nbor_proc %d: "
-             "%d != %d\n", proc, nbor_proc, map->side_id[j],
+             "%d != %d\n", proc, nbor_proc, map->side_id[j], 
              mesh->ecmap_sideids[i+cnt]);
     }
   }
@@ -720,7 +683,7 @@ int indx;
     j = sindex[i];
     if (map->neigh_id[j] != mesh->ecmap_neighids[i+cnt]) {
       printf("%d DDirectory Test: Different neigh IDs for nbor_proc %d: "
-             ZOLTAN_ID_SPEC " != " ZOLTAN_ID_SPEC "\n", proc, nbor_proc, map->neigh_id[j],
+             ZOLTAN_ID_SPEC " != " ZOLTAN_ID_SPEC "\n", proc, nbor_proc, map->neigh_id[j], 
              mesh->ecmap_neighids[i+cnt]);
     }
   }
@@ -731,8 +694,8 @@ int indx;
     printf("Local ID\tSide ID\tGlobal ID\tNeigh ID\n");
     for (i = 0; i < map_size; i++) {
       j = sindex[i];
-      printf("\t%d\t%d\t" ZOLTAN_ID_SPEC "\t" ZOLTAN_ID_SPEC "\n",
-             map->elem_id[j], map->side_id[j],
+      printf("\t%d\t%d\t" ZOLTAN_ID_SPEC "\t" ZOLTAN_ID_SPEC "\n", 
+             map->elem_id[j], map->side_id[j], 
              map->glob_id[j], map->neigh_id[j]);
     }
   }

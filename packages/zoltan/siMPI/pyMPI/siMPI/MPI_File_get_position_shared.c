@@ -18,5 +18,6 @@
 int MPI_File_get_position_shared(MPI_File fh, MPI_Offset *offset)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_position_shared(fh, offset);
+  return PMPI_File_get_position_shared(fh, offset); 
 }
+

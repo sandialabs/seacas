@@ -14,10 +14,11 @@
 
 #include "mpi.h"
 
-int MPI_Error_class(
-        int errorcode,
+int MPI_Error_class( 
+        int errorcode, 
         int *errorclass)
 {
   _MPI_COVERAGE();
   return PMPI_Error_class (errorcode, errorclass);
 }
+

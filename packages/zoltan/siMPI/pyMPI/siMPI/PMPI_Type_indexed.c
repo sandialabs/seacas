@@ -15,11 +15,11 @@
 #include "mpi.h"
 #include <string.h>
 
-int PMPI_Type_indexed(
-        int count,
-        int blocklens[],
-        int indices[],
-        MPI_Datatype old_type,
+int PMPI_Type_indexed( 
+        int count, 
+        int blocklens[], 
+        int indices[], 
+        MPI_Datatype old_type, 
         MPI_Datatype *newtype )
 {
   int index, i;
@@ -53,11 +53,11 @@ int PMPI_Type_indexed(
   info = _MPI_TYPE_LIST[index].info;
   info->count = count;
   info->blocklen = (int *) _MPI_safeMalloc(sizeof(int)*count, "MPI_TYPE_INDEXED: Error with malloc");;
-  info->blocklen = memcpy(info->blocklen, blocklens, sizeof(int)*count);
+  info->blocklen = memcpy(info->blocklen, blocklens, sizeof(int)*count); 
   info->stride = (int *) _MPI_safeMalloc(sizeof(int)*count, "MPI_TYPE_INDEXED: Error with malloc");;
-  info->stride = memcpy(info->stride, indices, sizeof(int)*count);
+  info->stride = memcpy(info->stride, indices, sizeof(int)*count); 
   info->types = (int *) _MPI_safeMalloc(sizeof(MPI_Datatype), "MPI_TYPE_INDEXED: Error with malloc");;
-  info->types[0] = old_type;
+  info->types[0] = old_type;  
 
   /* ================================ */
   /* Create linked list of structures */
@@ -76,3 +76,4 @@ int PMPI_Type_indexed(
 
   return MPI_SUCCESS;
 }
+

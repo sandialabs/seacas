@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -149,7 +112,7 @@ int Zoltan_RIB_inertial3d(
      if (dotpt->nWeights)
         for (j = 0; j < dotnum; j++) {
            i = (dindx ? dindx[j] : j);
-           wgt = dotpt->Weight[i * dotpt->nWeights];
+           wgt = dotpt->Weight[i * dotpt->nWeights]; 
            xdif = x[i] - cm[0];
            ydif = y[i] - cm[1];
            zdif = z[i] - cm[2];
@@ -177,17 +140,17 @@ int Zoltan_RIB_inertial3d(
      /* Sum tensor across processors */
 
      if (Tflops_Special) {
-        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz;
+        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz; 
         tmp1[3] = xy; tmp1[4] = xz; tmp1[5] = yz;
         Zoltan_RIB_reduce_double(tmp1, tmp2, 6, comm, nproc, rank, proc, 1);
-        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2];
+        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2]; 
         xyt = tmp2[3]; xzt = tmp2[4]; yzt = tmp2[5];
      }
      else {
-        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz;
+        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz; 
         tmp1[3] = xy; tmp1[4] = xz; tmp1[5] = yz;
         MPI_Allreduce(tmp1, tmp2, 6, MPI_DOUBLE, MPI_SUM, comm);
-        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2];
+        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2]; 
         xyt = tmp2[3]; xzt = tmp2[4]; yzt = tmp2[5];
      }
 
@@ -466,7 +429,7 @@ void Zoltan_RIB_reduce_double(double *in, double *out, int len, MPI_Comm comm,
 {
    int i, m, to, tag = 32107;
    MPI_Status status;
-
+ 
    /* this is a recursive function for Tflops_Special that takes a double
       vector in and returns the summed vector out for a subset of processors
       of the entire number of processors.  rank is a processors rank within
@@ -488,10 +451,10 @@ void Zoltan_RIB_reduce_double(double *in, double *out, int len, MPI_Comm comm,
          if (m < nproc)
             Zoltan_RIB_reduce_double(in, out, len, comm, nproc, rank, proc, m);
          else
-            for (i = 0; i < len; i++)
+            for (i = 0; i < len; i++) 
                out[i] = in[i];
          MPI_Send(out, len, MPI_DOUBLE, to, tag, comm);
-      }
+      }  
       else
          Zoltan_RIB_reduce_double(in, out, len, comm, nproc, rank, proc, m);
 }

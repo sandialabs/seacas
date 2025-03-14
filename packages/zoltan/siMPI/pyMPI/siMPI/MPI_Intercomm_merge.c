@@ -19,3 +19,4 @@ int MPI_Intercomm_merge ( MPI_Comm comm, int high, MPI_Comm *comm_out )
   _MPI_COVERAGE();
   return PMPI_Intercomm_merge (comm, high, comm_out);
 }
+

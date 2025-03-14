@@ -19,3 +19,4 @@ int MPI_Group_compare ( MPI_Group group1, MPI_Group group2, int *result )
   _MPI_COVERAGE();
   return PMPI_Group_compare (group1, group2, result);
 }
+

@@ -15,12 +15,13 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_Attr_get (
-        MPI_Comm comm,
-        int keyval,
-        void *attr_value,
+int MPI_Attr_get ( 
+        MPI_Comm comm, 
+        int keyval, 
+        void *attr_value, 
         int *flag )
 {
   _MPI_COVERAGE();
-  return PMPI_Attr_get(comm, keyval, attr_value, flag);
+  return PMPI_Attr_get(comm, keyval, attr_value, flag); 
 }
+

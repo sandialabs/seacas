@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_File_iread_shared(MPI_File fh, void *buf, int count,
+int MPI_File_iread_shared(MPI_File fh, void *buf, int count, 
                           MPI_Datatype datatype, MPIO_Request *request)
 {
   _MPI_COVERAGE();
-  return PMPI_File_iread_shared(fh, buf, count, datatype, request);
+  return PMPI_File_iread_shared(fh, buf, count, datatype, request); 
 }
+

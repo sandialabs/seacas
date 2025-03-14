@@ -45,8 +45,8 @@ int MPI_Sendrecv( void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int MPI_Wait ( MPI_Request* request, MPI_Status* status);
 int MPI_Waitany( int count, MPI_Request array_of_requests[], int* index, MPI_Status* status);
 int MPI_Waitall(
-        int count,
-        MPI_Request array_of_requests[],
+        int count, 
+        MPI_Request array_of_requests[], 
         MPI_Status array_of_statuses[] );
 
 

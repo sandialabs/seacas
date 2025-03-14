@@ -22,3 +22,4 @@ int PMPI_Comm_split ( MPI_Comm comm, int color, int key, MPI_Comm *comm_out )
   /* it just returns a new communicator                               */
   return PMPI_Comm_create(comm,_MPI_COMM_WORLD_GROUP,comm_out);
 }
+

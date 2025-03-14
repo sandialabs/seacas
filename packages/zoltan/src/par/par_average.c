@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -53,9 +16,10 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
-#include "par_average_const.h"
 #include "par_median_const.h"
 #include "zz_const.h"
+
+#define TINY   1.0e-6
 
 /* prototypes for TFLOPS_SPECIAL */
 static void Zoltan_average_cuts_reduce(int, int, int, double *, double *,
@@ -82,7 +46,7 @@ double Zoltan_RB_Average_Cut(
   double oldvaluehalf   /* Cut computed before averaging is done.            */
 )
 {
-/* Compute a median value that is exactly between two closest dots.
+/* Compute a median value that is exactly between two closest dots. 
  * Routine is called when parameter AVERAGE_CUTS == 1.
  */
 double val[2] = {-DBL_MAX, DBL_MAX};
@@ -90,7 +54,7 @@ double gval[2];
 double valuehalf = oldvaluehalf;
 int i;
 
-  if (!Tflops_Special || num_procs > 1) {
+  if (!Tflops_Special || num_procs > 1) { 
     /* Don't include dot info if going thru loop only due to Tflops_Special */
     for (i = 0; i < dotnum; i++) {
 /*
@@ -98,7 +62,7 @@ printf("KDDDDD %d proclower=%d num_parts=%d numlist=%d i=%d dotmark[i]=%d dots[i
 */
       if (dotmark[i] == 0) {            /* in lower part */
         if (dots[i] > val[0]) val[0] = dots[i];
-      }
+      } 
       else {   /* in upper part */
         if (dots[i] < val[1]) val[1] = dots[i];
       }
@@ -108,7 +72,7 @@ printf("KDDDDD %d proclower=%d num_parts=%d numlist=%d i=%d dotmark[i]=%d dots[i
       MPI_Allreduce(&val[1], &gval[1], 1, MPI_DOUBLE, MPI_MIN, local_comm);
     }
     else
-      Zoltan_average_cuts_reduce(num_procs, rank, proc, val, gval, 2,
+      Zoltan_average_cuts_reduce(num_procs, rank, proc, val, gval, 2, 
                                  MPI_DOUBLE, local_comm);
 
     valuehalf = 0.5 * (gval[0] + gval[1]);

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include <mpi.h>
 #include <stdlib.h>
@@ -118,7 +81,7 @@ int read_chaco_file(int Proc,
     file_error = (fp == NULL);
   }
 
-  MPI_Bcast(&file_error, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&file_error, 1, MPI_INT, 0, zoltan_get_global_comm());
 
   if (file_error) {
     sprintf(cmesg, "fatal:  Could not open Chaco graph file %s",
@@ -236,17 +199,17 @@ for (i=0; i<nvtxs; i++) { /* move 2/3 of points much closer to "a" */
 
   /* Distribute graph */
 
-  if (!chaco_dist_graph(MPI_COMM_WORLD, pio_info, 0, &gnvtxs, &nvtxs,
-             &start, &adj, &vwgt_dim, &vwgts, &ewgt_dim, &ewgts,
+  if (!chaco_dist_graph(zoltan_get_global_comm(), pio_info, 0, &gnvtxs, &nvtxs, 
+             &start, &adj, &vwgt_dim, &vwgts, &ewgt_dim, &ewgts, 
              &ndim, &x, &y, &z, &assignments)) {
     Gen_Error(0, "fatal: Error returned from chaco_dist_graph");
     return 0;
   }
 
-  MPI_Bcast(&base, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&base, 1, MPI_INT, 0, zoltan_get_global_comm());
 
   if (!chaco_setup_mesh_struct(Proc, Num_Proc, prob, mesh, pio_info, gnvtxs, nvtxs,
-                     start, adj, vwgt_dim, vwgts, ewgt_dim, ewgts,
+                     start, adj, vwgt_dim, vwgts, ewgt_dim, ewgts, 
                      ndim, x, y, z, assignments, base, no_geom)) {
     Gen_Error(0, "fatal: Error returned from chaco_setup_mesh_struct");
     return 0;
@@ -288,8 +251,8 @@ int chaco_setup_mesh_struct(
   float     *y,                  /* y-coordinates of the vertices */
   float     *z,                  /* z-coordinates of the vertices */
   short     *assignments,        /* assignments from Chaco file; may be NULL */
-  int       base,                /* smallest vertex number to use;
-                                    base == 1 for Chaco;
+  int       base,                /* smallest vertex number to use; 
+                                    base == 1 for Chaco; 
                                     may be 0 or 1 for HG files. */
   int       no_geom              /* flag indicating whether coords are avail. */
 )
@@ -339,9 +302,9 @@ int i;
 
   /*
    * Each element has one set of coordinates (i.e., node) if a coords file
-   * was provided; zero otherwise.
+   * was provided; zero otherwise. 
    */
-  MPI_Bcast( &no_geom, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast( &no_geom, 1, MPI_INT, 0, zoltan_get_global_comm());
   if (no_geom)
     mesh->eb_nnodes[0] = 0;
   else
@@ -356,7 +319,7 @@ int i;
   strcpy(mesh->eb_names[0], "chaco");
 
   /* allocate the element structure array */
-  mesh->elements = (ELEM_INFO_PTR) malloc (mesh->elem_array_len
+  mesh->elements = (ELEM_INFO_PTR) malloc (mesh->elem_array_len 
                                          * sizeof(ELEM_INFO));
   if (!(mesh->elements)) {
     Gen_Error(0, "fatal: insufficient memory");
@@ -367,7 +330,7 @@ int i;
    * intialize all of the element structs as unused by
    * setting the globalID to -1
    */
-  for (i = 0; i < mesh->elem_array_len; i++)
+  for (i = 0; i < mesh->elem_array_len; i++) 
     initialize_element(&(mesh->elements[i]));
 
   /*
@@ -375,8 +338,8 @@ int i;
    * information from the Chaco file
    */
   if (!chaco_fill_elements(Proc, Num_Proc, prob, mesh, pio_info, gnvtxs, nvtxs,
-                     start, adj, vwgt_dim, vwgts, ewgt_dim, ewgts,
-                     ndim, x, y, z, assignments, base))
+                     start, adj, vwgt_dim, vwgts, ewgt_dim, ewgts, 
+                     ndim, x, y, z, assignments, base)) 
   {
     Gen_Error(0, "fatal: Error returned from chaco_fill_elements");
     return 0;
@@ -416,14 +379,14 @@ int chaco_fill_elements(
   int i, j, k, *local_ids = NULL;
   int num_vtx;
   int elem_id;
-  int min_vtx, max_vtx;
+  int min_vtx, max_vtx; 
   int *vtx_list = NULL;
   const char *yo = "chaco_fill_elements";
 /***************************** BEGIN EXECUTION ******************************/
 
   DEBUG_TRACE_START(Proc, yo);
 
-  chaco_init_local_ids(&local_ids, &vtx_list, &min_vtx, &max_vtx, &num_vtx,
+  chaco_init_local_ids(&local_ids, &vtx_list, &min_vtx, &max_vtx, &num_vtx, 
                        assignments, base);
 
   for (i = 0; i < num_vtx; i++) {
@@ -450,7 +413,7 @@ int chaco_fill_elements(
       mesh->elements[i].connect[0] = mesh->elements[i].globalID;
       mesh->elements[i].coord = (float **) malloc(sizeof(float *));
       mesh->elements[i].coord[0] = (float *) calloc(mesh->num_dims,
-                                                    sizeof(float));
+                                                    sizeof(float));  
       mesh->elements[i].coord[0][0] = x[i];
       mesh->elements[i].avg_coord[0] = x[i];
       if (mesh->num_dims > 1) {
@@ -508,7 +471,7 @@ int chaco_fill_elements(
          * if the adjacent element is on this processor
          * then find the local id for that element
          */
-        if (k == Proc)
+        if (k == Proc) 
           mesh->elements[i].adj[j] = (ZOLTAN_ID_TYPE)local_ids[elem_id-base-min_vtx];
         else /* use the global id */
           mesh->elements[i].adj[j] = (ZOLTAN_ID_TYPE)elem_id;
@@ -538,11 +501,11 @@ int chaco_fill_elements(
 
 /****************************************************************************/
 void chaco_init_local_ids(
-  int  **local_ids,
-  int **vtx_list,
-  int *min_vtx,
-  int *max_vtx,
-  int *num_vtx,
+  int  **local_ids, 
+  int **vtx_list, 
+  int *min_vtx, 
+  int *max_vtx, 
+  int *num_vtx, 
   short *assignments,
   int    base
 )
@@ -551,7 +514,7 @@ void chaco_init_local_ids(
 int i;
 int Proc;
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &Proc);
+  MPI_Comm_rank(zoltan_get_global_comm(), &Proc);
 
   *num_vtx = ch_dist_max_num_vtx(assignments);
   *vtx_list = (int *) malloc(((int)*num_vtx) * sizeof(int));
@@ -567,7 +530,7 @@ int Proc;
     *local_ids = (int *) malloc((*max_vtx - *min_vtx + 1) * sizeof(int));
   }
 
-  for (i = 0; i < *num_vtx; i++)
+  for (i = 0; i < *num_vtx; i++) 
     (*local_ids)[(*vtx_list)[i] - (*min_vtx)] = i;
 }
 

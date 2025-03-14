@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -55,9 +18,9 @@ extern "C" {
 
 /****************************************************************************/
 
-/* Scaling the weight of hypergraph edges.
+/* Scaling the weight of hypergraph edges. 
    This changes the inner product used in matching,
-   usually to the better!
+   usually to the better! 
    Note that the scaled weights are returned in a separate
    array (new_ewgts) and the hypergraph is not changed in this function.
 
@@ -66,10 +29,10 @@ extern "C" {
    2: net size scaling   (1/size)
    3: clique scaling     (2/(size*(size-1)))
 
-   EBEB: Removed Robert's old serial scaling methods.
+   EBEB: Removed Robert's old serial scaling methods. 
          We should look at these later.
  */
-int Zoltan_PHG_Scale_Edges (ZZ *zz, HGraph *hg, float *new_ewgt,
+int Zoltan_PHG_Scale_Edges (ZZ *zz, HGraph *hg, float *new_ewgt, 
                             int edge_scaling)
 {
 int    i, err;
@@ -77,7 +40,7 @@ int    *lsize = NULL;  /* local edge sizes */
 int    *size = NULL;   /* edge sizes */
 static char *yo = "Zoltan_PHG_Scale_Edges";
 
-  err = ZOLTAN_OK;
+  err = ZOLTAN_OK; 
 
   /* allocate size arrays */
   if (hg->nEdge == 0)
@@ -94,7 +57,7 @@ static char *yo = "Zoltan_PHG_Scale_Edges";
 
   case 0:
     /* copy current weights; no scaling. */
-    for (i = 0; i < hg->nEdge; i++)
+    for (i = 0; i < hg->nEdge; i++) 
         new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0);
     break;
 
@@ -114,7 +77,7 @@ static char *yo = "Zoltan_PHG_Scale_Edges";
 
     /* sum up local sizes */
     /* assume SCHEMEA : all procs in a row have same # hyperedges */
-    MPI_Allreduce(lsize, size, hg->nEdge, MPI_INT, MPI_SUM,
+    MPI_Allreduce(lsize, size, hg->nEdge, MPI_INT, MPI_SUM, 
                   hg->comm->row_comm);
 
 #ifdef DEBUG_EB
@@ -132,7 +95,7 @@ static char *yo = "Zoltan_PHG_Scale_Edges";
         else if (edge_scaling==2)
           new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0) / size[i];
         else if (edge_scaling==3)
-          new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0) * 2.0 /
+          new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0) * 2.0 / 
                         (size[i]*(size[i]-1.0));
       }
       else /* size[i] == 1 */
@@ -163,7 +126,7 @@ static char *yo = "Zoltan_PHG_Scale_Edges";
 int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
 {
   int i;
-  int *ldegree, *gdegree;
+  int *ldegree, *gdegree; 
   char *yo = "Zoltan_PHG_Scale_Vtx";
 
   if ((hgp->vtx_scaling==0) || (hg->nVtx==0))
@@ -177,7 +140,7 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
   }
 
   /* Allocate vtx_scal array if necessary */
-  if (hgp->vtx_scal==NULL){
+  if (hgp->vtx_scal==NULL){  
     /* first level in V-cycle or ...*/
     /* nVtx increased due to processor reduction */
     hgp->vtx_scal_size = hg->nVtx;
@@ -202,7 +165,7 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
     for (i=0; i<hg->nVtx; i++){
        ldegree[i] = hg->vindex[i+1] - hg->vindex[i]; /* local degree */
     }
-
+                                                                                
     /* Sum up along columns for global degrees. */
     MPI_Allreduce(ldegree, gdegree, hg->nVtx, MPI_INT, MPI_SUM,
           hg->comm->col_comm);
@@ -229,7 +192,7 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
     for (i=0; i<hg->nVtx; i++)
       if (gdegree[i] == 0)
          hgp->vtx_scal[i] = 1.0;
-      else
+      else    
          hgp->vtx_scal[i] = 1. / gdegree[i];
   }
   else if (hgp->vtx_scaling==3){  /* scale by sqrt vertex weights */
@@ -238,7 +201,7 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
          /* KDD Note:  Scaling by only first weight */
          if (hg->vwgt[i*hg->VtxWeightDim] == 0)
             hgp->vtx_scal[i] = 1.0;
-         else
+         else      
             /* KDD Note:  Scaling by only first weight */
             hgp->vtx_scal[i] = 1. / sqrt((double)hg->vwgt[i*hg->VtxWeightDim]);
       }
@@ -249,7 +212,7 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
          /* KDD Note:  Scaling by only first weight */
          if (hg->vwgt[i*hg->VtxWeightDim] == 0)
             hgp->vtx_scal[i] = 1.0;
-         else
+         else            
             /* KDD Note:  Scaling by only first weight */
             hgp->vtx_scal[i] = 1. / hg->vwgt[i*hg->VtxWeightDim];
       }
@@ -259,7 +222,8 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
 
   return ZOLTAN_OK;
 }
-
+ 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
+

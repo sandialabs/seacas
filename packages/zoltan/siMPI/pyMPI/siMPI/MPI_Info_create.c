@@ -19,3 +19,4 @@ int MPI_Info_create(MPI_Info *info)
   _MPI_COVERAGE();
   return PMPI_Info_create (info);
 }
+

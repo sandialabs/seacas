@@ -1,48 +1,13 @@
 !! 
 !! @HEADER
-!!
-!!!!**********************************************************************
-!!
+!! *****************************************************************************
 !!  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
-!!                  Copyright 2012 Sandia Corporation
 !!
-!! Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-!! the U.S. Government retains certain rights in this software.
-!!
-!! Redistribution and use in source and binary forms, with or without
-!! modification, are permitted provided that the following conditions are
-!! met:
-!!
-!! 1. Redistributions of source code must retain the above copyright
-!! notice, this list of conditions and the following disclaimer.
-!!
-!! 2. Redistributions in binary form must reproduce the above copyright
-!! notice, this list of conditions and the following disclaimer in the
-!! documentation and/or other materials provided with the distribution.
-!!
-!! 3. Neither the name of the Corporation nor the names of the
-!! contributors may be used to endorse or promote products derived from
-!! this software without specific prior written permission.
-!!
-!! THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-!! EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-!! IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-!! PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-!! CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-!! EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-!! PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-!! PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-!! LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-!! NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-!! SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-!!
-!! Questions? Contact Karen Devine	kddevin@sandia.gov
-!!                    Erik Boman	egboman@sandia.gov
-!!
-!!!!**********************************************************************
-!!
+!! Copyright 2012 NTESS and the Zoltan contributors.
+!! SPDX-License-Identifier: BSD-3-Clause
+!! *****************************************************************************
 !! @HEADER
- !!
+!!
 module dr_loadbal
 use zoltan
 use zoltan_user_data
@@ -135,7 +100,7 @@ type(PARIO_INFO) :: pio_info
 
 
 !  Allocate space for arrays. 
-  call MPI_Comm_size(MPI_COMM_WORLD, nprocs, ierr)
+  call MPI_Comm_size(zoltan_get_global_comm(), nprocs, ierr)
   allocate(psize(nprocs))
   allocate(partid(nprocs))
   allocate(idx(nprocs))
@@ -143,7 +108,7 @@ type(PARIO_INFO) :: pio_info
 !  
 !   *  Create a load-balancing object.
 !   
-  zz_obj => Zoltan_Create(MPI_COMM_WORLD)
+  zz_obj => Zoltan_Create(zoltan_get_global_comm())
   if (.not.associated(zz_obj)) then
     print *, "fatal:  NULL object returned from Zoltan_Create()"
     run_zoltan = .false.
@@ -168,7 +133,7 @@ type(PARIO_INFO) :: pio_info
 !     note: contents of this file may override the parameters set above 
   if (prob%ztnPrm_file /= "") then  
     call ztnPrm_read_file(zz_obj, prob%ztnPrm_file, &
-         MPI_COMM_WORLD)
+         zoltan_get_global_comm())
   endif
 
 !  
@@ -1027,7 +992,7 @@ integer(Zoltan_INT), intent(out) :: ierr
   endif
 
 !   get the processor number 
-  call MPI_Comm_rank(MPI_COMM_WORLD, proc, mpierr)
+  call MPI_Comm_rank(zoltan_get_global_comm(), proc, mpierr)
 
   j = 1
   do i = 0, current_elem%adj_len-1
@@ -1239,7 +1204,7 @@ integer(Zoltan_INT) :: test_both
   mesh => Mesh
 
   ! Find maximum partition number across all processors. 
-  call MPI_Comm_size(MPI_COMM_WORLD, Num_Proc, ierr)
+  call MPI_Comm_size(zoltan_get_global_comm(), Num_Proc, ierr)
   max_part = -1
   gmax_part = -1
   do i = 0, mesh%num_elems-1
@@ -1248,7 +1213,7 @@ integer(Zoltan_INT) :: test_both
     endif
   end do
   call MPI_Allreduce(max_part, gmax_part, 1, MPI_INTEGER, MPI_MAX, &
-                     MPI_COMM_WORLD, ierr)
+                     zoltan_get_global_comm(), ierr)
   if ((gmax_part == (Num_Proc-1)) .and. (Test_Local_Partitions == 0)) then
     test_both = 1
   else

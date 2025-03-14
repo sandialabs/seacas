@@ -20,3 +20,4 @@ int PMPI_Group_free ( MPI_Group *group )
   *group = MPI_GROUP_NULL;
   return MPI_SUCCESS;
 }
+

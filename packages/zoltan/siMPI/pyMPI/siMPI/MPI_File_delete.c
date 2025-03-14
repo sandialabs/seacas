@@ -18,5 +18,6 @@
 int MPI_File_delete(char *filename, MPI_Info info)
 {
   _MPI_COVERAGE();
-  return PMPI_File_delete(filename, info);
+  return PMPI_File_delete(filename, info); 
 }
+

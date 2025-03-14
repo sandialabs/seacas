@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -66,15 +29,15 @@ extern "C" {
 /* This function needs a distribution : rows then cols to work properly */
 int
 Zoltan_ZG_Build (ZZ* zz, ZG* graph, int local,
-  int request_GNOs,                /* Input:  Flag indicating calling code
+  int request_GNOs,                /* Input:  Flag indicating calling code 
                                               needs translation of extra GIDs
                                               to GNOs; partial 2D coloring
                                               needs this feature. */
-  int num_requested,               /* Input:  Local # of GIDs needing
+  int num_requested,               /* Input:  Local # of GIDs needing 
                                               translation to GNOs. */
-  ZOLTAN_ID_PTR requested_GIDs,    /* Input:  Calling code requests the
+  ZOLTAN_ID_PTR requested_GIDs,    /* Input:  Calling code requests the 
                                               GNOs for these GIDs */
-  ZOLTAN_GNO_TYPE *requested_GNOs  /* Output: Return GNOs of
+  ZOLTAN_GNO_TYPE *requested_GNOs  /* Output: Return GNOs of 
                                               the requested GIDs.  */
 )
 {
@@ -252,7 +215,7 @@ Zoltan_ZG_Export (ZZ* zz, const ZG* const graph, ZOLTAN_GNO_TYPE *gvtx, int *nvt
   AFFECT_NOT_NULL(gvtx, graph->mtx.mtx.globalY);
   AFFECT_NOT_NULL(nvtx, graph->mtx.mtx.nY);
   AFFECT_NOT_NULL(vtxdist, graph->mtx.dist_y);
-  AFFECT_NOT_NULL(xadj, graph->mtx.mtx.ystart);
+  AFFECT_NOT_NULL(xadj, graph->mtx.mtx.ystart); 
   AFFECT_NOT_NULL(adjncy, graph->mtx.mtx.pinGNO);
   AFFECT_NOT_NULL(partialD2, graph->fixed_vertices);
 

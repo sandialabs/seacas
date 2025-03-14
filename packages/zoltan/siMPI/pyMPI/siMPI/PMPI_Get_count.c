@@ -14,9 +14,9 @@
 
 #include "mpi.h"
 
-int PMPI_Get_count(
-        MPI_Status *status,
-        MPI_Datatype datatype,
+int PMPI_Get_count( 
+        MPI_Status *status, 
+        MPI_Datatype datatype, 
         int *count )
 {
   int size_of_one;
@@ -35,3 +35,4 @@ int PMPI_Get_count(
   }
   return MPI_SUCCESS;
 }
+

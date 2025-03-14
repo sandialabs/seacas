@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -60,9 +23,6 @@ extern "C" {
 #include "third_library.h"
 #include "third_library_params.h"
 
-#if __metis__ || __parmetis__
-#include "parmetis_interface.h"
-#endif
 /**********************************************************/
 /* Interface routine for Graph methods.                   */
 /**********************************************************/
@@ -141,7 +101,7 @@ int rc;
                          num_exp, exp_gids, exp_lids, exp_procs, exp_to_part);
   }
   else{
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
                        "Invalid value for GRAPH_PACKAGE parameter\n");
     rc = ZOLTAN_FATAL;
   }
@@ -204,7 +164,7 @@ void Zoltan_Third_Exit(ZOLTAN_Third_Graph *gr, ZOLTAN_Third_Geom *geo,
     MEMFREE(gr->ewgts);
     MEMFREE(gr->float_ewgts);
     MEMFREE(gr->adjproc);
-
+    
     Zoltan_ZG_Free(&gr->graph);
   }
 
@@ -299,7 +259,7 @@ float *wgts;
   fprintf(stderr,"Options: local %d, final_output %d, symmetrize %d keep_distribution %d speed %s\n",
     m->opts.local, m->opts.final_output, m->opts.symmetrize, m->opts.keep_distribution,
      ((m->opts.speed == 0) ? "full dd" : ((m->opts.speed == 1) ? "fast" : "no redist")));
-
+   
   fprintf(stderr,"redist %d, completed %d, bipartite %d\n", m->redist, m->completed, m->bipartite);
 
   fprintf(stderr,"globalX " ZOLTAN_GNO_SPEC ", globalY " ZOLTAN_GNO_SPEC ", nY %d, nY_ori %d, ywgtdim %d, nPins %d\n",
@@ -312,11 +272,11 @@ float *wgts;
       for (j=m->ystart[i]; j < m->ystart[i+1]; j++){
         fprintf(stderr, ZOLTAN_GNO_SPEC " ", m->pinGNO[j]);
         if (wgts && (m->pinwgtdim > 0)){
-          fprintf(stderr,"(");
+          fprintf(stderr,"("); 
           for (k=0; k < m->pinwgtdim; k++){
             fprintf(stderr,"%f ",*wgts++);
           }
-          fprintf(stderr,") ");
+          fprintf(stderr,") "); 
         }
       }
       fprintf(stderr,"\n");
@@ -364,14 +324,14 @@ int nproc_y = m2d->comm->nProc_y;
       }
 
       Zoltan_matrix_Print(m, NULL);
-
+  
       fflush(stderr);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
+    MPI_Barrier(zoltan_get_global_comm());
   }
-  MPI_Barrier(MPI_COMM_WORLD);
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
+  MPI_Barrier(zoltan_get_global_comm());
   return ZOLTAN_OK;
 }
 int Zoltan_Third_Graph_Print(ZZ *zz, ZOLTAN_Third_Graph *gr, char *s)
@@ -389,7 +349,7 @@ me = zz->Proc;
       gr->scatter_min, gr->get_data, gr->obj_wgt_dim, gr->edge_wgt_dim);
       fprintf(stderr,"num obj %d, num obj orig %d, num edges %d\n",
       gr->num_obj, gr->num_obj_orig, gr->num_edges);
-
+  
       if (gr->vtxdist){
         numvtx = gr->vtxdist[proc+1] - gr->vtxdist[proc];
         offset = gr->vtxdist[proc];
@@ -416,14 +376,14 @@ me = zz->Proc;
           fprintf(stderr,"\n");
         }
       }
-
+  
       fflush(stderr);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
+    MPI_Barrier(zoltan_get_global_comm());
   }
-  MPI_Barrier(MPI_COMM_WORLD);
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
+  MPI_Barrier(zoltan_get_global_comm());
   return ZOLTAN_OK;
 }
 
@@ -433,20 +393,20 @@ me = zz->Proc;
 #define CHECK_ZOLTAN_FREE(ptr) do { if ((ptr) != NULL) ZOLTAN_FREE(&(ptr)); } while (0)
 
 int Zoltan_TPL_Order_Init_Tree (struct Zoltan_TPL_Order_Struct *order, indextype blocknbr, indextype leavesnbr)
-{
+{   
   Zoltan_TPL_Order_Free_Struct(order);
 
   order->ancestor = (indextype *) ZOLTAN_MALLOC(blocknbr*sizeof(indextype));
   order->start = (indextype *) ZOLTAN_MALLOC((blocknbr+1)*sizeof(indextype));
   order->leaves = (indextype *) ZOLTAN_MALLOC((leavesnbr+1)*sizeof(indextype));
-
+  
   order->needfree = 1;
   if ((order->ancestor == NULL) || (order->start == NULL) || (order->leaves == NULL)) {
     Zoltan_TPL_Order_Free_Struct(order);
     return (ZOLTAN_MEMERR);
   }
   return (ZOLTAN_OK);
-}
+} 
 
 void Zoltan_TPL_Order_Free_Struct(struct Zoltan_TPL_Order_Struct *order)
 {
@@ -460,7 +420,7 @@ void Zoltan_TPL_Order_Free_Struct(struct Zoltan_TPL_Order_Struct *order)
   order->needfree = 0;
 }
 
-
+    
 
 
 #ifdef __cplusplus

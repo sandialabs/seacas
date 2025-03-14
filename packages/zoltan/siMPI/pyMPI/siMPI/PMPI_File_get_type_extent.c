@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_File_get_type_extent(MPI_File fh, MPI_Datatype datatype,
+int PMPI_File_get_type_extent(MPI_File fh, MPI_Datatype datatype, 
                              MPI_Aint *extent)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

@@ -19,3 +19,4 @@ MPI_Fint MPI_Request_c2f( MPI_Request c_request )
   _MPI_COVERAGE();
   return PMPI_Request_c2f (c_request);
 }
+

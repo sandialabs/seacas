@@ -19,3 +19,4 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided )
   _MPI_COVERAGE();
   return PMPI_Init_thread (argc, argv, required, provided);
 }
+

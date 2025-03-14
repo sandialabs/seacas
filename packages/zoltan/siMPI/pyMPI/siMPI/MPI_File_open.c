@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_File_open(MPI_Comm comm, char *filename, int amode,
+int MPI_File_open(MPI_Comm comm, char *filename, int amode, 
                   MPI_Info info, MPI_File *fh)
 {
   _MPI_COVERAGE();
-  return PMPI_File_open (comm, filename, amode, info, fh);
+  return PMPI_File_open (comm, filename, amode, info, fh); 
 }
+

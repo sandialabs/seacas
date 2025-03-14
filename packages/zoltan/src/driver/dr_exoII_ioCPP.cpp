@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include <mpi.h>   // must appear before stdio or iostream
 
@@ -117,8 +80,8 @@ int read_exoII_file(int Proc,
   gen_par_filename(pio_info->pexo_fname, par_nem_fname, pio_info, Proc,
                    Num_Proc);
 
-  /*
-   * check whether parallel file exists.  do the check with fopen
+  /* 
+   * check whether parallel file exists.  do the check with fopen 
    * as ex_open coredumps on the paragon when files do not exist.
    */
 
@@ -225,10 +188,10 @@ int read_exoII_file(int Proc,
   }
 
   /* Perform reduction on necessary fields of element blocks.  kdd 2/2001 */
-  MPI_Allreduce(nnodes, mesh->eb_nnodes, mesh->num_el_blks,
-                            MPI_INT, MPI_MAX, MPI_COMM_WORLD) ;
-  MPI_Allreduce(etypes, mesh->eb_etypes, mesh->num_el_blks,
-                            MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+  MPI_Allreduce(nnodes, mesh->eb_nnodes, mesh->num_el_blks, 
+                            MPI_INT, MPI_MAX, zoltan_get_global_comm()) ;
+  MPI_Allreduce(etypes, mesh->eb_etypes, mesh->num_el_blks, 
+                            MPI_INT, MPI_MIN, zoltan_get_global_comm());
   for (i = 0; i < mesh->num_el_blks; i++) {
     strcpy(mesh->eb_names[i], get_elem_name(mesh->eb_etypes[i]));
   }
@@ -239,7 +202,7 @@ int read_exoII_file(int Proc,
    * allocate a little extra for element migration latter
    */
   mesh->elem_array_len = mesh->num_elems + 5;
-  mesh->elements = (ELEM_INFO_PTR) malloc (mesh->elem_array_len
+  mesh->elements = (ELEM_INFO_PTR) malloc (mesh->elem_array_len 
                                          * sizeof(ELEM_INFO));
   if (!(mesh->elements)) {
     Gen_Error(0, "fatal: insufficient memory");
@@ -250,7 +213,7 @@ int read_exoII_file(int Proc,
    * intialize all of the element structs as unused by
    * setting the globalID to -1
    */
-  for (i = 0; i < mesh->elem_array_len; i++)
+  for (i = 0; i < mesh->elem_array_len; i++) 
     initialize_element(&(mesh->elements[i]));
 
   /* read the information for the individual elements */
@@ -476,7 +439,7 @@ static int read_elem_info(int pexoid, int Proc, PROB_INFO_PTR prob,
 
   /*************************************************************************/
   /*	Part two: Find the adjacencies on this processor                     */
-  /*		and get the edge weights                                     */
+  /*		and get the edge weights                                     */ 
   /*************************************************************************/
   if (!find_adjacency(Proc, mesh, sur_elem, nsurnd, max_nsur)) {
     Gen_Error(0, "fatal: Error returned from find_adjacency");
@@ -529,7 +492,7 @@ static int find_surnd_elem(MESH_INFO_PTR mesh, int **sur_elem, int *nsurnd,
   int     ielem, inode, lnode;
   int    *alloc_cnt, *tmp_ptr;
   ELEM_INFO_PTR elements = mesh->elements;
-
+  
 /***************************** BEGIN EXECUTION ******************************/
 
   alloc_cnt = (int *) malloc(mesh->num_nodes * sizeof(int));
@@ -615,7 +578,7 @@ static int find_adjacency(int Proc, MESH_INFO_PTR mesh,
    * is temporary, and will be expanded. This will make determining
    * off processor adjacencies much easier.
    *
-   * Adjacency info for an element's side i will be stored in the (i-1) entry
+   * Adjacency info for an element's side i will be stored in the (i-1) entry 
    * of adj array for the element.  Sides without adjacencies will have -1
    * as the adj array entries for those sides.  This system allows easy
    * identification of side ids for recomputing element comm maps after
@@ -666,7 +629,7 @@ static int find_adjacency(int Proc, MESH_INFO_PTR mesh,
       for (nscnt = 0; nscnt < nsides; nscnt++) {
 
         /* get the list of nodes on this side set */
-        side_cnt = ss_to_node_list((E_Type) (eb_etype[iblk]),
+        side_cnt = ss_to_node_list((E_Type) (eb_etype[iblk]), 
                                    elements[ielem].connect,
                                    (nscnt+1), side_nodes);
 
@@ -723,7 +686,7 @@ static int find_adjacency(int Proc, MESH_INFO_PTR mesh,
                * get the side id of entry. Make sure that ielem is
                * trying to communicate to a valid side of elem
                */
-              side_cnt = get_ss_mirror((E_Type) (eb_etype[iblk]),
+              side_cnt = get_ss_mirror((E_Type) (eb_etype[iblk]), 
                                        side_nodes, (nscnt+1),
                                        mirror_nodes);
 
@@ -747,7 +710,7 @@ static int find_adjacency(int Proc, MESH_INFO_PTR mesh,
                  * the edge weight is the number of nodes in the
                  * connecting face
                  */
-                elements[ielem].edge_wgt[nscnt] =
+                elements[ielem].edge_wgt[nscnt] = 
                   (float) get_elem_info(NSNODES, (E_Type) (eb_etype[iblk]),
                                        (nscnt+1));
 
@@ -838,7 +801,7 @@ static int read_comm_map_info(int pexoid, int Proc, PROB_INFO_PTR prob,
     return 0;
   }
 
-  if (ne_get_cmap_params(pexoid, NULL, NULL, mesh->ecmap_id,
+  if (ne_get_cmap_params(pexoid, NULL, NULL, mesh->ecmap_id, 
                          mesh->ecmap_cnt, Proc) < 0) {
     Gen_Error(0, "fatal: Error returned from ne_get_cmap_params");
     return 0;
@@ -865,7 +828,7 @@ static int read_comm_map_info(int pexoid, int Proc, PROB_INFO_PTR prob,
 
     if(ne_get_elem_cmap(pexoid, mesh->ecmap_id[imap],
                         &(mesh->ecmap_elemids[offset]),
-                        &(mesh->ecmap_sideids[offset]),
+                        &(mesh->ecmap_sideids[offset]), 
                         &(proc_ids[offset]), Proc) < 0) {
       Gen_Error(0, "fatal: Error returned from ne_get_elem_cmap");
       return 0;
@@ -888,26 +851,26 @@ static int read_comm_map_info(int pexoid, int Proc, PROB_INFO_PTR prob,
    * for the adjacent elements in this communication map.
    */
 
-  comm_obj = new Zoltan_Comm(max_len, proc_ids, MPI_COMM_WORLD, msg, &nrecv);
-
+  comm_obj = new Zoltan_Comm(max_len, proc_ids, zoltan_get_global_comm(), msg, &nrecv);
+  
   if (nrecv != max_len) {
     Gen_Error(0, "fatal: Error returned from Zoltan_Comm constructor");
     return 0;
   }
 
-  /* Exchange ids to neighbors.
-   * Assuming messages will be stored in order of processor number in
-   * ecmap_neighids.
+  /* Exchange ids to neighbors.  
+   * Assuming messages will be stored in order of processor number in 
+   * ecmap_neighids. 
    */
-  ierr = comm_obj->Do(msg+1, (char *) gids, sizeof(int),
+  ierr = comm_obj->Do(msg+1, (char *) gids, sizeof(int), 
                         (char *) (mesh->ecmap_neighids));
 
-  /* Exchange sanity check information.
+  /* Exchange sanity check information. 
    * Allows to check assumption that messages are stored in order of
    * processor number.
    */
   if (ierr == ZOLTAN_OK)
-    ierr = comm_obj->Do(msg+2, (char *) my_procs, sizeof(int),
+    ierr = comm_obj->Do(msg+2, (char *) my_procs, sizeof(int), 
                           (char *) recv_procs);
 
   if (ierr != ZOLTAN_OK) {
@@ -955,7 +918,7 @@ static int read_comm_map_info(int pexoid, int Proc, PROB_INFO_PTR prob,
     } /* End: "for (ielem = 0; ielem < mesh->ecmap_cnt[imap]; ielem++)" */
     offset += mesh->ecmap_cnt[imap];
   } /* End: "for for (imap = 0; imap < mesh->necmap; imap++)" */
-
+  
   free (proc_ids);
 
   DEBUG_TRACE_END(Proc, yo);
@@ -969,8 +932,8 @@ static int read_comm_map_info(int pexoid, int Proc, PROB_INFO_PTR prob,
 int write_elem_vars(
   int Proc,
   MESH_INFO_PTR mesh,
-  PARIO_INFO_PTR pio_info,
-  int num_exp,
+  PARIO_INFO_PTR pio_info, 
+  int num_exp, 
   ZOLTAN_ID_PTR exp_gids,
   int *exp_procs,
   int *exp_to_part
@@ -990,11 +953,11 @@ char cmesg[256];
 
   /* generate the parallel filename for this processor */
   int Num_Proc = 0;
-  MPI_Comm_size(MPI_COMM_WORLD, &Num_Proc);
+  MPI_Comm_size(zoltan_get_global_comm(), &Num_Proc);
 
   gen_par_filename(pio_info->pexo_fname, tmp_nem_fname, pio_info, Proc,
                    Num_Proc);
-  /*
+  /* 
    * Copy the parallel file to a new file (so we don't write results in the
    * cvs version).
    */
@@ -1034,14 +997,14 @@ char cmesg[256];
       if (mesh->elements[i].elem_blk == iblk) {
         /* Element is in block; see whether it is to be exported. */
         if ((tmp=in_list(mesh->elements[i].globalID, num_exp, (int *) exp_gids)) != -1)
-          vars[j++] = (Output.Plot_Partition ? (float) (exp_to_part[tmp])
+          vars[j++] = (Output.Plot_Partition ? (float) (exp_to_part[tmp]) 
                                        : (float) (exp_procs[tmp]));
         else
-          vars[j++] = (Output.Plot_Partition ? mesh->elements[i].my_part
+          vars[j++] = (Output.Plot_Partition ? mesh->elements[i].my_part 
                                        : (float) (Proc));
       }
     }
-    if (ex_put_elem_var(pexoid, 1, 1, mesh->eb_ids[iblk],
+    if (ex_put_elem_var(pexoid, 1, 1, mesh->eb_ids[iblk], 
                         mesh->eb_cnts[iblk], vars) < 0) {
       Gen_Error(0, "fatal: Error returned from ex_put_elem_var");
       return 0;

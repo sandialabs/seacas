@@ -22,30 +22,30 @@ int PMPI_Init ( int *argc, char **argv[]) {
   int retval = MPI_ERR_IN_STATUS;
   _MPI_COVERAGE();
   _MPI_INITIALIZED_FLAG = _MPI_TRUE;
-
+  
   /* ----------------------------------------------- */
   /*  Check for the current status of MPI            */
   /* ----------------------------------------------- */
-  if ( (_MPI_INIT_STATUS == _MPI_ENDED) || (_MPI_INIT_STATUS == _MPI_STARTED) ) {
+  if ( (_MPI_INIT_STATUS == _MPI_ENDED) || (_MPI_INIT_STATUS == _MPI_STARTED) ) {   
     if (_MPI_INIT_STATUS == _MPI_ENDED) {
       _MPI_COVERAGE();
       _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI was already finalized");
     } else {
       _MPI_COVERAGE();
-      _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI was already initialized");
+      _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI was already initialized");	
     }
     MPI_ERRORS_ARE_FATAL((MPI_Comm*)0, &retval);
     return MPI_ERR_OTHER;
-  }
+  } 
 
   /* ----------------------------------------------- */
   /* If the status is fine, initialize the internal  */
-  /* data structures                                 */
+  /* data structures                                 */ 
   /* ----------------------------------------------- */
   _MPI_COVERAGE();
-  _MPI_INIT_STATUS = _MPI_STARTED;
+  _MPI_INIT_STATUS = _MPI_STARTED; 
 
-  /* ---------- */
+  /* ---------- */ 
   /* Allocation */
   _MPI_COMM_ARRAY_SIZE = _MPI_PREALLOCATION_SIZE;
   _MPI_DATA_ARRAY_SIZE = _MPI_PREALLOCATION_SIZE;
@@ -84,9 +84,9 @@ int PMPI_Init ( int *argc, char **argv[]) {
   _MPI_TYPE_COUNT = 0;
   _MPI_OP_COUNT = 0;
   _MPI_REQ_COUNT = 0;
-
+    
   /* ------------------------- */
-  /* Set entries all to "null" */
+  /* Set entries all to "null" */ 
   for (i=0; i<_MPI_PREALLOCATION_SIZE; i++) {
     _MPI_COVERAGE();
     _MPI_Data_Invalid(i);

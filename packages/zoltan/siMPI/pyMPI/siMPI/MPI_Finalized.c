@@ -19,3 +19,4 @@ int MPI_Finalized( int *flag )
   _MPI_COVERAGE();
   return PMPI_Finalized (flag);
 }
+

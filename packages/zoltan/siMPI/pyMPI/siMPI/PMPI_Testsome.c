@@ -14,11 +14,11 @@
 
 #include "mpi.h"
 
-int PMPI_Testsome(
-        int incount,
-        MPI_Request array_of_requests[],
-        int *outcount,
-        int array_of_indices[],
+int PMPI_Testsome( 
+        int incount, 
+        MPI_Request array_of_requests[], 
+        int *outcount, 
+        int array_of_indices[], 
         MPI_Status array_of_statuses[] )
 {
   int i, j, num_active, flag, t;
@@ -36,7 +36,7 @@ int PMPI_Testsome(
         t = PMPI_Test( array_of_requests+i, &flag, array_of_statuses+j );
       if ( t != MPI_SUCCESS )
         return t;
-
+      
       if ( flag )
       {
         array_of_indices[j] = i;
@@ -45,9 +45,10 @@ int PMPI_Testsome(
       }
     }
   }
-
+  
   if ( num_active == 0 )
     *outcount = MPI_UNDEFINED;
-
+  
   return MPI_SUCCESS;
 }
+

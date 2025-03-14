@@ -15,12 +15,13 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Testall(
-        int count,
-        MPI_Request array_of_requests[],
-        int *flag,
+int PMPI_Testall( 
+        int count, 
+        MPI_Request array_of_requests[], 
+        int *flag, 
         MPI_Status array_of_statuses[] )
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

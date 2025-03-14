@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifndef __ZOLTAN_CONST_H
@@ -102,7 +65,7 @@ struct Param_List;
 /*
  *  Define the debug levels allowed.
  *    ZOLTAN_DEBUG_NONE = 0           - quiet mode; no debugging information.
- *    ZOLTAN_DEBUG_PARAMS = 1         - print values of all parameters used
+ *    ZOLTAN_DEBUG_PARAMS = 1         - print values of all parameters used 
  *                                           plus backtrace on Zoltan error.
  *    ZOLTAN_DEBUG_ZTIME = 2          - print Zoltan timing information.
  *    ZOLTAN_DEBUG_ATIME = 3          - print algorithm's timing info, if the
@@ -110,17 +73,17 @@ struct Param_List;
  *    ZOLTAN_DEBUG_TRACE_ZERO = 5     - print trace info on processor 0 only.
  *    ZOLTAN_DEBUG_TRACE_ALL = 6      - print trace info on all processors.
  *    ZOLTAN_DEBUG_TRACE_DETAIL = 7   - print detailed trace info on all processors.
- *    ZOLTAN_DEBUG_LIST = 8           - print lists of objects to be imported
+ *    ZOLTAN_DEBUG_LIST = 8           - print lists of objects to be imported 
  *                                  and exported.
  *    ZOLTAN_DEBUG_ALL = 10           - print all debug information available.
  */
-#define ZOLTAN_DEBUG_NONE 0
+#define ZOLTAN_DEBUG_NONE 0     
 #define ZOLTAN_DEBUG_PARAMS 1
 #define ZOLTAN_DEBUG_ZTIME 2
 #define ZOLTAN_DEBUG_ATIME 3
 #define ZOLTAN_DEBUG_TRACE_SINGLE 5
 #define ZOLTAN_DEBUG_TRACE_ALL 6
-#define ZOLTAN_DEBUG_TRACE_DETAIL 7
+#define ZOLTAN_DEBUG_TRACE_DETAIL 7 
 #define ZOLTAN_DEBUG_LIST 8
 #define ZOLTAN_DEBUG_ALL 10
 
@@ -155,7 +118,7 @@ struct Zoltan_TPL_Order_Struct;
 
 /*****************************************************************************/
 /*****************************************************************************/
-
+ 
 /**************************************************************************/
 /* The data structure below for hetero. machines is not being used yet!   */
 /* The structure will almost certainly change in the next release.        */
@@ -219,7 +182,7 @@ typedef struct {
 
 /*
  *  Define a Zoltan structure.  It will contain pointers to the
- *  appropriate functions for interfacing with applications and
+ *  appropriate functions for interfacing with applications and 
  *  pointers to the data structure used for load balancing.
  */
 
@@ -233,21 +196,21 @@ struct Zoltan_Struct {
   int Num_LID;                    /*  The number of entries in Local IDs.    */
   int Debug_Level;                /*  Debug level for this instance of
                                       load balancing.                        */
-  int Debug_Proc;                 /*  Print from this processor any debugging
-                                      info that is printed from only one
+  int Debug_Proc;                 /*  Print from this processor any debugging 
+                                      info that is printed from only one 
                                       processor.                             */
   int Fortran;                    /*  1 if created from Fortran, 0 otherwise */
   int Tflops_Special;             /*  Flag to indicate if we should use some
                                       MPI constructs (0) or not (1) on tflops*/
-  unsigned int Seed;              /*  Zoltan_Rand seed: default or provided
+  unsigned int Seed;              /*  Zoltan_Rand seed: default or provided 
                                       by user.     */
   struct Param_List *Params;      /*  List of parameter names & new vals     */
   int Deterministic;              /*  Flag indicating whether algorithms used
                                       should be forced to be deterministic.
                                       Default = TRUE.                        */
-  int Obj_Weight_Dim;             /*  Dimension of the object weights,
+  int Obj_Weight_Dim;             /*  Dimension of the object weights, 
                                       usually 0 (no weights) or 1            */
-  int Edge_Weight_Dim;            /*  Dimension of the edge weights,
+  int Edge_Weight_Dim;            /*  Dimension of the edge weights, 
                                       usually 0 (no weights) or 1            */
   int Timer;                      /*  Timer type that is currently active */
   struct Zoltan_Timer *ZTime;     /*  Timer structure for persistent timing. */
@@ -256,7 +219,7 @@ struct Zoltan_Struct {
                                           part assignments.     */
   ZOLTAN_PART_MULTI_FORT_FN *Get_Part_Multi_Fort;
                                        /* Fortran version            */
-  void *Get_Part_Multi_Data;           /* Ptr to user defined data to be
+  void *Get_Part_Multi_Data;           /* Ptr to user defined data to be 
                                           passed to Get_Part_Multi()    */
   ZOLTAN_PART_FN *Get_Part;            /* Fn ptr to get an object's
                                           part assignment.      */
@@ -270,7 +233,7 @@ struct Zoltan_Struct {
                                        /* Fortran version            */
   void *Get_Num_Edges_Data;            /* Ptr to user defined data
                                           to be passed to Get_Num_Edges()    */
-  ZOLTAN_NUM_EDGES_MULTI_FN *Get_Num_Edges_Multi;
+  ZOLTAN_NUM_EDGES_MULTI_FN *Get_Num_Edges_Multi;  
                                        /* Fn ptr to get multiple objects'
                                           number of edges.           */
   ZOLTAN_NUM_EDGES_MULTI_FORT_FN *Get_Num_Edges_Multi_Fort;
@@ -283,7 +246,7 @@ struct Zoltan_Struct {
                                        /* Fortran version            */
   void *Get_Edge_List_Data;            /* Ptr to user defined data
                                           to be passed to Get_Edge_List()    */
-  ZOLTAN_EDGE_LIST_MULTI_FN *Get_Edge_List_Multi;
+  ZOLTAN_EDGE_LIST_MULTI_FN *Get_Edge_List_Multi;  
                                        /* Fn ptr to get an object's edge list.*/
   ZOLTAN_EDGE_LIST_MULTI_FORT_FN *Get_Edge_List_Multi_Fort;
                                        /* Fortran version            */
@@ -292,15 +255,15 @@ struct Zoltan_Struct {
   /***************************************************************************/
   ZOLTAN_NUM_GEOM_FN *Get_Num_Geom;    /* Fn ptr to get an object's
                                           number of geometry values. */
-  ZOLTAN_NUM_GEOM_FORT_FN *Get_Num_Geom_Fort;
+  ZOLTAN_NUM_GEOM_FORT_FN *Get_Num_Geom_Fort;  
                                        /* Fortran version            */
   void *Get_Num_Geom_Data;             /* Ptr to user defined data
                                           to be passed to Get_Num_Geom()     */
   /***************************************************************************/
-  ZOLTAN_GEOM_MULTI_FN *Get_Geom_Multi;
+  ZOLTAN_GEOM_MULTI_FN *Get_Geom_Multi;        
                                        /* Fn ptr to get all objects'
                                           geometry values.           */
-  ZOLTAN_GEOM_MULTI_FORT_FN *Get_Geom_Multi_Fort;
+  ZOLTAN_GEOM_MULTI_FORT_FN *Get_Geom_Multi_Fort; 
                                        /* Fortran version         */
   void *Get_Geom_Multi_Data;           /* Ptr to user defined data
                                           to be passed to Get_Geom_Multi()   */
@@ -310,64 +273,64 @@ struct Zoltan_Struct {
   void *Get_Geom_Data;                 /* Ptr to user defined data
                                           to be passed to Get_Geom()         */
   /***************************************************************************/
-  ZOLTAN_NUM_OBJ_FN *Get_Num_Obj;      /* Fn ptr to get a proc's
+  ZOLTAN_NUM_OBJ_FN *Get_Num_Obj;      /* Fn ptr to get a proc's  
                                           number of local objects.   */
-  ZOLTAN_NUM_OBJ_FORT_FN *Get_Num_Obj_Fort;
+  ZOLTAN_NUM_OBJ_FORT_FN *Get_Num_Obj_Fort;    
                                        /* Fortran version            */
   void *Get_Num_Obj_Data;              /* Ptr to user defined data
                                           to be passed to Get_Num_Obj()      */
   /***************************************************************************/
   ZOLTAN_OBJ_LIST_FN *Get_Obj_List;    /* Fn ptr to get all local
                                           objects on a proc.         */
-  ZOLTAN_OBJ_LIST_FORT_FN *Get_Obj_List_Fort;
+  ZOLTAN_OBJ_LIST_FORT_FN *Get_Obj_List_Fort;  
                                        /* Fortran version            */
   void *Get_Obj_List_Data;             /* Ptr to user defined data
                                           to be passed to Get_Obj_List()     */
-  ZOLTAN_FIRST_OBJ_FN *Get_First_Obj;  /* Fn ptr to get the first
+  ZOLTAN_FIRST_OBJ_FN *Get_First_Obj;  /* Fn ptr to get the first   
                                           local obj on a proc.       */
   ZOLTAN_FIRST_OBJ_FORT_FN *Get_First_Obj_Fort;
                                        /* Fortran version            */
   void *Get_First_Obj_Data;            /* Ptr to user defined data
                                           to be passed to Get_First_Obj()    */
-  ZOLTAN_NEXT_OBJ_FN *Get_Next_Obj;    /* Fn ptr to get the next
+  ZOLTAN_NEXT_OBJ_FN *Get_Next_Obj;    /* Fn ptr to get the next   
                                           local obj on a proc.       */
-  ZOLTAN_NEXT_OBJ_FORT_FN *Get_Next_Obj_Fort;
+  ZOLTAN_NEXT_OBJ_FORT_FN *Get_Next_Obj_Fort;  
                                        /* Fortran version            */
   void *Get_Next_Obj_Data;             /* Ptr to user defined data
                                           to be passed to Get_Next_Obj()     */
   /***************************************************************************/
   ZOLTAN_NUM_BORDER_OBJ_FN *Get_Num_Border_Obj;
-                                       /* Fn ptr to get a proc's
+                                       /* Fn ptr to get a proc's 
                                           number of border objs wrt
                                           a given processor.         */
-  ZOLTAN_NUM_BORDER_OBJ_FORT_FN *Get_Num_Border_Obj_Fort;
-                                       /* Fortran version     */
+  ZOLTAN_NUM_BORDER_OBJ_FORT_FN *Get_Num_Border_Obj_Fort; 
+                                       /* Fortran version     */ 
   void *Get_Num_Border_Obj_Data;       /* Ptr to user defined data
                                           to be passed to
                                           Get_Num_Border_Obj()       */
-  ZOLTAN_BORDER_OBJ_LIST_FN *Get_Border_Obj_List;
+  ZOLTAN_BORDER_OBJ_LIST_FN *Get_Border_Obj_List;  
                                        /* Fn ptr to get all objects
                                           sharing a border with a
                                           given processor.           */
-  ZOLTAN_BORDER_OBJ_LIST_FORT_FN *Get_Border_Obj_List_Fort;
+  ZOLTAN_BORDER_OBJ_LIST_FORT_FN *Get_Border_Obj_List_Fort; 
                                        /* Fortran version   */
   void *Get_Border_Obj_List_Data;      /* Ptr to user defined data
                                           to be passed to
                                           Get_Border_Obj_List()      */
   ZOLTAN_FIRST_BORDER_OBJ_FN *Get_First_Border_Obj;
-                                       /* Fn ptr to get the first
-                                          object sharing a border
+                                       /* Fn ptr to get the first 
+                                          object sharing a border 
                                           with a given processor.    */
-  ZOLTAN_FIRST_BORDER_OBJ_FORT_FN *Get_First_Border_Obj_Fort;
+  ZOLTAN_FIRST_BORDER_OBJ_FORT_FN *Get_First_Border_Obj_Fort; 
                                        /* Fortran version */
   void *Get_First_Border_Obj_Data;     /* Ptr to user defined data
                                           to be passed to
                                           Get_First_Border_Obj()     */
-  ZOLTAN_NEXT_BORDER_OBJ_FN *Get_Next_Border_Obj;
-                                       /* Fn ptr to get the next
-                                          object sharing a border
+  ZOLTAN_NEXT_BORDER_OBJ_FN *Get_Next_Border_Obj;  
+                                       /* Fn ptr to get the next 
+                                          object sharing a border 
                                           with a given processor.    */
-  ZOLTAN_NEXT_BORDER_OBJ_FORT_FN *Get_Next_Border_Obj_Fort;
+  ZOLTAN_NEXT_BORDER_OBJ_FORT_FN *Get_Next_Border_Obj_Fort; 
                                        /* Fortran version   */
   void *Get_Next_Border_Obj_Data;      /* Ptr to user defined data
                                           to be passed to
@@ -376,16 +339,16 @@ struct Zoltan_Struct {
   ZOLTAN_NUM_COARSE_OBJ_FN *Get_Num_Coarse_Obj;
                                        /* Fn ptr to get the number of
                                           elements in the coarse grid*/
-  ZOLTAN_NUM_COARSE_OBJ_FORT_FN *Get_Num_Coarse_Obj_Fort;
+  ZOLTAN_NUM_COARSE_OBJ_FORT_FN *Get_Num_Coarse_Obj_Fort; 
                                        /* Fortran version     */
   void *Get_Num_Coarse_Obj_Data;       /* Ptr to user defined data
                                           to be passed to
                                           Get_Num_Coarse_Obj()       */
   /***************************************************************************/
-  ZOLTAN_COARSE_OBJ_LIST_FN *Get_Coarse_Obj_List;
+  ZOLTAN_COARSE_OBJ_LIST_FN *Get_Coarse_Obj_List;  
                                        /* Fn ptr to get all
                                           elements in the coarse grid*/
-  ZOLTAN_COARSE_OBJ_LIST_FORT_FN *Get_Coarse_Obj_List_Fort;
+  ZOLTAN_COARSE_OBJ_LIST_FORT_FN *Get_Coarse_Obj_List_Fort; 
                                        /* Fortran version   */
   void *Get_Coarse_Obj_List_Data;      /* Ptr to user defined data
                                           to be passed to
@@ -393,15 +356,15 @@ struct Zoltan_Struct {
   ZOLTAN_FIRST_COARSE_OBJ_FN *Get_First_Coarse_Obj;
                                        /* Fn ptr to get the first coarse
                                           obj on a proc.             */
-  ZOLTAN_FIRST_COARSE_OBJ_FORT_FN *Get_First_Coarse_Obj_Fort;
+  ZOLTAN_FIRST_COARSE_OBJ_FORT_FN *Get_First_Coarse_Obj_Fort; 
                                        /* Fortran version */
   void *Get_First_Coarse_Obj_Data;     /* Ptr to user defined data
                                           to be passed to
                                           Get_First_Coarse_Obj()     */
-  ZOLTAN_NEXT_COARSE_OBJ_FN *Get_Next_Coarse_Obj;
+  ZOLTAN_NEXT_COARSE_OBJ_FN *Get_Next_Coarse_Obj;  
                                        /* Fn ptr to get the next coarse
                                           obj on a proc.             */
-  ZOLTAN_NEXT_COARSE_OBJ_FORT_FN *Get_Next_Coarse_Obj_Fort;
+  ZOLTAN_NEXT_COARSE_OBJ_FORT_FN *Get_Next_Coarse_Obj_Fort; 
                                        /* Fortran version   */
   void *Get_Next_Coarse_Obj_Data;      /* Ptr to user defined data
                                           to be passed to
@@ -415,25 +378,25 @@ struct Zoltan_Struct {
                                           to be passed to
                                           Get_Num_Child()            */
   /***************************************************************************/
-  ZOLTAN_CHILD_LIST_FN *Get_Child_List;
+  ZOLTAN_CHILD_LIST_FN *Get_Child_List;        
                                        /* Fn ptr to get all
                                           children of an element     */
-  ZOLTAN_CHILD_LIST_FORT_FN *Get_Child_List_Fort;
+  ZOLTAN_CHILD_LIST_FORT_FN *Get_Child_List_Fort;  
                                        /* Fortran version            */
   void *Get_Child_List_Data;           /* Ptr to user defined data
                                           to be passed to
                                           Get_Child_List()           */
   /***************************************************************************/
-  ZOLTAN_CHILD_WEIGHT_FN *Get_Child_Weight;
+  ZOLTAN_CHILD_WEIGHT_FN *Get_Child_Weight;    
                                        /* Fn ptr to get the weight
                                           of an element              */
-  ZOLTAN_CHILD_WEIGHT_FORT_FN *Get_Child_Weight_Fort;
+  ZOLTAN_CHILD_WEIGHT_FORT_FN *Get_Child_Weight_Fort; 
                                        /* Fortran version         */
   void *Get_Child_Weight_Data;         /* Ptr to user defined data
                                           to be passed to
                                           Get_Child_Weight()         */
   /***************************************************************************/
-  ZOLTAN_HG_SIZE_CS_FN *Get_HG_Size_CS;
+  ZOLTAN_HG_SIZE_CS_FN *Get_HG_Size_CS;    
                                        /* Fn ptr to get size and format of
                                           hypergraph compressed storage.  */
   ZOLTAN_HG_SIZE_CS_FORT_FN *Get_HG_Size_CS_Fort;
@@ -441,7 +404,7 @@ struct Zoltan_Struct {
   void *Get_HG_Size_CS_Data;         /* Ptr to user defined data
                                         to be passed to Get_HG_Size_CS() */
   /***************************************************************************/
-  ZOLTAN_HG_CS_FN *Get_HG_CS;
+  ZOLTAN_HG_CS_FN *Get_HG_CS;    
                                        /* Fn ptr to get hypergraph pins
                                           in a compressed storage format.  */
   ZOLTAN_HG_CS_FORT_FN *Get_HG_CS_Fort;
@@ -449,7 +412,7 @@ struct Zoltan_Struct {
   void *Get_HG_CS_Data;                /* Ptr to user defined data
                                         to be passed to Get_HG_CS() */
   /***************************************************************************/
-  ZOLTAN_HG_SIZE_EDGE_WTS_FN *Get_HG_Size_Edge_Wts;
+  ZOLTAN_HG_SIZE_EDGE_WTS_FN *Get_HG_Size_Edge_Wts;    
                                        /* Fn ptr to get size of hypergraph
                                           edge weights to be returned.  */
   ZOLTAN_HG_SIZE_EDGE_WTS_FORT_FN *Get_HG_Size_Edge_Wts_Fort;
@@ -457,7 +420,7 @@ struct Zoltan_Struct {
   void *Get_HG_Size_Edge_Wts_Data;     /* Ptr to user defined data to be
                                           passed to Get_HG_Size_Edge_Wts() */
   /***************************************************************************/
-  ZOLTAN_HG_EDGE_WTS_FN *Get_HG_Edge_Wts;
+  ZOLTAN_HG_EDGE_WTS_FN *Get_HG_Edge_Wts;    
                                        /* Fn ptr to get hyperedge weights */
   ZOLTAN_HG_EDGE_WTS_FORT_FN *Get_HG_Edge_Wts_Fort;
                                        /* Fortran version            */
@@ -467,7 +430,7 @@ struct Zoltan_Struct {
   ZOLTAN_NUM_FIXED_OBJ_FN *Get_Num_Fixed_Obj;
                                             /* Fn ptr to get a processor's
                                                number of fixed objects.      */
-  ZOLTAN_NUM_FIXED_OBJ_FORT_FN *Get_Num_Fixed_Obj_Fort;
+  ZOLTAN_NUM_FIXED_OBJ_FORT_FN *Get_Num_Fixed_Obj_Fort;  
                                             /* Fortran version               */
   void *Get_Num_Fixed_Obj_Data;             /* Ptr to user defined data to be
                                                passed to Get_Num_Fixed_Obj() */
@@ -475,14 +438,14 @@ struct Zoltan_Struct {
   ZOLTAN_FIXED_OBJ_LIST_FN *Get_Fixed_Obj_List;
                                             /* Fn ptr to get a processor's
                                                number of fixed objects.      */
-  ZOLTAN_FIXED_OBJ_LIST_FORT_FN *Get_Fixed_Obj_List_Fort;
+  ZOLTAN_FIXED_OBJ_LIST_FORT_FN *Get_Fixed_Obj_List_Fort;  
                                             /* Fortran version               */
   void *Get_Fixed_Obj_List_Data;            /* Ptr to user defined data to be
                                                passed to Get_Fixed_Obj_List()*/
   /***************************************************************************/
   ZOLTAN_HIER_NUM_LEVELS_FN *Get_Hier_Num_Levels;
                                        /* Function that returns the number
-                                          of levels for hierarchical
+                                          of levels for hierarchical 
                                           partitioning */
   ZOLTAN_HIER_NUM_LEVELS_FORT_FN *Get_Hier_Num_Levels_Fort;
                                        /* Fortran version             */
@@ -499,7 +462,7 @@ struct Zoltan_Struct {
   /***************************************************************************/
   ZOLTAN_HIER_METHOD_FN *Get_Hier_Method;
                                        /* Function that allows app to set the
-                                          LB method and params for process
+                                          LB method and params for process 
                                           at a given level in
                                           hierarchical partitioning */
   ZOLTAN_HIER_METHOD_FORT_FN *Get_Hier_Method_Fort;
@@ -559,7 +522,7 @@ struct Zoltan_Struct {
   void *Unpack_Obj_Multi_Data;         /* Ptr to user defined data to be
                                           passed to Unpack_Obj_Multi()       */
   /***************************************************************************/
-  ZOLTAN_PROC_NAME_FN *Get_Processor_Name;
+  ZOLTAN_PROC_NAME_FN *Get_Processor_Name; 
                                        /* Fn ptr to get proc name   */
   void *Get_Processor_Name_Data;       /* Ptr to user defined data   */
 
@@ -603,9 +566,9 @@ typedef struct Zoltan_Transform_Struct ZZ_Transform;
  *  that are not included in the load-balancing communicator.
  */
 
-#define ZOLTAN_PROC_NOT_IN_COMMUNICATOR(zz) ((zz)->Proc == -1)
+#define ZOLTAN_PROC_NOT_IN_COMMUNICATOR(zz) ((zz)->Proc == -1) 
 
-/*
+/*  
  *  Print trace information.
  */
 
@@ -661,10 +624,10 @@ typedef struct Zoltan_Transform_Struct ZZ_Transform;
 /*
  *  Debugging macro for Tflop architecture.
  *  ZOLTAN_HEAP_INFO(proc_number, string) prints information about the heap,
- *  such as number of fragments, total free memory, largest free chunk
+ *  such as number of fragments, total free memory, largest free chunk 
  *  of memory, and total used memory.  The processor number and provided
  *  string are printed to help instrument the code.
- *  On architectures other than Tflop, ZOLTAN_HEAP_INFO compiles
+ *  On architectures other than Tflop, ZOLTAN_HEAP_INFO compiles 
  *  but has no effect.
  */
 #ifdef TFLOP
@@ -683,9 +646,9 @@ typedef struct Zoltan_Transform_Struct ZZ_Transform;
 /*****************************************************************************/
 /*****************************************************************************/
 /* PROTOTYPES */
-extern int Zoltan_Get_Obj_List(ZZ *, int *,
+extern int Zoltan_Get_Obj_List(ZZ *, int *, 
               ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, int, float**, int **);
-extern int Zoltan_Get_Obj_List_Special_Malloc(ZZ *, int *,
+extern int Zoltan_Get_Obj_List_Special_Malloc(ZZ *, int *, 
               ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, int, float**, int **);
 
 extern int Zoltan_Print_Obj_List( ZZ *zz, ZOLTAN_ID_PTR Gids, ZOLTAN_ID_PTR Lids,

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,18 +31,18 @@ comm_group level_info[NLEVELS];
     rc = MPI_Comm_size(comm[i], nprocs + i);
     if (rc != MPI_SUCCESS){
       MPI_Error_string(rc, errorstr, &len);
-      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr);
+      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr); 
     }
-
+  
     rc = MPI_Comm_rank(comm[i], me + i);
     if (rc != MPI_SUCCESS){
       MPI_Error_string(rc, errorstr, &len);
-      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr);
+      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr); 
     }
 #ifdef DEBUG_ME
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
     printf("(%d) %s communicator, size %d, my rank %d\n",me[0],commName[i],nprocs[i],me[i]);
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
 #endif
   }
 
@@ -95,7 +58,7 @@ comm_group level_info[NLEVELS];
     /*
      * classes[k] contains the rank (in level i) of the rank 0 element of element k's subcommunicator
      */
-    level_down(i, classes, me, nprocs);
+    level_down(i, classes, me, nprocs); 
 
     /*
      * my sub communicator will create which parts in the final partitioning?
@@ -104,19 +67,19 @@ comm_group level_info[NLEVELS];
   }
 
 #ifdef DEBUG_ME
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
   for (i=0; i < nprocs[0]; i++){
     if (i == me[0]){
-      printf("(%d) ranges: %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) \n",
+      printf("(%d) ranges: %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) \n", 
         me[0],
-        commName[0], level_part_range[0][0],  level_part_range[0][1], level_part_range[0][0] + me[0],
+        commName[0], level_part_range[0][0],  level_part_range[0][1], level_part_range[0][0] + me[0], 
         commName[1], level_part_range[1][0],  level_part_range[1][1], level_part_range[1][0] + me[1],
         commName[2], level_part_range[2][0],  level_part_range[2][1], level_part_range[2][0] + me[2],
         commName[3], level_part_range[3][0],  level_part_range[3][1], level_part_range[3][0] + me[3]);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
+    MPI_Barrier(zoltan_get_global_comm());
+    MPI_Barrier(zoltan_get_global_comm());
   }
 #endif
 
@@ -134,7 +97,7 @@ comm_group level_info[NLEVELS];
       lval=0;   /* meaningful level in hierarchy */
     }
 
-    MPI_Allreduce(&lval, &gval, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(&lval, &gval, 1, MPI_INT, MPI_SUM, zoltan_get_global_comm());
 
     if (gval < nprocs[0]){
       /* next level in hierarchy is significant for at least some processes */
@@ -143,10 +106,10 @@ comm_group level_info[NLEVELS];
   }
 
 #ifdef DEBUG_ME
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
   printf("(%d) %d significant levels %d %d %d %d\n",me[0], num_significant_levels,
   level_number[0], level_number[1], level_number[2], level_number[3]);
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
 #endif
 
   /* Save global info about topology */
@@ -155,13 +118,13 @@ comm_group level_info[NLEVELS];
 
   my_part_number = level_part_range[level][0] + me[level];
 
-  MPI_Allgather(&my_part_number, 1, MPI_INT, procToPart, 1, MPI_INT, MPI_COMM_WORLD);
+  MPI_Allgather(&my_part_number, 1, MPI_INT, procToPart, 1, MPI_INT, zoltan_get_global_comm());
 
   for (i=0; i < nprocs[0]; i++){
     partToProc[procToPart[i]] = i;
   }
 
-  level_info[0].comm = MPI_COMM_WORLD;
+  level_info[0].comm = zoltan_get_global_comm();
   level_info[0].name = commName[0];
   level_info[0].nGroups = 1;
   level_info[0].myGroup = 0;
@@ -177,7 +140,7 @@ comm_group level_info[NLEVELS];
     memset((void *)&level_info[i], 0, sizeof(comm_group));
     mine = 0;
 
-    MPI_Allgather(&(level_part_range[level][0]), 1, MPI_INT, buf, 1, MPI_INT, MPI_COMM_WORLD);
+    MPI_Allgather(&(level_part_range[level][0]), 1, MPI_INT, buf, 1, MPI_INT, zoltan_get_global_comm());
     memset(classes, 0, sizeof(int) * nprocs[0]);
     for (j=0; j < nprocs[0]; j++){
       classes[buf[j]]++;
@@ -234,7 +197,7 @@ comm_group level_info[NLEVELS];
                 level_info[i].name, 0, level_info[i].offsets[1]-1);
     }
 
-    ping_pong_test(MPI_COMM_WORLD, me[0], sender, receiver, 100);
+    ping_pong_test(zoltan_get_global_comm(), me[0], sender, receiver, 100);
 
     /* ping pong across an entity */
 
@@ -246,7 +209,7 @@ comm_group level_info[NLEVELS];
     sender = partToProc[0];
     receiver = partToProc[level_info[i].offsets[1]];
 
-    ping_pong_test(MPI_COMM_WORLD, me[0], sender, receiver, 100);
+    ping_pong_test(zoltan_get_global_comm(), me[0], sender, receiver, 100);
   }
 
   MPI_Finalize();
@@ -308,7 +271,7 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
      fflush(stdout);
    }
 
-/* Communications between nodes
+/* Communications between nodes 
  *   - Blocking sends and recvs
  *   - No guarantee of prepost, so might pass through comm buffer
  */
@@ -381,20 +344,20 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
 
         if (myproc == senderRank) {
 
-           MPI_Recv(NULL, 0, MPI_CHAR, receiverRank, 99, MPI_COMM_WORLD, &status);   /* ok to start */
+           MPI_Recv(NULL, 0, MPI_CHAR, receiverRank, 99, zoltan_get_global_comm(), &status);   /* ok to start */
            MPI_Irecv(b, size/8, MPI_DOUBLE, other_proc, j, comm, &request);
-
+  
            t0 = MPI_Wtime();
            MPI_Send(a, size/8, MPI_DOUBLE, other_proc, j, comm);
            MPI_Wait(&request, &status);
            tsum += MPI_Wtime() - t0;
-
+  
         } else if (myproc == receiverRank) {
 
            MPI_Irecv(b, size/8, MPI_DOUBLE, other_proc, j, comm, &request);
 
-           MPI_Send(NULL, 0, MPI_CHAR, senderRank, 99, MPI_COMM_WORLD);    /* ok to start */
-
+           MPI_Send(NULL, 0, MPI_CHAR, senderRank, 99, zoltan_get_global_comm());    /* ok to start */
+  
            MPI_Wait(&request, &status);
 
            MPI_Send(b, size/8, MPI_DOUBLE, other_proc, j, comm);
@@ -442,14 +405,14 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
         t0 = MPI_Wtime();
         MPI_Send(a, size/8, MPI_DOUBLE, other_proc, 0, comm);
         MPI_Wait(&request_b, &status);
-
+  
         b[0] += 1.0;
         if (last != 0)
         b[last] += 1.0;
-
+  
         MPI_Send(b, size/8, MPI_DOUBLE, other_proc, 0, comm);
         MPI_Wait(&request_a, &status);
-
+  
         t1 = MPI_Wtime();
         time = 1.e6 * (t1 - t0);
       }
@@ -478,3 +441,5 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
       printf("\n Max rate = %f MB/sec  Min latency = %f usec\n",
                max_rate, min_latency);
 }
+
+

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -62,9 +25,9 @@ extern "C" {
 /*****************************************************************************/
 /*****************************************************************************/
 /*
- *  This file contains routines that create, copy, and destroy load-balancing
+ *  This file contains routines that create, copy, and destroy load-balancing 
  *  structures (struct Zoltan_Struct).
- *  These functions are all callable by the application.
+ *  These functions are all callable by the application. 
  */
 /*****************************************************************************/
 /*****************************************************************************/
@@ -114,7 +77,7 @@ int proc;
   if (communicator == MPI_COMM_NULL) {
     /*
      *  The processor is not in the communicator for the load-balancing
-     *  structure.  Set zz->Communicator to MPI_COMM_NULL and give dummy
+     *  structure.  Set zz->Communicator to MPI_COMM_NULL and give dummy 
      *  values to zz->Proc and zz->Num_Proc.
      */
     zz->Communicator = MPI_COMM_NULL;
@@ -155,7 +118,7 @@ ZZ *Zoltan_Copy(ZZ const *from)
     Zoltan_Destroy(&to);
   }
 
-  return to;
+  return to; 
 }
 
 /****************************************************************************/
@@ -165,7 +128,7 @@ ZZ *Zoltan_Copy(ZZ const *from)
 int Zoltan_Copy_To(ZZ *to, ZZ const *from)
 {
   /*
-   * Copy one Zoltan_Struct to another.  "to" must be a valid
+   * Copy one Zoltan_Struct to another.  "to" must be a valid 
    * Zoltan_Struct.
    */
 
@@ -175,7 +138,7 @@ int Zoltan_Copy_To(ZZ *to, ZZ const *from)
   *to = *from;
 
   MPI_Comm_dup(from->Communicator, &(to->Communicator));
-
+  
   to->Params = NULL;
   Zoltan_Copy_Params(&(to->Params), from->Params);
 
@@ -236,7 +199,7 @@ static void Zoltan_Free_Structures(
  */
 
   /* Free load-balancing data */
-  if (zz->LB.Free_Structure != NULL)
+  if (zz->LB.Free_Structure != NULL) 
     zz->LB.Free_Structure(zz);
 
  /* Add calls to additional module-specific free routines here.  */
@@ -352,7 +315,7 @@ static void Zoltan_Init(ZZ* zz)
   zz->Pack_Obj_Multi = NULL;
   zz->Unpack_Obj_Multi = NULL;
   zz->Get_Obj_Size_Multi = NULL;
-
+  
   zz->Pack_Obj_Fort = NULL;
   zz->Unpack_Obj_Fort = NULL;
   zz->Get_Obj_Size_Fort = NULL;
@@ -378,7 +341,7 @@ static void Zoltan_Init(ZZ* zz)
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-size_t Zoltan_Serialize_Size(struct Zoltan_Struct const *zz)
+size_t Zoltan_Serialize_Size(struct Zoltan_Struct const *zz) 
 {
   /* Compute size of buffer needed to serialize Zoltan_Struct */
   size_t bufSize = 0;
@@ -403,7 +366,7 @@ int Zoltan_Serialize(ZZ const *zz, size_t bufSize, char *buf)
   *intptr = zz->Debug_Proc; intptr++;
   *intptr = zz->Fortran; intptr++;
   *intptr = zz->Tflops_Special; intptr++;
-  *intptr = *((const int*) &(zz->Seed)); intptr++;
+  *intptr = *((int*) &(zz->Seed)); intptr++;
   *intptr = zz->Deterministic; intptr++;
   *intptr = zz->Obj_Weight_Dim; intptr++;
   *intptr = zz->Edge_Weight_Dim; intptr++;
@@ -417,7 +380,7 @@ int Zoltan_Serialize(ZZ const *zz, size_t bufSize, char *buf)
   Zoltan_LB_Serialize(zz, &bufptr);
 
   if (bufptr - buf > bufSize) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, "Zoltan_Serialize",
+    ZOLTAN_PRINT_ERROR(zz->Proc, "Zoltan_Serialize", 
                        "Buffer provided is too small; Zoltan just overwrote "
                        "your memory.");
     ierr = ZOLTAN_MEMERR;
@@ -430,7 +393,7 @@ int Zoltan_Deserialize(struct Zoltan_Struct *zz, size_t bufSize, char *buf)
 {
   int ierr = ZOLTAN_OK;
   char *bufptr = buf;
-
+  
   /* Copy 11 integers */
   int *intptr = (int *) bufptr;
   zz->Num_GID = *intptr; intptr++;
@@ -447,7 +410,7 @@ int Zoltan_Deserialize(struct Zoltan_Struct *zz, size_t bufSize, char *buf)
   bufptr = (char *) intptr;
 
   /* Consistent with Zoltan defaults, set default LB_METHOD to RCB; doing so
-   * sets the various function pointers for RCB.
+   * sets the various function pointers for RCB. 
    * Method and function pointers will be reset if parameter LB_METHOD has
    * been provided by user. */
   Zoltan_Set_Param(zz, "LB_METHOD", "RCB");
@@ -457,7 +420,7 @@ int Zoltan_Deserialize(struct Zoltan_Struct *zz, size_t bufSize, char *buf)
   Zoltan_LB_Deserialize(zz, &bufptr);
 
   if (bufptr - buf > bufSize) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, "Zoltan_Deserialize",
+    ZOLTAN_PRINT_ERROR(zz->Proc, "Zoltan_Deserialize", 
                        "Buffer provided is too small; Zoltan just copied "
                        "garbage memory.");
     ierr = ZOLTAN_MEMERR;

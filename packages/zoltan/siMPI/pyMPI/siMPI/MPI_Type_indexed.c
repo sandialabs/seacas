@@ -14,13 +14,14 @@
 
 #include "mpi.h"
 
-int MPI_Type_indexed(
-        int count,
-        int blocklens[],
-        int indices[],
-        MPI_Datatype old_type,
+int MPI_Type_indexed( 
+        int count, 
+        int blocklens[], 
+        int indices[], 
+        MPI_Datatype old_type, 
         MPI_Datatype *newtype )
 {
   _MPI_COVERAGE();
   return PMPI_Type_indexed (count, blocklens, indices, old_type, newtype);
 }
+

@@ -15,11 +15,12 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Allgatherv ( void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                     void *recvbuf, int *recvcounts, int *displs,
+int PMPI_Allgatherv ( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+                     void *recvbuf, int *recvcounts, int *displs, 
                     MPI_Datatype recvtype, MPI_Comm comm )
 {
   _MPI_COVERAGE();
   if ( recvcounts == 0 ) return MPI_ERR_ARG;
   return PMPI_Gather(sendbuf,sendcount,sendtype,recvbuf,*recvcounts,recvtype,0,comm);
 }
+

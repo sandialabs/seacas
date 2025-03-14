@@ -16,9 +16,10 @@
 
 /* STUB */
 int PMPI_Allgather ( void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                    void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                    void *recvbuf, int recvcount, MPI_Datatype recvtype, 
                    MPI_Comm comm )
 {
   _MPI_COVERAGE();
   return PMPI_Gather(sendbuf,sendcount,sendtype,recvbuf,recvcount,recvtype,0,comm);
 }
+

@@ -1,55 +1,18 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
 #endif
 
 #include "zoltan_util.h"
-#include "coloring.h"
+#include "coloring.h"    
 #include "g2l_hash.h"
 
 
@@ -61,8 +24,8 @@ extern "C" {
  */
 
 #define MAX_PRIME 193
-
-static int Zoltan_GenPrime(int stopafter, int *prime_num)
+    
+int Zoltan_GenPrime(int stopafter, int *prime_num)
 {
     static const int primes[MAX_PRIME]=
         {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 41, 47, 53, 59, 67, 79, 89,
@@ -109,7 +72,7 @@ static int Zoltan_GenPrime(int stopafter, int *prime_num)
 }
 
 #undef MAX_PRIME
-
+    
 
 int Zoltan_G2LHash_Create(G2LHash *hash, int maxsize, ZOLTAN_GNO_TYPE base, int nlvtx)
 {
@@ -198,7 +161,7 @@ int Zoltan_KVHash_Create(KVHash *hash, int maxsize)
 
     if (Zoltan_GenPrime(maxsize , &(hash->maxsize))==ZOLTAN_MEMERR)
       return ZOLTAN_MEMERR;
-
+    
     hash->table = NULL;
     hash->nodes = NULL;
     hash->size = 0;
@@ -218,12 +181,12 @@ int Zoltan_KVHash_Destroy(KVHash *hash)
     ZOLTAN_FREE(&hash->nodes);
 
     return ZOLTAN_OK;
-}
+}    
 
 int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value)
 {
     int i;
-
+    
     G2LHashNode *ptr;
 
     i = Zoltan_Hash((ZOLTAN_ID_PTR) (void *)&key, hash->num_gid_entries, (unsigned int) hash->maxsize);
@@ -233,7 +196,7 @@ int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value)
             ZOLTAN_PRINT_ERROR(-1, "Zoltan_KVHash_Insert", "Hash is full!");
             return -1;
         }
-
+        
         ptr = &(hash->nodes[hash->size]);
         ptr->gno = key;
         ptr->lno = value;
@@ -243,11 +206,11 @@ int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value)
     } else
         value = ptr->lno;
 
-    return value;
+    return value;   
 }
 
 
-int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key)
+int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key)    
 {
     int i;
     G2LHashNode *ptr;
@@ -259,7 +222,7 @@ int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key)
     else
         return ptr->lno;
 }
-
+    
 
 
 #ifdef __cplusplus

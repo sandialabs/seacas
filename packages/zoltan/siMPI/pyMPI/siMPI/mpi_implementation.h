@@ -9,14 +9,13 @@
 /* FILE  ***********    mpi_implementation.h   ********************/
 /******************************************************************/
 /* Author : Lisa Alano June 18 2002                               */
-/* Copyright (c) 2002, 2023 University of California Regents            */
+/* Copyright (c) 2002 University of California Regents            */
 /******************************************************************/
 
 #ifndef _MPI_IMPL_H
 #define _MPI_IMPL_H
 
 #ifdef __cplusplus
-  // NOLINTBEGIN
 extern "C" {
 #endif
 
@@ -47,7 +46,7 @@ extern "C" {
 #define _MPI_NOT_VALID		(-500)
 #define _MPI_NULL		(-1)
 
-#define _MPI_OP_START       	(MPI_MAX)
+#define _MPI_OP_START       	(MPI_MAX)	
 #define _MPI_OP_END       	(MPI_MAXLOC)
 #define _MPI_OP_OFFSET		(_MPI_OP_END+1)
 #define _MPI_TYPE_START         (MPI_CHAR)
@@ -134,7 +133,7 @@ typedef struct _MPI_COMM_IMPL {
   int valid;
   MPI_Handler_function_pointer handler;
   /*MPI_Handler_function handler;*/
-  MPI_Group group;
+  MPI_Group group; 
 } _MPI_COMM_IMPL;
 
 typedef struct _MPI_TYPE_DES {
@@ -158,13 +157,13 @@ typedef struct _MPI_DATA_ENTRY {
   int count;
   MPI_Datatype type;
   int tag;
-  MPI_Comm comm;
+  MPI_Comm comm; 
   int user;      /*Lets you know if you should free the buffer. No, if it is the user's buffer*/
 } _MPI_DATA_ENTRY;
 
 typedef struct _MPI_OP_TYPE {
   int valid;
-  void (*function) ( void * a, void * b, int * len, MPI_Datatype * );
+  void (*function) ( void * a, void * b, int * len, MPI_Datatype * ); 
   int commute;
 } _MPI_OP_TYPE;
 
@@ -258,7 +257,6 @@ int _MPI_Find_free (void);
 
 #ifdef __cplusplus
 }
-  // NOLINTEND
 #endif
 
 #endif

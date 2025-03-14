@@ -14,9 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_Graph_neighbors ( MPI_Comm comm, int rank, int maxneighbors,
+int MPI_Graph_neighbors ( MPI_Comm comm, int rank, int maxneighbors, 
                         int *neighbors )
 {
   _MPI_COVERAGE();
   return PMPI_Graph_neighbors (comm, rank, maxneighbors, neighbors);
 }
+

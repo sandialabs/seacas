@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #include <stdio.h>
@@ -145,7 +108,7 @@ char *recv_data)		/* array of data I'll own after comm */
 
     /* Check input parameters */
     if (!plan) {
-        MPI_Comm_rank(MPI_COMM_WORLD, &my_proc);
+        MPI_Comm_rank(zoltan_get_global_comm(), &my_proc);
 	ZOLTAN_COMM_ERROR("Communication plan = NULL", yo, my_proc);
 	return ZOLTAN_FATAL;
     }
@@ -162,10 +125,10 @@ char *recv_data)		/* array of data I'll own after comm */
     if ((plan->nsends + plan->self_msg) && !send_data) {
         size_t sum = 0;
         if (plan->sizes_to)   /* Not an error if all sizes_to == 0 */
-            for (i = 0; i < (plan->nsends + plan->self_msg); i++)
+            for (i = 0; i < (plan->nsends + plan->self_msg); i++) 
                 sum += plan->sizes_to[i];
         if (!plan->sizes_to || (plan->sizes_to && sum)) {
-            ZOLTAN_COMM_ERROR("nsends not zero, but send_data = NULL",
+            ZOLTAN_COMM_ERROR("nsends not zero, but send_data = NULL", 
                               yo, my_proc);
             return ZOLTAN_FATAL;
         }
@@ -173,10 +136,10 @@ char *recv_data)		/* array of data I'll own after comm */
     if ((plan->nrecvs + plan->self_msg) && !recv_data) {
         size_t sum = 0;
         if (plan->sizes_from)   /* Not an error if all sizes_from == 0 */
-            for (i = 0; i < (plan->nrecvs + plan->self_msg); i++)
+            for (i = 0; i < (plan->nrecvs + plan->self_msg); i++) 
                 sum += plan->sizes_from[i];
         if (!plan->sizes_from || (plan->sizes_from && sum)) {
-            ZOLTAN_COMM_ERROR("nrecvs not zero, but recv_data = NULL",
+            ZOLTAN_COMM_ERROR("nrecvs not zero, but recv_data = NULL", 
                               yo, my_proc);
             return ZOLTAN_FATAL;
         }
@@ -226,10 +189,10 @@ char *recv_data)		/* array of data I'll own after comm */
 		if (plan->procs_from[i] != my_proc) {
                     if (plan->sizes_from[i]) {
 		        MPI_Irecv((void *)
-                            &plan->recv_buff[(size_t)(plan->starts_from_ptr[i])
+                            &plan->recv_buff[(size_t)(plan->starts_from_ptr[i]) 
                                               * (size_t)nbytes],
 		                  plan->sizes_from[i] * nbytes,
-			          (MPI_Datatype) MPI_BYTE, plan->procs_from[i],
+			          (MPI_Datatype) MPI_BYTE, plan->procs_from[i], 
 			          tag, plan->comm, &plan->request[k]);
                     }
                     else
@@ -386,7 +349,7 @@ char *recv_data)		/* array of data I'll own after comm */
 			j++;
 		    }
                     if (plan->sizes_to[i]) {
-		        MPI_Rsend((void *) send_buff,
+		        MPI_Rsend((void *) send_buff, 
                                   plan->sizes_to[i] * nbytes,
 		                  (MPI_Datatype) MPI_BYTE, plan->procs_to[i],
                                   tag, plan->comm);
@@ -458,7 +421,7 @@ char *recv_data)		/* array of data I'll own after comm */
 
     else {			 	/* Need to copy into recv_data. */
 	if (plan->self_msg) {		/* Unpack own data before waiting */
-	    for (self_num = 0; self_num < plan->nrecvs + plan->self_msg; self_num++)
+	    for (self_num = 0; self_num < plan->nrecvs + plan->self_msg; self_num++) 
 		if (plan->procs_from[self_num] == my_proc) break;
 	    k = plan->starts_from[self_num];
             if (!plan->sizes_from || plan->sizes_from[self_num]) {
@@ -509,7 +472,7 @@ char *recv_data)		/* array of data I'll own after comm */
 {
   static char *yo = "Zoltan_Comm_Do_AlltoAll";
   char *outbuf=NULL, *inbuf=NULL, *buf=NULL;
-  int *outbufCounts=NULL, *outbufOffsets=NULL;
+  int *outbufCounts=NULL, *outbufOffsets=NULL; 
   int *inbufCounts=NULL, *inbufOffsets=NULL;
   int nprocs, me, i, j, k, p, sorted;
   int nSendMsgs, nSendItems, nRecvMsgs, nRecvItems;
@@ -541,7 +504,7 @@ char *recv_data)		/* array of data I'll own after comm */
 
   /* The *_to fields of the plan refer to the items in the send_data buffer,
    * and how to pull out the correct items for each receiver.  The
-   * *_from fields of the plan refer to the recv_data buffer.  Items
+   * *_from fields of the plan refer to the recv_data buffer.  Items 
    * arrive in process rank order, and these fields tell us where to
    * put them in the recv_data buffer.
    */
@@ -585,20 +548,20 @@ char *recv_data)		/* array of data I'll own after comm */
 
         if (i < nSendMsgs){
           if (plan->procs_to[i] == p){   /* procs_to is sorted */
-
+  
             for (j=0; j < plan->lengths_to[i]; j++,k++){
               itemSize = plan->sizes[plan->indices_to[k]] * nbytes;
               offset = plan->indices_to_ptr[k] * nbytes;
-
+  
               memcpy(buf, send_data + offset, itemSize);
-
+  
               buf += itemSize;
               length += itemSize;
             }
             i++;
           }
         }
-
+  
         outbufCounts[p] = length;
         if (p){
           outbufOffsets[p] = outbufOffsets[p-1] + outbufCounts[p-1];
@@ -632,7 +595,7 @@ char *recv_data)		/* array of data I'll own after comm */
           if (plan->procs_to[i] == p){   /* procs_to is sorted */
             length = plan->sizes_to[i] * nbytes;
             offset = plan->starts_to_ptr[i] * nbytes;
-
+  
             if ((!sorted || (plan->nvals > nSendItems)) && length){
               memcpy(buf, send_data + offset, length);
               buf += length;
@@ -640,7 +603,7 @@ char *recv_data)		/* array of data I'll own after comm */
             i++;
           }
         }
-
+  
         outbufCounts[p] = length;
         if (p){
           outbufOffsets[p] = outbufOffsets[p-1] + outbufCounts[p-1];
@@ -662,7 +625,7 @@ char *recv_data)		/* array of data I'll own after comm */
     for (p=0, i=0, k=0; p < nprocs; p++){
 
       length = 0;
-
+     
       if (i < nSendMsgs){
         if (plan->procs_to[i] == p){   /* procs_to is sorted */
           for (j=0; j < plan->lengths_to[i]; j++,k++){
@@ -681,7 +644,7 @@ char *recv_data)		/* array of data I'll own after comm */
       }
     }
   }
-  else{
+  else{                          
 
     /* item sizes are constant, and items belonging to a
      * given message are always stored contiguously in send_data
@@ -695,7 +658,7 @@ char *recv_data)		/* array of data I'll own after comm */
     }
     else{
       /* send_data is sorted by process, and we don't skip
-       * any of the data in the buffer, so we can use send_data
+       * any of the data in the buffer, so we can use send_data 
        * in the alltoall call
        */
       outbuf = send_data;
@@ -704,12 +667,12 @@ char *recv_data)		/* array of data I'll own after comm */
     for (p=0,i=0; p < nprocs; p++){
 
       length = 0;
-
+     
       if (i < nSendMsgs){
         if (plan->procs_to[i] == p){    /* procs_to is sorted */
           offset = plan->starts_to[i] * nbytes;
           length = plan->lengths_to[i] * nbytes;
-
+  
           if ((!sorted || (plan->nvals > nSendItems)) && length){
             memcpy(buf, send_data + offset, length);
             buf += length;
@@ -756,13 +719,13 @@ char *recv_data)		/* array of data I'll own after comm */
 
     if (i < nRecvMsgs){
       if (plan->procs_from[i] == p){
-
+  
         if (plan->sizes == NULL){
           length = plan->lengths_from[i] * nbytes;
         }
         else{
           length = plan->sizes_from[i] * nbytes;
-        }
+        }  
         i++;
       }
     }

@@ -18,5 +18,6 @@
 int MPI_Comm_get_name( MPI_Comm comm, char *namep, int *reslen )
 {
   _MPI_COVERAGE();
-  return PMPI_Comm_get_name (comm, namep, reslen);
+  return PMPI_Comm_get_name (comm, namep, reslen); 
 }
+

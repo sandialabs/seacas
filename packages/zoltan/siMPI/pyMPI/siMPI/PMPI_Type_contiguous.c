@@ -14,7 +14,7 @@
 
 #include "mpi.h"
 
-int PMPI_Type_contiguous(
+int PMPI_Type_contiguous( 
         int count,
         MPI_Datatype old_type,
         MPI_Datatype *newtype)
@@ -48,6 +48,7 @@ int PMPI_Type_contiguous(
     currType->next = 0;
     prevType = currType;
   }
-
+  
   return MPI_SUCCESS;
 }
+

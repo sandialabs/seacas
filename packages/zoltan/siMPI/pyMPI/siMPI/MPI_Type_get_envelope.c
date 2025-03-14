@@ -15,12 +15,13 @@
 #include "mpi.h"
 
 int MPI_Type_get_envelope(
-        MPI_Datatype datatype,
-        int *num_integers,
-        int *num_addresses,
-        int *num_datatypes,
+        MPI_Datatype datatype, 
+        int *num_integers, 
+        int *num_addresses, 
+        int *num_datatypes, 
         int *combiner)
 {
   _MPI_COVERAGE();
   return PMPI_Type_get_envelope (datatype, num_integers, num_addresses, num_datatypes, combiner);
 }
+

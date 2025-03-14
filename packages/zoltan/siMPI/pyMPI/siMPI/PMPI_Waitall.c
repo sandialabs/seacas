@@ -25,7 +25,7 @@ int PMPI_Waitall(
 {
   int retval, i;
 
-  retval = _MPI_Check_Request_Array(count, array_of_requests);
+  retval = _MPI_Check_Request_Array(count, array_of_requests); 
   if ( retval != MPI_SUCCESS ) return MPI_UNDEFINED;
 
   /* POLL THROUGH REQUESTS */
@@ -34,8 +34,9 @@ int PMPI_Waitall(
       retval = PMPI_Wait(array_of_requests+i,array_of_statuses+i);
       if (array_of_requests[i] != MPI_REQUEST_NULL) return retval;
     }
-  }
+  }  
   return MPI_SUCCESS;
-
+  
 }
 /*==========================================================================*/
+

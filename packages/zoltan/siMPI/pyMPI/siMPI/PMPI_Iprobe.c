@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Iprobe( int source, int tag, MPI_Comm comm, int *flag,
+int PMPI_Iprobe( int source, int tag, MPI_Comm comm, int *flag, 
                MPI_Status *status )
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include <mpi.h>
 #include <stdlib.h>
@@ -692,7 +655,7 @@ int check_inp (
 
 
 /* Broadcast commands to all processes.
-   NOTE: This requires manual updating when a new field
+   NOTE: This requires manual updating when a new field 
    is added to a struct, like Test!
  */
 void brdcst_cmd_info (
@@ -711,7 +674,7 @@ void brdcst_cmd_info (
   float_params[k++] = Test.Dynamic_Weights;
   float_params[k++] = Test.Dynamic_Graph;
 
-  MPI_Bcast (float_params, k, MPI_FLOAT, 0, MPI_COMM_WORLD);
+  MPI_Bcast (float_params, k, MPI_FLOAT, 0, zoltan_get_global_comm());
 
   k = 0;
   Test.Dynamic_Weights = float_params[k++];
@@ -739,7 +702,7 @@ void brdcst_cmd_info (
   int_params[j++] = Test.Gen_Files;
   int_params[j++] = Test.Vtx_Inc;
 
-  MPI_Bcast (int_params, j, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast (int_params, j, MPI_INT, 0, zoltan_get_global_comm());
 
   j = 0;
   Debug_Driver           = int_params[j++];
@@ -763,7 +726,7 @@ void brdcst_cmd_info (
   Test.Gen_Files         = int_params[j++];
   Test.Vtx_Inc           = int_params[j++];
 
-  MPI_Bcast (pio_info, sizeof(PARIO_INFO), MPI_BYTE, 0, MPI_COMM_WORLD);
+  MPI_Bcast (pio_info, sizeof(PARIO_INFO), MPI_BYTE, 0, zoltan_get_global_comm());
 
   switch (pio_info->file_type) {
   case CHACO_FILE:
@@ -785,16 +748,16 @@ void brdcst_cmd_info (
     if (Proc != 0)
       pio_info->dsk_list = (int*) malloc (pio_info->dsk_list_cnt*sizeof(int));
     MPI_Bcast (pio_info->dsk_list, pio_info->dsk_list_cnt, MPI_INT, 0,
-    MPI_COMM_WORLD);
+    zoltan_get_global_comm());
   }
 
   /* and broadcast the problem specifications */
-  MPI_Bcast (prob, sizeof(PROB_INFO), MPI_BYTE, 0, MPI_COMM_WORLD);
+  MPI_Bcast (prob, sizeof(PROB_INFO), MPI_BYTE, 0, zoltan_get_global_comm());
   if (prob->num_params > 0) {
     size = prob->num_params * sizeof(Parameter_Pair);
     if (Proc != 0)
       prob->params = (Parameter_Pair*) malloc(size);
-    MPI_Bcast (prob->params, size, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast (prob->params, size, MPI_CHAR, 0, zoltan_get_global_comm());
   }
 
   /* now calculate where the file for this processor is */

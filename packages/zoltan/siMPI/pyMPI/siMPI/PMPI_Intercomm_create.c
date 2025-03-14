@@ -15,10 +15,11 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Intercomm_create ( MPI_Comm local_comm, int local_leader,
-                         MPI_Comm peer_comm, int remote_leader, int tag,
+int PMPI_Intercomm_create ( MPI_Comm local_comm, int local_leader, 
+                         MPI_Comm peer_comm, int remote_leader, int tag, 
                          MPI_Comm *comm_out )
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

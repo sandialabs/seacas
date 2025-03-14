@@ -15,49 +15,6 @@
 
 @SET_MAKE@
 
-# @HEADER
-#
-########################################################################
-#
-#  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
-#                  Copyright 2012 Sandia Corporation
-#
-# Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-# the U.S. Government retains certain rights in this software.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the Corporation nor the names of the
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Questions? Contact Karen Devine	kddevin@sandia.gov
-#                    Erik Boman	        egboman@sandia.gov
-#
-########################################################################
-#
-# @HEADER
 
 # The following line helps the test harness recover from build errors.
 
@@ -548,12 +505,12 @@ GRAPH = \
 
 HA_H = \
 	$(srcdir)/ha/ha_const.h \
-	$(srcdir)/ha/ha_ovis.h
+	$(srcdir)/ha/ha_ovis.h 
 
 HA = \
 	$(srcdir)/ha/divide_machine.c \
 	$(srcdir)/ha/get_processor_name.c \
-	$(srcdir)/ha/ha_ovis.c
+	$(srcdir)/ha/ha_ovis.c 
 
 HIER_H = \
 	$(srcdir)/hier/hier.h
@@ -618,11 +575,11 @@ MATRIX = \
 	$(srcdir)/matrix/matrix_distribute.c \
 	$(srcdir)/matrix/matrix_operations.c \
 	$(srcdir)/matrix/matrix_sym.c \
-	$(srcdir)/matrix/matrix_utils.c
+	$(srcdir)/matrix/matrix_utils.c 
 
 ORDER_H = \
 	$(srcdir)/order/order_const.h \
-	$(srcdir)/order/hsfcOrder.h
+	$(srcdir)/order/hsfcOrder.h 
 
 ORDER = \
 	$(srcdir)/order/order.c \
@@ -664,7 +621,7 @@ TPLS_H = \
 	$(srcdir)/tpls/third_library_const.h \
 	$(srcdir)/tpls/third_library.h \
 	$(srcdir)/tpls/third_library_tools.h \
-	$(srcdir)/tpls/graph_util.h
+	$(srcdir)/tpls/graph_util.h 
 
 TPLS = \
 	$(srcdir)/tpls/build_graph.c \
@@ -680,9 +637,9 @@ EXTRA_PARMETIS_INTERFACE_H = \
 EXTRA_PARMETIS_INTERFACE = \
 	$(srcdir)/tpls/parmetis_interface.c
 
-@BUILD_PARMETIS_FALSE@PARMETIS_INTERFACE_H =
+@BUILD_PARMETIS_FALSE@PARMETIS_INTERFACE_H = 
 @BUILD_PARMETIS_TRUE@PARMETIS_INTERFACE_H = $(EXTRA_PARMETIS_INTERFACE_H)
-@BUILD_PARMETIS_FALSE@PARMETIS_INTERFACE =
+@BUILD_PARMETIS_FALSE@PARMETIS_INTERFACE = 
 @BUILD_PARMETIS_TRUE@PARMETIS_INTERFACE = $(EXTRA_PARMETIS_INTERFACE)
 EXTRA_SCOTCH_INTERFACE_H = \
 	$(srcdir)/tpls/scotch_interface.h
@@ -690,9 +647,9 @@ EXTRA_SCOTCH_INTERFACE_H = \
 EXTRA_SCOTCH_INTERFACE = \
 	$(srcdir)/tpls/scotch_interface.c
 
-@BUILD_SCOTCH_FALSE@SCOTCH_INTERFACE_H =
+@BUILD_SCOTCH_FALSE@SCOTCH_INTERFACE_H = 
 @BUILD_SCOTCH_TRUE@SCOTCH_INTERFACE_H = $(EXTRA_SCOTCH_INTERFACE_H)
-@BUILD_SCOTCH_FALSE@SCOTCH_INTERFACE =
+@BUILD_SCOTCH_FALSE@SCOTCH_INTERFACE = 
 @BUILD_SCOTCH_TRUE@SCOTCH_INTERFACE = $(EXTRA_SCOTCH_INTERFACE)
 PHG_H = \
 	$(srcdir)/phg/phg_comm.h \
@@ -813,7 +770,7 @@ UTILITIES = \
 	$(srcdir)/Utilities/shared/zoltan_id.c
 
 
-# ??
+# ?? 
 #	$(srcdir)/Utilities/Communication/Epetra_ZoltanMpiDistributor.cpp \
 #	$(srcdir)/Utilities/DDirectory/DD_Main_2.cpp \
 #	$(srcdir)/Utilities/Communication/comm_main_2.cpp
@@ -933,17 +890,17 @@ EXTRA_FORTRAN_H = \
     $(srcdir)/fort/set_unpackobj.fn \
     $(srcdir)/fort/set_unpackobj.if \
     $(srcdir)/fort/set_unpackobjmulti.fn \
-    $(srcdir)/fort/set_unpackobjmulti.if
+    $(srcdir)/fort/set_unpackobjmulti.if 
 
 EXTRA_FORTRAN = \
     $(srcdir)/fort/ztypes.f90 \
     $(srcdir)/fort/cwrap.c \
     $(srcdir)/fort/zoltan_user_data.f90 \
-    $(srcdir)/fort/fwrap.f90
+    $(srcdir)/fort/fwrap.f90 
 
-@BUILD_ZOLTAN_F90_INTERFACE_FALSE@FORTRAN_H =
+@BUILD_ZOLTAN_F90_INTERFACE_FALSE@FORTRAN_H = 
 @BUILD_ZOLTAN_F90_INTERFACE_TRUE@FORTRAN_H = $(EXTRA_FORTRAN_H)
-@BUILD_ZOLTAN_F90_INTERFACE_FALSE@FORTRAN =
+@BUILD_ZOLTAN_F90_INTERFACE_FALSE@FORTRAN = 
 @BUILD_ZOLTAN_F90_INTERFACE_TRUE@FORTRAN = $(EXTRA_FORTRAN)
 
 # ------------------------------------------------------------------------
@@ -1055,7 +1012,7 @@ include_HEADERS = $(INCLUDE_H) $(am__append_1)
 # ------------------------------------------------------------------------
 EXTRA_FORTRAN_INTERFACE = \
     $(srcdir)/fort/README \
-    $(srcdir)/fort/makefile
+    $(srcdir)/fort/makefile 
 
 ZOLTAN_MATLAB = \
     $(srcdir)/matlab/README \
@@ -1169,16 +1126,16 @@ execincludedir = $(includedir)
 nodist_execinclude_HEADERS = include/Zoltan_config.h
 
 # Add the absolute path to src/fort to F90 build line, so F90 can find
-# the files included in fwrap.f90.
-AM_FCFLAGS = -I@abs_top_srcdir@/src/fort
-AM_FFLAGS = -I@abs_top_srcdir@/src/fort
+# the files included in fwrap.f90.  
+AM_FCFLAGS = -I@abs_top_srcdir@/src/fort 
+AM_FFLAGS = -I@abs_top_srcdir@/src/fort 
 # Build zfdrive only if HAVE_MPI; I haven't figured out a proper build of
 # siMPI's Fortran interface yet (and serial zfdrive is not an important
 # use case).
 FDRIVER_SUBDIR = $(am__append_2)
 @BUILD_TESTS_FALSE@SUBDIRS = .
 
-#SUBDIRS = .
+#SUBDIRS = . 
 @BUILD_TESTS_TRUE@SUBDIRS = . driver $(FDRIVER_SUBDIR)
 
 # ------------------------------------------------------------------------
@@ -1250,7 +1207,7 @@ uninstall-libLIBRARIES:
 
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
-libzoltan.a: $(libzoltan_a_OBJECTS) $(libzoltan_a_DEPENDENCIES) $(EXTRA_libzoltan_a_DEPENDENCIES)
+libzoltan.a: $(libzoltan_a_OBJECTS) $(libzoltan_a_DEPENDENCIES) $(EXTRA_libzoltan_a_DEPENDENCIES) 
 	-rm -f libzoltan.a
 	$(libzoltan_a_AR) libzoltan.a $(libzoltan_a_OBJECTS) $(libzoltan_a_LIBADD)
 	$(RANLIB) libzoltan.a
@@ -3860,8 +3817,8 @@ include $(top_builddir)/Makefile.export.zoltan
 
 # ------------------------------------------------------------------------
 # Explicit FORTRAN dependencies to allow parallel builds (make -j)
-# KDD:  4/28/15  Specifying the dependencies does not seem to help
-# KDD:           the parallel F90 builds (although articles online
+# KDD:  4/28/15  Specifying the dependencies does not seem to help 
+# KDD:           the parallel F90 builds (although articles online 
 # KDD:           indicate it should).  I'll comment them out
 # KDD:           and use .NOTPARALLEL: instead.
 # ------------------------------------------------------------------------

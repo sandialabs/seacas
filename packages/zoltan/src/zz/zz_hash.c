@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -62,7 +25,7 @@ extern "C" {
 /*****************************************************************************/
 /*****************************************************************************/
 
-/* Zoltan_Hash is a hash function for Zoltan ids (local or global).
+/* Zoltan_Hash is a hash function for Zoltan ids (local or global). 
  *
  * Input:
  *   key: a key to hash of type ZOLTAN_ID_PTR
@@ -92,7 +55,7 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
   */
 
   uint32_t k;
-  MurmurHash3_x86_32((void *)key, sizeof(ZOLTAN_ID_TYPE)*num_id_entries,
+  MurmurHash3_x86_32((void *)key, sizeof(ZOLTAN_ID_TYPE)*num_id_entries,  
                      1, (void *)&k);
   return(k % n);
 }
@@ -101,7 +64,7 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
 
 #ifdef ZZ_NEW_HASH
 /* Let phi be the golden ratio  = 1.618033887 */
-#define MAXINT_DIV_PHI  2654435761U
+#define MAXINT_DIV_PHI  2654435761U   
    /* =2^32/phi,  best for 32 bit machines */
 /* #define MAXINT_DIV_PHI  11400714819323198485U    */
    /* =2^64/phi,  best for 64 bit machines */
@@ -113,25 +76,25 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
         that the new hash function changes some answers, therefore
         we have not yet replaced the old version. We should consider
         even stronger hash (like MD5) if we think good hashing is
-        very important.
+        very important. 
  */
-/* Algorithm:
+/* Algorithm: 
  *   This hash function is a variation of Fibonacci hashing,
  *   a multiplicative method. See e.g. Don Knuth's TAOCP,
- *   volume 3, for background information. Bitwise xor is used for
- *   keys longer than an int.
+ *   volume 3, for background information. Bitwise xor is used for 
+ *   keys longer than an int. 
  *
  *   This hash function should be replaced with a stronger method,
  *   like MD5, if high-quality hashing is important.
  *
- * Author:
- *   Erik Boman, eboman@cs.sandia.gov
+ * Author: 
+ *   Erik Boman, eboman@cs.sandia.gov 
  */
   unsigned int h, rest, *p, bytes, num_bytes;
   char *byteptr;
   unsigned int low_order_id[10];
 
-  /* We want the same hash value for 64 bit ZOLTAN_ID_TYPE that we get for
+  /* We want the same hash value for 64 bit ZOLTAN_ID_TYPE that we get for 
    * 32 bit ZOLTAN_ID_TYPE so that test answers do not change.  For 64 bit
    * ZOLTAN_ID_TYPE, we still get a good spread of hash values.
    */
@@ -145,7 +108,7 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
   /* First hash the int-sized portions of the key */
   h = 0;
   for (p = (unsigned int *)low_order_id, bytes=num_bytes;
-       bytes >= (unsigned int) sizeof(int);
+       bytes >= (unsigned int) sizeof(int); 
        bytes-=sizeof(int), p++){
     h = (h^(*p))*MAXINT_DIV_PHI;
   }
@@ -164,7 +127,7 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
   /* At this point h is a good hash value but it's not in the range (0,n-1).
    * We would like to return (h*n/INT_MAX), but this is difficult to compute
    * due to overflow. A simple alternative is to return (h%n) but this
-   * is not quite satisfactory since the leading bits are more evenly
+   * is not quite satisfactory since the leading bits are more evenly 
    * distributed than the trailing bits. Therefore we first shift
    * the bits around.
    */
@@ -187,7 +150,7 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
 unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
 {
 /* EBEB Old hash function that is compatible with the answer files. */
-/* Algorithm:
+/* Algorithm: 
  *   This hash function is based on Don Knuth's golden ratio
  *   multiplicative method. Bitwise xor is used for keys
  *   longer than an int. The method works well for keys
@@ -196,14 +159,14 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
  *   This hash function should be replaced with a stronger method
  *   if good hashing of a large number of keys is important.
  *
- * Author:
+ * Author: 
  *   Erik Boman, eboman@cs.sandia.gov (SNL 9226)
  */
   unsigned int h, rest, *p, bytes, num_bytes;
   char *byteptr;
   unsigned int low_order_id[10];
 
-  /* We want the same hash value for 64 bit ZOLTAN_ID_TYPE that we get for
+  /* We want the same hash value for 64 bit ZOLTAN_ID_TYPE that we get for 
    * 32 bit ZOLTAN_ID_TYPE so that test answers do not change.  For 64 bit
    * ZOLTAN_ID_TYPE, we still get a good spread of hash values.
    */
@@ -217,7 +180,7 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
   /* First hash the int-sized portions of the key */
   h = 0;
   for (p = (unsigned int *)low_order_id, bytes=num_bytes;
-       bytes >= (unsigned int) sizeof(int);
+       bytes >= (unsigned int) sizeof(int); 
        bytes-=sizeof(int), p++){
     h = (h*2654435761U) ^ (*p);
   }
@@ -241,12 +204,12 @@ unsigned int Zoltan_Hash(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
 /* Zoltan_Recommended_Hash_Size recommends a hash table size that can be used
  * with Zoltan_Hash.
  *
- * Input : #entries that will be stored in the hash table.
- *
- * Output : recommended size for the the hash table. This is also the range for
- * Zoltan_Hash. This is a simple
- * implementation that tries to bring the collisons to almost zero. The
- * recommeded hash size is the next largest prime number that is approximately
+ * Input : #entries that will be stored in the hash table. 
+ * 
+ * Output : recommended size for the the hash table. This is also the range for 
+ * Zoltan_Hash. This is a simple 
+ * implementation that tries to bring the collisons to almost zero. The 
+ * recommeded hash size is the next largest prime number that is approximately 
  * in the middle of 2^x and 2^(x+1) for some x.
  * */
 unsigned int Zoltan_Recommended_Hash_Size (unsigned int n)
@@ -262,7 +225,7 @@ unsigned int Zoltan_Recommended_Hash_Size (unsigned int n)
     805306457, 1610612741 } ;
     int i, hsize ;
 
-    /* SRSR : err on the side of performance and choose the next largest prime
+    /* SRSR : err on the side of performance and choose the next largest prime 
      * number. One can also choose primes[i-1] below to cut the memory by half.
      */
     hsize = primes[29] ;
@@ -283,3 +246,4 @@ unsigned int Zoltan_Recommended_Hash_Size (unsigned int n)
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
+

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 /* Basic example of using Zoltan to compute a quick partitioning
 ** of a set of objects.
 ***************************************************************/
@@ -70,7 +33,7 @@ static int get_number_of_objects(void *data, int *ierr);
 static void get_object_list(void *data, int sizeGID, int sizeLID,
             ZOLTAN_ID_PTR globalID, ZOLTAN_ID_PTR localID,
                   int wgt_dim, float *obj_wgts, int *ierr);
-
+ 
 static int get_next_line(FILE *fp, char *buf, int bufsize);
 
 static void input_file_error(int numProcs, int tag, int startProc);
@@ -87,7 +50,7 @@ int main(int argc, char *argv[])
   struct Zoltan_Struct *zz;
   int changes, numGidEntries, numLidEntries, numImport, numExport;
   ZOLTAN_ID_PTR importGlobalGids, importLocalGids;
-  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids;
+  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids; 
   int *importProcs, *importToPart, *exportProcs, *exportToPart;
   int *parts = NULL;
 
@@ -148,7 +111,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of objects to be sent to me */
@@ -202,9 +165,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -245,7 +208,7 @@ int i;
 }
 
 /* Function to find next line of information in input file */
-
+ 
 static int get_next_line(FILE *fp, char *buf, int bufsize)
 {
 int i, cval, len;
@@ -261,7 +224,7 @@ char *c;
     len = strlen(c);
 
     for (i=0, c=buf; i < len; i++, c++){
-      cval = (int)*c;
+      cval = (int)*c; 
       if (isspace(cval) == 0) break;
     }
     if (i == len) continue;   /* blank line */
@@ -372,13 +335,13 @@ int obj_ack_tag = 5, obj_count_tag = 10, obj_id_tag = 15;
       if (num == 0) input_file_error(numProcs, obj_count_tag, 1);
       num = sscanf(buf, ZOLTAN_ID_SPEC , myData->myGlobalIDs + i);
       if (num != 1) input_file_error(numProcs, obj_count_tag, 1);
-
+  
     }
 
     gids = (ZOLTAN_ID_TYPE *)malloc(sizeof(ZOLTAN_ID_TYPE) * (nobj + 1));
 
     for (i=1; i < numProcs; i++){
-
+    
       if (remainingObj > 1){
         nobj = remainingObj / 2;
         remainingObj -= nobj;
@@ -408,7 +371,7 @@ int obj_ack_tag = 5, obj_count_tag = 10, obj_id_tag = 15;
 
       if (nobj > 0)
         MPI_Send(gids, nobj, ZOLTAN_ID_MPI_TYPE, i, obj_id_tag, MPI_COMM_WORLD);
-
+      
     }
 
     free(gids);
@@ -428,7 +391,7 @@ int obj_ack_tag = 5, obj_count_tag = 10, obj_id_tag = 15;
     if (myData->numMyObjects > 0){
       myData->myGlobalIDs = (ZOLTAN_ID_TYPE *)malloc(sizeof(ZOLTAN_ID_TYPE) * myData->numMyObjects);
       MPI_Send(&ack, 1, MPI_INT, 0, obj_ack_tag, MPI_COMM_WORLD);
-      MPI_Recv(myData->myGlobalIDs, myData->numMyObjects, ZOLTAN_ID_MPI_TYPE, 0,
+      MPI_Recv(myData->myGlobalIDs, myData->numMyObjects, ZOLTAN_ID_MPI_TYPE, 0, 
                obj_id_tag, MPI_COMM_WORLD, &status);
     }
     else if (myData->numMyObjects == 0){

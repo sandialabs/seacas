@@ -15,12 +15,13 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Type_create_darray(int size, int rank, int ndims,
-                           int *array_of_gsizes, int *array_of_distribs,
-                           int *array_of_dargs, int *array_of_psizes,
-                           int order, MPI_Datatype oldtype,
-                           MPI_Datatype *newtype)
+int PMPI_Type_create_darray(int size, int rank, int ndims, 
+                           int *array_of_gsizes, int *array_of_distribs, 
+                           int *array_of_dargs, int *array_of_psizes, 
+                           int order, MPI_Datatype oldtype, 
+                           MPI_Datatype *newtype) 
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

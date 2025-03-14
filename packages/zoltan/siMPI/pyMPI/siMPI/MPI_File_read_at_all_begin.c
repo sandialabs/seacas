@@ -18,5 +18,6 @@ int MPI_File_read_at_all_begin(MPI_File fh, MPI_Offset offset, void *buf,
                          int count, MPI_Datatype datatype)
 {
   _MPI_COVERAGE();
-  return PMPI_File_read_at_all_begin (fh, offset, buf, count, datatype);
+  return PMPI_File_read_at_all_begin (fh, offset, buf, count, datatype); 
 }
+

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 
@@ -223,8 +186,7 @@ Zoltan_Postprocess_Order (ZZ *zz,
 
   /* Fill in the Zoltan Order Struct */
   /* EBEB: For now, discard separator info */
-#if 0
-  { /* DEBUG: Print separator sizes to file */
+  if (0){ /* DEBUG: Print separator sizes to file */
     FILE *fp;
     fp = fopen("separators.txt", "w");
     fprintf(fp, "%i\n", ord->num_part);
@@ -238,7 +200,6 @@ Zoltan_Postprocess_Order (ZZ *zz,
     fprintf(fp, "\n");
     fclose(fp);
   }
-#endif
 
   return (ierr);
 }
@@ -527,14 +488,14 @@ Zoltan_Postprocess_FinalOutput (ZZ* zz, ZOLTAN_Third_Graph *gr,
     nRuns++;
 
     if (zz->Proc == 0) {
-      for (i = 0; i < vdim; i++)
+      for (i = 0; i < vdim; i++) 
 	printf("STATS Runs %d  bal[%d]  CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	       nRuns, i, bal[i], balmax[i], balmin[i], balsum[i]/nRuns);
       printf("STATS Runs %d  cutl CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	     nRuns, cutl, cutlmax, cutlmin, cutlsum/nRuns);
       printf("STATS Runs %d  cutn CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	     nRuns, cutn, cutnmax, cutnmin, cutnsum/nRuns);
-      for (i = 0; i < edim; i++)
+      for (i = 0; i < edim; i++) 
 	printf("STATS Runs %d  cute[%d] CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	       nRuns, i, cute[i], cutemax[i], cutemin[i], cutesum[i]/nRuns);
       printf("STATS Runs %d  %s CURRENT %f  MAX %f  MIN %f  AVG %f\n",
@@ -657,12 +618,12 @@ int dim = zz->Edge_Weight_Dim;
     /* For now, use only first weight per edge. */
     float maxewgt = 0.;
     if (ewgts)
-      for (j = xadj[i]; j < xadj[i+1]; j++)
+      for (j = xadj[i]; j < xadj[i+1]; j++) 
         if (ewgts[j*dim] > maxewgt) maxewgt = ewgts[j*dim];
 
     for (j = xadj[i]; j < xadj[i+1]; j++)
       if (parts[i] != nborparts[j]) {
-        cutn += (ewgts ? maxewgt : 1.);
+        cutn += (ewgts ? maxewgt : 1.); 
         break;
       }
   }
@@ -699,14 +660,14 @@ int dim = zz->Edge_Weight_Dim;
     /* For now, use only first weight per edge. */
     float maxewgt = 0.;
     if (ewgts)
-      for (j = xadj[i]; j < xadj[i+1]; j++)
+      for (j = xadj[i]; j < xadj[i+1]; j++) 
         if (ewgts[j*dim] > maxewgt) maxewgt = ewgts[j*dim];
 
     used[parts[i]] = i;
     for (j = xadj[i]; j < xadj[i+1]; j++)
       if (used[nborparts[j]] < i) {
         used[nborparts[j]] = i;
-        cutl += (ewgts ? maxewgt : 1.);
+        cutl += (ewgts ? maxewgt : 1.); 
       }
   }
   ZOLTAN_FREE(&used);
@@ -721,7 +682,7 @@ static int Compute_Adjpart(
   ZZ *zz,
   int nvtx,         /* Input:  # vtxs in this processor */
   indextype *vtxdist,     /* Input:  Distribution of vertices across processors */
-  indextype *xadj,        /* Input:  Index of adjncy:  adjncy[xadj[i]] to
+  indextype *xadj,        /* Input:  Index of adjncy:  adjncy[xadj[i]] to 
                                adjncy[xadj[i]+1] are all edge nbors of vtx i. */
   indextype *adjncy,      /* Input:  Array of nbor vertices. */
   int *adjproc,     /* Input:  adjproc[j] == processor owning adjncy[j]. */
@@ -729,7 +690,7 @@ static int Compute_Adjpart(
   int *adjpart      /* Output: adjpart[j] == partition owning adjncy[j] */
 )
 {
-/* Given an adjacency list adjncy, find the partition number of each
+/* Given an adjacency list adjncy, find the partition number of each 
  * vertex in adjncy.  Return it in adjpart.
  */
 ZOLTAN_COMM_OBJ *plan;

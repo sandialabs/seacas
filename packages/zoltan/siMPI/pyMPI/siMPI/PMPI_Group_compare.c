@@ -28,3 +28,4 @@ int PMPI_Group_compare ( MPI_Group group1, MPI_Group group2, int *result )
   }
   return MPI_ERR_GROUP;
 }
+

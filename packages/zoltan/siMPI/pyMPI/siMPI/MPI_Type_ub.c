@@ -19,3 +19,4 @@ int MPI_Type_ub ( MPI_Datatype datatype, MPI_Aint *displacement )
   _MPI_COVERAGE();
   return PMPI_Type_ub (datatype, displacement);
 }
+

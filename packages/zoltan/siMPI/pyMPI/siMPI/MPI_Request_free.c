@@ -20,3 +20,4 @@ int MPI_Request_free( MPI_Request *request )
   _MPI_COVERAGE();
   return PMPI_Request_free (request);
 }
+

@@ -19,3 +19,4 @@ double MPI_Wtick(void)
   _MPI_COVERAGE();
   return PMPI_Wtick();
 }
+

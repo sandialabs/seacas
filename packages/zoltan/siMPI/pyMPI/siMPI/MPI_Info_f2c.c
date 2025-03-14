@@ -19,3 +19,4 @@ MPI_Info MPI_Info_f2c(MPI_Fint info)
   _MPI_COVERAGE();
   return PMPI_Info_f2c (info);
 }
+

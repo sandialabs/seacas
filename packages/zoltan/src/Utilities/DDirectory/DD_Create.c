@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #include <stdio.h>
@@ -60,13 +23,13 @@ extern "C" {
 /*  NOTE: See file, README, for associated documentation. (RTH) */
 
 /* Zoltan_DD_Create assumes the global object being managed by the
- * directory is a Zoltan global ID, which is a ZOLTAN_ID_TYPE-tuple.
- * The "num_gid" parameter is where we specify how many ZOLTAN_ID_TYPEs
+ * directory is a Zoltan global ID, which is a ZOLTAN_ID_TYPE-tuple.  
+ * The "num_gid" parameter is where we specify how many ZOLTAN_ID_TYPEs 
  * are in the object (zz->Num_GID).
  *
  * However, some Zoltan code uses a data directory to manage other
  * global integer values.  When the ZOLTAN_ID_TYPE was always be an
- * unsigned integer, that worked.
+ * unsigned integer, that worked.  
  *
  * But now that the ZOLTAN_ID_TYPE can be specified at compile time,
  * we need to be more careful.
@@ -79,7 +42,7 @@ extern "C" {
  * managed by the data directory is a 64-bit int, "num_gid" should
  * be "2".
  *
- * The "num_lid" parameter specifies the number ZOLTAN_ID_TYPEs in
+ * The "num_lid" parameter specifies the number ZOLTAN_ID_TYPEs in 
  * the local ID.
  *
  * The "user_length" parameter specifies the number of chars in the
@@ -92,7 +55,7 @@ int Zoltan_DD_Create (
  Zoltan_DD_Directory **dd,    /* contains directory state and pointers */
  MPI_Comm comm,               /* Dup'ed and saved for future use       */
  int num_gid,                 /* Number of entries in a global ID.     */
- int num_lid,                 /* Number of entries in a local ID.
+ int num_lid,                 /* Number of entries in a local ID.      
                                  If zero, ignore LIDs                  */
  int user_length,             /* Optional user data length in chars, 0 ignore */
  int table_length,            /* sizeof hash table, use default if 0   */
@@ -193,7 +156,7 @@ int Zoltan_DD_Create (
 }
 
 /*******************  Copy functions  ***************************/
-
+    
 
 Zoltan_DD_Directory *Zoltan_DD_Copy(Zoltan_DD_Directory *from)
 {
@@ -221,16 +184,16 @@ int Zoltan_DD_Copy_To(Zoltan_DD_Directory **toptr, Zoltan_DD_Directory *from)
   if (from) {
     DD_NodeIdx i;
 
-    to = *toptr =
+    to = *toptr = 
       (Zoltan_DD_Directory *)ZOLTAN_MALLOC(
-        sizeof (Zoltan_DD_Directory) +
+        sizeof (Zoltan_DD_Directory) + 
         (from->table_length * sizeof(DD_NodeIdx)));
 
     if (!to) {
-      ZOLTAN_PRINT_ERROR(from->my_proc, yo, "Insufficient memory.");
+      ZOLTAN_PRINT_ERROR(from->my_proc, yo, "Insufficient memory."); 
       return ZOLTAN_MEMERR;
     }
-
+  
     *to = *from;
     memcpy(to->table, from->table, to->table_length * sizeof(DD_NodeIdx));
 
@@ -251,7 +214,7 @@ int Zoltan_DD_Copy_To(Zoltan_DD_Directory **toptr, Zoltan_DD_Directory *from)
 
   return ZOLTAN_OK;
 }
-
+  
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif

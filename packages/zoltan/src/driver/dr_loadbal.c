@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include <mpi.h>
 #ifdef TIMER_CALLBACKS
@@ -59,13 +22,8 @@ double Timer_Callback_Time, Timer_Global_Callback_Time;
 
 #include <stdlib.h>
 #include <stdio.h>
-#if defined(_WIN32) && !defined(__MINGW32__)
 #include <string.h>
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#else
 #include <strings.h>
-#endif
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -160,7 +118,7 @@ int setup_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
   DEBUG_TRACE_START(Proc, yo);
 
   /* Allocate space for arrays. */
-  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_Comm_size(zoltan_get_global_comm(), &nprocs);
   Num_Global_Parts = nprocs;
   Obj_Weight_Dim = 0;
   psize = (float *) malloc(nprocs*sizeof(float));
@@ -178,7 +136,7 @@ int setup_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
     if (prob->params[i].Index>=0)
       ierr = Zoltan_Set_Param_Vec(zz, prob->params[i].Name, prob->params[i].Val,
 	     prob->params[i].Index);
-    else
+    else 
       ierr = Zoltan_Set_Param(zz, prob->params[i].Name, prob->params[i].Val);
     if (ierr == ZOLTAN_FATAL) {
       sprintf(errmsg,
@@ -213,7 +171,7 @@ int setup_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
   /* if there is a paramfile specified, read it
      note: contents of this file may override the parameters set above */
   if (strcmp(prob->zoltanParams_file, "")) {
-    zoltanParams_read_file(zz, prob->zoltanParams_file, MPI_COMM_WORLD);
+    zoltanParams_read_file(zz, prob->zoltanParams_file, zoltan_get_global_comm());
   }
 
   if (Test.Fixed_Objects) {
@@ -347,7 +305,7 @@ int setup_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
 
     safe_free((void **)(void *) &psize);
     safe_free((void **)(void *) &partid);
-
+  
     psize = (float *) malloc(nentries * sizeof(float));
     partid = (int *) malloc(2 * nentries * sizeof(int));
     idx = partid + nentries;
@@ -659,7 +617,7 @@ int run_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
     Timer_Callback_Time = 0.0;
 #endif /* TIMER_CALLBACKS */
 
-    MPI_Barrier(MPI_COMM_WORLD);   /* For timings only */
+    MPI_Barrier(zoltan_get_global_comm());   /* For timings only */
     stime = MPI_Wtime();
 
     ierr = Zoltan_LB_Partition(zz, &new_decomp,
@@ -675,14 +633,14 @@ int run_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
     }
 
     mytime = MPI_Wtime() - stime;
-    MPI_Allreduce(&mytime, &maxtime, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+    MPI_Allreduce(&mytime, &maxtime, 1, MPI_DOUBLE, MPI_MAX, zoltan_get_global_comm());
     if (Proc == 0)
       printf("\nDRIVER:  Zoltan_LB_Partition time = %g\n", maxtime);
     Total_Partition_Time += maxtime;
 
 #ifdef TIMER_CALLBACKS
     MPI_Allreduce(&Timer_Callback_Time, &Timer_Global_Callback_Time,
-		   1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+		   1, MPI_DOUBLE, MPI_MAX, zoltan_get_global_comm());
     if (Proc == 0)
       printf("DRIVER:  Callback time = %g\n", Timer_Global_Callback_Time);
 #endif /* TIMER_CALLBACKS */
@@ -691,8 +649,8 @@ int run_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
     {int mine[2], gmax[2], gmin[2];
     mine[0] = num_imported;
     mine[1] = num_exported;
-    MPI_Allreduce(mine, gmax, 2, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-    MPI_Allreduce(mine, gmin, 2, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+    MPI_Allreduce(mine, gmax, 2, MPI_INT, MPI_MAX, zoltan_get_global_comm());
+    MPI_Allreduce(mine, gmin, 2, MPI_INT, MPI_MIN, zoltan_get_global_comm());
     if (Proc == 0) {
       printf("DRIVER:  new_decomp %d Min/Max Import: %d %d\n", new_decomp, gmin[0], gmax[0]);
       printf("DRIVER:  new_decomp %d Min/Max Export: %d %d\n", new_decomp, gmin[1], gmax[1]);
@@ -728,7 +686,7 @@ for (i = 0; i < num_exported; i++)
   fprintf(fp, "%d\n", export_to_part[i]);
  /* fprintf(fp, "%d : %d\n", export_gids[(i+1)*Num_GID-1], export_to_part[i]); */
 fclose(fp);
-MPI_Barrier(MPI_COMM_WORLD);
+MPI_Barrier(zoltan_get_global_comm());
 MPI_Finalize();
 exit(-1);
 }
@@ -738,7 +696,7 @@ exit(-1);
     /*
      * Call another routine to perform the migration
      */
-    MPI_Barrier(MPI_COMM_WORLD);   /* For timings only */
+    MPI_Barrier(zoltan_get_global_comm());   /* For timings only */
     stime = MPI_Wtime();
     if (new_decomp && (num_exported != -1 || num_imported != -1)) {
       if (Export_Lists_Special) {
@@ -782,7 +740,7 @@ exit(-1);
     }
 
     mytime = MPI_Wtime() - stime;
-    MPI_Allreduce(&mytime, &maxtime, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+    MPI_Allreduce(&mytime, &maxtime, 1, MPI_DOUBLE, MPI_MAX, zoltan_get_global_comm());
     if (Proc == 0)
       printf("DRIVER:  Total migration time = %g\n", maxtime);
 
@@ -799,7 +757,7 @@ exit(-1);
 		 current_elem->my_part);
 	}
       }
-      MPI_Allreduce(&errcnt, &gerrcnt, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+      MPI_Allreduce(&errcnt, &gerrcnt, 1, MPI_INT, MPI_SUM, zoltan_get_global_comm());
       if (gerrcnt) {
 	Zoltan_LB_Free_Part(&import_gids, &import_lids,
 			    &import_procs, &import_to_part);
@@ -927,7 +885,7 @@ exit(-1);
       return 0;
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
     if (Proc == 0)
       printf("\nOrdering time = %f seconds\n", MPI_Wtime() - kddstart);
 
@@ -980,12 +938,12 @@ exit(-1);
 	printf("Turn off \"test dynamic graph\".\n");
       }
 
-      MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+      MPI_Comm_size(zoltan_get_global_comm(), &nprocs);
       if (Debug_Driver > 0 && nprocs>1) {
           if (Proc == 0)
               addIDs = (mesh->num_elems > addIDs ) ? addIDs : mesh->num_elems;
 
-          MPI_Bcast(&addIDs, 1, MPI_INT, 0, MPI_COMM_WORLD);
+          MPI_Bcast(&addIDs, 1, MPI_INT, 0, zoltan_get_global_comm());
           checkIDs = addIDs;
       }
 
@@ -1013,8 +971,8 @@ exit(-1);
                   lids[i*num_lid_entries+num_lid_entries-1] = -1;
               }
           }
-          MPI_Bcast(gids+(mesh->num_elems*num_gid_entries), addIDs*num_gid_entries, ZOLTAN_ID_MPI_TYPE, 0, MPI_COMM_WORLD);
-          MPI_Bcast(lids+(mesh->num_elems*num_gid_entries), addIDs*num_gid_entries, ZOLTAN_ID_MPI_TYPE, 0, MPI_COMM_WORLD);
+          MPI_Bcast(gids+(mesh->num_elems*num_gid_entries), addIDs*num_gid_entries, ZOLTAN_ID_MPI_TYPE, 0, zoltan_get_global_comm());
+          MPI_Bcast(lids+(mesh->num_elems*num_gid_entries), addIDs*num_gid_entries, ZOLTAN_ID_MPI_TYPE, 0, zoltan_get_global_comm());
           if (Proc == 0)
               addIDs = 0;
       }
@@ -1047,7 +1005,7 @@ exit(-1);
 	      if (color[i] > maxcolor)
                   maxcolor = color[i];
 	    MPI_Allreduce(&maxcolor, &gmaxcolor, 1,
-			  MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+			  MPI_INT, MPI_MAX, zoltan_get_global_comm());
 	    if (Proc == 0)
 	      printf("Valid coloring found; #colors = %d.\n",
 		     gmaxcolor);
@@ -1066,7 +1024,7 @@ exit(-1);
                   for (i = 0; i<checkIDs; ++i)
                       bColor[i] = color[i];
               }
-              MPI_Bcast(bColor, checkIDs, MPI_INT, 0, MPI_COMM_WORLD);
+              MPI_Bcast(bColor, checkIDs, MPI_INT, 0, zoltan_get_global_comm());
               if (Proc != 0) {
                   for (i = mesh->num_elems; i<mesh->num_elems+checkIDs; ++i) {
                       if (color[i] != bColor[i-mesh->num_elems]) {
@@ -1594,10 +1552,10 @@ void get_edge_list_multi (void *data, int num_gid_entries, int num_lid_entries,
     for (i = 0; i < current_elem->adj_len; i++) {
 
       /* Skip NULL adjacencies (sides that are not adjacent to another elem). */
-      /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.
-       * This line is needed only for Exodus inputs which will not work correctly
-       * with current definition of adj as ZOLTAN_ID_PTR, and it generates
-       * compiler warnings.  If the Exodus interface is revived, this line
+      /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.  
+       * This line is needed only for Exodus inputs which will not work correctly 
+       * with current definition of adj as ZOLTAN_ID_PTR, and it generates 
+       * compiler warnings.  If the Exodus interface is revived, this line 
        * should again be included.
        *
       if (current_elem->adj[i] == -1) continue;
@@ -1677,10 +1635,10 @@ void get_edge_list (void *data, int num_gid_entries, int num_lid_entries,
   for (i = 0; i < current_elem->adj_len; i++) {
 
     /* Skip NULL adjacencies (sides that are not adjacent to another elem). */
-    /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.
-     * This line is needed only for Exodus inputs which will not work correctly
-     * with current definition of adj as ZOLTAN_ID_PTR, and it generates
-     * compiler warnings.  If the Exodus interface is revived, this line
+    /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.  
+     * This line is needed only for Exodus inputs which will not work correctly 
+     * with current definition of adj as ZOLTAN_ID_PTR, and it generates 
+     * compiler warnings.  If the Exodus interface is revived, this line 
      * should again be included.
      *
     if (current_elem->adj[i] == -1) continue;
@@ -1978,7 +1936,7 @@ void get_nemesis_hg_size(
 /* KDDKDD
 {
 int me;
-MPI_Comm_rank(MPI_COMM_WORLD, &me);
+MPI_Comm_rank(zoltan_get_global_comm(), &me);
 printf("%d KDDKDD HGSIZE numlist %d format %d numpins %d\n", me, *num_lists, *format, *num_pins);
 }
 */
@@ -2041,7 +1999,7 @@ void get_nemesis_hg(
 /* KDDKDD
 {
 int me;
-MPI_Comm_rank(MPI_COMM_WORLD, &me);
+MPI_Comm_rank(zoltan_get_global_comm(), &me);
 printf("%d KDDKDD EDGELIST %d:  ", me, elemGID[nelems*num_gid_entries+gid]);
 for (j = 0; j < nnodes; j++) printf("%d ", meshvtxGID[(j*num_gid_entries)+edgelistPtr[nelems]+gid]);
 printf("\n");
@@ -2392,12 +2350,12 @@ int test_both;  /* If true, test both Zoltan_*_Assign and Zoltan_*_PP_Assign. */
 		/* True if # parts == # processors.                      */
 
   /* Find maximum part number across all processors. */
-  MPI_Comm_size(MPI_COMM_WORLD, &Num_Proc);
+  MPI_Comm_size(zoltan_get_global_comm(), &Num_Proc);
   max_part = gmax_part = -1;
   for (i = 0; i < mesh->num_elems; i++)
     if (mesh->elements[i].my_part > max_part)
       max_part = mesh->elements[i].my_part;
-  MPI_Allreduce(&max_part, &gmax_part, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+  MPI_Allreduce(&max_part, &gmax_part, 1, MPI_INT, MPI_MAX, zoltan_get_global_comm());
   test_both = ((gmax_part == (Num_Proc-1)) && (Test.Local_Parts == 0));
 
   /* generate the parallel filename for this processor */

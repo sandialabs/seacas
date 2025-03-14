@@ -15,10 +15,11 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                  void *recvbuf, int recvcnt, MPI_Datatype recvtype,
+int MPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+                  void *recvbuf, int recvcnt, MPI_Datatype recvtype, 
                  MPI_Comm comm )
 {
   _MPI_COVERAGE();
   return PMPI_Alltoall (sendbuf, sendcount, sendtype, recvbuf, recvcnt, recvtype, comm);
 }
+
