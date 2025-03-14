@@ -42,7 +42,7 @@ namespace Iohb {
   template void Layout::add(const std::string &name, const int64_t &value);
   template void Layout::add(const std::string &name, const size_t &value);
 #endif
-  
+
   // Ideally, this would be in the include file, but when building in Sierra, we
   // need to keep all `fmt` includes out of the include file due to some TPLs
   // having an embedded fmt which is a different version than used by IOSS.
