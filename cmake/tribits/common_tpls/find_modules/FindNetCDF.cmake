@@ -14,7 +14,7 @@
 #    Control the search through NetCDF_DIR or setting environment variable
 #    NetCDF_ROOT to the NetCDF installation prefix.
 #
-#    This module does not search default paths! 
+#    This module does not search default paths!
 #
 #    Following variables are set:
 #    NetCDF_FOUND            (BOOL)       Flag indicating if NetCDF was found
@@ -27,11 +27,6 @@
 #    Additional variables set
 #    NetCDF_C_LIBRARY        (FILE)       NetCDF C library
 #    NetCDF_CXX_LIBRARY      (FILE)       NetCDF C++ library
-#    NetCDF_LARGE_DIMS       (BOOL)       Checks the header files for size of 
-#                                          NC_MAX_DIMS and NC_MAX_VARS
-#                                          Returns TRUE if
-#                                          NC_MAX_DIMS >= 655363
-#                                          NC_MAX_VARS >= 524288
 #
 # #############################################################################
 
@@ -45,7 +40,7 @@ if ( NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )
 
     # Do nothing. Variables are set. No need to search again
 
-else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
+else()
 
     # If NetCDF_ROOT was defined in the environment, use it.
     # Definition from the command line will take precedence.
@@ -99,7 +94,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             set(NetCDF_INCLUDE_DIR "NetCDF_INCLUDE_DIR-NOTFOUND")
         endif()
 
-    else() 
+    else()
 
         set(netcdf_inc_suffixes "include")
         if(NetCDF_ROOT)
@@ -115,7 +110,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             else()
                  message(SEND_ERROR "NetCDF_ROOT=${NetCDF_ROOT} does not exist")
                  set(NetCDF_INCLUDE_DIR "NetCDF_INCLUDE_DIR-NOTFOUND")
-            endif()    
+            endif()
 
 
         else()
@@ -133,50 +128,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
         message(SEND_ERROR "Can not locate NetCDF include directory")
     endif()
 
-    # Large dimension and parallel check here
-    if ( NetCDF_INCLUDE_DIR ) 
-       
-        set(netcdf_h "${NetCDF_INCLUDE_DIR}/netcdf.h" )
-        message(STATUS "NetCDF include file ${netcdf_h} will be searched for define values")
-
-        file(STRINGS "${netcdf_h}" netcdf_max_dims_string REGEX "^#define NC_MAX_DIMS")
-        string(REGEX REPLACE "[^0-9]" "" netcdf_max_dims "${netcdf_max_dims_string}")
-
-        file(STRINGS "${netcdf_h}" netcdf_max_vars_string REGEX "^#define NC_MAX_VARS")
-        string(REGEX REPLACE "[^0-9]" "" netcdf_max_vars "${netcdf_max_vars_string}")
-
-        if ( 
-             ( (netcdf_max_dims EQUAL 65536)  OR (netcdf_max_dims GREATER 65536) ) AND
-             ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) )
-            )
-            set(NetCDF_LARGE_DIMS TRUE)
-        else()
-            message(WARNING "WARNING: The NetCDF found in ${NetCDF_ROOT} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
-                             "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
-            set(NetCDF_LARGE_DIMS FALSE)
-        endif()
-
-        set(NetCDF_PARALLEL False)
-        find_path(meta_path
-                  NAMES "netcdf_meta.h"
-                  HINTS ${NetCDF_INCLUDE_DIR}
-                  NO_DEFAULT_PATH)
-        if(meta_path)
-           # Search meta for NC_HAS_PARALLEL setting...
-           # Note that there is both NC_HAS_PARALLEL4 and NC_HAS_PARALLEL, only want NC_HAS_PARALLEL
-           # so add a space to end to avoid getting NC_HAS_PARALLEL4
-           file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL ")
-           string(REGEX REPLACE "[^0-9]" "" netcdf_par_val "${netcdf_par_string}")
-           # NOTE: The line for NC_HAS_PARALLEL has an hdf5 string in it which results
-           #       netcdf_par_val being set to 05 or 15 above...
-           if (netcdf_par_val EQUAL 15)
-              set(NetCDF_PARALLEL True)
-           endif()    
-        endif()
-
-    endif()    
-
-    # Search for libraries 
+    # Search for libraries
     # Search order preference:
     #  (1) NetCDF_LIBRARY_DIR - check existence of path AND if the include files exist
     #  (2) NetCDF_ROOT/<lib,Lib>
@@ -195,14 +147,14 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 #                         NAMES netcdf_c++
 #                         HINTS ${NetCDF_LIBRARY_DIR}
 #                         NO_DEFAULT_PATH)
-             
+
         else()
             message(SEND_ERROR "NetCDF_LIBRARY_DIR=${NetCDF_LIBRARY_DIR} does not exist")
             set(NetCDF_LIBRARY "NetCDF_C_LIBRARY-NOTFOUND")
 #            set(NetCDF_LIBRARY "NetCDF_CXX_LIBRARY-NOTFOUND")
         endif()
 
-    else() 
+    else()
 
         if(NetCDF_ROOT)
 
@@ -224,7 +176,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
                  message(SEND_ERROR "NetCDF_ROOT=${NetCDF_ROOT} does not exist")
                  set(NetCDF_LIBRARY "NetCDF_C_LIBRARY-NOTFOUND")
 #                 set(NetCDF_LIBRARY "NetCDF_CXX_LIBRARY-NOTFOUND")
-            endif()    
+            endif()
 
 
         else()
@@ -232,7 +184,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             find_library(NetCDF_C_LIBRARY
                          NAMES netcdf
                          PATH_SUFFIXES ${netcdf_lib_suffixes})
-            
+
 #            find_library(NetCDF_CXX_LIBRARY
 #                         NAMES netcdf_c++
 #                         PATH_SUFFIXES ${netcdf_lib_suffixes})
@@ -244,84 +196,113 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
     if ( NOT NetCDF_C_LIBRARY )
         message(SEND_ERROR "Can not locate NetCDF C library")
-    endif()    
-    
+    endif()
+
 #    if ( NOT NetCDF_CXX_LIBRARY )
 #        message(SEND_ERROR "Can not locate NetCDF CXX library")
-#    endif()    
+#    endif()
 
 
-   
+
     # Define the LIBRARIES and INCLUDE_DORS
     set(NetCDF_INCLUDE_DIRS ${NetCDF_INCLUDE_DIR})
     set(NetCDF_LIBRARIES    ${NetCDF_CXX_LIBRARY} ${NetCDF_C_LIBRARY})
+endif()
 
-    # Need to find the NetCDF config script to check for HDF5
-    if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
-        message(STATUS "\tNetCDF_ROOT is ${NetCDF_ROOT}")
-        find_program(netcdf_config nc-config 
+# Parallel check here
+if ( NetCDF_INCLUDE_DIR )
+	set(NetCDF_PARALLEL False)
+    find_path(meta_path
+	          NAMES "netcdf_meta.h"
+              HINTS ${NetCDF_INCLUDE_DIR}
+              NO_DEFAULT_PATH)
+    if(meta_path)
+       # Search meta for NC_HAS_PARALLEL setting...
+       # Note that there is both NC_HAS_PARALLEL and NC_HAS_PARALLEL4, only want first...
+       file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL ")
+       string(REGEX MATCH "[01]" netcdf_par_val "${netcdf_par_string}")
+       if (netcdf_par_val EQUAL 1)
+          set(NetCDF_PARALLEL True)
+       endif()
+    endif()
+endif()
+
+# Get information such as HDF5 dependency and parallel capability
+if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
+    MESSAGE(STATUS "\tNetCDF_ROOT is ${NetCDF_ROOT}")
+    # First, try to get this information from an installed CMake config file
+    find_package(netCDF QUIET HINTS ${NetCDF_ROOT} NO_MODULE)
+    if (netCDF_CONFIG)
+        # If we find an installed config file, it can tell us these things
+        MESSAGE(STATUS "\tnetCDF_CONFIG is ${netCDF_CONFIG}")
+        set(NetCDF_NEEDS_HDF5 "${netCDF_HAS_HDF5}")
+        set(NetCDF_VERSION "${netCDF_VERSION}")
+        set(NetCDF_NEEDS_PNetCDF "${netCDF_HAS_PNETCDF}")
+    else()
+        # Otherwise, try calling the nc-config shell script
+        if (WIN32)
+            message(FATAL_ERROR "nc-config can't be used on Windows, please use CMake to install NetCDF")
+        endif()
+        find_program(netcdf_config nc-config
                        PATHS ${NetCDF_ROOT}/bin ${NetCDF_BIN_DIR}
-                       NO_DEFAULT_PATH
-                       NO_CMAKE_SYSTEM_PATH
+		           NO_DEFAULT_PATH
+		           NO_CMAKE_SYSTEM_PATH
                        DOC "NetCDF configuration script")
 
         if (netcdf_config)
             message(STATUS "Found NetCDF configuration script: ${netcdf_config}")
-            execute_process(COMMAND "${netcdf_config}" "--has-hdf5"
+            execute_process(COMMAND sh -c "${netcdf_config} --has-hdf5"
                             RESULT_VARIABLE _ret_code
                             OUTPUT_VARIABLE _stdout
                             ERROR_VARIABLE  _stderr
                            )
-            string(REGEX REPLACE "[\n\r ]" "" _hdf5_answer ${_stdout})
+            string(REGEX MATCH "yes|no" _hdf5_answer ${_stdout})
             message(STATUS "${netcdf_config} --has-hdf5 returned '${_hdf5_answer}'")
             string(COMPARE EQUAL "${_hdf5_answer}" "yes" _has_hdf5)
-            if (${_has_hdf5} ) 
+            if (${_has_hdf5} )
                 set(NetCDF_NEEDS_HDF5 True)
             else()
                 set(NetCDF_NEEDS_HDF5 False)
-            endif()    
+            endif()
 
-            execute_process(COMMAND "${netcdf_config}" "--version"
+            execute_process(COMMAND sh -c "${netcdf_config} --version"
                             RESULT_VARIABLE _ret_code
                             OUTPUT_VARIABLE _stdout
                             ERROR_VARIABLE  _stderr
                            )
-            string(REGEX REPLACE "[\n\r]" "" NetCDF_VERSION ${_stdout})
+            string(STRIP ${_stdout} NetCDF_VERSION)
 
-# If --has-pnetcdf returns true, then add pnetcdf as dependent library.
-            execute_process(COMMAND "${netcdf_config}" "--has-pnetcdf"
+	    # If --has-pnetcdf returns true, then add pnetcdf as dependent library.
+            execute_process(COMMAND sh -c "${netcdf_config} --has-pnetcdf"
                             RESULT_VARIABLE _ret_code
                             OUTPUT_VARIABLE _stdout
                             ERROR_VARIABLE  _stderr
                            )
-            string(REGEX REPLACE "[\n\r ]" "" _pnetcdf_answer ${_stdout})
+            string(REGEX MATCH "yes|no" _pnetcdf_answer ${_stdout})
             message(STATUS "${netcdf_config} --has-pnetcdf returned '${_pnetcdf_answer}'")
             string(COMPARE EQUAL "${_pnetcdf_answer}" "yes" _has_pnetcdf)
-            if (${_has_pnetcdf} ) 
+            if (${_has_pnetcdf} )
                 set(NetCDF_NEEDS_PNetCDF True)
             else()
                 set(NetCDF_NEEDS_PNetCDF False)
-            endif()    
-
-
+            endif()
         endif()
-    endif()    
-
-    if(NetCDF_NEEDS_HDF5) 
-        message(STATUS "NetCDF requires HDF5")
-        add_package_dependency(NetCDF DEPENDS_ON HDF5)
-    else()
-        message(STATUS "NetCDF does not require HDF5")
     endif()
+endif()
 
-    if(NetCDF_NEEDS_PNetCDF) 
-        message(STATUS "NetCDF requires PNetCDF")
-        add_package_dependency(NetCDF DEPENDS_ON PNetCDF)
-    else()
-        message(STATUS "NetCDF does not require PNetCDF")
-    endif()
+if(NetCDF_NEEDS_HDF5)
+    message(STATUS "NetCDF requires HDF5")
+    add_package_dependency(NetCDF DEPENDS_ON HDF5)
+else()
+    message(STATUS "NetCDF does not require HDF5")
+endif()
 
-endif(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )    
+if(NetCDF_NEEDS_PNetCDF)
+    message(STATUS "NetCDF requires PNetCDF")
+    add_package_dependency(NetCDF DEPENDS_ON PNetCDF)
+else()
+    message(STATUS "NetCDF does not require PNetCDF")
+endif()
 
 # --- Search for NetCDF tools
 if ( NetCDF_BINARY_DIR )
@@ -331,7 +312,7 @@ else()
         set(NetCDF_BINARY_DIR "${NetCDF_BINARY_DIR}" CACHE PATH "Path to search for NetCDF tools")
     endif()
 
-    set(netcdf_bin_names "ncdump")
+    set(netcdf_bin_names "ncdump" "ncdump.exe")
     if (NetCDF_BINARY_DIR)
 
         if (EXISTS "${NetCDF_BINARY_DIR}")
@@ -350,7 +331,7 @@ else()
             set(NetCDF_BINARY_DIR "NetCDF_BINARY_DIR-NOTFOUND")
         endif()
 
-    else() 
+    else()
 
         set(netcdf_bin_suffixes "bin")
         if(NetCDF_ROOT)
@@ -359,14 +340,14 @@ else()
 
                 find_path(NetCDF_BINARY_DIR
                           NAMES ${netcdf_bin_names}
-                          HINTS ${NetCDF_ROOT}/bin
+                          HINTS ${NetCDF_ROOT}
                           PATH_SUFFIXES ${netcdf_bin_suffixes}
                           NO_DEFAULT_PATH)
 
             else()
                  message(SEND_ERROR "NetCDF_ROOT=${NetCDF_ROOT} does not exist")
                  set(NetCDF_BINARY_DIR "NetCDF_BINARY_DIR-NOTFOUND")
-            endif()    
+            endif()
 
 
         else()
@@ -376,9 +357,7 @@ else()
                       PATH_SUFFIXES ${netcdf_bin_suffixes})
 
         endif()
-
     endif()
-
 
     if ( NOT NetCDF_BINARY_DIR )
         message(STATUS "Can not locate NetCDF bin directory")
