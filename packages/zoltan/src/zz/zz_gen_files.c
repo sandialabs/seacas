@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
@@ -60,13 +23,13 @@ extern "C" {
 /* Temporary prototypes. These functions are HG routines
    currently not compiled into Zoltan, but duplicated in this file. */
 static ZOLTAN_GNO_TYPE Zoltan_HG_Get_Pins(ZZ *zz, int *nEdges, int **edgeSize,
-                   ZOLTAN_ID_PTR *edgeIds, ZOLTAN_ID_PTR *vtxIds,
+                   ZOLTAN_ID_PTR *edgeIds, ZOLTAN_ID_PTR *vtxIds, 
                    int *nEwgts, ZOLTAN_ID_PTR *eWgtIds, float **eWgts);
 static int turn_off_reduce_dimensions(ZZ *zz);
 static ZOLTAN_GNO_TYPE merge_gids(ZZ *zz, ZOLTAN_ID_PTR *merged_egids, ZOLTAN_GNO_TYPE size_merged,
            ZOLTAN_ID_PTR idbuf, ZOLTAN_GNO_TYPE numIds, void *htptr, ZOLTAN_GNO_TYPE htSize);
 static int augment_search_structure(ZZ *zz, void *htptr,
-     ZOLTAN_GNO_TYPE maxEdges, ZOLTAN_ID_PTR merged_egids, ZOLTAN_GNO_TYPE size_merged,
+     ZOLTAN_GNO_TYPE maxEdges, ZOLTAN_ID_PTR merged_egids, ZOLTAN_GNO_TYPE size_merged, 
      ZOLTAN_GNO_TYPE prev_size_merged);
 static ZOLTAN_GNO_TYPE fan_in_edge_global_ids(ZZ *zz, int numEdges, ZOLTAN_ID_PTR egids);
 
@@ -74,7 +37,7 @@ static ZOLTAN_GNO_TYPE fan_in_edge_global_ids(ZZ *zz, int numEdges, ZOLTAN_ID_PT
 /*****************************************************************************/
 /*
  *  This file contains routines for generating output files
- *  from Zoltan that describe the data given to Zoltan. These
+ *  from Zoltan that describe the data given to Zoltan. These 
  *  functions are all callable by the application, and can be
  *  invoked independent of load-balancing (Zoltan_LB_Balance).
  */
@@ -96,9 +59,9 @@ int gen_geom, int gen_graph, int gen_hg)
  *   fname,      the basename for the output files
  *   base_index, first vertex (object) is labelled 0 or 1?
  *                 ignored for hypergraphs, Matrix Market standard says "1".
- *   gen_geom,   generate geometry file?
- *   gen_graph,  generate graph file?
- *   gen_hg,     generate hypergraph file?
+ *   gen_geom,   generate geometry file? 
+ *   gen_graph,  generate graph file? 
+ *   gen_hg,     generate hypergraph file? 
  *
  *  The output is serialized, such that each processor
  *  will open and close each output file in turn.
@@ -176,7 +139,7 @@ int gen_geom, int gen_graph, int gen_hg)
   else{
     /* Compute global number of vertices. */
     gno_val = (ZOLTAN_GNO_TYPE)num_obj;
-    MPI_Allreduce(&gno_val, &glob_nvtxs, 1, zoltan_gno_mpi_type, MPI_SUM, zz->Communicator);
+    MPI_Allreduce(&gno_val, &glob_nvtxs, 1, zoltan_gno_mpi_type, MPI_SUM, zz->Communicator);  
   }
 
   /* Local number of edges. */
@@ -187,7 +150,7 @@ int gen_geom, int gen_graph, int gen_hg)
 
   /* Compute global number of edges. */
   gno_val = (ZOLTAN_GNO_TYPE)num_edges;
-  MPI_Reduce(&gno_val, &glob_edges, 1, zoltan_gno_mpi_type, MPI_SUM, 0, zz->Communicator);
+  MPI_Reduce(&gno_val, &glob_edges, 1, zoltan_gno_mpi_type, MPI_SUM, 0, zz->Communicator);  
   /* Assume no self-edges! */
   glob_edges /= 2;
 
@@ -208,11 +171,11 @@ int gen_geom, int gen_graph, int gen_hg)
        * Edge weights are not necessarily for edges of my pins.
        */
       glob_hedges = Zoltan_HG_Get_Pins(zz, &nEdges, &edgeSize,
-                   &edgeIds, &vtxIds,
+                   &edgeIds, &vtxIds, 
                    &nEwgts, &eWgtIds, &eWgts);
 
       if (glob_hedges < 0){
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
           "Error calling hypergraph pin query functions.\n");
         error = ZOLTAN_FATAL;
         goto End;
@@ -225,7 +188,7 @@ int gen_geom, int gen_graph, int gen_hg)
         numPins = 0;
       }
 
-      /* Get the global number of pins for process 0.
+      /* Get the global number of pins for process 0. 
        */
       gno_val = (ZOLTAN_GNO_TYPE)numPins;
       MPI_Reduce(&gno_val, &glob_pins, 1, zoltan_gno_mpi_type, MPI_SUM, 0, zz->Communicator);
@@ -261,7 +224,7 @@ int gen_geom, int gen_graph, int gen_hg)
 
       if ( ((maxVtxId - minVtxId + 1) != glob_nvtxs) ||
            ((maxEdgeId - minEdgeId + 1) != glob_hedges)){
-
+    
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Edge or Vertex IDs not consecutive.");
         error = ZOLTAN_FATAL;
         goto End;
@@ -280,7 +243,7 @@ int gen_geom, int gen_graph, int gen_hg)
   if (gen_geom){
     if (zz->Get_Num_Geom == NULL ||
      (zz->Get_Geom == NULL && zz->Get_Geom_Multi == NULL)) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
      "Geometry output requested, but no corresponding query function was found.\n");
       error = ZOLTAN_FATAL;
       goto End;
@@ -303,7 +266,7 @@ int gen_geom, int gen_graph, int gen_hg)
     }
    }
 
-  Zoltan_Print_Sync_Start(zz->Communicator, 0);
+  Zoltan_Print_Sync_Start(zz->Communicator, 0); 
 
   /* Do we need this if we have pin callbacks?  Vertex assignment
    * is in the hypergraph file.
@@ -337,9 +300,9 @@ int gen_geom, int gen_graph, int gen_hg)
     goto End;
   }
   for (i=0; i<num_obj; i++) {
-    int jj;
-    for (jj = 0; jj < lenGID; jj++)
-      fprintf(fp, ZOLTAN_ID_SPEC" ", global_ids[i*lenGID+jj]);
+    int j;
+    for (j = 0; j < lenGID; j++)
+      fprintf(fp, ZOLTAN_ID_SPEC" ", global_ids[i*lenGID+j]);
     fprintf(fp, "\n");
   }
   fflush(fp);
@@ -383,7 +346,7 @@ int gen_geom, int gen_graph, int gen_hg)
     /* If proc 0, write first line. */
     if (zz->Proc == 0){
       fprintf(fp, "%% First line: #vertices #edges weight_flag\n");
-      fprintf(fp, ZOLTAN_GNO_SPEC " " ZOLTAN_GNO_SPEC " %1d%1d%1d", glob_nvtxs, glob_edges,
+      fprintf(fp, ZOLTAN_GNO_SPEC " " ZOLTAN_GNO_SPEC " %1d%1d%1d", glob_nvtxs, glob_edges, 
         print_vtx_num, (zz->Obj_Weight_Dim>0), (zz->Edge_Weight_Dim>0));
       if (zz->Obj_Weight_Dim>1 || zz->Edge_Weight_Dim>1)
         fprintf(fp, " %d %d", zz->Obj_Weight_Dim, zz->Edge_Weight_Dim);
@@ -415,7 +378,7 @@ int gen_geom, int gen_graph, int gen_hg)
     fclose(fp);
   }
 
-  Zoltan_Print_Sync_End(zz->Communicator, 0);
+  Zoltan_Print_Sync_End(zz->Communicator, 0); 
 
   /* Separate synchronization for hypergraphs; this could be merged
      into the previous synchronization. */
@@ -426,7 +389,7 @@ int gen_geom, int gen_graph, int gen_hg)
   if (gen_hg){
 
     /* PLEASE READ: If you change the format of this "matrixmarket plus"
-     * file, please change dr_hg_io.c:process_mtxp_file(), which
+     * file, please change dr_hg_io.c:process_mtxp_file(), which 
      * reads the file for zdrive.
      *
      * This format is our own extension of the NIST Matrix Market file
@@ -438,12 +401,12 @@ int gen_geom, int gen_graph, int gen_hg)
      *  3. numeric data on a line is separated by one or more blanks
      *  4. real data is in floating-point decimal format, can use "e" notation
      *  5. all indices are 1-based
-     *  6. character data may be upper or lower case.
+     *  6. character data may be upper or lower case. 
      */
 
     sprintf(full_fname, "%s.mtxp", fname);  /* matrixmarket plus */
 
-    Zoltan_Print_Sync_Start(zz->Communicator, 0);
+    Zoltan_Print_Sync_Start(zz->Communicator, 0); 
     if (zz->Proc == 0)
       fp = fopen(full_fname, "w");
     else
@@ -452,29 +415,29 @@ int gen_geom, int gen_graph, int gen_hg)
     if (fp==NULL){
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Could not open file for writing.\n");
       error = ZOLTAN_FATAL;
-      Zoltan_Print_Sync_End(zz->Communicator, 0);
+      Zoltan_Print_Sync_End(zz->Communicator, 0); 
       goto End;
     }
 
     /* If proc 0, write first line. */
     if (zz->Proc == 0){
-      fprintf(fp,
+      fprintf(fp, 
         "%%%%MatrixMarket+ distributed-matrix coordinate real general\n%%\n");
-      fprintf(fp,
+      fprintf(fp, 
         "%%rows = hyperedges, columns = vertices\n%%\n");
-      fprintf(fp,
+      fprintf(fp, 
         "%%#rows #columns #pins #procs dim-vertex-weights "
         "#edge-weight-entries dim-edge-weights\n%%\n");
-      fprintf(fp, ZOLTAN_GNO_SPEC " " ZOLTAN_GNO_SPEC " " ZOLTAN_GNO_SPEC
-                  " %d %d " ZOLTAN_GNO_SPEC " %d\n",
-        glob_hedges, glob_nvtxs, glob_pins,
+      fprintf(fp, ZOLTAN_GNO_SPEC " " ZOLTAN_GNO_SPEC " " ZOLTAN_GNO_SPEC 
+                  " %d %d " ZOLTAN_GNO_SPEC " %d\n", 
+        glob_hedges, glob_nvtxs, glob_pins, 
         zz->Num_Proc,
         zz->Obj_Weight_Dim, glob_ewgts, zz->Edge_Weight_Dim);
-      fprintf(fp,
+      fprintf(fp, 
         "%%\n%%========================================================\n");
-      fprintf(fp,
+      fprintf(fp, 
         "%% Edge ID, Vertex ID, 1.0, Process ID\n%%\n");
-      fprintf(fp,
+      fprintf(fp, 
         "%% Edge and Vertex IDs are 1-based, process IDs are zero-based.\n%%\n");
     }
 
@@ -491,12 +454,12 @@ int gen_geom, int gen_graph, int gen_hg)
     }
     fflush(fp);
     fclose(fp);
-    Zoltan_Print_Sync_End(zz->Communicator, 0);
+    Zoltan_Print_Sync_End(zz->Communicator, 0); 
     MPI_Barrier(zz->Communicator);
 
     /* Each proc prints its vertices and vertex weights. */
 
-    Zoltan_Print_Sync_Start(zz->Communicator, 0);
+    Zoltan_Print_Sync_Start(zz->Communicator, 0); 
 
     vptr = global_ids;
     wptr = float_vwgt;
@@ -504,9 +467,9 @@ int gen_geom, int gen_graph, int gen_hg)
     fp = fopen(full_fname, "a");
 
     if (zz->Proc == 0){
-      fprintf(fp,
+      fprintf(fp, 
         "%%\n%%========================================================\n");
-      fprintf(fp,
+      fprintf(fp, 
         "%% Vertex ID, Vertex weights, Process ID\n%%\n");
     }
 
@@ -520,14 +483,14 @@ int gen_geom, int gen_graph, int gen_hg)
     }
     fflush(fp);
     fclose(fp);
-    Zoltan_Print_Sync_End(zz->Communicator, 0);
+    Zoltan_Print_Sync_End(zz->Communicator, 0); 
     MPI_Barrier(zz->Communicator);
 
     /* Each proc prints its edge weights. */
 
     if (zz->Edge_Weight_Dim > 0){
 
-      Zoltan_Print_Sync_Start(zz->Communicator, 0);
+      Zoltan_Print_Sync_Start(zz->Communicator, 0); 
 
       eptr = eWgtIds;
       wptr = eWgts;
@@ -535,9 +498,9 @@ int gen_geom, int gen_graph, int gen_hg)
       fp = fopen(full_fname, "a");
 
       if (zz->Proc == 0){
-        fprintf(fp,
+        fprintf(fp, 
           "%%\n%%========================================================\n");
-        fprintf(fp,
+        fprintf(fp, 
           "%% Edge ID, Edge weights, Process ID\n%%\n");
       }
 
@@ -552,7 +515,7 @@ int gen_geom, int gen_graph, int gen_hg)
 
       fflush(fp);
       fclose(fp);
-      Zoltan_Print_Sync_End(zz->Communicator, 0);
+      Zoltan_Print_Sync_End(zz->Communicator, 0); 
       MPI_Barrier(zz->Communicator);
     }
   }
@@ -568,7 +531,7 @@ End:
   ZOLTAN_FREE(&float_vwgt);
   ZOLTAN_FREE(&ewgts);
   ZOLTAN_FREE(&part);
-
+  
   if (have_pin_callbacks){
     ZOLTAN_FREE(&edgeSize);
     ZOLTAN_FREE(&edgeIds);
@@ -600,7 +563,7 @@ static int turn_off_reduce_dimensions(ZZ *zz)
 }
 
 static ZOLTAN_GNO_TYPE Zoltan_HG_Get_Pins(ZZ *zz, int *nEdges, int **edgeSize,
-            ZOLTAN_ID_PTR *edgeIds, ZOLTAN_ID_PTR *vtxIds,
+            ZOLTAN_ID_PTR *edgeIds, ZOLTAN_ID_PTR *vtxIds, 
             int *nEwgts, ZOLTAN_ID_PTR *eWgtIds, float **eWgts)
 {
   char *yo = "Zoltan_HG_Get_Pins";
@@ -696,7 +659,7 @@ struct _gidht{
   struct _gidht *next;
 } *gidNode, *gidNext;
 struct _gidht **ht=NULL;
-int proc, myrank, nprocs, mask, i;
+int proc, myrank, nprocs, mask, i; 
 unsigned int ui;
 unsigned int nbits;
 ZOLTAN_ID_PTR merged_egids, idbuf;
@@ -718,7 +681,7 @@ MPI_Datatype zoltan_gno_mpi_type;
   /*
    * The processes have possibly overlapping lists of edge global IDs.
    * We will fan in the lists, with each process merging its
-   * IDs with the IDs it received.  Normally we wouldn't want to
+   * IDs with the IDs it received.  Normally we wouldn't want to 
    * allocate storage for all possible edges on one process, because
    * in general this won't fit.  But Zoltan_Generate_Files is used
    * in a debugging mode, so hopefully this won't be a problem.
@@ -726,7 +689,7 @@ MPI_Datatype zoltan_gno_mpi_type;
 
   nEdges = (ZOLTAN_GNO_TYPE)numEdges;
 
-  MPI_Allreduce(&nEdges, &maxEdges, 1, zoltan_gno_mpi_type, MPI_MAX, zz->Communicator);
+  MPI_Allreduce(&nEdges, &maxEdges, 1, zoltan_gno_mpi_type, MPI_MAX, zz->Communicator);  
 
   if (maxEdges == 0){
     return 0;
@@ -747,7 +710,7 @@ MPI_Datatype zoltan_gno_mpi_type;
   /* Do the fan in (bit switching logarithmic fan-in) */
 
   myrank = zz->Proc;
-  nprocs = zz->Num_Proc;
+  nprocs = zz->Num_Proc; 
 
   for (nbits=0; nbits<(sizeof(int)*8); nbits++){
     if ((nprocs >> nbits) == 0) break;
@@ -768,7 +731,7 @@ MPI_Datatype zoltan_gno_mpi_type;
           MPI_Send(merged_egids, size_merged * lenGID, ZOLTAN_ID_MPI_TYPE, proc, gidTag, zz->Communicator);
         }
       }
-
+ 
       else{
         MPI_Recv(&numIds, 1, zoltan_gno_mpi_type, proc, sizeTag, zz->Communicator, &stat);
 
@@ -817,7 +780,7 @@ MPI_Datatype zoltan_gno_mpi_type;
   return allEdges;
 }
 static int augment_search_structure(ZZ *zz, void *htptr,
-     ZOLTAN_GNO_TYPE maxEdges, ZOLTAN_ID_PTR merged_egids, ZOLTAN_GNO_TYPE size_merged,
+     ZOLTAN_GNO_TYPE maxEdges, ZOLTAN_ID_PTR merged_egids, ZOLTAN_GNO_TYPE size_merged, 
      ZOLTAN_GNO_TYPE prev_size_merged)
 {
 struct _gidht{
@@ -883,7 +846,7 @@ ZOLTAN_ID_PTR newIds, mergedPtr, inPtr;
     gidNode = ht[j];
     while (gidNode){
       if (ZOLTAN_EQ_GID(zz, inPtr, newIds + (gidNode->gidIdx * lenGID))){
-        break;
+        break;                           
       }
       gidNode = gidNode->next;
     }

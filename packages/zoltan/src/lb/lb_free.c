@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
@@ -57,8 +20,8 @@ extern "C" {
 /*****************************************************************************/
 /*
  *  This file contains routines for freeing arrays allocated by Zoltan and
- *  returned to the application; these functions are all callable by the
- *  application.
+ *  returned to the application; these functions are all callable by the 
+ *  application.  
  *
  *  Also includes routine for freeing memory in zz->LB (LB_Struct).
  *  This routine should be called only by Zoltan.
@@ -82,7 +45,7 @@ int Zoltan_LB_Free_Part(
   ZOLTAN_FREE(local_ids);
   ZOLTAN_FREE(procs);
   ZOLTAN_FREE(to_part);
-
+  
   return (ZOLTAN_OK);
 
 }
@@ -98,13 +61,13 @@ int Zoltan_LB_Special_Free_Part(
 /*
  *  Routine to free the arrays returning the results of the load balancing.
  *  This routine should be used within Zoltan to ensure that F90-allocated
- *  arrays are freed correctly.
+ *  arrays are freed correctly.  
  *  For example, Zoltan SPECIAL_MALLOCs return arrays, but then needs to
  *  free them while changing the return list format.  Zoltan should call
  *  Zoltan_LB_Special_Free Part (not Zoltan_LB_Free_Part) to SPECIAL_FREE
  *  the memory that was SPECIAL_MALLOCed.
- *
- *  External applications do not need to use this routine,
+ * 
+ *  External applications do not need to use this routine, 
  *  as the correct malloc/free protocal for their language will be observed.
  */
 
@@ -121,7 +84,7 @@ int Zoltan_LB_Special_Free_Part(
 /*****************************************************************************/
 
 int Zoltan_LB_Free_Data(
-  ZOLTAN_ID_PTR *import_global_ids, /* Array of global IDs for non-local objects
+  ZOLTAN_ID_PTR *import_global_ids, /* Array of global IDs for non-local objects 
                                     assigned to this processor in the new
                                     decomposition.                           */
   ZOLTAN_ID_PTR *import_local_ids,  /* Array of local IDs for non-local objects

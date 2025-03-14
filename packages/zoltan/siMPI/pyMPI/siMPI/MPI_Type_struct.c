@@ -14,13 +14,14 @@
 
 #include "mpi.h"
 
-int MPI_Type_struct(
-        int count,
-        int blocklens[],
-        MPI_Aint indices[],
-        MPI_Datatype old_types[],
+int MPI_Type_struct( 
+        int count, 
+        int blocklens[], 
+        MPI_Aint indices[], 
+        MPI_Datatype old_types[], 
         MPI_Datatype *newtype )
 {
   _MPI_COVERAGE();
   return PMPI_Type_struct (count, blocklens, indices, old_types, newtype);
 }
+

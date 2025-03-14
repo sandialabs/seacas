@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012, 2023 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -79,8 +42,8 @@ static int nfree = 0;           /* number of calls to free */
 #ifdef ZOLTAN_NO_MPI
 #define GET_RANK(a) *(a)=0
 #else
-#include <mpi.h>
-#define GET_RANK(a) MPI_Comm_rank(MPI_COMM_WORLD, (a))
+#include <zoltan_comm.h>
+#define GET_RANK(a) MPI_Comm_rank(zoltan_get_global_comm(), (a))
 #endif
 
 #define MAX_STRING_LEN 50
@@ -104,7 +67,7 @@ void Zoltan_Memory_Debug(int new_level) {
 }
 
 /******************************************************************************/
-int Zoltan_Memory_Get_Debug(void) {
+int Zoltan_Memory_Get_Debug() {
   return DEBUG_MEMORY;
 }
 
@@ -358,7 +321,7 @@ double *Zoltan_Malloc(size_t n, char *filename, int lineno)
   else {		/* n < 0 */
     GET_RANK(&proc);
     fprintf(stderr, "%s (from %s,%d) ERROR on proc %d: "
-	    "Negative malloc argument. (%lu)\n", yo, filename, lineno, proc,
+	    "Negative malloc argument. (%lu)\n", yo, filename, lineno, proc, 
             (unsigned long) n);
     return ((double *) NULL);
   }
@@ -517,8 +480,8 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
  *  This version of free calls the system's free function.  It doesn't call
  *  free if ptr is the NULL pointer.
  */
-
-  if (ptr == NULL || *ptr == NULL)
+ 
+  if (ptr == NULL || *ptr == NULL) 
     return;
 
   nfree++;
@@ -533,7 +496,7 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
     if (dbptr == NULL) {
       GET_RANK(&proc);
       fprintf(stderr, "Proc %d: Memory error: In free, address (0x%lx) "
-	"not found in debug list. File=%s, line=%d.\n", proc,
+	"not found in debug list. File=%s, line=%d.\n", proc, 
         (long) *ptr, filename, lineno);
    }
    else {
@@ -555,7 +518,7 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
 #else
   free(*ptr);
 #endif
-
+ 
   /* Set value of ptr to NULL, to flag further references to it. */
   *ptr = NULL;
 
@@ -570,7 +533,7 @@ void Zoltan_Multifree(char *filename, int lineno, int n, ...)
 {
   int i;
   va_list va;
-
+  
   va_start(va, n);
   for (i=0; i<n; i++){
     Zoltan_Free(va_arg(va, void **), filename, lineno);
@@ -586,7 +549,7 @@ va_dcl
   int i, n, lineno;
   char *filename;
   va_list va;
-
+   
   va_start(va);
   filename = va_arg(va, char *);
   lineno = va_arg(va, int);
@@ -601,7 +564,7 @@ va_dcl
 
 /* Print out status of malloc/free calls.  Flag any memory leaks. */
 
-void Zoltan_Memory_Stats(void)
+void Zoltan_Memory_Stats()
 {
     struct malloc_debug_data *dbptr;	/* loops through debug list */
     int       proc;		/* processor ID */
@@ -621,10 +584,10 @@ void Zoltan_Memory_Stats(void)
     else if (DEBUG_MEMORY > 1) {
         GET_RANK(&proc);
 	fprintf(stderr, "Proc %d: Calls to malloc = %d,  Calls to free = %d, "
-                        "Max bytes = %lu, total bytes = %lu\n",
+                        "Max bytes = %lu, total bytes = %lu\n", 
                          proc, nmalloc, nfree,
                          (unsigned long) bytes_max, (unsigned long) bytes_used);
-        if (nmalloc > nfree)
+        if (nmalloc > nfree) 
           fprintf(stderr, "Proc %d: Possible memory error: "
                           "# malloc > # free.\n", proc);
         else if (nfree > nmalloc)
@@ -634,7 +597,7 @@ void Zoltan_Memory_Stats(void)
 	    fprintf(stderr, "Proc %d: Remaining allocations:\n", proc);
 	    for (dbptr = top; dbptr != NULL; dbptr = dbptr->next) {
 		fprintf(stderr, " order=%d, size=%lu, location=0x%lx, "
-                  "file=%s, line=%d\n",
+                  "file=%s, line=%d\n", 
                   dbptr->order, (unsigned long) (dbptr->size),
                   (long) dbptr->ptr,
                   dbptr->file, dbptr->line);
@@ -663,7 +626,7 @@ size_t Zoltan_Memory_Usage (int type)
 
 void Zoltan_Memory_Reset (int type)
 {
-/* Reset total bytes used currently or maximum bytes used at any point
+/* Reset total bytes used currently or maximum bytes used at any point 
    to zero. */
 
    if (type == ZOLTAN_MEM_STAT_TOTAL)

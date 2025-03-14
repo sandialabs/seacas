@@ -19,3 +19,4 @@ int MPI_Info_delete(MPI_Info info, char *key)
   _MPI_COVERAGE();
   return PMPI_Info_delete(info, key);
 }
+

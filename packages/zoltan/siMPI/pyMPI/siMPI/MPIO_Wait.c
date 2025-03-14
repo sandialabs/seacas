@@ -18,5 +18,6 @@
 int MPIO_Wait(MPIO_Request *request, MPI_Status *status)
 {
   _MPI_COVERAGE();
-  return PMPIO_Wait(request, status);
+  return PMPIO_Wait(request, status); 
 }
+

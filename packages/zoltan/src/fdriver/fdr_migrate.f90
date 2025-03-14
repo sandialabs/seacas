@@ -1,48 +1,13 @@
 !! 
 !! @HEADER
-!!
-!!!!**********************************************************************
-!!
+!! *****************************************************************************
 !!  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
-!!                  Copyright 2012 Sandia Corporation
 !!
-!! Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-!! the U.S. Government retains certain rights in this software.
-!!
-!! Redistribution and use in source and binary forms, with or without
-!! modification, are permitted provided that the following conditions are
-!! met:
-!!
-!! 1. Redistributions of source code must retain the above copyright
-!! notice, this list of conditions and the following disclaimer.
-!!
-!! 2. Redistributions in binary form must reproduce the above copyright
-!! notice, this list of conditions and the following disclaimer in the
-!! documentation and/or other materials provided with the distribution.
-!!
-!! 3. Neither the name of the Corporation nor the names of the
-!! contributors may be used to endorse or promote products derived from
-!! this software without specific prior written permission.
-!!
-!! THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-!! EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-!! IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-!! PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-!! CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-!! EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-!! PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-!! PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-!! LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-!! NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-!! SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-!!
-!! Questions? Contact Karen Devine	kddevin@sandia.gov
-!!                    Erik Boman	egboman@sandia.gov
-!!
-!!!!**********************************************************************
-!!
+!! Copyright 2012 NTESS and the Zoltan contributors.
+!! SPDX-License-Identifier: BSD-3-Clause
+!! *****************************************************************************
 !! @HEADER
- !!
+!!
 
 module dr_migrate
 
@@ -265,7 +230,7 @@ integer(Zoltan_INT) :: lid
   endif
 ! Make sure all procs have the same value.
   call MPI_Allreduce(flag, Use_Edge_Wgts, 1, MPI_LOGICAL, MPI_LOR, &
-                     MPI_COMM_WORLD, mpierr)
+                     zoltan_get_global_comm(), mpierr)
 
 
 !  
@@ -276,7 +241,7 @@ integer(Zoltan_INT) :: lid
   
   if (Mesh%num_elems == 0) return ! No elements to update 
 
-  call MPI_Comm_rank(MPI_COMM_WORLD, proc, mpierr)
+  call MPI_Comm_rank(zoltan_get_global_comm(), proc, mpierr)
 
 !  
 !   *  Build New_Elem_Index array and list of processor assignments.
@@ -515,8 +480,8 @@ integer(Zoltan_INT) :: i, j, k, last, mpierr
 integer(Zoltan_INT) :: adj_elem
 
 
-  call MPI_Comm_rank(MPI_COMM_WORLD, proc, mpierr)
-  call MPI_Comm_size(MPI_COMM_WORLD, num_proc, mpierr)
+  call MPI_Comm_rank(zoltan_get_global_comm(), proc, mpierr)
+  call MPI_Comm_size(zoltan_get_global_comm(), num_proc, mpierr)
 
 !  compact elements array, as the application expects the array to be dense 
   do i = 0, New_Elem_Index_Size-1
@@ -713,7 +678,7 @@ integer(Zoltan_INT), intent(out) :: ierr
   gid = num_gid_entries;
   lid = num_lid_entries;
 
-  call MPI_Comm_rank(MPI_COMM_WORLD, proc, mpierr)
+  call MPI_Comm_rank(zoltan_get_global_comm(), proc, mpierr)
 
 
   if (num_lid_entries.gt.0) then
@@ -862,7 +827,7 @@ integer(Zoltan_INT), intent(out) :: ierr
 
   gid = num_gid_entries;
 
-  call MPI_Comm_rank(MPI_COMM_WORLD, proc, mpierr)
+  call MPI_Comm_rank(zoltan_get_global_comm(), proc, mpierr)
 
 
   idx = in_list(elem_gid(gid), New_Elem_Index_Size, New_Elem_Index)
@@ -1014,7 +979,7 @@ integer, allocatable :: status(:,:), req(:)
   do i = 0, Mesh%necmap-1
 ! RISKY old style assumption the address of recv_vec(offset) is passed
     call MPI_Irecv(recv_vec(offset), Mesh%ecmap_cnt(i), MPI_INTEGER, &
-                     Mesh%ecmap_id(i), msg_type, MPI_COMM_WORLD, req(i), ierr)
+                     Mesh%ecmap_id(i), msg_type, zoltan_get_global_comm(), req(i), ierr)
     offset = offset + Mesh%ecmap_cnt(i)
   end do
 
@@ -1023,7 +988,7 @@ integer, allocatable :: status(:,:), req(:)
   do i = 0, Mesh%necmap-1
 ! RISKY old style assumption the address of send_vec(offset) is passed
     call MPI_Send(send_vec(offset), Mesh%ecmap_cnt(i), MPI_INTEGER, &
-                    Mesh%ecmap_id(i), msg_type, MPI_COMM_WORLD, ierr)
+                    Mesh%ecmap_id(i), msg_type, zoltan_get_global_comm(), ierr)
     offset = offset + Mesh%ecmap_cnt(i)
   end do
 

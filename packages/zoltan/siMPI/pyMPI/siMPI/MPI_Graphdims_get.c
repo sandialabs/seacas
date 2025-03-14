@@ -19,3 +19,4 @@ int MPI_Graphdims_get ( MPI_Comm comm, int *nnodes, int *nedges )
   _MPI_COVERAGE();
   return PMPI_Graphdims_get (comm, nnodes, nedges);
 }
+

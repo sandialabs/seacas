@@ -1,54 +1,17 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
-/*
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
+/* 
  * Discover hardware topology using hwloc.
  * Tested with hwloc 1.0.2: http://www.open-mpi.org/software/hwloc
  *
  * Print out topology and which MPI processes are where.
- * Printing out the MPI ranks may not be possible
+ * Printing out the MPI ranks may not be possible 
  * if hwloc_get_cpubind() doesn't work or if it
  * works but gives us a cpuset containing more than one cpu.
  *
@@ -96,8 +59,8 @@ int i, j, p;
 int rc, num;
 
   MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(zoltan_get_global_comm(), &size);
+  MPI_Comm_rank(zoltan_get_global_comm(), &rank);
 
   /* allocate & initialize topology object */
 
@@ -116,7 +79,7 @@ int rc, num;
 
   support = hwloc_topology_get_support((struct hwloc_topology *)topology);
 
-  /*
+  /* 
    * Get the depth of topology and the root.
    * The root typically is a node on a multi-node machine, not the collection of nodes
    * in the application.
@@ -124,7 +87,7 @@ int rc, num;
 
   depth = hwloc_topology_get_depth(topology);
 
-  /*
+  /* 
    * Which cpu am I running on?
    *
    * HWLOC_CPUBIND_STRICT - says assume each process is running on one processor and won't be moved
@@ -139,13 +102,13 @@ int rc, num;
   }
   else{
     rc = hwloc_get_cpubind(topology, binding, HWLOC_CPUBIND_STRICT);
-
+  
     if ((rc < 0) || (hwloc_cpuset_weight(binding) > 1)){
       have_my_cpu = 0;
     }
   }
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
 
   if (!have_my_cpu && (rank == 0)){
     printf("Warning: Unable to identify each MPI process with its CPU\n");
@@ -161,8 +124,8 @@ int rc, num;
   if (have_my_cpu){
 
     hwloc_cpuset_snprintf(mask, MAX_NAME_LEN-1, binding);
-    MPI_Gather(mask, MAX_NAME_LEN, MPI_CHAR, recvbuf, MAX_NAME_LEN, MPI_CHAR, 0, MPI_COMM_WORLD);
-
+    MPI_Gather(mask, MAX_NAME_LEN, MPI_CHAR, recvbuf, MAX_NAME_LEN, MPI_CHAR, 0, zoltan_get_global_comm());
+ 
     if (rank == 0){
       cpuset = (hwloc_cpuset_t*)malloc(sizeof(hwloc_cpuset_t) * size);
 
@@ -183,17 +146,17 @@ int rc, num;
     for (i=0; i < depth; i++){
 
       num = hwloc_get_nbobjs_by_depth(topology, i);
-
+   
       for (j = 0; j < num; j++){
 
         obj = hwloc_get_obj_by_depth(topology, i, j);
 
         if (j==0){
           hwloc_obj_type_snprintf(type_name, MAX_NAME_LEN-1, obj, 1);
-          printf("\n%d %s%s:\n",num,type_name, ((num> 1) ? "s" : ""));
+          printf("\n%d %s%s:\n",num,type_name, ((num> 1) ? "s" : "")); 
         }
 
-        hwloc_cpuset_snprintf(mask, MAX_NAME_LEN - 1, obj->cpuset);
+        hwloc_cpuset_snprintf(mask, MAX_NAME_LEN - 1, obj->cpuset); 
         local_memory = obj->memory.local_memory;
         total_memory= obj->memory.total_memory;
 
@@ -260,3 +223,4 @@ char *info=NULL;
 
   return info;
 }
+

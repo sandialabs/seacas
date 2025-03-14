@@ -19,3 +19,4 @@ int MPI_Group_excl ( MPI_Group group, int n, int *ranks, MPI_Group *newgroup )
   _MPI_COVERAGE();
   return PMPI_Group_excl (group, n, ranks, newgroup);
 }
+

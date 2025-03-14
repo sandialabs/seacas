@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -93,7 +56,7 @@ void phg_free_temp_vertices(zoltan_temp_vertices *ztv)
 }
 
 /*****************************************************************************/
-int phg_map_GIDs_to_processes(ZZ *zz, ZOLTAN_ID_PTR eid, int size,
+int phg_map_GIDs_to_processes(ZZ *zz, ZOLTAN_ID_PTR eid, int size, 
                              int lenGID, int **hashedProc, int nprocs)
 {
 int i, j;
@@ -109,7 +72,7 @@ static char *yo = "map_GIDs_to_processes";
   procList = (int *)ZOLTAN_MALLOC(sizeof(int) * size);
 
   if (!procList){
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error.");
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error."); 
     return ZOLTAN_MEMERR;
   }
 
@@ -125,7 +88,7 @@ static char *yo = "map_GIDs_to_processes";
 }
 
 /****************************************************************************/
-/*
+/* 
  * Create, access and delete a hash table mapping a GID its
  * position in a list.
  */
@@ -172,11 +135,11 @@ phg_GID_lookup *phg_create_GID_lookup_table(ZOLTAN_ID_PTR gids, int size, int le
     lu->htTop[i].gno = i;
 
     j = Zoltan_Hash(lu->htTop[i].gid, lenGID, tsize);
-
+    
     lu->htTop[i].next = lu->ht[j];
     lu->ht[j] = lu->htTop + i;
   }
-
+ 
   return lu;
 }
 
@@ -191,7 +154,7 @@ phg_GID_lookup *phg_create_GID_lookup_table2(ZOLTAN_ID_PTR gids, int ngids, int 
   phg_GID_lookup *lu = NULL;
 
   tsize = ngids;    /* actually may be larger than number of unique ids */
-
+  
   nextGID = nextUniqueGID = gids;
 
   lu = (phg_GID_lookup *)ZOLTAN_MALLOC(sizeof(phg_GID_lookup));
@@ -224,7 +187,7 @@ phg_GID_lookup *phg_create_GID_lookup_table2(ZOLTAN_ID_PTR gids, int ngids, int 
 
     if (nextUniqueGID < nextGID){
       for (k=0; k<lenGID; k++){
-        nextUniqueGID[k] = nextGID[k];
+        nextUniqueGID[k] = nextGID[k]; 
       }
     }
 
@@ -232,7 +195,7 @@ phg_GID_lookup *phg_create_GID_lookup_table2(ZOLTAN_ID_PTR gids, int ngids, int 
 
     hn->next = lu->ht[j];
     lu->ht[j] = hn;
-
+   
     hn++;
     nextUniqueGID += lenGID;
     lu->numGIDs++;
@@ -250,7 +213,7 @@ int phg_lookup_GID(phg_GID_lookup *lu, ZOLTAN_ID_PTR gid)
   if (lu->numGIDs < 1) return -1;
 
   i = Zoltan_Hash(gid, lu->lenGID, (unsigned int) lu->table_size);
-
+  
   for (hn=lu->ht[i]; hn != NULL; hn = hn->next){
     match = 1;
     for (k=0; k<lu->lenGID; k++){

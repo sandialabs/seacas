@@ -99,3 +99,4 @@ int _MPI_Check_Request_Array(int count, MPI_Request array[]) {
   }
   return _MPI_NOT_OK;
 }
+

@@ -18,5 +18,6 @@
 int MPI_Comm_split ( MPI_Comm comm, int color, int key, MPI_Comm *comm_out )
 {
   _MPI_COVERAGE();
-  return PMPI_Comm_split (comm, color, key, comm_out);
+  return PMPI_Comm_split (comm, color, key, comm_out); 
 }
+

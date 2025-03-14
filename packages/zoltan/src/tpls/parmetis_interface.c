@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -91,7 +54,7 @@ static int mylog2(int x)
   return (i-1);
 }
 
-static int Zoltan_Parmetis_Parse(ZZ*, indextype *, char*, realtype*, double *,
+static int Zoltan_Parmetis_Parse(ZZ*, indextype *, char*, realtype*, double *, 
                                  ZOLTAN_Output_Order*);
 
 
@@ -148,10 +111,8 @@ int Zoltan_ParMetis(
   realtype *imb_tols;
   indextype ncon;
   indextype edgecut;
-#ifdef ZOLTAN_PARMETIS
   indextype wgtflag;
   indextype numflag = 0;
-#endif
   indextype num_part = zz->LB.Num_Global_Parts; /* passed to ParMETIS. */
 
   ZOLTAN_TRACE_ENTER(zz, yo);
@@ -164,10 +125,10 @@ int Zoltan_ParMetis(
     int tmp = zz->LB.Num_Global_Parts * MAX(zz->Obj_Weight_Dim, 1);
     prt.input_part_sizes = (realtype *) ZOLTAN_MALLOC(tmp * sizeof(realtype));
 
-    for (i = 0; i < tmp; i++)
+    for (i = 0; i < tmp; i++) 
       prt.input_part_sizes[i] = (realtype) part_sizes[i];
 
-    /* KDD 2/2014:  removed re-scaling part sizes so they sum to one.
+    /* KDD 2/2014:  removed re-scaling part sizes so they sum to one.  
      *              part_sizes are already scaled in Zoltan_LB_Get_Part_Sizes.
      *              plus, the code here was wrong for multiple object weights.
      *              similar scaling code did not exist in the Scotch interface.
@@ -238,7 +199,7 @@ int Zoltan_ParMetis(
 #endif /* PARMETIS31_ALWAYS_FREES_VSIZE */
 
 
-  ierr = Zoltan_Preprocess_Graph(zz, &global_ids, &local_ids,  &gr,
+  ierr = Zoltan_Preprocess_Graph(zz, &global_ids, &local_ids,  &gr, 
                                  geo, &prt, &vsp);
   if ((ierr != ZOLTAN_OK) && (ierr != ZOLTAN_WARN)) {
     Zoltan_Third_Exit(&gr, geo, &prt, &vsp, &part, NULL);
@@ -257,10 +218,8 @@ int Zoltan_ParMetis(
 
   /* Get ready to call ParMETIS */
   edgecut = -1;
-#ifdef ZOLTAN_PARMETIS
   wgtflag = 2*(gr.obj_wgt_dim>0) + (gr.edge_wgt_dim>0);
   numflag = 0;
-#endif
   ncon = (gr.obj_wgt_dim > 0 ? gr.obj_wgt_dim : 1);
 
   if (!prt.part_sizes){
@@ -279,7 +238,7 @@ int Zoltan_ParMetis(
 
   /* if (strcmp(alg, "ADAPTIVEREPART") == 0) */
   for (i = 0; i < num_part*ncon; i++)
-    if (prt.part_sizes[i] == 0)
+    if (prt.part_sizes[i] == 0) 
       ZOLTAN_THIRD_ERROR(ZOLTAN_FATAL, "Zero-sized part(s) requested! "
                             "ParMETIS 3.x will likely fail. Please use a "
                             "different method, or remove the zero-sized "
@@ -364,9 +323,9 @@ int Zoltan_ParMetis(
       /* Use default options for METIS */
 #if !defined(METIS_VER_MAJOR) || METIS_VER_MAJOR < 5
       options[0] = 0;
-      METIS_WPartGraphKway (gr.vtxdist+1, gr.xadj, gr.adjncy,
+      METIS_WPartGraphKway (gr.vtxdist+1, gr.xadj, gr.adjncy, 
                             gr.vwgt, gr.ewgts, &wgtflag,
-                            &numflag, &num_part, prt.part_sizes,
+                            &numflag, &num_part, prt.part_sizes, 
                             options, &edgecut, prt.part);
 #else
       METIS_SetDefaultOptions(options);
@@ -392,7 +351,7 @@ int Zoltan_ParMetis(
   if (get_times) times[2] = Zoltan_Time(zz->Timer);
 
 
-  if (gr.final_output) {
+  if (gr.final_output) { 
     /* Do final output now because after the data will not be coherent:
        unscatter only unscatter part data, not graph */
     ierr = Zoltan_Postprocess_FinalOutput (zz, &gr, &prt, &vsp, use_timers, itr);
@@ -400,10 +359,10 @@ int Zoltan_ParMetis(
   /* Ignore the timings of Final Ouput */
   if (get_times) times[3] = Zoltan_Time(zz->Timer);
 
-  ierr = Zoltan_Postprocess_Graph(zz, global_ids, local_ids, &gr,
+  ierr = Zoltan_Postprocess_Graph(zz, global_ids, local_ids, &gr, 
                                   geo, &prt, &vsp, NULL, &part);
 
-  Zoltan_Third_Export_User(&part,
+  Zoltan_Third_Export_User(&part, 
                            num_imp, imp_gids, imp_lids, imp_procs, imp_to_part,
                            num_exp, exp_gids, exp_lids, exp_procs, exp_to_part);
 
@@ -428,10 +387,10 @@ int Zoltan_ParMetis(
 
 
 static int Zoltan_Parmetis_Parse(
-  ZZ* zz,
-  indextype *options,
+  ZZ* zz, 
+  indextype *options, 
   char* alg,
-  realtype* itr,
+  realtype* itr, 
   double *pmv3_itr,
   ZOLTAN_Output_Order *ord
 )
@@ -572,10 +531,10 @@ int Zoltan_ParMetis_Order(
   ZOLTAN_Third_Graph gr;
 
 #ifdef ZOLTAN_PARMETIS
-  MPI_Comm comm = zz->Communicator;/* don't want to risk letting external
+  MPI_Comm comm = zz->Communicator;/* don't want to risk letting external 
                                       packages changing our communicator */
-  indextype numflag = 0;
 #endif
+  indextype numflag = 0;
 
   int timer_p = 0;
   int get_times = 0;
@@ -721,7 +680,7 @@ int Zoltan_ParMetis_Order(
   if (IS_GLOBAL_GRAPH(gr.graph_type)){
     ZOLTAN_TRACE_DETAIL(zz, yo, "Calling the ParMETIS library");
 
-    ParMETIS_V3_NodeND (gr.vtxdist, gr.xadj, gr.adjncy,
+    ParMETIS_V3_NodeND (gr.vtxdist, gr.xadj, gr.adjncy, 
                         &numflag, options, ord.rank, ord.sep_sizes, &comm);
     ZOLTAN_TRACE_DETAIL(zz, yo, "Returned from the ParMETIS library");
 
@@ -735,11 +694,11 @@ int Zoltan_ParMetis_Order(
     order_opt->return_args = RETURN_RANK|RETURN_IPERM; /* We provide directly all the permutations */
 #if !defined(METIS_VER_MAJOR) || METIS_VER_MAJOR < 5
     options[0] = 0;  /* Use default options for METIS. */
-    METIS_NodeND(&numobj, gr.xadj, gr.adjncy, &numflag, options,
+    METIS_NodeND(&numobj, gr.xadj, gr.adjncy, &numflag, options, 
                  ord.iperm, ord.rank);
 #else
     METIS_SetDefaultOptions(options);
-    METIS_NodeND(&numobj, gr.xadj, gr.adjncy, NULL, options,
+    METIS_NodeND(&numobj, gr.xadj, gr.adjncy, NULL, options, 
                  ord.iperm, ord.rank); /* NULL is vwgt -- new interface in v4 */
 #endif
 
@@ -821,7 +780,7 @@ int Zoltan_ParMetis_Order(
 
   ierr = Zoltan_Postprocess_Graph (zz, l_gids, l_lids, &gr, NULL, NULL, NULL, &ord, NULL);
 
-  ZOLTAN_FREE(&l_gids);
+  ZOLTAN_FREE(&l_gids); 
   ZOLTAN_FREE(&l_lids);
 
   /* Get a time here */

@@ -20,3 +20,4 @@ int MPI_Comm_create(MPI_Comm comm, MPI_Group new_group, MPI_Comm* new_comm)
   _MPI_COVERAGE();
   return  PMPI_Comm_create(comm, new_group, new_comm);
 }
+

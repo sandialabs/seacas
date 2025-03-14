@@ -20,3 +20,4 @@ int MPI_Init( int *argc, char **argv[])
   _MPI_COVERAGE();
   return  PMPI_Init(argc, argv);
 }
+

@@ -18,5 +18,6 @@
 int MPI_Buffer_attach( void *buffer, int size )
 {
   _MPI_COVERAGE();
-  return PMPI_Buffer_attach (buffer, size);
+  return PMPI_Buffer_attach (buffer, size); 
 }
+

@@ -14,10 +14,11 @@
 
 #include "mpi.h"
 
-int MPI_Intercomm_create ( MPI_Comm local_comm, int local_leader,
-                         MPI_Comm peer_comm, int remote_leader, int tag,
+int MPI_Intercomm_create ( MPI_Comm local_comm, int local_leader, 
+                         MPI_Comm peer_comm, int remote_leader, int tag, 
                          MPI_Comm *comm_out )
 {
   _MPI_COVERAGE();
   return PMPI_Intercomm_create (local_comm, local_leader, peer_comm, remote_leader, tag, comm_out);
 }
+

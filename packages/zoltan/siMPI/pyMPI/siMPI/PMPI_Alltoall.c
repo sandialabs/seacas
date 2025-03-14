@@ -16,8 +16,8 @@
 #include <string.h>
 
 /* STUB */
-int PMPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
+int PMPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+                  void *recvbuf, int recvcount, MPI_Datatype recvtype, 
                  MPI_Comm comm )
 {
   int send_size;
@@ -40,8 +40,8 @@ int PMPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
     switch( _MPI_checkSendType(recvtype) ) {
     case _MPI_DEFAULT:
       _MPI_COVERAGE();
-      send_size = _MPI_calculateSize(sendcount, sendtype);
-      recv_size = _MPI_calculateSize(recvcount, recvtype);
+      send_size = _MPI_calculateSize(sendcount, sendtype);  
+      recv_size = _MPI_calculateSize(recvcount, recvtype);  
       if ( send_size < recv_size ) {
         _MPI_COVERAGE();
 	memcpy(recvbuf,sendbuf,send_size);
@@ -51,9 +51,10 @@ int PMPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
       }
       return MPI_SUCCESS;
     default:
-      return MPI_Abort(comm, MPI_UNDEFINED);
+      return MPI_Abort(comm, MPI_UNDEFINED); 
     }
   default:
-    return MPI_Abort(comm, MPI_UNDEFINED);
+    return MPI_Abort(comm, MPI_UNDEFINED); 
   }
 }
+

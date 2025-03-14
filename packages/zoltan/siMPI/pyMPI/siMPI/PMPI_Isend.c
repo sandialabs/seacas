@@ -18,7 +18,7 @@ int PMPI_Isend (void* message, int count, MPI_Datatype datatype, int dest,
         int tag, MPI_Comm comm, MPI_Request* request)
 {
   int retval;
-  retval = PMPI_Send(message, count, datatype, dest, tag, comm);
+  retval = PMPI_Send(message, count, datatype, dest, tag, comm); 
 
   /* Fill in the request object so that we can query it later */
   if (retval == MPI_SUCCESS && request != 0) {
@@ -28,3 +28,4 @@ int PMPI_Isend (void* message, int count, MPI_Datatype datatype, int dest,
   return retval;
 }
 /*=============================================================================================*/
+

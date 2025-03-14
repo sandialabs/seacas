@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include "zz_const.h"
 #include "rcb.h"
@@ -55,7 +18,7 @@ int Zoltan_RCB_Build_Structure(ZZ *zz, int *num_obj, int *max_obj, int wgtflag,
                                double overalloc, int use_ids, int gen_tree)
 {
 /*
- *  Function to build the geometry-based data structures for
+ *  Function to build the geometry-based data structures for 
  *  Steve Plimpton's RCB implementation.
  */
 char *yo = "Zoltan_RCB_Build_Structure";
@@ -120,7 +83,7 @@ int i, ierr = 0;
                                &(rcb->Num_Dim),
                                wgtflag, overalloc, use_ids, 1);
   if (ierr) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
                        "Error returned from Zoltan_RB_Build_Structure.");
     Zoltan_RCB_Free_Structure(zz);
     return(ierr);
@@ -209,6 +172,7 @@ size_t Zoltan_RCB_Serialize_Structure_Size(ZZ const *zz) {
 
 void Zoltan_RCB_Serialize_Structure(ZZ const *zz, char **buf)
 {
+  char *yo = "Zoltan_RCB_Serialize_Structure";
   RCB_STRUCT const *zzrcb = (RCB_STRUCT const *) zz->LB.Data_Structure;
 
   if (!zzrcb)
@@ -227,7 +191,7 @@ void Zoltan_RCB_Serialize_Structure(ZZ const *zz, char **buf)
   memcpy(bufptr, (void *)(zzrcb->Box), sizeof(struct rcb_box));
   bufptr += sizeof(struct rcb_box);
 
-  memcpy(bufptr, (const void *) &(zzrcb->Tran), sizeof(ZZ_Transform));
+  memcpy(bufptr, (void *) &(zzrcb->Tran), sizeof(ZZ_Transform));
   bufptr += sizeof(ZZ_Transform);
 
   *buf = bufptr;
@@ -235,6 +199,7 @@ void Zoltan_RCB_Serialize_Structure(ZZ const *zz, char **buf)
 
 void Zoltan_RCB_Deserialize_Structure(ZZ *zz, char **buf)
 {
+  char *yo = "Zoltan_RCB_Serialize_Structure";
   RCB_STRUCT *zzrcb = (RCB_STRUCT *) ZOLTAN_MALLOC(sizeof(RCB_STRUCT));
   zz->LB.Data_Structure = zzrcb;
 

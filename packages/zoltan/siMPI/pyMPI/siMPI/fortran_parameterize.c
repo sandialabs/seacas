@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <strings.h>
 #include <ctype.h>
 
 #include "mpi_config.h"
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
       printf("      %s\n",args);
     }
   }
+  
 
-
-  return 0;
+  return 0;  
 }

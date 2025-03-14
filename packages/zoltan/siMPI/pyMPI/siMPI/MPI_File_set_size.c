@@ -17,5 +17,6 @@
 int MPI_File_set_size(MPI_File fh, MPI_Offset size)
 {
   _MPI_COVERAGE();
-  return PMPI_File_set_size (fh, size);
+  return PMPI_File_set_size (fh, size); 
 }
+

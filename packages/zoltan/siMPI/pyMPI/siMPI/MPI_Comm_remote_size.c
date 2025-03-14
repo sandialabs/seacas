@@ -20,3 +20,4 @@ int MPI_Comm_remote_size ( MPI_Comm comm, int *size )
   _MPI_COVERAGE();
   return PMPI_Comm_remote_size (comm, size);
 }
+

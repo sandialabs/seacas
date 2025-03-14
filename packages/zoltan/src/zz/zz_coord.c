@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -63,7 +26,7 @@ extern "C" {
 /*****************************************************************************/
 /*****************************************************************************/
 
-/*
+/* 
  * This function gets a list of coordinates one way or the other,
  * i.e., by calling either Get_Geom_Multi or Get_Geom for each object.
  *
@@ -80,9 +43,9 @@ static PARAM_VARS Reduce_Dim_Params[] = {
                   { "DEGENERATE_RATIO", NULL, "DOUBLE", 0 },
                   { NULL, NULL, NULL, 0 } };
 
-static void inertial_matrix2D(ZZ *zz, double *X, int num_obj,
+static void inertial_matrix2D(ZZ *zz, double *X, int num_obj, 
   double *cm, double (*im)[3]) ;
-static void inertial_matrix3D(ZZ *zz, double *X, int num_obj,
+static void inertial_matrix3D(ZZ *zz, double *X, int num_obj, 
   double *cm, double (*im)[3]) ;
 static int eigenvectors(double (*m)[3], double (*evecs)[3], int dim);
 static void projected_distances(ZZ *zz, double *coords, int num_obj,
@@ -90,13 +53,13 @@ static void projected_distances(ZZ *zz, double *coords, int num_obj,
 static void order_decreasing(double *d, int *order);
 static void transform_coordinates(double *coords, int num_obj, int d,
                                   ZZ_Transform *tr);
-static int get_target_dimension(double *dist, int *order,
+static int get_target_dimension(double *dist, int *order, 
                                 double deg_ratio, int d);
 
 #define NEAR_ONE(x) ((x >= .9999) && (x <= 1.0001))
 
 int Zoltan_Get_Coordinates(
-  ZZ *zz,
+  ZZ *zz, 
   int num_obj,               /* Input:  number of objects */
   ZOLTAN_ID_PTR global_ids,  /* Input:  global IDs of objects */
   ZOLTAN_ID_PTR local_ids,   /* Input:  local IDs of objects; may be NULL. */
@@ -110,7 +73,7 @@ int Zoltan_Get_Coordinates(
   int num_gid_entries = zz->Num_GID;
   int num_lid_entries = zz->Num_LID;
   int alloced_coords = 0;
-  ZOLTAN_ID_PTR lid;   /* Temporary pointers to local IDs; used to pass
+  ZOLTAN_ID_PTR lid;   /* Temporary pointers to local IDs; used to pass 
                           NULL to query functions when NUM_LID_ENTRIES == 0. */
   double dist[3];
   double im[3][3] = {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}};
@@ -127,7 +90,7 @@ int Zoltan_Get_Coordinates(
 
   /* Error check -- make sure needed callback functions are registered. */
 
-  if (zz->Get_Num_Geom == NULL ||
+  if (zz->Get_Num_Geom == NULL || 
      (zz->Get_Geom == NULL && zz->Get_Geom_Multi == NULL)) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Must register ZOLTAN_NUM_GEOM_FN and "
                        "either ZOLTAN_GEOM_MULTI_FN or ZOLTAN_GEOM_FN");
@@ -138,13 +101,13 @@ int Zoltan_Get_Coordinates(
 
   *num_dim = zz->Get_Num_Geom(zz->Get_Num_Geom_Data, &ierr);
   if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
                        "Error returned from ZOLTAN_GET_NUM_GEOM_FN");
     goto End;
   }
 
   if (*num_dim < 0 || *num_dim > 3) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
                        "Invalid dimension returned from ZOLTAN_NUM_GEOM_FN");
     goto End;
   }
@@ -166,7 +129,7 @@ int Zoltan_Get_Coordinates(
                          num_obj, global_ids, local_ids, *num_dim, *coords,
                          &ierr);
       if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
                            "Error returned from ZOLTAN_GET_GEOM_MULTI_FN");
         goto End;
       }
@@ -175,10 +138,10 @@ int Zoltan_Get_Coordinates(
       for (i = 0; i < num_obj; i++) {
         lid = (num_lid_entries ? &(local_ids[i*num_lid_entries]) : NULL);
         zz->Get_Geom(zz->Get_Geom_Data, num_gid_entries, num_lid_entries,
-                     global_ids + i*num_gid_entries, lid,
+                     global_ids + i*num_gid_entries, lid, 
                      (*coords) + i*(*num_dim), &ierr);
         if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {
-          ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+          ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
                              "Error returned from ZOLTAN_GET_GEOM_FN");
           goto End;
         }
@@ -188,11 +151,11 @@ int Zoltan_Get_Coordinates(
 
   /*
    * For RCB, RIB, and HSFC: if REDUCE_DIMENSIONS was selected, compute the
-   * center of mass and inertial matrix of the coordinates.
+   * center of mass and inertial matrix of the coordinates.  
    *
    * For 3D problems: If the geometry is "flat", transform the points so the
-   * two primary directions lie along the X and Y coordinate axes and project
-   * to the Z=0 plane.  If in addition the geometry is "skinny", project to
+   * two primary directions lie along the X and Y coordinate axes and project 
+   * to the Z=0 plane.  If in addition the geometry is "skinny", project to 
    * the X axis.  (This creates a 2D or 1D problem respectively.)
    *
    * For 2D problems: If the geometry is essentially a line, transform it's
@@ -200,14 +163,14 @@ int Zoltan_Get_Coordinates(
    * 1D problem.
    *
    * Return these points to the partitioning algorithm, in effect partitioning
-   * in only the 2 (or 1) significant dimensions.
+   * in only the 2 (or 1) significant dimensions.  
    */
 
-  if (((*num_dim == 3) || (*num_dim == 2)) &&
+  if (((*num_dim == 3) || (*num_dim == 2)) && 
       ((zz->LB.Method==RCB) || (zz->LB.Method==RIB) || (zz->LB.Method==HSFC))){
 
     Zoltan_Bind_Param(Reduce_Dim_Params, "KEEP_CUTS", (void *)&i);
-    Zoltan_Bind_Param(Reduce_Dim_Params, "REDUCE_DIMENSIONS",
+    Zoltan_Bind_Param(Reduce_Dim_Params, "REDUCE_DIMENSIONS", 
                      (void *)&reduce_dimensions);
     Zoltan_Bind_Param(Reduce_Dim_Params, "DEGENERATE_RATIO", (void *)&deg_ratio);
 
@@ -231,7 +194,7 @@ int Zoltan_Get_Coordinates(
 
     if (zz->LB.Method == RCB){
       tran = &(((RCB_STRUCT *)(zz->LB.Data_Structure))->Tran);
-    }
+    } 
     else if (zz->LB.Method == RIB){
       tran = &(((RIB_STRUCT *)(zz->LB.Data_Structure))->Tran);
     }
@@ -244,9 +207,9 @@ int Zoltan_Get_Coordinates(
     if (tran->Target_Dim >= 0){
       /*
        * On a previous load balancing call, we determined whether
-       * or not the geometry was degenerate.  If the geometry was
-       * determined to be not degenerate, then we assume it is still
-       * not degenerate, and we skip the degeneracy calculation.
+       * or not the geometry was degenerate.  If the geometry was 
+       * determined to be not degenerate, then we assume it is still 
+       * not degenerate, and we skip the degeneracy calculation.  
        */
       if (tran->Target_Dim > 0){
         /*
@@ -254,11 +217,11 @@ int Zoltan_Get_Coordinates(
          * of the geometry along the principal directions determined
          * last time to determine if it is still degenerate with that
          * orientation.  If so, we transform the coordinates using the
-         * same transformation we used last time.  If not, we do the
+         * same transformation we used last time.  If not, we do the 
          * entire degeneracy calculation again.
          */
-
-        if ((tran->Axis_Order[0] >= 0) &&
+ 
+        if ((tran->Axis_Order[0] >= 0) && 
             (tran->Axis_Order[1] >= 0) && (tran->Axis_Order[2] >= 0)){
           axis_aligned = 1;
         }
@@ -266,8 +229,8 @@ int Zoltan_Get_Coordinates(
           axis_aligned = 0;
         }
 
-        projected_distances(zz, *coords, num_obj, tran->CM,
-             tran->Evecs, dist, d, axis_aligned, tran->Axis_Order);
+        projected_distances(zz, *coords, num_obj, tran->CM, 
+             tran->Evecs, dist, d, axis_aligned, tran->Axis_Order); 
 
         target_dim = get_target_dimension(dist, order, deg_ratio, d);
 
@@ -298,7 +261,7 @@ int Zoltan_Get_Coordinates(
 
       /*
        * The inertial matrix is a 3x3 or 2x2 real symmetric matrix.  Get its
-       * three or two orthonormal eigenvectors.  These usually indicate the
+       * three or two orthonormal eigenvectors.  These usually indicate the 
        * orientation of the geometry.
        */
 
@@ -308,7 +271,7 @@ int Zoltan_Get_Coordinates(
         if (zz->Proc == 0){
           ZOLTAN_PRINT_WARN(0, yo, "REDUCE_DIMENSIONS calculation failed");
         }
-        goto End;
+        goto End; 
       }
 
       /*
@@ -339,7 +302,7 @@ int Zoltan_Get_Coordinates(
         }
       }
 
-      if ((tran->Axis_Order[0] >= 0) &&
+      if ((tran->Axis_Order[0] >= 0) && 
           (tran->Axis_Order[1] >= 0) && (tran->Axis_Order[2] >= 0)){
         axis_aligned = 1;
       }
@@ -349,8 +312,8 @@ int Zoltan_Get_Coordinates(
        * by the direction of the eigenvectors through the center of mass.
        */
 
-      projected_distances(zz, *coords, num_obj, tran->CM, tran->Evecs, dist,
-                          d, axis_aligned, tran->Axis_Order);
+      projected_distances(zz, *coords, num_obj, tran->CM, tran->Evecs, dist, 
+                          d, axis_aligned, tran->Axis_Order); 
 
       /*
        * Decide whether these distances indicate the geometry is
@@ -393,12 +356,12 @@ int Zoltan_Get_Coordinates(
         }
         else{
           /*
-           * Reorder the eigenvectors (they're the columns of evecs) from
+           * Reorder the eigenvectors (they're the columns of evecs) from 
            * longest projected distance to shorted projected distance.  Compute
            * the transpose (the inverse) of the matrix.  This will transform
-           * the geometry to align along the X-Y plane, or along the X axis.
+           * the geometry to align along the X-Y plane, or along the X axis. 
            */
-
+  
           for (i=0; i< target_dim; i++){
             tran->Transformation[i][2] = 0.0;
             for (j=0; j<d; j++){
@@ -446,19 +409,19 @@ void Zoltan_Initialize_Transformation(ZZ_Transform *tr)
     tr->Permutation[i] = -1;
     tr->CM[i] = 0.0;
     tr->Axis_Order[i] = 0;
-  }
+  } 
 }
 
 /*
  * Decide whether the relative lengths of the edges of the oriented
  * bounding box indicate the geometry is very flat in one or two directions.
  */
-static int get_target_dimension(double *dist, int *order,
+static int get_target_dimension(double *dist, int *order, 
                                 double deg_ratio, int d)
 {
   int target_dim = 0;
   double flat;
-
+  
   if (d == 2){
     if (dist[0] < dist[1]){
       order[0] = 1; order[1] = 0;
@@ -474,14 +437,14 @@ static int get_target_dimension(double *dist, int *order,
     order_decreasing(dist, order);
 
     flat = dist[order[0]] / deg_ratio;
-
+  
     if (dist[order[2]] < flat){
       /*
        * We'll rotate geometry so it's aligned with the X/Y plane
        * and project to Z=0.
        */
       target_dim = 2;
-
+  
       if (dist[order[1]] < flat){
         /*
          * We'll rotate geometry so it's aligned with the X-axis
@@ -521,18 +484,18 @@ static void transform_coordinates(double *coords, int num_obj, int d,
   }
   else{
     for (i=0; i<num_obj; i++, coords += d){
-
-      x = tr->Transformation[0][0]*coords[0] +
+  
+      x = tr->Transformation[0][0]*coords[0] + 
           tr->Transformation[0][1]*coords[1];
 
       if (d == 3) x +=  tr->Transformation[0][2]*coords[2];
-
+  
       if (tr->Target_Dim == 2){
-        y = tr->Transformation[1][0]*coords[0] +
-            tr->Transformation[1][1]*coords[1];
+        y = tr->Transformation[1][0]*coords[0] + 
+            tr->Transformation[1][1]*coords[1]; 
         if (d == 3) y +=  tr->Transformation[1][2]*coords[2];
-      }
-
+      } 
+  
       coords[0] = x;
       coords[1] = y;
       if (d == 3) coords[2] = 0.0;
@@ -543,7 +506,7 @@ static void transform_coordinates(double *coords, int num_obj, int d,
  * Calculate a 2x2 inertial matrix representing the
  * locations of the 2-dimensional coordinates.
  */
-static void inertial_matrix2D(ZZ *zstruct, double *X,
+static void inertial_matrix2D(ZZ *zstruct, double *X, 
                             int num_obj, double *cm, double (*im)[3])
 {
   double    tmp1[3], tmp2[3];
@@ -560,7 +523,7 @@ static void inertial_matrix2D(ZZ *zstruct, double *X,
   int proclower = 0;
   num_coords = (double)num_obj;
 
-  cm[0] = cm[1] = 0.0;
+  cm[0] = cm[1] = 0.0; 
   for (j = 0, c = X; j < num_obj; j++, c += 2) {
     cm[0] += c[0];
     cm[1] += c[1];
@@ -590,12 +553,12 @@ static void inertial_matrix2D(ZZ *zstruct, double *X,
   }
 
   if (zstruct->Tflops_Special) {
-     tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = xy;
+     tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = xy; 
      Zoltan_RIB_reduce_double(tmp1, tmp2, 3, comm, nproc, rank, proc, 1);
-     xxt = tmp2[0]; yyt = tmp2[1]; xyt = tmp2[2];
+     xxt = tmp2[0]; yyt = tmp2[1]; xyt = tmp2[2]; 
   }
   else {
-     tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = xy;
+     tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = xy; 
      MPI_Allreduce(tmp1, tmp2, 3, MPI_DOUBLE, MPI_SUM, comm);
      xxt = tmp2[0]; yyt = tmp2[1]; xyt = tmp2[2];
   }
@@ -610,7 +573,7 @@ static void inertial_matrix2D(ZZ *zstruct, double *X,
  * Calculate a 3x3 inertial matrix representing the
  * locations of the 3-dimensional coordinates.
  */
-static void inertial_matrix3D(ZZ *zstruct, double *X,
+static void inertial_matrix3D(ZZ *zstruct, double *X, 
                             int num_obj, double *cm, double (*im)[3])
 {
   double    tmp1[6], tmp2[6];
@@ -629,7 +592,7 @@ static void inertial_matrix3D(ZZ *zstruct, double *X,
 
   /* Much of this was taken from Zoltan_RIB_inertial3d() */
 
-  cm[0] = cm[1] = cm[2] = 0.0;
+  cm[0] = cm[1] = cm[2] = 0.0; 
   for (j = 0, c = X; j < num_obj; j++, c += 3) {
     cm[0] += c[0];
     cm[1] += c[1];
@@ -734,7 +697,7 @@ MPI_Comm local_comm;
       /* distance along the j'th eigenvector */
       d[j] = max[order[j]] - min[order[j]];
     }
-
+    
     return;
   }
 
@@ -810,12 +773,13 @@ static void order_decreasing(double *d, int *order)
     }
   }
 }
-/*
+/* 
  * Given a real symmetric matrix "m", find its eigenvectors.  Put
  * the orthonormal eigenvectors in the columns of the matrix "evecs".
  * Assume dim is 2 or 3.
  */
 
+#define SIGN(a,b) ((b) < 0 ? -fabs(a) : fabs(a))
 static int eigenvectors(double (*m)[3], double (*evecs)[3], int dim)
 {
   double temp[2][2];

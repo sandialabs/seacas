@@ -14,9 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_Group_union ( MPI_Group group1, MPI_Group group2,
+int MPI_Group_union ( MPI_Group group1, MPI_Group group2, 
                      MPI_Group *group_out )
 {
   _MPI_COVERAGE();
   return PMPI_Group_union (group1, group2, group_out);
 }
+

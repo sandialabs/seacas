@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include "dr_const.h"
 #include "dr_externs.h"
@@ -70,8 +33,8 @@ static void echo_cmd_file(FILE *fp, const char *cmd_file);
 /*****************************************************************************/
 
 void print_distributed_mesh(
-     int Proc,
-     int Num_Proc,
+     int Proc, 
+     int Num_Proc, 
      MESH_INFO_PTR mesh)
 {
 int i, j, k;
@@ -82,7 +45,7 @@ ELEM_INFO_PTR current_elem;
 
 /*
  * Print the distributed mesh description for each processor.  This routine
- * is useful for debugging the input meshes (Nemesis or Chaco).  It is
+ * is useful for debugging the input meshes (Nemesis or Chaco).  It is 
  * serial, so it should not be used for production runs.
  */
 
@@ -111,7 +74,7 @@ ELEM_INFO_PTR current_elem;
     current_elem = &(mesh->elements[i]);
     if (current_elem->globalID == ZOLTAN_ID_INVALID) continue;
 
-    printf(ZOLTAN_ID_SPEC " in part %d (%f):\n", current_elem->globalID,
+    printf(ZOLTAN_ID_SPEC " in part %d (%f):\n", current_elem->globalID, 
            current_elem->my_part, current_elem->cpu_wgt[0]);
     for (j = 0; j < mesh->eb_nnodes[current_elem->elem_blk]; j++) {
       printf("\t" ZOLTAN_ID_SPEC " |", current_elem->connect[j]);
@@ -158,7 +121,7 @@ ELEM_INFO_PTR current_elem;
     for (j = 0; j < mesh->ecmap_cnt[i]; j++) {
       k = j + offset;
       printf("    %d     %d     " ZOLTAN_ID_SPEC "    " ZOLTAN_ID_SPEC "\n", mesh->ecmap_elemids[k],
-           mesh->ecmap_sideids[k],
+           mesh->ecmap_sideids[k], 
            mesh->elements[mesh->ecmap_elemids[k]].globalID,
            mesh->ecmap_neighids[k]);
     }
@@ -181,14 +144,14 @@ ELEM_INFO_PTR current_elem;
   }
   if (mesh->hewgt_dim && (mesh->heNumWgts > 0)){
     printf("\nHyperedge Weights\n");
-    for (i=0; i<mesh->heNumWgts; i++){
+    for (i=0; i<mesh->heNumWgts; i++){ 
       if (mesh->heWgtId){
         printf("Hyperedge " ZOLTAN_ID_SPEC " (%d):  (", mesh->heWgtId[i], i);
       }
       else{
         printf("Hyperedge " ZOLTAN_ID_SPEC " (%d):  (", mesh->hgid[i], i);
       }
-      for (j = 0; j < mesh->hewgt_dim; j++)
+      for (j = 0; j < mesh->hewgt_dim; j++) 
         printf("%f ", mesh->hewgts[i*mesh->hewgt_dim + j]);
       printf(")\n");
     }
@@ -272,14 +235,14 @@ int output_results(const char *cmd_file,
     return 0;
   }
 
-  if (Proc == 0)
+  if (Proc == 0) 
     echo_cmd_file(fp, cmd_file);
 
   fprintf(fp, "Global element ids assigned to processor %d\n", Proc);
   fprintf(fp, "GID\tPart\tPerm\tIPerm\n");
   for (i = 0; i < mesh->num_elems; i++) {
     j = index[i];
-    fprintf(fp, ZOLTAN_ID_SPEC "\t%d\t%d\t%d\n",
+    fprintf(fp, ZOLTAN_ID_SPEC "\t%d\t%d\t%d\n", 
               global_ids[j], (int)parts[j], (int)perm[j], (int)invperm[j]);
   }
 
@@ -308,7 +271,7 @@ int output_results(const char *cmd_file,
       for (j = 0; j < mesh->eb_nnodes[current_element->elem_blk]; j++) {
         global_ids[k] = (ZOLTAN_ID_TYPE)(current_element->connect[j]);
         x[k] = current_element->coord[j][0];
-        if (mesh->num_dims > 1)
+        if (mesh->num_dims > 1) 
           y[k] = current_element->coord[j][1];
         if (mesh->num_dims > 2)
           z[k] = current_element->coord[j][2];
@@ -317,7 +280,7 @@ int output_results(const char *cmd_file,
       }
     }
 
-    quicksort_pointer_inc_id_id(index, global_ids, NULL,
+    quicksort_pointer_inc_id_id(index, global_ids, NULL, 
                                 0, total_nodes-1);
 
     strcat(par_out_fname, ".mesh");
@@ -341,7 +304,7 @@ int output_results(const char *cmd_file,
       }
       fprintf(fp, ")\n");
     }
-
+    
     fclose(fp);
     free(global_ids);
     free(x);
@@ -374,7 +337,7 @@ FILE *cmd_fp;
 
   while(fgets(inp_line, MAX_INPUT_STR_LN, cmd_fp)) {
     /* skip any line that is a comment */
-    if((inp_line[0] != '#') && (inp_line[0] != '\n'))
+    if((inp_line[0] != '#') && (inp_line[0] != '\n')) 
       fprintf(fp, "%s", inp_line);
   }
 

@@ -18,5 +18,6 @@
 int MPI_File_get_atomicity(MPI_File fh, int *flag)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_atomicity(fh, flag);
+  return PMPI_File_get_atomicity(fh, flag); 
 }
+

@@ -19,3 +19,4 @@ int MPI_File_write_ordered_end(MPI_File fh, void *buf, MPI_Status *status)
   _MPI_COVERAGE();
   return PMPI_File_write_ordered_end (fh, buf, status);
 }
+

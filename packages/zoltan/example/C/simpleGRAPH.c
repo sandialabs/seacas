@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 /**************************************************************
 *  Basic example of using Zoltan to partition a graph.
 ***************************************************************/
@@ -57,7 +20,7 @@
 
 static char *global_fname="graph.txt";
 
-/* Structure to hold graph data
+/* Structure to hold graph data 
    ZOLTAN_ID_TYPE is defined when Zoltan is compiled.  It's size can
    be obtained at runtime by a library call.  (See zoltan_types.h).
 */
@@ -127,7 +90,7 @@ int main(int argc, char *argv[])
   }
 
   /******************************************************************
-  ** Read graph from input file and distribute it
+  ** Read graph from input file and distribute it 
   ******************************************************************/
 
   fp = fopen(global_fname, "r");
@@ -154,13 +117,13 @@ int main(int argc, char *argv[])
   Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0");
   Zoltan_Set_Param(zz, "LB_METHOD", "GRAPH");
   Zoltan_Set_Param(zz, "LB_APPROACH", "PARTITION");
-  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1");
+  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
   Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "RETURN_LISTS", "ALL");
 
   /* Graph parameters */
 
-  Zoltan_Set_Param(zz, "CHECK_GRAPH", "2");
+  Zoltan_Set_Param(zz, "CHECK_GRAPH", "2"); 
   Zoltan_Set_Param(zz, "PHG_EDGE_SIZE_THRESHOLD", ".35");  /* 0-remove all, 1-remove none */
 
   /* Query functions - defined in simpleQueries.h */
@@ -178,7 +141,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of vertices to be sent to me */
@@ -232,9 +195,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -321,7 +284,7 @@ ZOLTAN_ID_TYPE *nextNbor;
   GRAPH_DATA *graph = (GRAPH_DATA *)data;
   *ierr = ZOLTAN_OK;
 
-  if ( (sizeGID != 1) || (sizeLID != 1) ||
+  if ( (sizeGID != 1) || (sizeLID != 1) || 
        (num_obj != graph->numMyVertices)||
        (wgt_dim != 0)){
     *ierr = ZOLTAN_FATAL;
@@ -355,7 +318,7 @@ ZOLTAN_ID_TYPE *nextNbor;
 }
 
 /* Function to find next line of information in input file */
-
+ 
 static int get_next_line(FILE *fp, char *buf, int bufsize)
 {
 int i, cval, len;
@@ -371,7 +334,7 @@ char *c;
     len = strlen(c);
 
     for (i=0, c=buf; i < len; i++, c++){
-      cval = (int)*c;
+      cval = (int)*c; 
       if (isspace(cval) == 0) break;
     }
     if (i == len) continue;   /* blank line */
@@ -400,16 +363,16 @@ int count=0;
       if ((c - buf) >= bufsize) break;
       c++;
     }
-
+  
     if ( (c-buf) >= bufsize) break;
-
+  
     vals[count++] = atoi(c);
-
+  
     while (isdigit(*c)){
       if ((c - buf) >= bufsize) break;
       c++;
     }
-
+  
     if ( (c-buf) >= bufsize) break;
   }
 
@@ -595,7 +558,7 @@ GRAPH_DATA *send_graph;
     for (i=0; i <numGlobalNeighbors; i++){
       id = (unsigned int)graph->nborGID[i];
       graph->nborProc[i] = simple_hash(&id, numProcs);
-    }
+    } 
 
     /* Create a sub graph for each process */
 
@@ -650,10 +613,10 @@ GRAPH_DATA *send_graph;
       if (nnbors > 0){
         memcpy(send_graph[procID].nborGID + j, graph->nborGID + graph->nborIndex[i],
                nnbors * sizeof(ZOLTAN_ID_TYPE));
-
+  
         memcpy(send_graph[procID].nborProc + j, graph->nborProc + graph->nborIndex[i],
                nnbors * sizeof(int));
-
+  
         idx[procID] = j + nnbors;
       }
     }
@@ -779,3 +742,4 @@ unsigned int simple_hash(unsigned int *key, unsigned int n)
   /* Return h mod n */
   return (h%n);
 }
+

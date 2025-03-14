@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 
@@ -150,7 +113,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
    * This is the hypergraph intended by the application, before alterations
    * for the phg algorithm.  This hypergraph is suitable for Zoltan_LB_Eval.
    *
-   * The hyperedges returned are whole hyperedges - they are not distributed
+   * The hyperedges returned are whole hyperedges - they are not distributed 
    * over more than one process.
    */
 
@@ -564,7 +527,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
     }
 
     msg_tag--;
-    ierr = Zoltan_Comm_Do_Reverse(plan, msg_tag, (char *)sendGnoBuf,
+    ierr = Zoltan_Comm_Do_Reverse(plan, msg_tag, (char *)sendGnoBuf, 
                      sizeof(ZOLTAN_GNO_TYPE) * 2, NULL, (char *)recvGnoBuf);
 
     if (ierr != ZOLTAN_OK){
@@ -651,7 +614,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
         ew_lids = ZOLTAN_MALLOC_LID_ARRAY(zz, myEWs.size);
         myEWs.wgt = (float *)ZOLTAN_MALLOC(myEWs.size * cnt);
 
-        if (!myEWs.edgeGID || !ew_lids || !myEWs.wgt){
+        if (!myEWs.edgeGID || !myEWs.wgt){
           MEMORY_ERROR;
         }
 
@@ -666,7 +629,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
         /* Get process assigned to each hyperedge.  */
 
-        ierr = phg_map_GIDs_to_processes(zz, myEWs.edgeGID, myEWs.size, gid_size,
+        ierr = phg_map_GIDs_to_processes(zz, myEWs.edgeGID, myEWs.size, gid_size, 
                   &myEWs.edgeHash, nProc);
 
         if ((ierr!=ZOLTAN_OK) && (ierr!=ZOLTAN_WARN)){
@@ -781,21 +744,21 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
     msg_tag--;
     ierr = Zoltan_Comm_Create(&plan, zhg->nPins, zhg->Pin_Procs, comm, msg_tag, &nRequests);
-
+  
     if (ierr != ZOLTAN_OK){
       goto End;
     }
-
+  
     if (nRequests > 0){
       gid_buf = ZOLTAN_MALLOC_GID_ARRAY(zz, nRequests);
       if (!gid_buf) MEMORY_ERROR;
       sendGnoBuf = (ZOLTAN_GNO_TYPE *)ZOLTAN_MALLOC(sizeof(ZOLTAN_GNO_TYPE) * nRequests);
       if (!sendGnoBuf) MEMORY_ERROR;
     }
-
+  
     msg_tag--;
     ierr = Zoltan_Comm_Do(plan, msg_tag, (char *)myPins.pinGID, gid_chars, (char *)gid_buf);
-
+  
     if (ierr != ZOLTAN_OK){
       goto End;
     }
@@ -804,7 +767,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
     zhg->numHEdges = (int *)ZOLTAN_CALLOC(sizeof(int), zhg->nObj);
     if (zhg->nObj && !zhg->numHEdges) MEMORY_ERROR;
-
+  
     for (i=0; i<nRequests; i++){
       j = phg_lookup_GID(lookup_myObjs, gid_buf + ( i * gid_size));
       if (j < 0) FATAL_ERROR("Unexpected vertex GID received");
@@ -815,15 +778,15 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
     ZOLTAN_FREE(&gid_buf);
     phg_free_GID_lookup_table(&lookup_myObjs);
     phg_free_objects(&myObjs);
-
+  
     msg_tag--;
 
     zhg->pinGNO = (ZOLTAN_GNO_TYPE *)ZOLTAN_CALLOC(sizeof(ZOLTAN_GNO_TYPE) , zhg->nPins);
     if (zhg->nPins && !zhg->pinGNO) MEMORY_ERROR;
-
+  
     ierr = Zoltan_Comm_Do_Reverse(plan, msg_tag, (char *)sendGnoBuf, sizeof(ZOLTAN_GNO_TYPE),
                   NULL, (char *)zhg->pinGNO);
-
+  
     if (ierr != ZOLTAN_OK){
       goto End;
     }
@@ -832,10 +795,10 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
     Zoltan_Comm_Destroy(&plan);
 
     /*
-     * There may be two edge weights provided for a single edge, depending on
-     * how the application supplied the graph in the query functions.
+     * There may be two edge weights provided for a single edge, depending on 
+     * how the application supplied the graph in the query functions.  
      * Find the one or two weights supplied for each edge.
-     * If there are two weights, combine them as specified by the
+     * If there are two weights, combine them as specified by the 
      * PHG_EDGE_WEIGHT_OPERATION.
      */
 
@@ -889,7 +852,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
              if (ew_dim){
                /* this proc provided weights for [v0,v1] and [v1, v0] */
                index = iptr - 1;
-               dest = wgts + k * ew_dim;
+               dest = wgts + k * ew_dim; 
                src = zhg->Ewgt + index * ew_dim;
                for (dim = 0; dim < ew_dim; dim++){
                  dest[dim] = src[dim];
@@ -926,13 +889,13 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
     msg_tag--;
     ierr = Zoltan_Comm_Create(&plan, cnt, procBuf, comm, msg_tag, &nRequests);
-
+  
     if (ierr != ZOLTAN_OK){
       goto End;
     }
 
     ZOLTAN_FREE(&procBuf);
-
+  
     if (nRequests > 0){
       sendFloatBuf = (float *) ZOLTAN_CALLOC(sizeof(float) , nRequests * ew_dim);
       if (ew_dim && !sendFloatBuf) MEMORY_ERROR;
@@ -942,13 +905,13 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
     msg_tag--;
     ierr = Zoltan_Comm_Do(plan, msg_tag, (char *)sendGnoBuf, sizeof(ZOLTAN_GNO_TYPE) * 2, (char *)recvGnoBuf);
-
+  
     if (ierr != ZOLTAN_OK){
       goto End;
     }
 
     ZOLTAN_FREE(&sendGnoBuf);
-
+  
     nEdge = 0;
     for (i=0; i<nRequests; i++){
       gnos[0] = recvGnoBuf[i*2];
@@ -961,7 +924,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
       if (iptr != ZOLTAN_NOT_FOUND){
         if (ew_dim){
-          dest = sendFloatBuf + i * ew_dim;
+          dest = sendFloatBuf + i * ew_dim; 
           src = zhg->Ewgt + index * ew_dim;
           for (dim = 0; dim < ew_dim; dim++){
             dest[dim] = src[dim];
@@ -985,23 +948,23 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
       /* Before doing global communication, determine whether there is any information to share.  */
       rc = MPI_Allreduce(&nEdge, &w, 1, MPI_INT, MPI_MAX, comm);
       CHECK_FOR_MPI_ERROR(rc);
-
+  
       if (w > 0){
         if (cnt > 0){
           recvFloatBuf = (float *)ZOLTAN_MALLOC(sizeof(float) * cnt * ew_dim);
           if (ew_dim && !recvFloatBuf) MEMORY_ERROR;
         }
-
+      
         msg_tag--;
-
+  
         ierr = Zoltan_Comm_Do_Reverse(plan, msg_tag, (char *)sendFloatBuf, sizeof(float) * ew_dim,
                       NULL, (char *)recvFloatBuf);
-
+      
         if (ierr != ZOLTAN_OK){
           goto End;
         }
         ZOLTAN_FREE(&sendFloatBuf);
-
+    
         if (cnt > 0){
           cnt = 0;
           for (k=0; k < zhg->nPins; k++){
@@ -1015,7 +978,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
             }
           }
         }
-
+    
         ZOLTAN_FREE(&recvFloatBuf);
       }
       else{
@@ -1036,7 +999,7 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
 
     ZOLTAN_FREE(&wgts);
 
-    /*************************************************************************
+    /************************************************************************* 
      * Convert the graph edges to hyperedges.
      */
 
@@ -1045,10 +1008,10 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
     ew_dim = zhg->edgeWeightDim;
 
     if (use_all_neighbors){
-      /*
+      /* 
        * Create a hyperedge out of each vertex, containing that vertex
        * and all of its neighbors.  The hyperedge weight will be the
-       * maximum (not sum) of the weight of each original graph edge.
+       * maximum (not sum) of the weight of each original graph edge. 
        */
 
       zhg->nHedges = zhg->nObj;
@@ -1108,8 +1071,8 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
       zhg->Ewgt = wgts;
     }
     else{
-      /*
-       * Create a hyperedge out of each pair of neighboring vertices.
+      /* 
+       * Create a hyperedge out of each pair of neighboring vertices.  
        * The hyperedge weight will be the weight of the original graph edge.
        *
        * The user may or may not have specified graph edges twice
@@ -1175,13 +1138,13 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
       ZOLTAN_FREE(&zhg->Pin_Procs);
 
       if (cnt > 0){
-
+  
         if (ew_dim > 0){
           zhg->Ewgt = (float *)ZOLTAN_MALLOC(sizeof(float) * cnt * ew_dim);
           if (!zhg->Ewgt) MEMORY_ERROR;
           memcpy(zhg->Ewgt, wgts, ew_dim * cnt * sizeof(float));
         }
-
+  
         zhg->edgeGNO = (ZOLTAN_GNO_TYPE *)ZOLTAN_MALLOC(sizeof(ZOLTAN_GNO_TYPE) * cnt);
         if (!zhg->edgeGNO) MEMORY_ERROR;
         zhg->Esize = (int *)ZOLTAN_MALLOC(sizeof(int) * cnt);
@@ -1190,11 +1153,11 @@ phg_GID_lookup       *lookup_myHshVtxs = NULL;
         if (!zhg->pinGNO) MEMORY_ERROR;
         zhg->Pin_Procs = (int *)ZOLTAN_MALLOC(sizeof(int) * cnt * 2);
         if (!zhg->Pin_Procs) MEMORY_ERROR;
-
+  
         memcpy(zhg->pinGNO, edgeBuf, 2 * cnt * sizeof(ZOLTAN_GNO_TYPE));
-
+  
         memcpy(zhg->Pin_Procs, procBuf, 2 * cnt * sizeof(int));
-
+  
         for (i=0; i < cnt; i++){
           zhg->Esize[i] = 2;
         }
@@ -1370,7 +1333,7 @@ int Zoltan_PHG_GIDs_to_global_numbers(ZZ *zz, ZOLTAN_GNO_TYPE *gnos, int len, in
    * use global numbers which are consecutive integers beginning with zero.  Convert
    * the application's global IDs to our global numbers.
    */
-
+  
   if (randomize) {
     /* Randomize the global numbers */
     gtotal = (ZOLTAN_GNO_TYPE *) ZOLTAN_CALLOC(3*nProc+1, sizeof(ZOLTAN_GNO_TYPE));
@@ -1442,7 +1405,7 @@ End:
 }
 /*****************************************************************************/
 
-int Zoltan_Hypergraph_Queries(ZZ *zz,
+int Zoltan_Hypergraph_Queries(ZZ *zz, 
    int *num_lists,         /* output: number of edges */
    int *num_pins,          /* output: total number of pins in edges */
    ZOLTAN_ID_PTR *edg_GID, /* output: list of edge global IDs */
@@ -1633,7 +1596,7 @@ int numGID = zz->Num_GID;
      if (!found){
        /* O(numEdges) calls to malloc may be costlier in some platforms. An
         * array of size O(numVerts) allocated first, and the reallocated if
-        * numVerts < numEdges could be useful then. SRSR : The performance
+        * numVerts < numEdges could be useful then. SRSR : The performance 
         * improvement in octopi was small.
         */
        hn = (struct _hash_node *)ZOLTAN_MALLOC(sizeof(struct _hash_node));
@@ -1651,7 +1614,7 @@ int numGID = zz->Num_GID;
   }
 
   /* Create array of indices into location in pin list.
-   * Create the corresponding list of unique edge IDs.
+   * Create the corresponding list of unique edge IDs.                          
    */
 
   vIdx = (int *)ZOLTAN_MALLOC((numEdges+1) * sizeof(int));
@@ -1736,7 +1699,7 @@ End:
 }
 /*****************************************************************************/
 
-int Zoltan_Graph_Queries( ZZ *zz,
+int Zoltan_Graph_Queries( ZZ *zz, 
   int numVertex, ZOLTAN_ID_PTR vgid, ZOLTAN_ID_PTR vlid,        /* IN */
   int *tot_nbors, int **num_nbors,             /* OUT */
   ZOLTAN_ID_PTR *nbor_GIDs, int **nbor_Procs,  /* OUT */
@@ -1778,7 +1741,7 @@ int *numEdges = NULL;
   if (sumNumEntries == 0){
     goto End;
   }
-
+  
   nbor_gids = ZOLTAN_MALLOC_GID_ARRAY(zz, sumNumEntries);
   nbor_procs = (int *)ZOLTAN_MALLOC(sizeof(int) * sumNumEntries);
   gewgts = (float *)ZOLTAN_MALLOC(sizeof(float) * ew_dim * sumNumEntries);
@@ -1808,12 +1771,12 @@ int *numEdges = NULL;
    gid_ptr = nbor_gids;
    proc_ptr = nbor_procs;
    wgt_ptr = gewgts;
-
+ 
     for (i=0; i<numVertex; i++){
 
       zz->Get_Edge_List(zz->Get_Edge_List_Data,
-        gid_size, lid_size,
-        vgid + (i * gid_size), vlid + (i * lid_size),
+        gid_size, lid_size, 
+        vgid + (i * gid_size), vlid + (i * lid_size), 
         gid_ptr, proc_ptr, ew_dim, wgt_ptr, &ierr);
 
       if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {

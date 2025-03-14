@@ -15,10 +15,11 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Errhandler_create(
+int PMPI_Errhandler_create( 
         MPI_Handler_function *function,
         MPI_Errhandler       *errhandler)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

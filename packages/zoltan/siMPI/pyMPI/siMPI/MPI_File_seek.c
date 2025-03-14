@@ -17,5 +17,6 @@
 int MPI_File_seek(MPI_File fh, MPI_Offset offset, int whence)
 {
   _MPI_COVERAGE();
-  return PMPI_File_seek (fh, offset, whence);
+  return PMPI_File_seek (fh, offset, whence); 
 }
+

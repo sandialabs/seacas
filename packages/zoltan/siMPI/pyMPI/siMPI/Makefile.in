@@ -1036,7 +1036,7 @@ uninstall-libLIBRARIES:
 
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
-libsimpi.a: $(libsimpi_a_OBJECTS) $(libsimpi_a_DEPENDENCIES) $(EXTRA_libsimpi_a_DEPENDENCIES)
+libsimpi.a: $(libsimpi_a_OBJECTS) $(libsimpi_a_DEPENDENCIES) $(EXTRA_libsimpi_a_DEPENDENCIES) 
 	-rm -f libsimpi.a
 	$(libsimpi_a_AR) libsimpi.a $(libsimpi_a_OBJECTS) $(libsimpi_a_LIBADD)
 	$(RANLIB) libsimpi.a
@@ -1077,7 +1077,7 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-mpirun$(EXEEXT): $(mpirun_OBJECTS) $(mpirun_DEPENDENCIES) $(EXTRA_mpirun_DEPENDENCIES)
+mpirun$(EXEEXT): $(mpirun_OBJECTS) $(mpirun_DEPENDENCIES) $(EXTRA_mpirun_DEPENDENCIES) 
 	@rm -f mpirun$(EXEEXT)
 	$(LINK) $(mpirun_OBJECTS) $(mpirun_LDADD) $(LIBS)
 

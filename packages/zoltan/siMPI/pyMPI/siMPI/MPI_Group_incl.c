@@ -18,3 +18,4 @@ int MPI_Group_incl ( MPI_Group group, int n, int *ranks, MPI_Group *group_out )
 {
   return PMPI_Group_incl (group, n, ranks, group_out);
 }
+

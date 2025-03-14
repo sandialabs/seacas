@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine      kddevin@sandia.gov
- *                    Erik Boman        egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -106,8 +69,6 @@ static double eval_cut_quality(int, double *, double *, double *, double *,
               int);
 static void compute_weight_sums( int, int *, int, double *, double,
             double *, double *, MPI_Comm, int, int, int, int);
-static void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr);
-            
 #endif /* RB_MAX_WGTS > 1 */
 
 /*****************************************************************************/
@@ -351,10 +312,10 @@ int Zoltan_RB_find_bisector(
     MPI_Get_address(&(med->totallo[0]), &(ind[3]));
 #else /* MPI 1.x */
     /* MPI_Address is deprecated in MPI 2.0 */
-    MPI_Address(med, &offset);
-    MPI_Address(&(med->countlo), &(ind[1]));
-    MPI_Address(&(med->proclo), &(ind[2]));
-    MPI_Address(&(med->totallo[0]), &(ind[3]));
+    MPI_Address(med, &offset); 
+    MPI_Address(&(med->countlo), &(ind[1])); 
+    MPI_Address(&(med->proclo), &(ind[2])); 
+    MPI_Address(&(med->totallo[0]), &(ind[3])); 
 #endif /* MPI_VERSION >= 2 */
 
     ind[0] = 0;
@@ -540,7 +501,7 @@ int Zoltan_RB_find_bisector(
         tmp_half = 0.5 * (valuemin + valuemax);
 
 #ifdef DEBUG_BISECT
-      printf("[%2d] Debug: Iteration %d,  tmp_half = %f\n",
+      printf("[%2d] Debug: Iteration %d,  tmp_half = %f\n", 
              proc, iteration, tmp_half);
 #endif
 
@@ -687,7 +648,7 @@ int Zoltan_RB_find_bisector(
               proc, medme->totallo[0], medme->totallo[1],
               medme->totalhi[0], medme->totalhi[1]);
       printf("[%2d] Debug: med->totallo = (%f, %f), med->totalhi = (%f, %f)\n",
-              proc, med->totallo[0], med->totallo[1],
+              proc, med->totallo[0], med->totallo[1], 
               med->totalhi[0], med->totalhi[1]);
       printf("[%2d] Debug: med->wtlo = (%f, %f), med->wthi = (%f, %f)\n",
               proc, med->wtlo[0], med->wtlo[1], med->wthi[0], med->wthi[1]);
@@ -821,8 +782,8 @@ int Zoltan_RB_find_bisector(
 
 #ifdef DEBUG_BISECT
                   printf("[%2d] Debug: moving dot %d to other half, "
-                         "norm(tmplo) = %g, norm(tmphi) = %g\n",
-                         proc, i, Zoltan_norm(mcnorm, nwgts, tmplo, scalelo),
+                         "norm(tmplo) = %g, norm(tmphi) = %g\n", 
+                         proc, i, Zoltan_norm(mcnorm, nwgts, tmplo, scalelo), 
                          Zoltan_norm(mcnorm, nwgts, tmphi, scalehi));
 #endif
                 }
@@ -839,7 +800,7 @@ int Zoltan_RB_find_bisector(
           }
 
 #ifdef DEBUG_BISECT
-          printf("[%2d] Debug: bisect value too small, breakflag = %d\n",
+          printf("[%2d] Debug: bisect value too small, breakflag = %d\n", 
                  proc, breakflag);
 #endif
 
@@ -987,7 +948,7 @@ int Zoltan_RB_find_bisector(
                   Zoltan_daxpy(nwgts, 1., &uniformWeight, tmphi, tmphi);
 #ifdef DEBUG_BISECT
                 printf("[%2d] Examining dot %2d = %f, norm= %f, oldnorm= %f\n",
-                  proc, i, dots[i],
+                  proc, i, dots[i], 
                   Zoltan_norm(mcnorm, nwgts, tmphi, scalehi), oldnorm);
                 printf("[%2d] tmplo = (%f, %f)\n", proc, tmplo[0], tmplo[1]);
                 printf("[%2d] tmphi = (%f, %f)\n", proc, tmphi[0], tmphi[1]);
@@ -1017,7 +978,7 @@ int Zoltan_RB_find_bisector(
             }
           }
 #ifdef DEBUG_BISECT
-          printf("[%2d] Debug: bisect value too big, breakflag = %d\n",
+          printf("[%2d] Debug: bisect value too big, breakflag = %d\n", 
                  proc, breakflag);
 #endif
           if (breakflag){                  /* done if moved enough */
@@ -1253,7 +1214,7 @@ static double eval_cut_quality(
 
 
 */
-static void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr)
+void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr)
 {
   struct bisector *med1, *med2;
   int i, nwgts;
@@ -1265,7 +1226,7 @@ static void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype 
   /* make sure both bisectors use the same # of weights */
   nwgts = med1->nwgts;
   if (med2->nwgts != nwgts){
-    ZOLTAN_PRINT_ERROR(-1, yo,
+    ZOLTAN_PRINT_ERROR(-1, yo, 
                        "Inconsistent number of weights in bisector structs!");
     return;
   }
@@ -1414,3 +1375,4 @@ static void Zoltan_daxpy(int n, double alpha, double *x, double *y, double *z)
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
+

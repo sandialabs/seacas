@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012, 2023 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine  kddevin@sandia.gov
- *                    Erik Boman  egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -312,7 +275,7 @@ static char* zz_mpi_datatype_names[5] =
 "MPI_LONG_LONG"             /* standard */
 };
 
-MPI_Datatype Zoltan_mpi_gno_type(void)
+MPI_Datatype Zoltan_mpi_gno_type()
 {
   int size_short=0, size_int=0, size_long=0, size_long_long=0;
 
@@ -360,13 +323,13 @@ MPI_Datatype Zoltan_mpi_gno_type(void)
   if (!zz_mpi_gno_name){
     /* should never happen */
     fprintf(stderr,"Zoltan_mpi_gno_type: It happened\n");
-    MPI_Abort(MPI_COMM_WORLD,99);
+    MPI_Abort(zoltan_get_global_comm(),99);
   }
 
   return zz_mpi_gno_type;
 }
 
-char *Zoltan_mpi_gno_name(void)
+char *Zoltan_mpi_gno_name()
 {
   Zoltan_mpi_gno_type();
   return zz_mpi_gno_name;
@@ -377,7 +340,7 @@ char *Zoltan_mpi_gno_name(void)
  * Return the number of kilobytes allocated to this process.
  * Return 0 if it is not possible to determine this.
  */
-long Zoltan_get_process_kilobytes(void)
+long Zoltan_get_process_kilobytes()
 {
 #ifdef _WIN32
   return 0;
@@ -435,7 +398,7 @@ void Zoltan_write_linux_meminfo(int append, char *msg, int committedOnly)
   char *c=NULL, *next=NULL, *c_end;
   char fbuf[64],buf[2048],label[64],value[64],units[64];
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(zoltan_get_global_comm(), &rank);
 
   f = open("/proc/meminfo", O_RDONLY);
   if (f == -1) return;

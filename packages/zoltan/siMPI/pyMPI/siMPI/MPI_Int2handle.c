@@ -19,3 +19,4 @@ MPI_Handle_type MPI_Int2handle( MPI_Fint f_handle, MPI_Handle_enum handle_kind )
   _MPI_COVERAGE();
   return PMPI_Int2handle (f_handle, handle_kind);
 }
+

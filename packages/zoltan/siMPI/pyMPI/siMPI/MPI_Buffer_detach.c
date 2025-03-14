@@ -18,5 +18,6 @@
 int MPI_Buffer_detach( void *bufferptr, int *size)
 {
   _MPI_COVERAGE();
-  return PMPI_Buffer_detach (bufferptr, size);
+  return PMPI_Buffer_detach (bufferptr, size); 
 }
+

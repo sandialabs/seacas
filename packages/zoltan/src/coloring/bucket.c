@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
@@ -52,7 +15,7 @@ extern "C" {
 #include <assert.h>
 #include <limits.h>
 #include "zoltan_mem.h"
-#include "bucket.h"
+#include "bucket.h"    
 
 
 void Zoltan_Bucket_Insert(Bucket* bs, int id, int value)
@@ -60,17 +23,17 @@ void Zoltan_Bucket_Insert(Bucket* bs, int id, int value)
 #if 0
     assert (bs != NULL);
     assert (value >= 0);
-    assert (value <= bs->max_value);
+    assert (value <= bs->max_value);    
     assert (id >= 0);
     assert (id < bs->nb_elements);
 #endif
-
+    
     bs->values[id] = value;
-
+    
     bs->elements[id].prev = NULL;
     bs->elements[id].next = bs->buckets[value];
-
-    if (bs->buckets[value] != NULL)
+    
+    if (bs->buckets[value] != NULL) 
         bs->buckets[value]->prev = &(bs->elements[id]);
     else if (bs->current_min_value > value)
         bs->current_min_value = value;
@@ -85,15 +48,15 @@ void Zoltan_Bucket_Update(Bucket* bs, int id, int new_value)
 
     if (old_value == INT_MAX)
         return;
-
-#if 0
+    
+#if 0  
     assert (bs != NULL);
     assert (new_value >= 0);
-    assert (new_value <= bs->max_value);
+    assert (new_value <= bs->max_value);        
     assert (id >= 0);
     assert (id < bs->nb_elements);
 #endif
-
+  
     bs->values[id] = new_value;
 
 
@@ -101,7 +64,7 @@ void Zoltan_Bucket_Update(Bucket* bs, int id, int new_value)
         bs->buckets[old_value] = bs->elements[id].next;
     else
         bs->elements[id].prev->next = bs->elements[id].next;
-
+  
     if (bs->elements[id].next != NULL)
         bs->elements[id].next->prev = bs->elements[id].prev;
 
@@ -112,7 +75,7 @@ int Zoltan_Bucket_PopMin(Bucket* bs)
 {
     int id;
 
-#if 0
+#if 0  
     assert (bs != NULL);
     assert (bs->current_min_value >= 0);
 #endif
@@ -136,7 +99,7 @@ Bucket Zoltan_Bucket_Initialize(int max_value, int nb_element)
     Bucket bs;
     int i;
 
-#if 0
+#if 0  
     assert (max_value>=0);
     assert (nb_element>=0);
 #endif
@@ -160,19 +123,19 @@ Bucket Zoltan_Bucket_Initialize(int max_value, int nb_element)
             bs.elements[i].next = NULL;
         }
     }
-
-
+	
+  
     bs.current_min_value = max_value+1;
-
+  
     return bs;
 }
-
+    
 void Zoltan_Bucket_Free(Bucket* bs)
 {
     ZOLTAN_FREE(&(bs->values));
     ZOLTAN_FREE(&(bs->buckets));
     ZOLTAN_FREE(&(bs->elements));
-}
+} 
 
 
 #ifdef __cplusplus

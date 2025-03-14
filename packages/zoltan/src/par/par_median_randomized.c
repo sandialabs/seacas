@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012, 2023 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -77,12 +40,12 @@ typedef struct _commStruct{
   MPI_Comm comm;
 }commStruct;
 
-static int rb_sort_doubles_increasing(const void *a, const void *b)
+int rb_sort_doubles_increasing(const void *a, const void *b)
 {
 double v1, v2;
 
-  v1 = *(const double *)a;
-  v2 = *(const double *)b;
+  v1 = *(double *)a;
+  v2 = *(double *)b;
 
   if (v1 < v2) return -1;
   else if (v1 > v2) return 1;
@@ -94,10 +57,10 @@ static int mark_median(int *, int *, int, int, double *, double, int);
 static int reorder_list(double *, int, int* , int *);
 static void sample_partition(int, int *, double *, double, int, double *);
 
-static int test_candidate(int *, int *, double *, int *, double *, int, double, double, int,
+static int test_candidate(int *, int *, double *, int *, double *, int, double, double, int, 
    double, double, double, commStruct *, double *, double *, int *, int *);
 
-static void mark_lo_and_hi(double, double, double *, double *, int *, int *,
+static void mark_lo_and_hi(double, double, double *, double *, int *, int *, 
                            double *, double *, int, double, int *, commStruct *);
 static int get_median_candidates(double *, int, double *, int, double, commStruct *);
 static int get_3plus_candidates(int, int *, double *, double, commStruct *, double *);
@@ -118,7 +81,7 @@ static double *msgBuf=NULL;
 /*****************************************************************************/
 
 int Zoltan_RB_find_median_randomized(
-  int Tflops_Special,   /* Flag indicating whether Tflops_Special handling
+  int Tflops_Special,   /* Flag indicating whether Tflops_Special handling 
                            of communicators should be done (to avoid memory
                            leaks in tflops' Comm_Dup and Comm_Split).        */
   double *dots,         /* array of coordinates                              */
@@ -178,7 +141,7 @@ int Zoltan_RB_find_median_randomized(
   else
     sprintf(debugText,"(%d - %d) ",proclower,proclower+num_procs-1);
 #endif
-
+ 
   loopCount=0;
   msgBuf = NULL;
   ierr = return_ok;
@@ -229,7 +192,7 @@ int Zoltan_RB_find_median_randomized(
       tolerance = wtmax;
       Zoltan_RB_max_double(&tolerance, 1, proclower, rank, num_procs, local_comm);
     }
-    else
+    else 
       tolerance = 1.0;   /* if user did not supply weights, all are 1.0 */
   }
   else {
@@ -260,8 +223,8 @@ int Zoltan_RB_find_median_randomized(
     medians = (double *)ZOLTAN_MALLOC((num_procs+2) * sizeof(double));
 
   if (!Tflops_Special || num_procs > 1) { /* don't need to go thru if only
-                                             one proc with Tflops_Special.
-                                             Input argument Tflops_Special
+                                             one proc with Tflops_Special. 
+                                             Input argument Tflops_Special 
                                              should be 0 for
                                              serial partitioning. */
 
@@ -279,8 +242,8 @@ int Zoltan_RB_find_median_randomized(
         /* We'll generate random candidates and continue search in while loop below */
 
         /* TODO - if we have a first guess, we should generate candidates close
-         *   to the first guess and do a binary search of those.  Otherwise,
-         *   unless first guess is median, we're not really using this info.
+         *   to the first guess and do a binary search of those.  Otherwise, 
+         *   unless first guess is median, we're not really using this info. 
          */
         medians[0] = valuemin;
         medians[1] = valuemax;
@@ -298,23 +261,23 @@ int Zoltan_RB_find_median_randomized(
       else{
         tmp_half = invalidDot;
       }
-
-      /* Create sorted array of unique local median values.  True global median is
-       * between the minimum and maximum of these local medians.
+  
+      /* Create sorted array of unique local median values.  True global median is 
+       * between the minimum and maximum of these local medians. 
        */
-
+  
       ndots = get_median_candidates(&tmp_half, 1, medians, num_procs, validMax, &comm);
-
+  
       left = 0;
       right = ndots-1;
 
       if (ndots == 1){ /*   If only one dot - it must be median */
-
+      
         /* Write dotmark array, compute weightlo, weighthi */
         test_candidate(&numlist, dotlist, dots, dotmark, wgts, wgtflag, uniformWeight, weight,
                            rectilinear_blocks, tolerance, targetlo,
                            medians[0], &comm, &weightlo, &weighthi, &markactive, &loopCount);
-
+  
         found_median = 1;
         tmp_half = medians[0];
       }
@@ -322,22 +285,22 @@ int Zoltan_RB_find_median_randomized(
          /* Median is between medians[0] and medians[1], or it's one
           * or the other.  Call test_candidate to mark dots, pare active list.
           */
-
-        found_median = test_candidate(&numlist, dotlist, dots, dotmark,
-                           wgts, wgtflag, uniformWeight, weight, rectilinear_blocks,
+  
+        found_median = test_candidate(&numlist, dotlist, dots, dotmark, 
+                           wgts, wgtflag, uniformWeight, weight, rectilinear_blocks, 
                            tolerance, targetlo,
                            medians[0], &comm, &weightlo, &weighthi, &markactive, &loopCount);
-
+  
         if (found_median){
           tmp_half = medians[0];
         }
         else{
-          found_median = test_candidate(&numlist, dotlist, dots, dotmark,
-                           wgts, wgtflag, uniformWeight, weight, rectilinear_blocks,
+          found_median = test_candidate(&numlist, dotlist, dots, dotmark, 
+                           wgts, wgtflag, uniformWeight, weight, rectilinear_blocks, 
                            tolerance, targetlo,
                            medians[1], &comm, &weightlo, &weighthi, &markactive, &loopCount);
-
-          /* If candidate was not the median, we'll search between medians[0] and
+  
+          /* If candidate was not the median, we'll search between medians[0] and 
            * medians[1] in while loop below */
 
           if (found_median){
@@ -354,7 +317,7 @@ int Zoltan_RB_find_median_randomized(
       }
     }
 
-    /* Begin with a binary search through candidate medians if we have them.
+    /* Begin with a binary search through candidate medians if we have them. 
      * Then select random candidates after this search narrows down the range.
      */
 
@@ -437,7 +400,7 @@ int Zoltan_RB_find_median_randomized(
   /* found median */
   *valuehalf = tmp_half;
 
-  if (average_cuts)
+  if (average_cuts) 
     *valuehalf = Zoltan_RB_Average_Cut(Tflops_Special, dots, dotmark, dotnum,
                                        num_procs, rank, proc, local_comm,
                                        *valuehalf);
@@ -482,7 +445,7 @@ double v3 = v[c];
     return c;
   }
 }
-static int mark_median(int *dotlist, int *dotmark,
+static int mark_median(int *dotlist, int *dotmark, 
         int start, int nmeds, double *dots, double med, int mark)
 {
 int i, j;
@@ -490,7 +453,7 @@ int count=0;
 
   for (j = start; ; j++) {
     i = dotlist[j];
-    if (dots[i] == med) {
+    if (dots[i] == med) { 
       dotmark[i] = mark;
       if (++count == nmeds) break;
     }
@@ -541,7 +504,7 @@ int i, next_p;
  * Set pivotIdx to "j", the first value equal to p.
  * Return count, the number of values equal to p.
  */
-
+ 
 static int reorder_list(double *vals, int len, int *pivotIdx, int *idxList)
 {
 int i, j, right;
@@ -592,7 +555,7 @@ double p;
 /* Dots are sorted increasing.                                      */
 /* If forceUnique=1, will try to find three unique if possible.     */
 
-static void sample_partition(int numlist, int *dotlist, double *dots,
+static void sample_partition(int numlist, int *dotlist, double *dots, 
                             double invalidDot, int forceUnique,
                             double *samples)
 {
@@ -634,7 +597,7 @@ int mid = numlist >> 1;
       qsort(samples, 3, sizeof(double), rb_sort_doubles_increasing);
     }
   }
-}
+} 
 
 /*
  * Given a candidate median value, sum up weights to left and right of it.
@@ -649,7 +612,7 @@ int mid = numlist >> 1;
  *
  * Write dotmark array with LOPART and HIPART markers.
  */
-static int test_candidate(int *numlist, int *dotlist, double *dots, int *dotmark,
+static int test_candidate(int *numlist, int *dotlist, double *dots, int *dotmark, 
                           double *wgts, int wgtflag, double uniformWeight, double totalweight, int rectilinear_blocks,
                           double tolerance, double targetlo,
                           double candidate, commStruct *comm,
@@ -667,7 +630,7 @@ int proc = comm->proc;
 int num_procs = comm->num_procs;
 MPI_Comm local_comm = comm->comm;
 double mylo=0.0, mymed=0.0, myhi=0.0;
-int countmed=0, indexmed=-1;
+int countlo=0, countmed=0, counthi=0, indexmed=-1;
 
   if (count) (*count)++;
 
@@ -677,6 +640,7 @@ int countmed=0, indexmed=-1;
     if (dots[i] < candidate) {
       mylo += tmpwgt;
       dotmark[i] = LOPART;
+      countlo++;
     }
     else if (dots[i] == candidate) {
       mymed += tmpwgt;
@@ -687,6 +651,7 @@ int countmed=0, indexmed=-1;
     else{
       myhi += tmpwgt;
       dotmark[i] = HIPART;
+      counthi++;
     }
   }
 
@@ -843,7 +808,7 @@ int countmed=0, indexmed=-1;
   return found_median;
 }
 
-/* Mark dots below loBound as LOPART and dots above hiBound as HIPART
+/* Mark dots below loBound as LOPART and dots above hiBound as HIPART 
  * and remove them from the active list, and accumulate their weights
  * in weightlo and weighthi.
  */
@@ -869,7 +834,7 @@ MPI_Comm local_comm = comm->comm;
   for (j=0; j < *numlist; j++){
     i = dotlist[j];
     tmpwgt = (wgts ? wgts[i*wgtflag] : uniformWeight);
-
+   
     if (dots[i] < loBound){
       wlo += tmpwgt;
       dotmark[i] = LOPART;
@@ -909,7 +874,7 @@ MPI_Comm local_comm = comm->comm;
 
 /* For now we assume "nmymed" is 3 or less.  Can change this.            */
 
-static int get_median_candidates(double *mymed, int nmymed,
+static int get_median_candidates(double *mymed, int nmymed, 
                                  double *medians, int nmedians,
                                  double validmax, commStruct *comm)
 {
@@ -1103,7 +1068,7 @@ double *dotCopy = NULL;
 
 /* MAXLENGTH is 2^(DEPTHMAX-1) */
 #define DEPTHMAX 5
-#define MAXLENGTH 16
+#define MAXLENGTH 16 
 
 static int depthCount = 0;
 static int serialIterations=0;
@@ -1145,7 +1110,7 @@ int i;
         levelCount[DEPTHMAX] += count;
       }
     }
-    depthCount++;
+    depthCount++;  
   }
 }
 
@@ -1187,7 +1152,7 @@ MPI_Status status;
   MPI_Reduce(&parallelIterations, &parMax, 1, MPI_INT, MPI_MAX, print_proc, comm);
   MPI_Reduce(&parallelIterations, &parSum, 1, MPI_INT, MPI_SUM, print_proc, comm);
 
-  /* Get the iteration count from the rank 0 process of each parallel median find
+  /* Get the iteration count from the rank 0 process of each parallel median find 
    * calculation.
    */
   if (print_proc == rank){

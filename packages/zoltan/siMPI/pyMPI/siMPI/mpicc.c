@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     arguments[argc++] = lib_library;
   }
   arguments[argc] = 0;
-
+  
 
   /* ----------------------------------------------- */
   /* In verbose mode, echo the command               */

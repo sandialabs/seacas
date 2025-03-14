@@ -41,10 +41,10 @@ int PMPI_Wait(MPI_Request* request, MPI_Status* status) {
     retval = PMPI_Recv((*request)->buffer,
                        (*request)->count,
                        (*request)->type,
-                       _MPI_RANK,
+                       _MPI_RANK, 
                        (*request)->tag,
                        (*request)->comm,
-                       &recv_status);
+                       &recv_status); 
     if ( retval == MPI_ERR_TAG && (*request)->cancel )
     {
       /* no matching send and the recv request has been cancelled */
@@ -56,10 +56,10 @@ int PMPI_Wait(MPI_Request* request, MPI_Status* status) {
       return retval;
     }
   }
-
+  
   /* Copy in the status */
   if ( status && status != MPI_STATUS_IGNORE) {
-    status->MPI_SOURCE = _MPI_RANK;
+    status->MPI_SOURCE = _MPI_RANK; 
     status->MPI_TAG = (*request)->tag;
     status->MPI_ERROR = MPI_SUCCESS;
     if ((*request)->send) {
@@ -68,7 +68,7 @@ int PMPI_Wait(MPI_Request* request, MPI_Status* status) {
       status->__count = recv_status.__count;
     }
   }
-
+  
   /* ----------------------------------------------- */
   /* Mark the request available in the pool and then */
   /* write REQUEST_NULL back into the original req   */
@@ -80,3 +80,4 @@ int PMPI_Wait(MPI_Request* request, MPI_Status* status) {
   return MPI_SUCCESS;
 }
 /*==========================================================================*/
+

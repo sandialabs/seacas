@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 /*
    Code imported to Zoltan zdrive from
 
@@ -67,13 +30,8 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <stdlib.h>
-#if defined(_WIN32) && !defined(__MINGW32__)
 #include <string.h>
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#else
 #include <strings.h>
-#endif
 #include "zoltan.h"
 #include "dr_param_file.h"
 #include "dr_const.h"
@@ -86,7 +44,7 @@
        fflush(stdout); \
        fprintf(stderr,"in file %s, line %d, failed to allocate %ld bytes",\
                __FILE__,__LINE__,size); \
-       MPI_Abort(MPI_COMM_WORLD,1); \
+       MPI_Abort(zoltan_get_global_comm(),1); \
     } \
  }
 
@@ -137,7 +95,7 @@ void zoltanParams_hier_set_num_levels(int levels) {
   int i;
 
 #ifdef DEBUG
-  printf("(zoltanParams_hier_set_num_levels) setting to %d\n", levels);
+  printf("(zoltanParams_hier_set_num_levels) setting to %d\n", levels);  
   fflush(stdout);
 #endif
 
@@ -153,11 +111,11 @@ void zoltanParams_hier_set_num_levels(int levels) {
 
   num_levels = levels;
 
-  SAFE_MALLOC(zph, struct zoltanParams_hier_struct **,
+  SAFE_MALLOC(zph, struct zoltanParams_hier_struct **, 
 	      (long)sizeof(struct zoltanParams_hier_struct *) * levels);
 
   for (i=0; i<levels; i++) {
-    SAFE_MALLOC(zph[i],  struct zoltanParams_hier_struct *,
+    SAFE_MALLOC(zph[i],  struct zoltanParams_hier_struct *, 
 		(long)sizeof (struct zoltanParams_hier_struct));
     zph[i]->partition = 0;
     zph[i]->first = NULL;
@@ -170,7 +128,7 @@ void zoltanParams_hier_set_partition(int level, int partition) {
   int mypid;
   MPI_Comm_rank(comm, &mypid);
 
-  printf("[%d] will compute partition %d at level %d\n",
+  printf("[%d] will compute partition %d at level %d\n", 
 	 mypid, partition, level); fflush(stdout);
 #endif
 
@@ -185,7 +143,7 @@ void zoltanParams_hier_set_param(int level, char *param, char *value) {
 #ifdef DEBUG
   int mypid;
   MPI_Comm_rank(comm, &mypid);
-  printf("[%d] will set param <%s> to <%s> at level %d\n",
+  printf("[%d] will set param <%s> to <%s> at level %d\n", 
 	 mypid, param, value, level); fflush(stdout);
 #endif
 
@@ -197,7 +155,7 @@ void zoltanParams_hier_set_param(int level, char *param, char *value) {
   strcpy(newparam->param, param);
   strcpy(newparam->value, value);
   newparam->next = NULL;
-
+  
   if (!zph[level]->first) {
     zph[level]->first = newparam;
     return;
@@ -205,7 +163,7 @@ void zoltanParams_hier_set_param(int level, char *param, char *value) {
 
   nextparam = zph[level]->first;
   while (nextparam->next) nextparam=nextparam->next;
-  nextparam->next = newparam;
+  nextparam->next = newparam;    
 }
 
 int zoltanParams_hier_get_num_levels() {
@@ -225,7 +183,7 @@ void zoltanParams_hier_use_params(int level, struct Zoltan_Struct *zz, int *ierr
 
   *ierr = ZOLTAN_OK;
   check_level(level);
-
+  
   nextparam = zph[level]->first;
 
   while (nextparam) {
@@ -233,7 +191,7 @@ void zoltanParams_hier_use_params(int level, struct Zoltan_Struct *zz, int *ierr
     if (*ierr != ZOLTAN_OK) return;
     nextparam = nextparam->next;
   }
-
+  
 }
 
 static int get_num_levels(void *data, int *ierr) {
@@ -264,20 +222,20 @@ void zoltanParams_set_comm(MPI_Comm thecomm) {
 void zoltanParams_hier_setup(struct Zoltan_Struct *zz) {
 
   /* make sure the hierarchical balancing callbacks are in place */
-  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_NUM_LEVELS_FN_TYPE,
+  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_NUM_LEVELS_FN_TYPE, 
 		    (void (*)()) get_num_levels, NULL) == ZOLTAN_FATAL) {
     fprintf(stderr,"zoltanParams_hier_setup: set NUM_LEVELS callback failed\n");
   }
 
-  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_PART_FN_TYPE,
+  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_PART_FN_TYPE, 
 		    (void (*)()) get_partition, NULL) == ZOLTAN_FATAL) {
     fprintf(stderr,"zoltanParams_hier_setup: set PART callback failed\n");
   }
 
-  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_METHOD_FN_TYPE,
+  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_METHOD_FN_TYPE, 
 		    (void (*)()) get_method, NULL) == ZOLTAN_FATAL) {
     fprintf(stderr,"zoltanParams_hier_setup: set METHOD callback failed\n");
-  }
+  }   
 }
 
 /*
@@ -307,7 +265,7 @@ void zoltanParams_hier_setup(struct Zoltan_Struct *zz) {
   End file with EOF
 
 */
-void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file,
+void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file, 
 			    MPI_Comm thecomm) {
   FILE *fp;
   char str1[500], str2[500];
@@ -325,7 +283,7 @@ void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file,
   if (!fp) {
     fprintf(stderr,"Cannot open file %s for reading", file);
     return;
-  }
+  } 
 
 #ifdef DEBUG
   if (mypid == 0) {
@@ -366,7 +324,7 @@ void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file,
 	while ((fscanf(fp, "%s %s\n", str1, str2) == 2) &&
 	       (strcmp(str1, "LEVEL") != 0) &&
 	       (strcmp(str2, "END") != 0)) {
-
+	  
 	  zoltanParams_hier_set_param(level, str1, str2);
 	}
       }

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -62,9 +25,9 @@ extern "C" {
  *  specific registration routines that enable tighter type-checking by
  *  the compiler.
  *
- *  When new callback functions are added to Zoltan, they should be
+ *  When new callback functions are added to Zoltan, they should be 
  *  added to the case statement in Zoltan_Set_Fn and Zoltan_Get_Fn
- *  and should have separate registration functions specific to the
+ *  and should have separate registration functions specific to the 
  *  new callback types.
  */
 /****************************************************************************/
@@ -92,171 +55,171 @@ int ierr;
 
   switch (fn_type) {
   case ZOLTAN_PART_FN_TYPE:
-    ierr = Zoltan_Set_Part_Fn(zz,
+    ierr = Zoltan_Set_Part_Fn(zz, 
                   (ZOLTAN_PART_FN *) fn, data);
     break;
   case ZOLTAN_PART_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Part_Multi_Fn(zz,
+    ierr = Zoltan_Set_Part_Multi_Fn(zz, 
                   (ZOLTAN_PART_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_NUM_EDGES_FN_TYPE:
-    ierr = Zoltan_Set_Num_Edges_Fn(zz,
+    ierr = Zoltan_Set_Num_Edges_Fn(zz, 
                   (ZOLTAN_NUM_EDGES_FN *) fn, data);
     break;
   case ZOLTAN_NUM_EDGES_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Num_Edges_Multi_Fn(zz,
+    ierr = Zoltan_Set_Num_Edges_Multi_Fn(zz, 
                   (ZOLTAN_NUM_EDGES_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_EDGE_LIST_FN_TYPE:
-    ierr = Zoltan_Set_Edge_List_Fn(zz,
+    ierr = Zoltan_Set_Edge_List_Fn(zz, 
                   (ZOLTAN_EDGE_LIST_FN *) fn, data);
     break;
   case ZOLTAN_EDGE_LIST_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Edge_List_Multi_Fn(zz,
+    ierr = Zoltan_Set_Edge_List_Multi_Fn(zz, 
                   (ZOLTAN_EDGE_LIST_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_NUM_GEOM_FN_TYPE:
-    ierr = Zoltan_Set_Num_Geom_Fn(zz,
+    ierr = Zoltan_Set_Num_Geom_Fn(zz, 
                   (ZOLTAN_NUM_GEOM_FN *) fn, data);
     break;
   case ZOLTAN_GEOM_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Geom_Multi_Fn(zz,
+    ierr = Zoltan_Set_Geom_Multi_Fn(zz, 
                   (ZOLTAN_GEOM_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_GEOM_FN_TYPE:
-    ierr = Zoltan_Set_Geom_Fn(zz,
+    ierr = Zoltan_Set_Geom_Fn(zz, 
                   (ZOLTAN_GEOM_FN *) fn, data);
     break;
   case ZOLTAN_NUM_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Num_Obj_Fn(zz,
+    ierr = Zoltan_Set_Num_Obj_Fn(zz, 
                   (ZOLTAN_NUM_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_OBJ_LIST_FN_TYPE:
-    ierr = Zoltan_Set_Obj_List_Fn(zz,
+    ierr = Zoltan_Set_Obj_List_Fn(zz, 
                   (ZOLTAN_OBJ_LIST_FN *) fn, data);
     break;
   case ZOLTAN_FIRST_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_First_Obj_Fn(zz,
+    ierr = Zoltan_Set_First_Obj_Fn(zz, 
                   (ZOLTAN_FIRST_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_NEXT_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Next_Obj_Fn(zz,
+    ierr = Zoltan_Set_Next_Obj_Fn(zz, 
                   (ZOLTAN_NEXT_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_NUM_BORDER_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Num_Border_Obj_Fn(zz,
+    ierr = Zoltan_Set_Num_Border_Obj_Fn(zz, 
                   (ZOLTAN_NUM_BORDER_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_BORDER_OBJ_LIST_FN_TYPE:
-    ierr = Zoltan_Set_Border_Obj_List_Fn(zz,
+    ierr = Zoltan_Set_Border_Obj_List_Fn(zz, 
                   (ZOLTAN_BORDER_OBJ_LIST_FN *) fn, data);
     break;
   case ZOLTAN_FIRST_BORDER_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_First_Border_Obj_Fn(zz,
+    ierr = Zoltan_Set_First_Border_Obj_Fn(zz, 
                   (ZOLTAN_FIRST_BORDER_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_NEXT_BORDER_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Next_Border_Obj_Fn(zz,
+    ierr = Zoltan_Set_Next_Border_Obj_Fn(zz, 
                   (ZOLTAN_NEXT_BORDER_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_PRE_MIGRATE_PP_FN_TYPE:
-    ierr = Zoltan_Set_Pre_Migrate_PP_Fn(zz,
+    ierr = Zoltan_Set_Pre_Migrate_PP_Fn(zz, 
                   (ZOLTAN_PRE_MIGRATE_PP_FN *) fn, data);
     break;
   case ZOLTAN_MID_MIGRATE_PP_FN_TYPE:
-    ierr = Zoltan_Set_Mid_Migrate_PP_Fn(zz,
+    ierr = Zoltan_Set_Mid_Migrate_PP_Fn(zz, 
                   (ZOLTAN_MID_MIGRATE_PP_FN *) fn, data);
     break;
   case ZOLTAN_POST_MIGRATE_PP_FN_TYPE:
-    ierr = Zoltan_Set_Post_Migrate_PP_Fn(zz,
+    ierr = Zoltan_Set_Post_Migrate_PP_Fn(zz, 
                   (ZOLTAN_POST_MIGRATE_PP_FN *) fn, data);
     break;
   case ZOLTAN_PRE_MIGRATE_FN_TYPE:
-    ierr = Zoltan_Set_Pre_Migrate_Fn(zz,
+    ierr = Zoltan_Set_Pre_Migrate_Fn(zz, 
                   (ZOLTAN_PRE_MIGRATE_FN *) fn, data);
     break;
   case ZOLTAN_MID_MIGRATE_FN_TYPE:
-    ierr = Zoltan_Set_Mid_Migrate_Fn(zz,
+    ierr = Zoltan_Set_Mid_Migrate_Fn(zz, 
                   (ZOLTAN_MID_MIGRATE_FN *) fn, data);
     break;
   case ZOLTAN_POST_MIGRATE_FN_TYPE:
-    ierr = Zoltan_Set_Post_Migrate_Fn(zz,
+    ierr = Zoltan_Set_Post_Migrate_Fn(zz, 
                   (ZOLTAN_POST_MIGRATE_FN *) fn, data);
     break;
   case ZOLTAN_OBJ_SIZE_FN_TYPE:
-    ierr = Zoltan_Set_Obj_Size_Fn(zz,
+    ierr = Zoltan_Set_Obj_Size_Fn(zz, 
                   (ZOLTAN_OBJ_SIZE_FN *) fn, data);
     break;
   case ZOLTAN_OBJ_SIZE_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Obj_Size_Multi_Fn(zz,
+    ierr = Zoltan_Set_Obj_Size_Multi_Fn(zz, 
                   (ZOLTAN_OBJ_SIZE_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_PACK_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Pack_Obj_Fn(zz,
+    ierr = Zoltan_Set_Pack_Obj_Fn(zz, 
                   (ZOLTAN_PACK_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_PACK_OBJ_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Pack_Obj_Multi_Fn(zz,
+    ierr = Zoltan_Set_Pack_Obj_Multi_Fn(zz, 
                   (ZOLTAN_PACK_OBJ_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_UNPACK_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Unpack_Obj_Fn(zz,
+    ierr = Zoltan_Set_Unpack_Obj_Fn(zz, 
                   (ZOLTAN_UNPACK_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_UNPACK_OBJ_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Unpack_Obj_Multi_Fn(zz,
+    ierr = Zoltan_Set_Unpack_Obj_Multi_Fn(zz, 
                   (ZOLTAN_UNPACK_OBJ_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_NUM_COARSE_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Num_Coarse_Obj_Fn(zz,
+    ierr = Zoltan_Set_Num_Coarse_Obj_Fn(zz, 
                   (ZOLTAN_NUM_COARSE_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_COARSE_OBJ_LIST_FN_TYPE:
-    ierr = Zoltan_Set_Coarse_Obj_List_Fn(zz,
+    ierr = Zoltan_Set_Coarse_Obj_List_Fn(zz, 
                   (ZOLTAN_COARSE_OBJ_LIST_FN *) fn, data);
     break;
   case ZOLTAN_FIRST_COARSE_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_First_Coarse_Obj_Fn(zz,
+    ierr = Zoltan_Set_First_Coarse_Obj_Fn(zz, 
                   (ZOLTAN_FIRST_COARSE_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_NEXT_COARSE_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Next_Coarse_Obj_Fn(zz,
+    ierr = Zoltan_Set_Next_Coarse_Obj_Fn(zz, 
                   (ZOLTAN_NEXT_COARSE_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_NUM_CHILD_FN_TYPE:
-    ierr = Zoltan_Set_Num_Child_Fn(zz,
+    ierr = Zoltan_Set_Num_Child_Fn(zz, 
                   (ZOLTAN_NUM_CHILD_FN *) fn, data);
     break;
   case ZOLTAN_CHILD_LIST_FN_TYPE:
-    ierr = Zoltan_Set_Child_List_Fn(zz,
+    ierr = Zoltan_Set_Child_List_Fn(zz, 
                   (ZOLTAN_CHILD_LIST_FN *) fn, data);
     break;
   case ZOLTAN_CHILD_WEIGHT_FN_TYPE:
-    ierr = Zoltan_Set_Child_Weight_Fn(zz,
+    ierr = Zoltan_Set_Child_Weight_Fn(zz, 
                   (ZOLTAN_CHILD_WEIGHT_FN *) fn, data);
     break;
   case ZOLTAN_HG_SIZE_CS_FN_TYPE:
-    ierr = Zoltan_Set_HG_Size_CS_Fn(zz,
+    ierr = Zoltan_Set_HG_Size_CS_Fn(zz, 
                   (ZOLTAN_HG_SIZE_CS_FN *) fn, data);
     break;
   case ZOLTAN_HG_CS_FN_TYPE:
-    ierr = Zoltan_Set_HG_CS_Fn(zz,
+    ierr = Zoltan_Set_HG_CS_Fn(zz, 
                   (ZOLTAN_HG_CS_FN *) fn, data);
     break;
   case ZOLTAN_HG_SIZE_EDGE_WTS_FN_TYPE:
-    ierr = Zoltan_Set_HG_Size_Edge_Wts_Fn(zz,
+    ierr = Zoltan_Set_HG_Size_Edge_Wts_Fn(zz, 
                   (ZOLTAN_HG_SIZE_EDGE_WTS_FN *) fn, data);
     break;
   case ZOLTAN_HG_EDGE_WTS_FN_TYPE:
-    ierr = Zoltan_Set_HG_Edge_Wts_Fn(zz,
+    ierr = Zoltan_Set_HG_Edge_Wts_Fn(zz, 
                   (ZOLTAN_HG_EDGE_WTS_FN *) fn, data);
     break;
   case ZOLTAN_NUM_FIXED_OBJ_FN_TYPE:
-    ierr = Zoltan_Set_Num_Fixed_Obj_Fn(zz,
+    ierr = Zoltan_Set_Num_Fixed_Obj_Fn(zz, 
                   (ZOLTAN_NUM_FIXED_OBJ_FN *) fn, data);
     break;
   case ZOLTAN_FIXED_OBJ_LIST_FN_TYPE:
-    ierr = Zoltan_Set_Fixed_Obj_List_Fn(zz,
+    ierr = Zoltan_Set_Fixed_Obj_List_Fn(zz, 
                   (ZOLTAN_FIXED_OBJ_LIST_FN *) fn, data);
     break;
   case ZOLTAN_HIER_NUM_LEVELS_FN_TYPE:
@@ -271,11 +234,9 @@ int ierr;
     ierr = Zoltan_Set_Hier_Method_Fn(zz,
 		  (ZOLTAN_HIER_METHOD_FN *) fn, data);
     break;
-  case ZOLTAN_PROC_NAME_FN_TYPE:
-  case ZOLTAN_MAX_FN_TYPES:
   default:
     sprintf(msg, "ZOLTAN_FN_TYPE %d is invalid.\n"
-            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES - 1);
+            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES);
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
     ierr = ZOLTAN_WARN;
   }
@@ -297,7 +258,7 @@ int Zoltan_Get_Fn(ZZ *zz, ZOLTAN_FN_TYPE fn_type,
  *    fn_type           --  Enum type indicating the function to be retrieved.
  *  Output:
  *    fn                --  Pointer to the function retrieved.
- *    data              --  Pointer to data associated with the retrieved
+ *    data              --  Pointer to data associated with the retrieved 
  *                          function.  May be NULL.
  */
 
@@ -486,11 +447,9 @@ int ierr = ZOLTAN_OK;
     *fn = (ZOLTAN_VOID_FN *) zz->Get_Hier_Method;
     *data = zz->Get_Hier_Method_Data;
     break;
-  case ZOLTAN_PROC_NAME_FN_TYPE:
-  case ZOLTAN_MAX_FN_TYPES:
   default:
     sprintf(msg, "ZOLTAN_FN_TYPE %d is invalid.\n"
-            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES - 1);
+            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES);
     *fn = NULL;
     *data = NULL;
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
@@ -505,7 +464,7 @@ int ierr = ZOLTAN_OK;
 /*****************************************************************************/
 /*
  * Callback registration functions that are specific to a given function
- * type.  Each callback function type must have a related registration
+ * type.  Each callback function type must have a related registration 
  * function.  Using these functions enables more type-checking between the
  * application and Zoltan.
  */
@@ -514,8 +473,8 @@ int ierr = ZOLTAN_OK;
 /*****************************************************************************/
 
 int Zoltan_Set_Part_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_PART_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_PART_MULTI_FN *fn, 
   void *data
 )
 {
@@ -529,8 +488,8 @@ int Zoltan_Set_Part_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Part_Fn(
-  ZZ *zz,
-  ZOLTAN_PART_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_PART_FN *fn, 
   void *data
 )
 {
@@ -544,8 +503,8 @@ int Zoltan_Set_Part_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Edges_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_EDGES_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_EDGES_MULTI_FN *fn, 
   void *data
 )
 {
@@ -559,8 +518,8 @@ int Zoltan_Set_Num_Edges_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Edges_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_EDGES_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_EDGES_FN *fn, 
   void *data
 )
 {
@@ -574,8 +533,8 @@ int Zoltan_Set_Num_Edges_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Edge_List_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_EDGE_LIST_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_EDGE_LIST_MULTI_FN *fn, 
   void *data
 )
 {
@@ -589,8 +548,8 @@ int Zoltan_Set_Edge_List_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Edge_List_Fn(
-  ZZ *zz,
-  ZOLTAN_EDGE_LIST_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_EDGE_LIST_FN *fn, 
   void *data
 )
 {
@@ -604,8 +563,8 @@ int Zoltan_Set_Edge_List_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Geom_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_GEOM_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_GEOM_FN *fn, 
   void *data
 )
 {
@@ -617,8 +576,8 @@ int Zoltan_Set_Num_Geom_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Geom_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_GEOM_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_GEOM_MULTI_FN *fn, 
   void *data
 )
 {
@@ -632,8 +591,8 @@ int Zoltan_Set_Geom_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Geom_Fn(
-  ZZ *zz,
-  ZOLTAN_GEOM_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_GEOM_FN *fn, 
   void *data
 )
 {
@@ -647,8 +606,8 @@ int Zoltan_Set_Geom_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_OBJ_FN *fn, 
   void *data
 )
 {
@@ -660,8 +619,8 @@ int Zoltan_Set_Num_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Obj_List_Fn(
-  ZZ *zz,
-  ZOLTAN_OBJ_LIST_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_OBJ_LIST_FN *fn, 
   void *data
 )
 {
@@ -673,8 +632,8 @@ int Zoltan_Set_Obj_List_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_First_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_FIRST_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_FIRST_OBJ_FN *fn, 
   void *data
 )
 {
@@ -686,8 +645,8 @@ int Zoltan_Set_First_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Next_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NEXT_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NEXT_OBJ_FN *fn, 
   void *data
 )
 {
@@ -699,8 +658,8 @@ int Zoltan_Set_Next_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Border_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_BORDER_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_BORDER_OBJ_FN *fn, 
   void *data
 )
 {
@@ -712,8 +671,8 @@ int Zoltan_Set_Num_Border_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Border_Obj_List_Fn(
-  ZZ *zz,
-  ZOLTAN_BORDER_OBJ_LIST_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_BORDER_OBJ_LIST_FN *fn, 
   void *data
 )
 {
@@ -725,8 +684,8 @@ int Zoltan_Set_Border_Obj_List_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_First_Border_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_FIRST_BORDER_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_FIRST_BORDER_OBJ_FN *fn, 
   void *data
 )
 {
@@ -738,8 +697,8 @@ int Zoltan_Set_First_Border_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Next_Border_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NEXT_BORDER_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NEXT_BORDER_OBJ_FN *fn, 
   void *data
 )
 {
@@ -751,8 +710,8 @@ int Zoltan_Set_Next_Border_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Obj_Size_Fn(
-  ZZ *zz,
-  ZOLTAN_OBJ_SIZE_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_OBJ_SIZE_FN *fn, 
   void *data
 )
 {
@@ -766,8 +725,8 @@ int Zoltan_Set_Obj_Size_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Obj_Size_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_OBJ_SIZE_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_OBJ_SIZE_MULTI_FN *fn, 
   void *data
 )
 {
@@ -781,8 +740,8 @@ int Zoltan_Set_Obj_Size_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Pack_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_PACK_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_PACK_OBJ_FN *fn, 
   void *data
 )
 {
@@ -796,8 +755,8 @@ int Zoltan_Set_Pack_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Pack_Obj_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_PACK_OBJ_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_PACK_OBJ_MULTI_FN *fn, 
   void *data
 )
 {
@@ -811,8 +770,8 @@ int Zoltan_Set_Pack_Obj_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Unpack_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_UNPACK_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_UNPACK_OBJ_FN *fn, 
   void *data
 )
 {
@@ -826,8 +785,8 @@ int Zoltan_Set_Unpack_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Unpack_Obj_Multi_Fn(
-  ZZ *zz,
-  ZOLTAN_UNPACK_OBJ_MULTI_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_UNPACK_OBJ_MULTI_FN *fn, 
   void *data
 )
 {
@@ -841,8 +800,8 @@ int Zoltan_Set_Unpack_Obj_Multi_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Coarse_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_COARSE_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_COARSE_OBJ_FN *fn, 
   void *data
 )
 {
@@ -854,8 +813,8 @@ int Zoltan_Set_Num_Coarse_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Coarse_Obj_List_Fn(
-  ZZ *zz,
-  ZOLTAN_COARSE_OBJ_LIST_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_COARSE_OBJ_LIST_FN *fn, 
   void *data
 )
 {
@@ -867,8 +826,8 @@ int Zoltan_Set_Coarse_Obj_List_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_First_Coarse_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_FIRST_COARSE_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_FIRST_COARSE_OBJ_FN *fn, 
   void *data
 )
 {
@@ -880,8 +839,8 @@ int Zoltan_Set_First_Coarse_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Next_Coarse_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NEXT_COARSE_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NEXT_COARSE_OBJ_FN *fn, 
   void *data
 )
 {
@@ -893,8 +852,8 @@ int Zoltan_Set_Next_Coarse_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Child_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_CHILD_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_CHILD_FN *fn, 
   void *data
 )
 {
@@ -906,8 +865,8 @@ int Zoltan_Set_Num_Child_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Child_List_Fn(
-  ZZ *zz,
-  ZOLTAN_CHILD_LIST_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_CHILD_LIST_FN *fn, 
   void *data
 )
 {
@@ -919,8 +878,8 @@ int Zoltan_Set_Child_List_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Child_Weight_Fn(
-  ZZ *zz,
-  ZOLTAN_CHILD_WEIGHT_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_CHILD_WEIGHT_FN *fn, 
   void *data
 )
 {
@@ -932,8 +891,8 @@ int Zoltan_Set_Child_Weight_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_HG_Size_CS_Fn(
-  ZZ *zz,
-  ZOLTAN_HG_SIZE_CS_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HG_SIZE_CS_FN *fn, 
   void *data
 )
 {
@@ -944,8 +903,8 @@ int Zoltan_Set_HG_Size_CS_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_HG_CS_Fn(
-  ZZ *zz,
-  ZOLTAN_HG_CS_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HG_CS_FN *fn, 
   void *data
 )
 {
@@ -956,8 +915,8 @@ int Zoltan_Set_HG_CS_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_HG_Size_Edge_Wts_Fn(
-  ZZ *zz,
-  ZOLTAN_HG_SIZE_EDGE_WTS_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HG_SIZE_EDGE_WTS_FN *fn, 
   void *data
 )
 {
@@ -969,8 +928,8 @@ int Zoltan_Set_HG_Size_Edge_Wts_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_HG_Edge_Wts_Fn(
-  ZZ *zz,
-  ZOLTAN_HG_EDGE_WTS_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HG_EDGE_WTS_FN *fn, 
   void *data
 )
 {
@@ -982,8 +941,8 @@ int Zoltan_Set_HG_Edge_Wts_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Num_Fixed_Obj_Fn(
-  ZZ *zz,
-  ZOLTAN_NUM_FIXED_OBJ_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_NUM_FIXED_OBJ_FN *fn, 
   void *data
 )
 {
@@ -995,8 +954,8 @@ int Zoltan_Set_Num_Fixed_Obj_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Fixed_Obj_List_Fn(
-  ZZ *zz,
-  ZOLTAN_FIXED_OBJ_LIST_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_FIXED_OBJ_LIST_FN *fn, 
   void *data
 )
 {
@@ -1008,8 +967,8 @@ int Zoltan_Set_Fixed_Obj_List_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Hier_Num_Levels_Fn(
-  ZZ *zz,
-  ZOLTAN_HIER_NUM_LEVELS_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HIER_NUM_LEVELS_FN *fn, 
   void *data
 )
 {
@@ -1021,8 +980,8 @@ int Zoltan_Set_Hier_Num_Levels_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Hier_Part_Fn(
-  ZZ *zz,
-  ZOLTAN_HIER_PART_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HIER_PART_FN *fn, 
   void *data
 )
 {
@@ -1034,8 +993,8 @@ int Zoltan_Set_Hier_Part_Fn(
 /*****************************************************************************/
 
 int Zoltan_Set_Hier_Method_Fn(
-  ZZ *zz,
-  ZOLTAN_HIER_METHOD_FN *fn,
+  ZZ *zz, 
+  ZOLTAN_HIER_METHOD_FN *fn, 
   void *data
 )
 {

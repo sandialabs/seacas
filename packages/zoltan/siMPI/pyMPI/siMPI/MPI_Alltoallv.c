@@ -15,17 +15,18 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_Alltoallv (
-        void *sendbuf,
-        int *sendcnts,
-        int *sdispls,
-        MPI_Datatype sendtype,
-        void *recvbuf,
-        int *recvcnts,
-        int *rdispls,
-        MPI_Datatype recvtype,
+int MPI_Alltoallv ( 
+        void *sendbuf, 
+        int *sendcnts, 
+        int *sdispls, 
+        MPI_Datatype sendtype, 
+        void *recvbuf, 
+        int *recvcnts, 
+        int *rdispls, 
+        MPI_Datatype recvtype, 
         MPI_Comm comm )
 {
   _MPI_COVERAGE();
-  return PMPI_Alltoallv( sendbuf, sendcnts, sdispls, sendtype, recvbuf, recvcnts, rdispls, recvtype, comm);
+  return PMPI_Alltoallv( sendbuf, sendcnts, sdispls, sendtype, recvbuf, recvcnts, rdispls, recvtype, comm); 
 }
+

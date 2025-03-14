@@ -23,7 +23,7 @@ int PMPI_Type_extent( MPI_Datatype datatype, MPI_Aint *extent )
   {
     index = _MPI_FindType (datatype);
     if (index == _MPI_NOT_OK)
-    {
+    { 
       _MPI_ERR_ROUTINE (MPI_ERR_TYPE, "MPI_TYPE_SIZE: datatype error");
       MPI_Abort (MPI_COMM_NULL, MPI_ERR_TYPE);
     }
@@ -31,3 +31,4 @@ int PMPI_Type_extent( MPI_Datatype datatype, MPI_Aint *extent )
   }
 
 }
+

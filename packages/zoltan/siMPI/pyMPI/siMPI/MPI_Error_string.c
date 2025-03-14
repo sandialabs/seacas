@@ -19,3 +19,4 @@ int MPI_Error_string( int errorcode, char *string, int *resultlen )
   _MPI_COVERAGE();
   return PMPI_Error_string (errorcode, string, resultlen);
 }
+

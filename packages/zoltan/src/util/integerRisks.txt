@@ -8,7 +8,7 @@ short		16	16	16	16	16
 _int32				32
 int		16	32	64	32	32
 long		32	32	64	32	64
-long long			  	64
+long long			  	64	  
 pointer		32	32	64	64	64
 
 
@@ -70,3 +70,4 @@ To print longs: "%ld" or macros in inttypes.yh
 To print long longs: "%Ld" or macros in inttypes.yh
 
 Especially important in scanf's.
+

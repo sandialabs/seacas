@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Unpack ( void *inbuf, int insize, int *position,
-                void *outbuf, int outcount, MPI_Datatype datatype,
+int PMPI_Unpack ( void *inbuf, int insize, int *position, 
+                void *outbuf, int outcount, MPI_Datatype datatype, 
                 MPI_Comm comm )
 {
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

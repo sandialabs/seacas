@@ -19,3 +19,4 @@ int MPI_Type_commit ( MPI_Datatype *datatype )
   _MPI_COVERAGE();
   return PMPI_Type_commit (datatype);
 }
+

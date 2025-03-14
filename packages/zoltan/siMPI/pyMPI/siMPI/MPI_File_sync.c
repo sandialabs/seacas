@@ -17,5 +17,6 @@
 int MPI_File_sync(MPI_File fh)
 {
   _MPI_COVERAGE();
-  return PMPI_File_sync (fh);
+  return PMPI_File_sync (fh); 
 }
+

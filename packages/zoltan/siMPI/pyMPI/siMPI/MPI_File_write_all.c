@@ -14,9 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_File_write_all(MPI_File fh, void *buf, int count,
+int MPI_File_write_all(MPI_File fh, void *buf, int count, 
                        MPI_Datatype datatype, MPI_Status *status)
 {
   _MPI_COVERAGE();
-  return PMPI_File_write_all (fh, buf, count, datatype, status);
+  return PMPI_File_write_all (fh, buf, count, datatype, status); 
 }
+

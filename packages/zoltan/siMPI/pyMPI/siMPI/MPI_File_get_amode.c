@@ -18,5 +18,6 @@
 int MPI_File_get_amode(MPI_File fh, int *amode)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_amode(fh, amode);
+  return PMPI_File_get_amode(fh, amode); 
 }
+

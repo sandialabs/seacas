@@ -18,5 +18,6 @@
 MPI_Fint MPI_File_c2f(MPI_File fh)
 {
   _MPI_COVERAGE();
-  return PMPI_File_c2f(fh);
+  return PMPI_File_c2f(fh); 
 }
+

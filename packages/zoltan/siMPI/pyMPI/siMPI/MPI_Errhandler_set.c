@@ -19,3 +19,4 @@ int MPI_Errhandler_set( MPI_Comm comm, MPI_Errhandler errhandler )
   _MPI_COVERAGE();
   return PMPI_Errhandler_set (comm, errhandler);
 }
+

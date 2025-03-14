@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_File_open(MPI_Comm comm, char *filename, int amode,
+int PMPI_File_open(MPI_Comm comm, char *filename, int amode, 
                   MPI_Info info, MPI_File *fh)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

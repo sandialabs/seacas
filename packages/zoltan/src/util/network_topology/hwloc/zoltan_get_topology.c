@@ -1,49 +1,12 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
-/*
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
+/* 
  * Discover hardware topology using hwloc.
  * Tested with hwloc 1.0.2: http://www.open-mpi.org/software/hwloc
  *
@@ -85,18 +48,18 @@
   } \
 }
 
-/*
+/* 
  * Define BUILD_MAIN to create a test application
  */
-#define BUILD_MAIN
+#define BUILD_MAIN 
 
 #define MAX_NAME_LEN 64           /* what should this be? */
 #define MAX_NUM_LEVELS 12          /* ditto */
 
-int Zoltan_Get_Topology(int **branch_degree,
-                        int **num_cpus,
-                        char ***level_name,
-                        uint64_t **total_memory,
+int Zoltan_Get_Topology(int **branch_degree, 
+                        int **num_cpus, 
+                        char ***level_name, 
+                        uint64_t **total_memory, 
                         uint64_t **local_memory)
 {
 hwloc_topology_t topology;
@@ -114,8 +77,8 @@ hwloc_cpuset_t ancestor_cpuset[MAX_NUM_LEVELS];  /* mask representing cpus in th
 uint64_t lmem[MAX_NUM_LEVELS];           /* memory owned by this object */
 uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its children */
 
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(zoltan_get_global_comm(), &size);
+  MPI_Comm_rank(zoltan_get_global_comm(), &rank);
 
   /* allocate & initialize topology object */
 
@@ -135,7 +98,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
 
   hwloc_topology_load(topology);
 
-  /*
+  /* 
    * Get the depth of topology and the root.
    */
 
@@ -145,17 +108,17 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
     ancestor_cpuset[i] = hwloc_cpuset_alloc();
   }
 
-  /*
+  /* 
    * Get topology information.  We'll use sibling 0 at each level of the topology.
    *
-   * The root object typically is a node on a multi-node machine, not the
+   * The root object typically is a node on a multi-node machine, not the 
    * collection of nodes in the application.
    */
 
   rootobj = hwloc_get_root_obj(topology);
 
   hwloc_obj_type_snprintf(type_name[0], MAX_NAME_LEN, rootobj, 1);
-  hwloc_cpuset_copy(ancestor_cpuset[0], rootobj->cpuset);
+  hwloc_cpuset_copy(ancestor_cpuset[0], rootobj->cpuset); 
   type_size[0] = 1;
   lmem[0] = rootobj->memory.local_memory;  /*0 if not available */
   tmem[0] = rootobj->memory.total_memory;
@@ -170,13 +133,13 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
     type_size[i] = prev_obj->arity;      /* parent's number of children */
 
     if ( (type_size[i] > 1) || (i == depth-1)){
-      /*
+      /* 
        * Significant levels are processing units (the leaf nodes) and levels
        * that are genuine branches - not the only child of parent.
        */
       real_level[next++] = i;
     }
-
+  
     obj = prev_obj->children[0];
     hwloc_obj_type_snprintf(type_name[i], MAX_NAME_LEN, obj, 1);
     hwloc_cpuset_copy(ancestor_cpuset[i], obj->cpuset);
@@ -217,7 +180,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
       to = real_level[i+1];
     else
       to = 0;             /* leaf node */
-
+ 
     /* Total number of CPUs within this object
      */
 
@@ -237,7 +200,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
       }
     }
 
-    /*
+    /* 
      * name of this level in the topology and the succession of children
      * level that have only one parent.
      */
@@ -259,7 +222,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
       else{
         strcat(description, type_name[from]);
       }
-
+  
       (*level_name)[i] = (char *)malloc(strlen(description) +1);
       MEMORY_ERROR((*level_name)[i]);
       strcpy((*level_name)[i], description);
@@ -309,11 +272,11 @@ uint64_t *local_memory=NULL, *total_memory=NULL;
 char **type_name=NULL;
 
   MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(zoltan_get_global_comm(), &rank);
 
   depth = Zoltan_Get_Topology(&branching_degree, &num_cpus, &type_name, &total_memory, &local_memory);
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
 
   if (rank == 0){
 
@@ -325,7 +288,7 @@ char **type_name=NULL;
         printf("  %d %s (%d total CPUs) %swith\n",
               branching_degree[i-1], type_name[i],num_cpus[i],
               ((num_cpus[i] > 1) ? "each " : ""));
-      }
+      } 
       else{
         printf("  %d %s\n", branching_degree[i-1], type_name[i]);
       }
@@ -346,7 +309,7 @@ char **type_name=NULL;
       for (i=0; i < depth; i++){
         printf("Memory at level %s: (%f10.0KB, %f10.0KB)\n",
          type_name[i],(float)total_memory[i]/1024.0,(float)local_memory[i]/1024.0);
-      }
+      } 
     }
     else{
         printf("Memory available at each level is not available\n");
@@ -355,7 +318,7 @@ char **type_name=NULL;
 
   /* Allocated cpusets can be freed with hwloc_cpuset_free() */
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
   MPI_Finalize();
 
   return 0;

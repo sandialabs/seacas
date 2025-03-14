@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
@@ -100,25 +63,25 @@ int Zoltan_HG_HGraph_Free(
 {
   if (hg){
 /*
-    Zoltan_Multifree (__FILE__, __LINE__, 11,
+    Zoltan_Multifree (__FILE__, __LINE__, 11, 
      &hg->coor, &hg->vwgt, &hg->ewgt,
      &hg->hindex, &hg->hvertex, &hg->vindex, &hg->vedge, &hg->dist_x,
      &hg->dist_y, &hg->vmap, &hg->fixed);
 */
 
-    ZOLTAN_FREE(&hg->esize);
-    ZOLTAN_FREE(&hg->coor);
-    ZOLTAN_FREE(&hg->vwgt);
+    ZOLTAN_FREE(&hg->esize); 
+    ZOLTAN_FREE(&hg->coor); 
+    ZOLTAN_FREE(&hg->vwgt); 
     ZOLTAN_FREE(&hg->ewgt);
-    ZOLTAN_FREE(&hg->hindex);
-    ZOLTAN_FREE(&hg->hvertex);
-    ZOLTAN_FREE(&hg->vindex);
-    ZOLTAN_FREE(&hg->vedge);
+    ZOLTAN_FREE(&hg->hindex); 
+    ZOLTAN_FREE(&hg->hvertex); 
+    ZOLTAN_FREE(&hg->vindex); 
+    ZOLTAN_FREE(&hg->vedge); 
     ZOLTAN_FREE(&hg->dist_x);
-    ZOLTAN_FREE(&hg->dist_y);
-    ZOLTAN_FREE(&hg->vmap);
+    ZOLTAN_FREE(&hg->dist_y); 
+    ZOLTAN_FREE(&hg->vmap); 
     ZOLTAN_FREE(&hg->fixed_part);
-    ZOLTAN_FREE(&hg->pref_part);
+    ZOLTAN_FREE(&hg->pref_part); 
   }
   return ZOLTAN_OK;
 }
@@ -160,7 +123,7 @@ int Zoltan_HG_Info (
       }
       printf("Vertex weights   :    %9.2f %9.2f %9.2f %12.2f\n", wgt_min,
        wgt_tot/hg->nVtx, wgt_max, wgt_tot);
-
+  
       mean = var = 0.0;
       if (hg->nVtx > 1) {
         mean = wgt_tot / hg->nVtx;
@@ -171,7 +134,7 @@ int Zoltan_HG_Info (
         var = sqrt(var/(hg->nVtx-1));
         printf ("Vertex Stats: stdev %.2f,   Coef of Var %.2f\n", var, var/mean);
       }
-
+  
       count=0;
       temp=0.0;
       for (i = 0; i < hg->nVtx; i++)
@@ -263,7 +226,7 @@ int Zoltan_HG_Info (
 
 void Zoltan_HG_Mirror(
   int inlength,     /* Input:  either nVtx or nEdge */
-  int *inindex,     /* Input:  index array, either vindex or hindex;
+  int *inindex,     /* Input:  index array, either vindex or hindex; 
                                length = inlength+1  */
   int *indata,      /* Input:  non-zeros array, either vedge or hvertex;
                                length = nPins */
@@ -274,8 +237,8 @@ void Zoltan_HG_Mirror(
                                length = nPins */
 )
 {
-/* Routine to invert arrays describing vertices and edges.
- * Usually called by Zoltan_HG_Create_Mirror, with arguments
+/* Routine to invert arrays describing vertices and edges. 
+ * Usually called by Zoltan_HG_Create_Mirror, with arguments 
  * determined by Zoltan_HG_Create_Mirror.
  * Arrays must be allocated to correct size before calling
  * the function.
@@ -368,7 +331,7 @@ int Zoltan_HG_Create_Mirror (
     return ZOLTAN_FATAL;  /* unable to proceed */
   }
 
-  Zoltan_HG_Mirror(inlength, index, data,
+  Zoltan_HG_Mirror(inlength, index, data, 
                     outlength, outindex, outdata);
 
   ZOLTAN_TRACE_EXIT(zz, yo);
@@ -400,7 +363,7 @@ int Zoltan_HG_Check (
   ZOLTAN_TRACE_ENTER(zz, yo);
 
   if ((hg->nEdge && !hg->hindex) ||
-      (hg->nVtx && !hg->vindex) ||
+      (hg->nVtx && !hg->vindex) || 
       (hg->nPins && (!hg->vedge || !hg->hvertex))) {
     ZOLTAN_PRINT_WARN(zz->Proc, yo, "NULL arrays found");
     err = ZOLTAN_WARN;
@@ -451,7 +414,7 @@ int Zoltan_HG_Check (
       err = ZOLTAN_WARN;
     }
 
-  if (hg->comm && hg->comm->nProc_x == 1) {
+  if (hg->comm && hg->comm->nProc_x == 1) { 
     /* In 2D distribution, check makes sense only if proc has entire hedge */
     for (i = 0; i < hg->nEdge; i++)
       if (hg->hindex[i+1] == hg->hindex[i]) {
@@ -486,10 +449,10 @@ int Zoltan_HG_Check (
         /* for each vertex of current hyperedge get index to hyperedges */
         if (hg->vedge[k] == iedge)    /* does it match with original edge? */
           break;
-      if (k == hg->vindex[hg->hvertex[j]+1]) {
+      if (k == hg->vindex[hg->hvertex[j]+1]) { 
         /* if no match was found then failure, else keep on */
         ZOLTAN_PRINT_WARN(zz->Proc, yo, "Inconsistent hvertex/vedge");
-        err = ZOLTAN_WARN;
+        err = ZOLTAN_WARN;                    
         break;
       }
     }
@@ -513,7 +476,7 @@ void Zoltan_HG_Print(
 {
 /* Routine to print hypergraph weights and edges. Assumes serial execution;
  * put inside Zoltan_Print_Sync_Start/Zoltan_Print_Sync_End for parallel
- * programs.
+ * programs. 
  */
 int i, j;
 int num_vwgt;
@@ -531,14 +494,14 @@ char *yo = "Zoltan_HG_Print";
 
   sum = (float *) ZOLTAN_MALLOC(MAX(num_vwgt, num_ewgt) * sizeof(float));
 
-  fprintf(fp, "%s nVtx=%d nEdge=%d nPins=%d vWgt=%d eWgt=%d\n",
-          str, hg->nVtx, hg->nEdge, hg->nPins,
+  fprintf(fp, "%s nVtx=%d nEdge=%d nPins=%d vWgt=%d eWgt=%d\n", 
+          str, hg->nVtx, hg->nEdge, hg->nPins, 
           hg->VtxWeightDim, hg->EdgeWeightDim);
 
   /* Print Vertex Info */
   fprintf(fp, "%s Vertices:  (edges)\n", str);
   for (i = 0; i < hg->nVtx; i++) {
-    fprintf(fp, "%d (" ZOLTAN_GNO_SPEC ") in part %d:  ",
+    fprintf(fp, "%d (" ZOLTAN_GNO_SPEC ") in part %d:  ", 
             i, VTX_LNO_TO_GNO(hg, i), (parts ? parts[i] : -1));
     fprintf(fp, "(");
     for (j = hg->vindex[i]; j < hg->vindex[i+1]; j++)
@@ -665,7 +628,7 @@ void Zoltan_Input_HG_Init(ZHG *zhg)
   zhg->numHEdges= NULL;
 
   zhg->coor = NULL;
-
+  
   zhg->fixed = NULL;
 
   zhg->GnRepartVtx = 0;

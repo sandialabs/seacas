@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_File_get_type_extent(MPI_File fh, MPI_Datatype datatype,
+int MPI_File_get_type_extent(MPI_File fh, MPI_Datatype datatype, 
                              MPI_Aint *extent)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_type_extent (fh, datatype, extent);
+  return PMPI_File_get_type_extent (fh, datatype, extent); 
 }
+

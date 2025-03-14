@@ -18,3 +18,4 @@ int MPI_Test_cancelled(MPI_Status *status, int *flag) {
   _MPI_COVERAGE();
   return PMPI_Test_cancelled(status, flag);
 }
+

@@ -14,9 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_Graph_map ( MPI_Comm comm_old, int nnodes, int *index, int *edges,
+int MPI_Graph_map ( MPI_Comm comm_old, int nnodes, int *index, int *edges, 
                    int *newrank )
 {
   _MPI_COVERAGE();
   return PMPI_Graph_map (comm_old, nnodes, index, edges, newrank);
 }
+

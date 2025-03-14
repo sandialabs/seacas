@@ -1,4 +1,12 @@
-/*
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
+/* 
 *   Matrix Market I/O library for ANSI C
 *
 *   See http://math.nist.gov/MatrixMarket for details.
@@ -91,7 +99,7 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 
    MM_matrix_typecode: 4-character sequence
 
-				    ojbect 		sparse/   	data        storage
+				    ojbect 		sparse/   	data        storage 
 						  		dense     	type        scheme
 
    string position:	 [0]        [1]			[2]         [3]
@@ -106,7 +114,7 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 #define MM_MTX_STR		"matrix"
 #define MM_ARRAY_STR	"array"
 #define MM_DENSE_STR	"array"
-#define MM_COORDINATE_STR "coordinate"
+#define MM_COORDINATE_STR "coordinate" 
 #define MM_SPARSE_STR	"coordinate"
 #define MM_COMPLEX_STR	"complex"
 #define MM_REAL_STR		"real"

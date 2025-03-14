@@ -15,9 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_Allreduce ( void *sendbuf, void *recvbuf, int count,
+int MPI_Allreduce ( void *sendbuf, void *recvbuf, int count, 
                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   _MPI_COVERAGE();
   return PMPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
 }
+

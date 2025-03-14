@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -116,11 +79,11 @@ int Zoltan_HSFC_Box_Assign (
       }
 
    if (d->tran.Target_Dim > 0){   /* It must be 1 or 2 */
-     /*
+     /* 
       * Degenerate geometry:
       * Transform query box into coordinates that were used for partitioning,
-      * and place an axis aligned bounding box around it.  This box in the new
-      * coordinates may encompass more "dots" than did the original box, but
+      * and place an axis aligned bounding box around it.  This box in the new 
+      * coordinates may encompass more "dots" than did the original box, but 
       * it won't miss any dots.
       */
      lo[0] = xlo; lo[1] = ylo; lo[2] = zlo;
@@ -138,7 +101,7 @@ int Zoltan_HSFC_Box_Assign (
        dim = d->tran.Target_Dim;
      }
      else if (d->tran.Target_Dim == 1){
-       /*
+       /* 
         * Don't let Point_Assign transform coordinates (we already
         * did that) or remap partition numbers (we'll do that at "fini").
         */
@@ -152,7 +115,7 @@ int Zoltan_HSFC_Box_Assign (
        for (i = n; i <= loop; i++)  /* loop < n */
           part_array[i] = 1;
        d->tran.Target_Dim = 1;
-       d->ndimension = dim;
+       d->ndimension = dim;       
        zz->LB.Remap = remap;
        goto fini;
      }
@@ -324,7 +287,7 @@ static double next_query_2d (ZZ *zz, double *lquerybox, double *hquerybox,
    /* convert floating minimum query hilbert coordinate to integer */
    start[1] = (unsigned int) (modf (s * (double) IMAX, &t) * (double) IMAX);
    start[0] = (unsigned int) t;
-
+   
    /* initializations before starting main loop */
    state = 0;
    prune = 1;
@@ -397,7 +360,7 @@ static double next_query_2d (ZZ *zz, double *lquerybox, double *hquerybox,
          /* discard results below backtrack level */
          keyx &= ~(IMAX >> savelevel);
          keyy &= ~(IMAX >> savelevel);
-
+         
          nptx &= ~(IMAX >> savelevel);
          nptx &= ~(IMAX >> savelevel);
          }
@@ -490,7 +453,7 @@ static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
       x = ((nptx | temp) > qhix) ? qhix : (nptx | temp);
       y = ((npty | temp) > qhiy) ? qhiy : (npty | temp);
       z = ((nptz | temp) > qhiz) ? qhiz : (nptz | temp);
-      intersect_hi = ((x >> (29-level)) & 4)
+      intersect_hi = ((x >> (29-level)) & 4) 
                    | ((y >> (30-level)) & 2)
                    | ((z >> (31-level)) & 1);
 
@@ -498,7 +461,7 @@ static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
       x = ((nptx & temp) < qlox) ? qlox : (nptx & temp);
       y = ((npty & temp) < qloy) ? qloy : (npty & temp);
       z = ((nptz & temp) < qloz) ? qloz : (nptz & temp);
-      intersect_lo = ((x >> (29-level)) & 4)
+      intersect_lo = ((x >> (29-level)) & 4) 
                    | ((y >> (30-level)) & 2)
                    | ((z >> (31-level)) & 1);
 
@@ -571,7 +534,7 @@ static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
    for (i = 0; i < MAXLEVEL; i++)  {
       start[0] = (start[0] << 3) | (start[1] >> 29);
       start[1] = (start[1] << 3) | ((keyx >> (29-i)) & 4)
-                                 | ((keyy >> (30-i)) & 2)
+                                 | ((keyy >> (30-i)) & 2) 
                                  | ((keyz >> (31-i)) & 1);
       }
    return ldexp ((double) start[0], -22) + ldexp((double) start[1], -54);

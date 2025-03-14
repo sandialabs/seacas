@@ -15,49 +15,6 @@
 
 @SET_MAKE@
 
-# @HEADER
-#
-########################################################################
-#
-#  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
-#                  Copyright 2012 Sandia Corporation
-#
-# Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-# the U.S. Government retains certain rights in this software.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the Corporation nor the names of the
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Questions? Contact Karen Devine	kddevin@sandia.gov
-#                    Erik Boman	        egboman@sandia.gov
-#
-########################################################################
-#
-# @HEADER
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -300,7 +257,7 @@ ZOLTAN_TESTS = \
     test/runtests \
     test/ctest_zoltan.pl \
     test/ch_simple \
-    test/hg_simple
+    test/hg_simple 
 
 ZOLTAN_DOCS = \
     doc/Zoltan_html/Zoltan.html \
@@ -416,7 +373,7 @@ ZOLTAN_DOCS = \
     doc/Zoltan_html/ug_html/ug_util.html \
     doc/Zoltan_html/ug_html/ug_util_comm.html \
     doc/Zoltan_html/ug_html/ug_util_dd.html \
-    doc/Zoltan_html/ug_html/ug_util_mem.html
+    doc/Zoltan_html/ug_html/ug_util_mem.html 
 
 ZOLTAN_SAMPLE = \
        SampleConfigurationScripts/mac_osX_no_fortran \
@@ -446,11 +403,11 @@ EXTRA_DIST = config/generate-makeoptions.pl \
        Disclaimer GNU_Lesser_GPL.txt Known_Problems VERSION \
        $(ZOLTAN_DOCS) $(ZOLTAN_SAMPLE) $(ZOLTAN_TESTS)
 
-AUX_DIST = config/install-sh config/missing config/mkinstalldirs
+AUX_DIST = config/install-sh config/missing config/mkinstalldirs 
 MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 	configure config.status config.log \
 	src/common/config-h.in src/common/stamp-h.in \
-	$(AUX_DIST)
+	$(AUX_DIST) 
 
 
 #We now build tests and examples through separate make targets, rather than
@@ -460,11 +417,11 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #tarball.
 
 #Add this later
-@SUB_TEST_TRUE@TEST_SUBDIR =
+@SUB_TEST_TRUE@TEST_SUBDIR = 
 @SUB_EXAMPLE_TRUE@EXAMPLE_SUBDIR = example
 @HAVE_MPI_FALSE@SIMPI_SUBDIR = siMPI
-@HAVE_MPI_TRUE@SIMPI_SUBDIR =
-SUBDIRS = $(SIMPI_SUBDIR) src $(EXAMPLE_SUBDIR) $(TEST_SUBDIR)
+@HAVE_MPI_TRUE@SIMPI_SUBDIR = 
+SUBDIRS = $(SIMPI_SUBDIR) src $(EXAMPLE_SUBDIR) $(TEST_SUBDIR) 
 TRILINOS_HOME_DIR = @abs_top_srcdir@/../..
 TRILINOS_BUILD_DIR = @abs_top_builddir@/../..
 TRILINOS_MPI_MAX_PROC = 4
@@ -514,7 +471,7 @@ src/include/Zoltan_config.h: src/include/stamp-h1
 src/include/stamp-h1: $(top_srcdir)/src/include/Zoltan_config.h.in $(top_builddir)/config.status
 	@rm -f src/include/stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status src/include/Zoltan_config.h
-$(top_srcdir)/src/include/Zoltan_config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/src/include/Zoltan_config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f src/include/stamp-h1
 	touch $@
@@ -1049,7 +1006,7 @@ runtests-mpi :
   --verbosity=1 \
   --packages=zoltan
 
-@USING_EXPORT_MAKEFILES_TRUE@install-exec-hook:
+@USING_EXPORT_MAKEFILES_TRUE@install-exec-hook:	
 @USING_EXPORT_MAKEFILES_TRUE@	mkdir -p $(DESTDIR)$(includedir)
 @USING_EXPORT_MAKEFILES_TRUE@	cp $(top_builddir)/Makefile.export.zoltan $(DESTDIR)$(includedir)/.
 @USING_EXPORT_MAKEFILES_TRUE@	$(PERL_EXE) $(top_srcdir)/config/replace-install-prefix.pl \

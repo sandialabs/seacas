@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 /***************************************************************
   File   : zcoldrive.c
   Date   :
@@ -84,7 +47,7 @@ struct edge neig[8] = {
 };
 
 typedef struct {
-    int        stencil; /* for 5, 7 and 9-point, 4, 6 and 8 edges will be created, respectively,
+    int        stencil; /* for 5, 7 and 9-point, 4, 6 and 8 edges will be created, respectively, 
                            hence stencil value will be 4, 6 or 8 */
 
     int        procR, procC; /* proc mesh is R x C  */
@@ -96,7 +59,7 @@ typedef struct {
     int        numredge;
     int        *redgeto; /* if beta>0; contains end point of my random edges;
                             redgeto[lID(i,j)] = -1 means no random edge,
-                                                    >= 0 points to end point */
+                                                    >= 0 points to end point */    
 } UZData;
 
 extern unsigned int Zoltan_Rand_InRange(unsigned int *, unsigned int);
@@ -106,7 +69,7 @@ double u_wseconds(void)
  struct timeval tp;
 
  gettimeofday(&tp, NULL);
-
+ 
  return (double) tp.tv_sec + (double) tp.tv_usec / 1000000.0;
 }
 
@@ -114,9 +77,9 @@ double u_wseconds(void)
 static int get_number_of_objects(void *data, int *ierr)
 {
     UZData *uz = (UZData *) data;
-
+    
     *ierr = ZOLTAN_OK;
-
+    
     return (uz->_er-uz->_sr) * (uz->_ec-uz->_sc);
 }
 
@@ -127,7 +90,7 @@ static void get_object_list(void *data, int sizeGID, int sizeLID,
     UZData *uz = (UZData *) data;
     int i, j, next=0;
 
-  /* By setting parameters, I previously gave the Zoltan library
+  /* By setting parameters, I previously gave the Zoltan library 
    * the length of my global IDs, local IDs, and object weights.
    */
 
@@ -146,8 +109,8 @@ static void get_object_list(void *data, int sizeGID, int sizeLID,
                 fprintf(stderr, "umit something is wrong lID(%d, %d) is %d but next is %d\n", i, j, lID(i, j), next);
                 exit(1);
             }
-
-#if 0
+                
+#if 0            
             if (wgt_dim>0)
                 obj_wgts[next] = uz->stencil;  /* weight */
 #endif
@@ -160,7 +123,7 @@ static void get_object_list(void *data, int sizeGID, int sizeLID,
 
 /* let's keep this in the code for now; may be we'll use it later */
 #if 0
-/*
+/* 
  **************************************************************
  * Prototype: ZOLTAN_NUM_GEOM_FN
  * Return the dimension of a vertex, for geometric methods
@@ -172,7 +135,7 @@ static int get_num_geometry(void *data, int *ierr)
   return 2;
 }
 
-/*
+/* 
  **************************************************************
  * Prototype: ZOLTAN_GEOM_MULTI_FN
  * Return the coordinates of my objects (vertices), for
@@ -186,7 +149,7 @@ static void get_geometry_list(void *data, int sizeGID, int sizeLID,
 {
     UZData *uz = (UZData *) data;
     int i, j, next=0;
-
+    
     if ( (sizeGID != 1) || (sizeLID != 1) || (num_dim != 2)){
         *ierr = ZOLTAN_FATAL;
         return;
@@ -202,7 +165,7 @@ static void get_geometry_list(void *data, int sizeGID, int sizeLID,
 }
 #endif
 
-/*
+/* 
  **************************************************************
  * Prototype: ZOLTAN_NUM_EDGES_MULTI_FN
  * Return the number of edges for each vertex in the ID lists.
@@ -216,12 +179,12 @@ static void get_num_edges_list(void *data, int sizeGID, int sizeLID,
 {
     UZData *uz = (UZData *) data;
     int i, id, r, c, r2, c2, edgecnt, e;
-
+    
     if ( (sizeGID != 1) || (sizeLID != 1)){
         *ierr = ZOLTAN_FATAL;
         return;
     }
-
+    
     for (i=0;  i < num_obj ; ++i){
         id = globalID[i];
         r = getR(id);
@@ -236,7 +199,7 @@ static void get_num_edges_list(void *data, int sizeGID, int sizeLID,
             for (e=0; e<uz->stencil; ++e) {
                 r2 = r+neig[e].r;
                 c2 = c+neig[e].c;
-
+                
                 if (r2>=0 && r2<uz->meshR &&
                     c2>=0 && c2<uz->meshC)
                     ++edgecnt;
@@ -245,30 +208,30 @@ static void get_num_edges_list(void *data, int sizeGID, int sizeLID,
         } else /* internal vertices always have all the edges */
             numEdges[i] = uz->stencil;
         if (uz->redgeto && (uz->redgeto[i]>=0))
-            ++numEdges[i];
+            ++numEdges[i];        
     }
-
+    
     *ierr = ZOLTAN_OK;
 }
-/*
+/* 
 **************************************************************
  * Prototype: ZOLTAN_EDGE_LIST_MULTI_FN
  * For every vertex in the ID list, return a list of all its
  * adjacent vertices, and the processes on which they reside.
  * Also include the edge weights if any.
- * For graph methods.
+ * For graph methods.  
  **************************************************************
  */
 static void get_edge_list(void *data, int sizeGID, int sizeLID,
         int num_obj, ZOLTAN_ID_PTR globalID, ZOLTAN_ID_PTR localID,
-        int *num_edges,
+        int *num_edges, 
         ZOLTAN_ID_PTR nborGID, int *nborProc,
         int wgt_dim, float *ewgts, int *ierr)
 {
     UZData *uz = (UZData *) data;
     int i, id, r, c, r2, c2, e;
 
-    ZOLTAN_ID_PTR nextID;
+    ZOLTAN_ID_PTR nextID; 
     int *nextProc;
 
     if ( (sizeGID != 1) || (sizeLID != 1) ||
@@ -276,7 +239,7 @@ static void get_edge_list(void *data, int sizeGID, int sizeLID,
         *ierr = ZOLTAN_FATAL;
         return;
     }
-
+    
     nextID = nborGID;
     nextProc = nborProc;
 
@@ -290,26 +253,26 @@ static void get_edge_list(void *data, int sizeGID, int sizeLID,
         for (e=0; e<uz->stencil; ++e) {
             r2 = r+neig[e].r;
             c2 = c+neig[e].c;
-
+            
             if (r2>=0 && r2<uz->meshR &&
                 c2>=0 && c2<uz->meshC) {
                 *nextID++ = gID(r2, c2);
                 *nextProc++ = pID(r2/(uz->meshR/uz->procR), c2/(uz->meshC/uz->procC));
                 /* printf(" %d (%d, %d) [%d] ", *(nextID-1), r2, c2, *(nextProc-1)); */
             }
-
+            
         }
         if (uz->redgeto && (uz->redgeto[i]>=0)) {
             r2 = getR(uz->redgeto[i]);
             c2 = getC(uz->redgeto[i]);
-
+            
             *nextID++ = gID(r2, c2);
             *nextProc++ = pID(r2/(uz->meshR/uz->procR), c2/(uz->meshC/uz->procC));
             /* printf(" %d (%d, %d) [%d] ", *(nextID-1), r2, c2, *(nextProc-1)); */
         }
         /* printf("\n"); */
-
-        *ierr = ZOLTAN_OK;
+        
+        *ierr = ZOLTAN_OK;       
     }
 }
 
@@ -336,10 +299,10 @@ void saveColor(char *exename, UZData *uz, int *gid_list, int *color, int ngids)
     if (!uz->myRank)
         printf("Saving the colors in file '%s'\n", fname);
     fp = fopen(fname, "w");
-    for (i=0; i<ngids; ++i)
+    for (i=0; i<ngids; ++i) 
         fprintf(fp, "%d %d\n", gid_list[i], color[i]);
     fclose(fp);
-
+            
 }
 #endif
 
@@ -361,7 +324,7 @@ int main(int argc, char *argv[])
     double times[9]={0.,0.,0.,0.,0.,0.,0.,0.}; /* Used for timing measurements */
     double gtimes[9]={0.,0.,0.,0.,0.,0.,0.,0.}; /* Used for timing measurements */
 
-
+    
     /******************************************************************
      ** Initialize MPI and Zoltan
      ******************************************************************/
@@ -372,7 +335,7 @@ int main(int argc, char *argv[])
 
     MPI_Barrier(MPI_COMM_WORLD);
     times[0] = u_wseconds();
-
+    
     rc = Zoltan_Initialize(argc, argv, &ver);
     if (rc != ZOLTAN_OK){
         fprintf(stderr, "Sorry Zoltan initialize failed...\n");
@@ -380,14 +343,14 @@ int main(int argc, char *argv[])
     }
 
     zz = Zoltan_Create(MPI_COMM_WORLD);
-
+        
     if (argc<3 && !uz.myRank) {
         fprintf(stderr, "usage: %s [meshR] [meshC] [X-point stencil] [procR] [procC] [ws-beta] [<ZoltanParam>=<Val>] ...\n\n", argv[0]);
         fprintf(stderr, "ws-beta: is the probablity of adding an edge to a vertex to generate Watts-Strogatz graphs\n");
         fprintf(stderr, "Valid values for Stencil are 5, 7 and 9\n");
         fprintf(stderr, "Zoltan Coloring Parameters and values are\n");
         fprintf(stderr, "\tDISTANCE        : 1 or 2\n");
-        fprintf(stderr, "\tSUPERSTEP_SIZE  : suggested >= 100\n");
+        fprintf(stderr, "\tSUPERSTEP_SIZE  : suggested >= 100\n"); 
         fprintf(stderr, "\tCOMM_PATTERN    : S or A\n");
         fprintf(stderr, "\tCOLOR_ORDER     : I, B, U\n");
         fprintf(stderr, "\tCOLORING_METHOD : F (for now)\n");
@@ -416,7 +379,7 @@ int main(int argc, char *argv[])
         uz.procC = atoi(argv[5]);
     if (uz.procR <= 0 || uz.procC <= 0)
         computeProcMesh(&uz);
-
+    
     if (uz.procR*uz.procC!=uz.numProcs) {
         fprintf(stderr, "#Procs=%d but requested %dx%d Proc Mesh Partitioning...\n", uz.numProcs, uz.procR, uz.procC);
         goto End;
@@ -426,7 +389,7 @@ int main(int argc, char *argv[])
         uz.beta = atof(argv[6]);
     else
         uz.beta = 0.0;
-
+    
     /* compute which part of mesh I will compute */
     uz.myR = uz.myRank / uz.procC;
     uz.myC = uz.myRank % uz.procC;
@@ -450,7 +413,7 @@ int main(int argc, char *argv[])
     uz.redgeto = NULL;
     if (uz.beta>0) { /* create random edges for WS graph */
         int nlvtx= (uz._er-uz._sr) * (uz._ec-uz._sc), ngvtx=uz.meshC*uz.meshR, trsh=(int) (uz.beta*100.0);
-
+        
         uz.redgeto = (int *) malloc(nlvtx*sizeof(int));
         for (i=0; i<nlvtx; ++i) {
             int rv = Zoltan_Rand_InRange(NULL, 100);
@@ -462,7 +425,7 @@ int main(int argc, char *argv[])
         }
     }
     times[2] = u_wseconds();
-
+    
     /* printf("My rank %d/%d at proc-mesh loc (%d, %d) generating [%d, %d) x [%d, %d) + %d random edges\n", uz.myRank, uz.numProcs, uz.myR, uz.myC, uz._sr, uz._er, uz._sc, uz._ec, uz.numredge); */
 
 
@@ -479,7 +442,7 @@ int main(int argc, char *argv[])
 #endif
 
     Zoltan_Set_Param(zz, "DEBUG_LEVEL", "3");
-    Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1");
+    Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
     Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "1");
     Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "0");
 
@@ -502,7 +465,7 @@ int main(int argc, char *argv[])
     }
 
 
-#if 0
+#if 0    
     /* Graph parameters */
     Zoltan_Set_Param(zz, "CHECK_GRAPH", "2");
 #endif
@@ -519,11 +482,11 @@ int main(int argc, char *argv[])
 
     if (!uz.myRank) {
         printf("EdgeCut   Min=%8.0f  Max=%8.0f  Sum=%8.0f\n", graph.cuts[EVAL_GLOBAL_MIN], graph.cuts[EVAL_GLOBAL_MAX], graph.cuts[EVAL_GLOBAL_SUM]);
-        printf("#Vertices Min=%8.0f  Max=%8.0f  Sum=%8.0f imbal=%.2f\n", graph.nobj[EVAL_GLOBAL_MIN], graph.nobj[EVAL_GLOBAL_MAX], graph.nobj[EVAL_GLOBAL_SUM], graph.obj_imbalance);
+        printf("#Vertices Min=%8.0f  Max=%8.0f  Sum=%8.0f imbal=%.2f\n", graph.nobj[EVAL_GLOBAL_MIN], graph.nobj[EVAL_GLOBAL_MAX], graph.nobj[EVAL_GLOBAL_SUM], graph.obj_imbalance);        
     }
 #endif
 #endif
-
+    
 
     /* now color */
     ngids = get_number_of_objects(&uz, &rc);
@@ -535,9 +498,9 @@ int main(int argc, char *argv[])
         for (j=uz._sc; j<uz._ec; ++j) {
             gid_list[next++] = i*uz.meshC + j;
         }
-    }
+    }    
 #endif
-    color = (int *) malloc(sizeof(int) * ngids);
+    color = (int *) malloc(sizeof(int) * ngids);    
 
     MPI_Barrier(MPI_COMM_WORLD);
     times[3] = u_wseconds();
@@ -548,8 +511,8 @@ int main(int argc, char *argv[])
                       ngids,           /* #objects to color in this proc */
                       gid_list,        /* global ids of colored vertices */
                       NULL,            /* we ignore local ids */
-                      color);          /* result color */
-#else
+                      color);          /* result color */    
+#else    
     rc = Zoltan_Color(zz, /* input (all remaining fields are output) */
                       1,  /* Number of integers used for a global ID */
                       ngids,           /* #objects to color in this proc */
@@ -560,7 +523,7 @@ int main(int argc, char *argv[])
     times[4] = u_wseconds();
     MPI_Reduce(times, gtimes, 5, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-    if (rc != ZOLTAN_OK)
+    if (rc != ZOLTAN_OK) 
         fprintf(stderr, "Zoltan_Color failed with return code %d...\n", rc);
 
     for (maxcol=i=0; i<ngids; ++i)
@@ -569,7 +532,7 @@ int main(int argc, char *argv[])
     MPI_Reduce(&maxcol, &ncolors, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
     if (uz.myRank==0) {
         struct rusage usage;
-
+        
         printf("%s setup             Proc-0: %8.2lf   Max: %8.2lf\n", argv[0], times[1]-times[0], gtimes[1]-gtimes[0]);
         printf("%s gen rand edges    Proc-0: %8.2lf   Max: %8.2lf\n", argv[0], times[2]-times[1], gtimes[2]-gtimes[1]);
         printf("%s set gids          Proc-0: %8.2lf   Max: %8.2lf\n", argv[0], times[3]-times[2], gtimes[3]-gtimes[2]);
@@ -594,7 +557,7 @@ int main(int argc, char *argv[])
     if (uz.redgeto)
         free(uz.redgeto);
 
-End:
+End:    
     Zoltan_Destroy(&zz);
     MPI_Finalize();
 

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -59,13 +22,13 @@ extern "C" {
 /*****************************************************************************/
 /*
  *  This file contains routines implementing the migration-help tools.
- *  These functions are all callable by the application.
+ *  These functions are all callable by the application.  
  */
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
 
-static void printobj(int me, int nprocs,
+static void printobj(int me, int nprocs, 
    int num_import, unsigned int *import_global_ids,
    unsigned int *import_local_ids, int *import_procs, int *import_to_part,
    int num_export, unsigned int *export_global_ids,
@@ -89,8 +52,8 @@ int i, j;
     fprintf(stderr,"\n");
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(zoltan_get_global_comm());
+    MPI_Barrier(zoltan_get_global_comm());
   }
 
 }
@@ -158,15 +121,15 @@ static MPI_Request _request;
 
 int Zoltan_Low_Mem_Migrate(
   ZZ *zz,                      /* Zoltan structure.                  */
-  int num_import,              /* Number of non-local objects assigned to the
+  int num_import,              /* Number of non-local objects assigned to the 
                                   processor in the new decomposition.        */
-  ZOLTAN_ID_PTR import_global_ids, /* Array of global IDs for non-local objects
+  ZOLTAN_ID_PTR import_global_ids, /* Array of global IDs for non-local objects 
                                   assigned to this processor in the new
-                                  decomposition; this field can be NULL if
+                                  decomposition; this field can be NULL if 
                                   the application doesn't provide import IDs.*/
   ZOLTAN_ID_PTR import_local_ids,  /* Array of local IDs for non-local objects
                                   assigned to the processor in the new
-                                  decomposition; this field can be NULL if the
+                                  decomposition; this field can be NULL if the 
                                   application does not provide import IDs.   */
   int *import_procs,           /* Array of processor IDs of processors owning
                                   the non-local objects that are assigned to
@@ -185,7 +148,7 @@ int Zoltan_Low_Mem_Migrate(
                                   objects to be exported to other processors
                                   to establish the new decomposition.        */
   int *export_procs,           /* Array of processor IDs
-                                  to which objects will be exported
+                                  to which objects will be exported 
                                   to establish the new decomposition.        */
   int *export_to_part          /* Array of partition numbers to which exported
                                   objects should be assigned.                */
@@ -218,9 +181,9 @@ int ierr = ZOLTAN_OK;
 
 int num_gid_entries, num_lid_entries;  /* lengths of global & local ids */
 int *sizes = NULL;       /* sizes (in bytes) of the object data for export. */
-int id_size;             /* size (in bytes) of ZOLTAN_GID + padding for
+int id_size;             /* size (in bytes) of ZOLTAN_GID + padding for 
                             alignment                                       */
-int tag_size;            /* size (in bytes) of ZOLTAN_GID + one int
+int tag_size;            /* size (in bytes) of ZOLTAN_GID + one int 
                             (for message size) */
 int aligned_int;         /* size of an int padded for alignment             */
 ZOLTAN_COMM_OBJ *imp_plan = NULL; /* Comm obj built from import lists. */
@@ -253,13 +216,13 @@ MPI_Request request;
 MPI_Status status;
 int need_import_lists = 0;
 int need_export_lists = 0;
-ZOLTAN_ID_PTR mid_migrate_export_gids = NULL;
+ZOLTAN_ID_PTR mid_migrate_export_gids = NULL; 
 ZOLTAN_ID_PTR mid_migrate_export_lids = NULL;
-int *mid_migrate_export_procs = NULL;
+int *mid_migrate_export_procs = NULL; 
 int *mid_migrate_export_parts = NULL;
-ZOLTAN_ID_PTR mid_migrate_import_gids = NULL;
+ZOLTAN_ID_PTR mid_migrate_import_gids = NULL; 
 ZOLTAN_ID_PTR mid_migrate_import_lids = NULL;
-int *mid_migrate_import_procs = NULL;
+int *mid_migrate_import_procs = NULL; 
 int *mid_migrate_import_parts = NULL;
 int inBytes, outBytes, inCount, outCount;
 char *inBuf=NULL, *outBuf=NULL, *tmp;
@@ -282,11 +245,11 @@ intptr_t dummyVal;
    *  Check that all procs use the same id types.
    */
 
-  ierr = check_input(zz,
-                    ((num_export >= 0 && export_to_part) ||
+  ierr = check_input(zz, 
+                    ((num_export >= 0 && export_to_part) || 
                      (num_import >= 0 && import_to_part)),
                      &include_parts);
-  if (ierr != ZOLTAN_OK)
+  if (ierr != ZOLTAN_OK) 
     goto End;
 
   num_gid_entries = zz->Num_GID;
@@ -330,12 +293,12 @@ intptr_t dummyVal;
 
     /* Build the actual export arrays */
     ierr = actual_arrays(zz, num_gid_entries, num_lid_entries,
-                         num_export, export_global_ids, export_local_ids,
-                         export_procs, export_to_part,
+                         num_export, export_global_ids, export_local_ids, 
+                         export_procs, export_to_part, 
                          &actual_num_exp, &actual_exp_gids, &actual_exp_lids,
                          &actual_exp_procs, &actual_exp_to_part,
                          &actual_exp_allocated);
-    if (ierr < 0)
+    if (ierr < 0) 
       goto End;
 
   }
@@ -348,14 +311,14 @@ intptr_t dummyVal;
 
     /* Build the actual import arrays */
     ierr = actual_arrays(zz, num_gid_entries, num_lid_entries,
-                         num_import, import_global_ids, import_local_ids,
-                         import_procs, import_to_part,
+                         num_import, import_global_ids, import_local_ids, 
+                         import_procs, import_to_part, 
                          &actual_num_imp, &actual_imp_gids, &actual_imp_lids,
                          &actual_imp_procs, &actual_imp_to_part,
                          &actual_imp_allocated);
-    if (ierr < 0)
+    if (ierr < 0) 
       goto End;
-
+    
     /* Compute communication map based on imports.  */
     msgtag = 32767;
     ierr = Zoltan_Comm_Create(&imp_plan, actual_num_imp, actual_imp_procs,
@@ -375,10 +338,10 @@ intptr_t dummyVal;
         actual_exp_to_part = (int *) ZOLTAN_MALLOC(sizeof(int)*actual_num_exp);
       if (actual_exp_gids == NULL ||
           (num_lid_entries && actual_exp_lids == NULL) ||
-          actual_exp_procs == NULL ||
+          actual_exp_procs == NULL || 
           (import_to_part != NULL && actual_exp_to_part == NULL)) {
-        Zoltan_Multifree(__FILE__, __LINE__, 4,
-                         &actual_exp_gids, &actual_exp_lids,
+        Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                         &actual_exp_gids, &actual_exp_lids, 
                          &actual_exp_procs, &actual_exp_to_part);
         ierr = ZOLTAN_MEMERR;
         goto End;
@@ -408,7 +371,7 @@ intptr_t dummyVal;
 
     Zoltan_Comm_Info(imp_plan, NULL, NULL, NULL, NULL, NULL, NULL,
                      NULL, NULL, NULL, NULL, NULL, actual_exp_procs, NULL);
-
+ 
     if (include_parts) {
       msgtag2--;
       ierr = Zoltan_Comm_Do(imp_plan, msgtag2, (char *) actual_imp_to_part,
@@ -418,10 +381,10 @@ intptr_t dummyVal;
         goto End;
       }
     }
-
-    /* Create inverse plan (i.e., plan based on exports) so can set
-     * variable sizes.
-     * (Zoltan_Comm_Do_Reverse(imp_plan, ...) allows sending variable
+   
+    /* Create inverse plan (i.e., plan based on exports) so can set 
+     * variable sizes. 
+     * (Zoltan_Comm_Do_Reverse(imp_plan, ...) allows sending variable 
      * but does not tell how large to allocate receive buffer.
      */
     ierr = Zoltan_Comm_Invert_Plan(&imp_plan);
@@ -445,7 +408,7 @@ intptr_t dummyVal;
 
   if (destProcMap < 0){
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Unable to create first map.");
-    ierr = ZOLTAN_FATAL;
+    ierr = ZOLTAN_FATAL; 
     goto End;
   }
 
@@ -470,14 +433,14 @@ intptr_t dummyVal;
      printf("%s (%d) will send objects to %d processes\n", yo, zz->Proc, numDestProcs);
   }
 
-  /* Now create searchable map from process rank to number of GIDs
+  /* Now create searchable map from process rank to number of GIDs 
    */
 
   destProcMap = Zoltan_Map_Create(zz, nprocs, 1, sizeof(int), 1, 0);
 
   if (destProcMap < 0){
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Unable to create second map.");
-    ierr = ZOLTAN_FATAL;
+    ierr = ZOLTAN_FATAL; 
     goto End;
   }
 
@@ -495,7 +458,7 @@ intptr_t dummyVal;
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Unable to search for proc in second map.");
         goto End;
       }
-
+      
       if (dummyPtr != ZOLTAN_NOT_FOUND){
         dummyPtr++;
       }
@@ -526,7 +489,7 @@ intptr_t dummyVal;
       goto End;
     }
     if (zz->Debug_Level >= ZOLTAN_DEBUG_TRACE_DETAIL){
-       printf("%s (%d) pre migrate complete num_import %d num_export %d\n", yo, zz->Proc,
+       printf("%s (%d) pre migrate complete num_import %d num_export %d\n", yo, zz->Proc, 
               num_import, num_export);
     }
   }
@@ -538,7 +501,7 @@ intptr_t dummyVal;
   /*
    * Bucket brigade - at each step, a process receives data from its
    * left and sends data to its right, from and to a different process
-   * each time.
+   * each time. 
    */
 
   start_offset = 1;
@@ -553,14 +516,14 @@ intptr_t dummyVal;
     }
 
     if (*dummyPtr != ZOLTAN_NOT_FOUND) {
-      /*
-       * send myself objects that are going to a different partition on my process
+      /* 
+       * send myself objects that are going to a different partition on my process 
        */
       start_offset = 0;
     }
   }
 
-  for (i=start_offset; i < nprocs; i++){
+  for (i=start_offset; i < nprocs; i++){ 
 
     right = (rank + i) % nprocs;
     left = (nprocs + rank - i) % nprocs;
@@ -568,7 +531,7 @@ intptr_t dummyVal;
     inCount = outCount = 0;   /* number of objects */
     inBytes = outBytes = 0;   /* number of bytes */
     inBuf = outBuf = NULL;
-    mid_migrate_export_gids = mid_migrate_import_gids = NULL;
+    mid_migrate_export_gids = mid_migrate_import_gids = NULL; 
     mid_migrate_export_lids = mid_migrate_import_lids = NULL;
     mid_migrate_export_procs = mid_migrate_import_procs = NULL;
     mid_migrate_export_parts = mid_migrate_import_parts = NULL;
@@ -590,17 +553,17 @@ intptr_t dummyVal;
       outCount = dummyPtr;  /* number of objects I send to "right" */
 
       if (need_export_lists){
-        ierr = pack_message_for_proc(zz, right, outCount,
-                  num_export, export_global_ids, export_local_ids,
+        ierr = pack_message_for_proc(zz, right, outCount, 
+                  num_export, export_global_ids, export_local_ids, 
                   export_procs, export_to_part,
                   tag_size, id_size, aligned_int,
                   &outBuf, &outBytes,
-                  &mid_migrate_export_gids, &mid_migrate_export_lids,
+                  &mid_migrate_export_gids, &mid_migrate_export_lids, 
                   &mid_migrate_export_procs, &mid_migrate_export_parts);
       }
       else{
-        ierr = pack_message_for_proc(zz, right, outCount,
-                  num_export, export_global_ids, export_local_ids,
+        ierr = pack_message_for_proc(zz, right, outCount, 
+                  num_export, export_global_ids, export_local_ids, 
                   export_procs, export_to_part,
                   tag_size, id_size, aligned_int,
                   &outBuf, &outBytes,
@@ -620,7 +583,7 @@ intptr_t dummyVal;
     if (inBytes > 0){
       ierr = get_char_array(zz, inBytes, &_import_buf, &_import_buf_len);
       if (ierr != ZOLTAN_OK){
-        goto End;
+        goto End;  
       }
       inBuf = _import_buf;
     }
@@ -633,10 +596,10 @@ intptr_t dummyVal;
       message_send(comm, right, outBuf, outBytes);   /* ready send */
     }
     else {
-      /*
+      /* 
        * only happens if nprocs < 3, or if proc sends-to/receives-from self
        */
-      if (rank < left){
+      if (rank < left){ 
         message_send(comm, right, outBuf, outBytes);
         message_receive(comm, left, inBuf, inBytes);
       }
@@ -647,20 +610,20 @@ intptr_t dummyVal;
     }
 
     if (zz->Debug_Level >= ZOLTAN_DEBUG_TRACE_DETAIL){
-       printf("%s (%d) send %d to %d, got %d from %d\n", yo, zz->Proc,
+       printf("%s (%d) send %d to %d, got %d from %d\n", yo, zz->Proc, 
               outBytes, right, inBytes, left);
     }
 
-    /*
-     * We have posted the receive from the left.  We don't need the objects from
-     * the left in order to create the import lists.  So we do this computation
+    /* 
+     * We have posted the receive from the left.  We don't need the objects from 
+     * the left in order to create the import lists.  So we do this computation 
      * before waiting for the objects.
      */
     if (need_import_lists){
       ierr = create_import_lists(zz, inBytes, left, num_import,
                   import_global_ids, import_local_ids, import_procs, import_to_part,
                   &inCount,
-                  &mid_migrate_import_gids, &mid_migrate_import_lids,
+                  &mid_migrate_import_gids, &mid_migrate_import_lids, 
                   (import_procs ? &mid_migrate_import_procs : NULL),
                   (import_to_part ? &mid_migrate_import_parts : NULL));
 
@@ -678,17 +641,17 @@ intptr_t dummyVal;
 
     message_wait(inBytes);     /* wait for objects from the left */
 
-    /*
+    /* 
      *  Perform application-specified processing before unpacking the data.
      */
     if (zz->Migrate.Mid_Migrate_PP != NULL) {
       zz->Migrate.Mid_Migrate_PP(zz->Migrate.Mid_Migrate_PP_Data,
                               num_gid_entries, num_lid_entries,
                               inCount,
-                              mid_migrate_import_gids, mid_migrate_import_lids,
+                              mid_migrate_import_gids, mid_migrate_import_lids, 
                               mid_migrate_import_procs, mid_migrate_import_parts,
                               outCount,
-                              mid_migrate_export_gids, mid_migrate_export_lids,
+                              mid_migrate_export_gids, mid_migrate_export_lids, 
                               mid_migrate_export_procs, mid_migrate_export_parts,
                               &ierr);
       if (ierr < 0) {
@@ -701,11 +664,11 @@ intptr_t dummyVal;
     /*
      *  Unpack the object data.
      */
-
+  
     if (inBytes > 0) {
-
+  
       if (zz->Unpack_Obj_Multi != NULL) {
-
+  
         /* Allocate and fill input arrays for Unpack_Obj_Multi. */
 
         ierr = get_int_array(zz, inCount, &_sizes, &_sizes_len);
@@ -728,32 +691,32 @@ intptr_t dummyVal;
         tmp = inBuf;
         idx_cnt = 0;
         for (k = 0; k < inCount; k++) {
-
+  
           /* Unpack the object's global ID */
           ZOLTAN_SET_GID(zz, &(tmp_id[k*num_gid_entries]), (ZOLTAN_ID_PTR) tmp);
           tmp += id_size;
-
+  
           /* Unpack the object's size */
           sizes[k] = *((int *)tmp);
           tmp += aligned_int;
-
+  
           /* If using ZOLTAN_UNPACK_OBJ_MULTI_FN, build the index array. */
           idx_cnt += tag_size;
           if (idx != NULL) {
             idx[k] = idx_cnt;
           }
-
+  
           tmp += sizes[k];
           idx_cnt += sizes[k];
         }
-
+  
         if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
           printf("[%1d] DEBUG in %s: Unpacking objects with multi-fn\n",
                  zz->Proc,yo);
         }
         zz->Unpack_Obj_Multi(zz->Unpack_Obj_Multi_Data, num_gid_entries,
                            inCount, tmp_id, sizes, idx, inBuf, &ierr);
-
+        
         if (ierr < 0) {
           ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error returned from "
                           "ZOLTAN_UNPACK_OBJ_MULTI_FN.");
@@ -769,9 +732,9 @@ intptr_t dummyVal;
             ZOLTAN_PRINT_GID(zz, (ZOLTAN_ID_PTR)tmp);
             printf("size = %d bytes\n", tmp_size);
           }
-
+  
           /* Unpack the object's data */
-
+         
           zz->Unpack_Obj(zz->Unpack_Obj_Data, num_gid_entries,
                          (ZOLTAN_ID_PTR) tmp, tmp_size,
                          tmp + tag_size, &ierr);
@@ -801,7 +764,7 @@ intptr_t dummyVal;
     }
 
     if (zz->Debug_Level >= ZOLTAN_DEBUG_TRACE_DETAIL){
-       printf("%s (%d) post migrate complete num_import %d num_export %d\n", yo, zz->Proc,
+       printf("%s (%d) post migrate complete num_import %d num_export %d\n", yo, zz->Proc, 
               num_import, num_export);
     }
   }
@@ -813,13 +776,13 @@ End:
   reset_arrays();
 
   if (actual_exp_allocated) {
-    Zoltan_Multifree(__FILE__, __LINE__, 4,
-                     &actual_exp_gids, &actual_exp_lids,
+    Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                     &actual_exp_gids, &actual_exp_lids, 
                      &actual_exp_procs, &actual_exp_to_part);
   }
   if (actual_imp_allocated) {
-    Zoltan_Multifree(__FILE__, __LINE__, 4,
-                     &actual_imp_gids, &actual_imp_lids,
+    Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                     &actual_imp_gids, &actual_imp_lids, 
                      &actual_imp_procs, &actual_imp_to_part);
   }
 
@@ -834,15 +797,15 @@ End:
 
 int Zoltan_Migrate(
   ZZ *zz,                      /* Zoltan structure.                  */
-  int num_import,              /* Number of non-local objects assigned to the
+  int num_import,              /* Number of non-local objects assigned to the 
                                   processor in the new decomposition.        */
-  ZOLTAN_ID_PTR import_global_ids, /* Array of global IDs for non-local objects
+  ZOLTAN_ID_PTR import_global_ids, /* Array of global IDs for non-local objects 
                                   assigned to this processor in the new
-                                  decomposition; this field can be NULL if
+                                  decomposition; this field can be NULL if 
                                   the application doesn't provide import IDs.*/
   ZOLTAN_ID_PTR import_local_ids,  /* Array of local IDs for non-local objects
                                   assigned to the processor in the new
-                                  decomposition; this field can be NULL if the
+                                  decomposition; this field can be NULL if the 
                                   application does not provide import IDs.   */
   int *import_procs,           /* Array of processor IDs of processors owning
                                   the non-local objects that are assigned to
@@ -861,7 +824,7 @@ int Zoltan_Migrate(
                                   objects to be exported to other processors
                                   to establish the new decomposition.        */
   int *export_procs,           /* Array of processor IDs
-                                  to which objects will be exported
+                                  to which objects will be exported 
                                   to establish the new decomposition.        */
   int *export_to_part          /* Array of partition numbers to which exported
                                   objects should be assigned.                */
@@ -882,9 +845,9 @@ int Zoltan_Migrate(
 char *yo = "Zoltan_Migrate";
 int num_gid_entries, num_lid_entries;  /* lengths of global & local ids */
 int *sizes = NULL;       /* sizes (in bytes) of the object data for export. */
-int id_size;             /* size (in bytes) of ZOLTAN_GID + padding for
+int id_size;             /* size (in bytes) of ZOLTAN_GID + padding for 
                             alignment                                       */
-int tag_size;            /* size (in bytes) of ZOLTAN_GID + one int
+int tag_size;            /* size (in bytes) of ZOLTAN_GID + one int 
                             (for message size) */
 char *export_buf = NULL; /* buffer for packing export data.                 */
 char *import_buf = NULL; /* buffer for receiving imported data.             */
@@ -893,7 +856,7 @@ int i;                   /* loop counter.                                   */
 int tmp_size;            /* size of a single object's data.                 */
 int *idx = NULL;         /* index used for multi-fn packs and unpacks.      */
 int idx_cnt = 0;         /* index counter for idx array.                    */
-ZOLTAN_ID_PTR tmp_id = NULL; /* pointer to storage for a global ID in comm
+ZOLTAN_ID_PTR tmp_id = NULL; /* pointer to storage for a global ID in comm  
                                 buf  */
 ZOLTAN_ID_PTR lid;       /* temporary pointer to a local ID; used to pass
                             NULL to query functions when NUM_LID_ENTRIES=0. */
@@ -936,11 +899,11 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
    *  Check that all procs use the same id types.
    */
 
-  ierr = check_input(zz,
-                    ((num_export >= 0 && export_to_part) ||
+  ierr = check_input(zz, 
+                    ((num_export >= 0 && export_to_part) || 
                      (num_import >= 0 && import_to_part)),
                      &include_parts);
-  if (ierr != ZOLTAN_OK)
+  if (ierr != ZOLTAN_OK) 
     goto End;
 
   num_gid_entries = zz->Num_GID;
@@ -979,12 +942,12 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
 
     /* Build the actual export arrays */
     ierr = actual_arrays(zz, num_gid_entries, num_lid_entries,
-                         num_export, export_global_ids, export_local_ids,
-                         export_procs, export_to_part,
+                         num_export, export_global_ids, export_local_ids, 
+                         export_procs, export_to_part, 
                          &actual_num_exp, &actual_exp_gids, &actual_exp_lids,
                          &actual_exp_procs, &actual_exp_to_part,
                          &actual_exp_allocated);
-    if (ierr < 0)
+    if (ierr < 0) 
       goto End;
 
     /* Compute communication map based on actual exports.  */
@@ -1002,14 +965,14 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
 
     /* Build the actual import arrays */
     ierr = actual_arrays(zz, num_gid_entries, num_lid_entries,
-                         num_import, import_global_ids, import_local_ids,
-                         import_procs, import_to_part,
+                         num_import, import_global_ids, import_local_ids, 
+                         import_procs, import_to_part, 
                          &actual_num_imp, &actual_imp_gids, &actual_imp_lids,
                          &actual_imp_procs, &actual_imp_to_part,
                          &actual_imp_allocated);
-    if (ierr < 0)
+    if (ierr < 0) 
       goto End;
-
+    
     /* Compute communication map based on imports.  */
     msgtag = 32767;
     ierr = Zoltan_Comm_Create(&imp_plan, actual_num_imp, actual_imp_procs,
@@ -1029,10 +992,10 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
         actual_exp_to_part = (int *) ZOLTAN_MALLOC(sizeof(int)*actual_num_exp);
       if (actual_exp_gids == NULL ||
           (num_lid_entries && actual_exp_lids == NULL) ||
-          actual_exp_procs == NULL ||
+          actual_exp_procs == NULL || 
           (import_to_part != NULL && actual_exp_to_part == NULL)) {
-        Zoltan_Multifree(__FILE__, __LINE__, 4,
-                         &actual_exp_gids, &actual_exp_lids,
+        Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                         &actual_exp_gids, &actual_exp_lids, 
                          &actual_exp_procs, &actual_exp_to_part);
         ierr = ZOLTAN_MEMERR;
         goto End;
@@ -1061,7 +1024,7 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
 
     Zoltan_Comm_Info(imp_plan, NULL, NULL, NULL, NULL, NULL, NULL,
                      NULL, NULL, NULL, NULL, NULL, actual_exp_procs, NULL);
-
+ 
     if (include_parts) {
       msgtag2--;
       ierr = Zoltan_Comm_Do(imp_plan, msgtag2, (char *) actual_imp_to_part,
@@ -1071,10 +1034,10 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
         goto End;
       }
     }
-
-    /* Create inverse plan (i.e., plan based on exports) so can set
-     * variable sizes.
-     * (Zoltan_Comm_Do_Reverse(imp_plan, ...) allows sending variable
+   
+    /* Create inverse plan (i.e., plan based on exports) so can set 
+     * variable sizes. 
+     * (Zoltan_Comm_Do_Reverse(imp_plan, ...) allows sending variable 
      * but does not tell how large to allocate receive buffer.
      */
     ierr = Zoltan_Comm_Invert_Plan(&imp_plan);
@@ -1122,17 +1085,17 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
   ZOLTAN_TRACE_DETAIL(zz, yo, "Done pre-migration processing");
 
   id_size = Zoltan_Align(num_gid_entries * sizeof(ZOLTAN_ID_TYPE));
-  /* Note that alignment is not strictly necessary
+  /* Note that alignment is not strictly necessary 
      when ZOLTAN_ID_TYPE is int or unsigned int. */
   aligned_int = Zoltan_Align(sizeof(int));
   tag_size = id_size + aligned_int;
 
   /*
-   * For each object, allow space for its global ID and its data plus
+   * For each object, allow space for its global ID and its data plus 
    * one int (for the object data size).
    * Zoltan will pack the global IDs; the application must pack the data
    * through the pack routine.  Zoltan needs the global IDs for unpacking,
-   * as the order of the data received during communication is not
+   * as the order of the data received during communication is not 
    * necessarily the same order as import_global_ids[].
    * Zoltan also needs to communicate the sizes of the objects because
    * only the sender knows the size of each object.
@@ -1146,7 +1109,7 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
     }
 
     if (zz->Get_Obj_Size_Multi != NULL) {
-      zz->Get_Obj_Size_Multi(zz->Get_Obj_Size_Multi_Data,
+      zz->Get_Obj_Size_Multi(zz->Get_Obj_Size_Multi_Data, 
                              num_gid_entries, num_lid_entries, actual_num_exp,
                              actual_exp_gids, actual_exp_lids, sizes, &ierr);
       if (ierr < 0) {
@@ -1158,9 +1121,9 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
     else {
       for (i = 0; i < actual_num_exp; i++){
         lid = (num_lid_entries ? &(actual_exp_lids[i*num_lid_entries]) : NULL);
-        sizes[i] = zz->Get_Obj_Size(zz->Get_Obj_Size_Data,
+        sizes[i] = zz->Get_Obj_Size(zz->Get_Obj_Size_Data, 
                        num_gid_entries, num_lid_entries,
-                       &(actual_exp_gids[i*num_gid_entries]),
+                       &(actual_exp_gids[i*num_gid_entries]), 
                        lid, &ierr);
         if (ierr < 0) {
           ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error returned from "
@@ -1196,7 +1159,7 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
     /*
      *  Pack the objects for export.
      */
-
+  
     idx_cnt = 0;
     tmp = export_buf;
     for (i = 0; i < actual_num_exp; i++) {
@@ -1205,7 +1168,7 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
       tmp_id = (ZOLTAN_ID_PTR) tmp;
       ZOLTAN_SET_GID(zz, tmp_id, &(actual_exp_gids[i*num_gid_entries]));
       tmp += id_size;
-
+    
       /* Pack the object's size */
       *((int *)tmp) = sizes[i];
       tmp += aligned_int;
@@ -1221,13 +1184,13 @@ int *actual_imp_to_part = NULL;          /* processor may not be included.  */
 
     if (zz->Pack_Obj_Multi != NULL) {
       if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
-        printf("[%1d] DEBUG in %s: Packing objects with multi-pack\n",
+        printf("[%1d] DEBUG in %s: Packing objects with multi-pack\n", 
                zz->Proc, yo);
       }
       zz->Pack_Obj_Multi(zz->Pack_Obj_Multi_Data,
                          num_gid_entries, num_lid_entries, actual_num_exp,
-                         actual_exp_gids, actual_exp_lids,
-                         (actual_exp_to_part!=NULL ? actual_exp_to_part
+                         actual_exp_gids, actual_exp_lids, 
+                         (actual_exp_to_part!=NULL ? actual_exp_to_part 
                                                    : actual_exp_procs),
                          sizes, idx, export_buf, &ierr);
       if (ierr < 0) {
@@ -1245,15 +1208,15 @@ if (ierr != 0){
         if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
           printf("[%1d] DEBUG in %s: Packing object with gid ", zz->Proc, yo);
           ZOLTAN_PRINT_GID(zz, &(actual_exp_gids[i*num_gid_entries]));
-          printf("size = %d bytes\n", sizes[i]);
+          printf("size = %d bytes\n", sizes[i]); 
         }
 
         /* Pack the object's data */
         lid = (num_lid_entries ? &(actual_exp_lids[i*num_lid_entries]) : NULL);
-        dest = (actual_exp_to_part != NULL ? actual_exp_to_part[i]
+        dest = (actual_exp_to_part != NULL ? actual_exp_to_part[i] 
                                            : actual_exp_procs[i]);
 
-        zz->Pack_Obj(zz->Pack_Obj_Data,
+        zz->Pack_Obj(zz->Pack_Obj_Data, 
                            num_gid_entries, num_lid_entries,
                            &(actual_exp_gids[i*num_gid_entries]), lid, dest,
                            sizes[i], tmp, &ierr);
@@ -1317,7 +1280,7 @@ if (ierr != 0){
 
   ZOLTAN_TRACE_DETAIL(zz, yo, "Done communication");
 
-  /*
+  /* 
    *  Perform application-specified processing before unpacking the data.
    */
   if (zz->Migrate.Mid_Migrate_PP != NULL) {
@@ -1467,13 +1430,13 @@ if (ierr != 0){
 End:
 
   if (actual_exp_allocated) {
-    Zoltan_Multifree(__FILE__, __LINE__, 4,
-                     &actual_exp_gids, &actual_exp_lids,
+    Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                     &actual_exp_gids, &actual_exp_lids, 
                      &actual_exp_procs, &actual_exp_to_part);
   }
   if (actual_imp_allocated) {
-    Zoltan_Multifree(__FILE__, __LINE__, 4,
-                     &actual_imp_gids, &actual_imp_lids,
+    Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                     &actual_imp_gids, &actual_imp_lids, 
                      &actual_imp_procs, &actual_imp_to_part);
   }
 
@@ -1496,8 +1459,8 @@ static int check_input(
   int *include_parts
 )
 {
-/*
- * Routine to ensure that all processors have the same values of
+/* 
+ * Routine to ensure that all processors have the same values of 
  * zz->Num_GID and zz->Num_LID.
  * Also, check whether partitions are included on any processors; if so,
  * set include_parts to true.
@@ -1516,9 +1479,9 @@ int ierr = ZOLTAN_OK;
   loc_tmp[4] = -(zz->Num_LID);
   loc_tmp[5] = -(parts);
 
-  /*
-   * Check both max and min values of IDs so that all processors can
-   * return the same error code.
+  /* 
+   * Check both max and min values of IDs so that all processors can 
+   * return the same error code. 
    */
 
   MPI_Allreduce(loc_tmp, glob, 6,
@@ -1579,9 +1542,9 @@ int ierr;
     goto End;
   }
 
-  if (zz->Migrate.Pre_Migrate_PP || zz->Migrate.Mid_Migrate_PP ||
+  if (zz->Migrate.Pre_Migrate_PP || zz->Migrate.Mid_Migrate_PP || 
       zz->Migrate.Post_Migrate_PP) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
       "Partition information not available in Zoltan_Help_Migrate for "
       "ZOLTAN_*_MIGRATE_PP_FNs; use ZOLTAN_*_MIGRATE_FNs instead.");
     ierr = ZOLTAN_FATAL;
@@ -1605,7 +1568,7 @@ End:
 /****************************************************************************/
 static int actual_arrays(
   ZZ *zz,
-  int num_gid_entries,
+  int num_gid_entries, 
   int num_lid_entries,
   int num,
   ZOLTAN_ID_PTR gids,
@@ -1617,7 +1580,7 @@ static int actual_arrays(
   ZOLTAN_ID_PTR *actual_lids,
   int **actual_procs,
   int **actual_to_part,
-  int *actual_allocated
+  int *actual_allocated 
 )
 {
 char *yo = "actual_arrays";
@@ -1625,7 +1588,7 @@ int i, j;
 
   /*
    *  Test whether to pack objects that have changed partition
-   *  but not changed processor.
+   *  but not changed processor.  
    *  If packing them, the actual objects == objects passed to this function.
    *  If not packing them, build arrays with them stripped out.
    */
@@ -1642,7 +1605,7 @@ int i, j;
   else {  /* zz->Migrate.Only_Proc_Changes */
     /* Pack only objects that are actually changing processor. */
     *actual_num = 0;
-    for (i = 0; i < num; i++)
+    for (i = 0; i < num; i++) 
       if (procs[i] != zz->Proc)
         (*actual_num)++;
 
@@ -1664,22 +1627,22 @@ int i, j;
       if (to_part != NULL)
         *actual_to_part = (int *) ZOLTAN_MALLOC(sizeof(int)*(*actual_num));
       if (*actual_gids == NULL || (num_lid_entries && *actual_lids == NULL) ||
-          *actual_procs == NULL ||
+          *actual_procs == NULL || 
           (to_part != NULL && *actual_to_part == NULL)) {
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory Error.");
-        Zoltan_Multifree(__FILE__, __LINE__, 4,
-                         actual_gids, actual_lids,
+        Zoltan_Multifree(__FILE__, __LINE__, 4, 
+                         actual_gids, actual_lids, 
                          actual_procs, actual_to_part);
         return (ZOLTAN_MEMERR);
       }
-
+   
       for (j = 0, i = 0; i < num; i++) {
         if (procs[i] != zz->Proc) {
-          ZOLTAN_SET_GID(zz,
+          ZOLTAN_SET_GID(zz, 
                         *actual_gids + j*num_gid_entries,
                         gids + i*num_gid_entries);
           if (num_lid_entries)
-            ZOLTAN_SET_LID(zz,
+            ZOLTAN_SET_LID(zz, 
                           *actual_lids + j*num_lid_entries,
                           lids + i*num_lid_entries);
           (*actual_procs)[j] = procs[i];
@@ -1802,19 +1765,19 @@ static void reset_arrays()
 }
 
 static int pack_message_for_proc(ZZ *zz, int dest_proc, int num,
-             int num_export, ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR lids,
-             int *to_proc, int *to_part,
+             int num_export, ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR lids, 
+             int *to_proc, int *to_part, 
              int tag_size, int id_size, int aligned_int,
              char **send_buf, int *send_size,
              ZOLTAN_ID_PTR *export_gids, ZOLTAN_ID_PTR *export_lids, int **export_procs,
-             int **export_parts)
+             int **export_parts) 
 {
   /*
-   * For each object, allow space for its global ID and its data plus
+   * For each object, allow space for its global ID and its data plus 
    * one int (for the object data size).
    * Zoltan will pack the global IDs; the application must pack the data
    * through the pack routine.  Zoltan needs the global IDs for unpacking,
-   * as the order of the data received during communication is not
+   * as the order of the data received during communication is not 
    * necessarily the same order as import_global_ids[].
    * Zoltan also needs to communicate the sizes of the objects because
    * only the sender knows the size of each object.
@@ -1831,7 +1794,7 @@ ZOLTAN_ID_PTR tmp_id=NULL, send_gids=NULL, send_lids=NULL;
 int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
 
   *send_buf = NULL;
-  *send_size = 0;
+  *send_size = 0;    
 
   if (export_gids){
     *export_gids = *export_lids = NULL;
@@ -1905,16 +1868,16 @@ int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
     sizes = _sizes;
 
     if (zz->Get_Obj_Size_Multi != NULL) {
-      zz->Get_Obj_Size_Multi(zz->Get_Obj_Size_Multi_Data,
+      zz->Get_Obj_Size_Multi(zz->Get_Obj_Size_Multi_Data, 
                              num_gid_entries, num_lid_entries, num,
-                             send_gids, (send_lids ? send_lids : NULL),
+                             send_gids, (send_lids ? send_lids : NULL), 
                              sizes, &ierr);
     }
     else {
       for (i = 0; i < num; i++){
-        sizes[i] = zz->Get_Obj_Size(zz->Get_Obj_Size_Data,
+        sizes[i] = zz->Get_Obj_Size(zz->Get_Obj_Size_Data, 
                        num_gid_entries, num_lid_entries,
-                       &(send_gids[i*num_gid_entries]),
+                       &(send_gids[i*num_gid_entries]), 
                        (send_lids ? &(send_lids[i*num_lid_entries]) : NULL),
                        &ierr);
         if (ierr != 0) break;
@@ -1953,7 +1916,7 @@ int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
     /*
      *  Pack the objects for export.
      */
-
+  
     idx_cnt = 0;
     tmp = export_buf;
     for (i = 0; i < num; i++) {
@@ -1962,7 +1925,7 @@ int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
       tmp_id = (ZOLTAN_ID_PTR) tmp;
       ZOLTAN_SET_GID(zz, tmp_id, &(send_gids[i*num_gid_entries]));
       tmp += id_size;
-
+    
       /* Pack the object's size */
       *((int *)tmp) = sizes[i];
       tmp += aligned_int;
@@ -1978,12 +1941,12 @@ int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
 
     if (zz->Pack_Obj_Multi != NULL) {
       if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
-        printf("[%1d] DEBUG in %s: Packing objects with multi-pack\n",
+        printf("[%1d] DEBUG in %s: Packing objects with multi-pack\n", 
                zz->Proc, yo);
       }
       zz->Pack_Obj_Multi(zz->Pack_Obj_Multi_Data,
                          num_gid_entries, num_lid_entries, num,
-                         send_gids, (send_lids ? send_lids : NULL),
+                         send_gids, (send_lids ? send_lids : NULL), 
                          (send_parts ? send_parts : send_procs),
                          sizes, idx, export_buf, &ierr);
     }
@@ -1993,16 +1956,16 @@ int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
         if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
           printf("[%1d] DEBUG in %s: Packing object with gid ", zz->Proc, yo);
           ZOLTAN_PRINT_GID(zz, &(send_gids[i*num_gid_entries]));
-          printf("size = %d bytes\n", sizes[i]);
+          printf("size = %d bytes\n", sizes[i]); 
         }
 
         /* Pack the object's data */
         dest = (send_parts != NULL ? send_parts[i] : send_procs[i]);
 
-        zz->Pack_Obj(zz->Pack_Obj_Data,
+        zz->Pack_Obj(zz->Pack_Obj_Data, 
                            num_gid_entries, num_lid_entries,
                            &(send_gids[i*num_gid_entries]),
-                           (send_lids ? &(send_lids[i*num_lid_entries]) : NULL),
+                           (send_lids ? &(send_lids[i*num_lid_entries]) : NULL), 
                            dest, sizes[i], tmp, &ierr);
 
         if (ierr < 0)
@@ -2023,7 +1986,7 @@ int *idx=NULL, *sizes=NULL, *send_parts=NULL, *send_procs=NULL;
   ZOLTAN_TRACE_DETAIL(zz, yo, "Done packing objects");
 
   *send_buf = export_buf;
-  *send_size = total_send_size;
+  *send_size = total_send_size;    
 
 End:
   return ierr;
@@ -2055,7 +2018,7 @@ static int create_import_lists(ZZ *zz, int msglen, int src, int num,
     if (procs[i] == src){
       numObj++;
     }
-  }
+  } 
 
   ierr = get_gid_array(zz, numObj, &_import_gids, &_import_gids_len);
   if (ierr != ZOLTAN_OK){

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 #include <mpi.h>
 #include <stdlib.h>
@@ -88,10 +51,10 @@ void print_sync_start(int proc, int do_print_line)
   int        from, flag;
   MPI_Status status;
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
   if ( proc != 0) {
     from = proc - 1;
-    MPI_Recv((void *) &flag, 1, MPI_INT, from, 0, MPI_COMM_WORLD, &status);
+    MPI_Recv((void *) &flag, 1, MPI_INT, from, 0, zoltan_get_global_comm(), &status);
   }
   else {
     if (do_print_line) {
@@ -153,14 +116,14 @@ void print_sync_end(int proc, int nprocs, int do_print_line)
 
   if (proc == 0) {
     from = nprocs - 1;
-    MPI_Irecv((void *) &flag, 1, MPI_INT, from, 0, MPI_COMM_WORLD, &req);
+    MPI_Irecv((void *) &flag, 1, MPI_INT, from, 0, zoltan_get_global_comm(), &req);
 
 #ifdef DEBUG_PSYNC
     (void) printf("\t\t\t Proc 0 posted receive from %5d\n", from);
 #endif
   }
 
-  MPI_Send((void *) &flag, 1, MPI_INT, to, 0, MPI_COMM_WORLD);
+  MPI_Send((void *) &flag, 1, MPI_INT, to, 0, zoltan_get_global_comm());
 
   if (proc == 0) {
     MPI_Wait(&req, &status);
@@ -172,7 +135,7 @@ void print_sync_end(int proc, int nprocs, int do_print_line)
    * (Num_Proc-1)
    */
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(zoltan_get_global_comm());
 
 }
 
@@ -199,16 +162,16 @@ MPI_Request *req = NULL;
   /* Post receives */
   offset = 0;
   for (i = 0; i < mesh->necmap; i++) {
-    MPI_Irecv(&(recv_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT,
-              mesh->ecmap_id[i], msg_type, MPI_COMM_WORLD, &(req[i]));
+    MPI_Irecv(&(recv_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT, 
+              mesh->ecmap_id[i], msg_type, zoltan_get_global_comm(), &(req[i]));
     offset += mesh->ecmap_cnt[i]*vec_len;
   }
 
   /* Send messages */
   offset = 0;
   for (i = 0; i < mesh->necmap; i++) {
-    MPI_Send(&(send_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT,
-             mesh->ecmap_id[i], msg_type, MPI_COMM_WORLD);
+    MPI_Send(&(send_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT, 
+             mesh->ecmap_id[i], msg_type, zoltan_get_global_comm());
     offset += mesh->ecmap_cnt[i]*vec_len;
   }
 

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -52,14 +15,13 @@ extern "C" {
 
 
 #include "zz_const.h"
-#include "ha_const.h"
 
 
 int Zoltan_Divide_Machine(
    ZZ *zz,             /* The Zoltan structure (not used now, will be
                           used for pointer to machine details */
    int obj_wgt_dim,    /* Number of different weights (loads). */
-   float *part_sizes,  /* Array of part sizes, containing percentage of
+   float *part_sizes,  /* Array of part sizes, containing percentage of 
                           work per part. (length= obj_wgt_dim*num_parts) */
    int proc,           /* my processor number in global sense */
    MPI_Comm comm,      /* communicator for part of machine to be divided */
@@ -89,8 +51,8 @@ double *sum = NULL;
  * into two pieces.
  * For now, it simply divides the machine in half.  In the future, it will
  * be a more complicated routine taking into account the architecture of
- * the machine and communication network.
- * The two resulting sets contain contiguously numbered processors
+ * the machine and communication network. 
+ * The two resulting sets contain contiguously numbered processors 
  * and parts.
  */
 
@@ -118,7 +80,7 @@ double *sum = NULL;
     while (np == 0 && (++i) < totalprocs) {
       Zoltan_LB_Proc_To_Part(zz, i, &np, &fpartmid);
     }
-    if (np)
+    if (np) 
       *partmid = fpartmid;
     else
       *partmid = totalparts;
@@ -131,7 +93,7 @@ double *sum = NULL;
     i = Zoltan_LB_Part_To_Proc(zz, *partmid, NULL);
     if (i != *procmid) {
 
-      /* Part is spread across several processors.
+      /* Part is spread across several processors. 
          Don't allow mid to fall within a part; reset procmid so that it
          falls at a part boundary.  */
 
@@ -169,7 +131,7 @@ double *sum = NULL;
     *set = 0;
     *num_parts = *partmid - *partlower;
     *num_procs = *procmid - *proclower;
-  }
+  } 
   else {
     *set = 1;
     *num_parts = totalparts - *partmid;
@@ -184,7 +146,7 @@ int Zoltan_Divide_Parts(
    ZZ *zz,             /* The Zoltan structure (not used now, will be
                           used for pointer to machine details */
    int obj_wgt_dim,    /* Number of different weights (loads). */
-   float *part_sizes,  /* Array of part sizes, containing percentage of
+   float *part_sizes,  /* Array of part sizes, containing percentage of 
                           work per part. (length= obj_wgt_dim*num_parts) */
    int num_parts,      /* Input: # of parts to be divided */
    int *partlower,     /* lowest numbered part in first set */
@@ -198,7 +160,7 @@ int dim = obj_wgt_dim;
 double *sum = NULL;
 
 /* This SERIAL routine divides the current group of parts
- * into two pieces with roughly equal numbers of parts per piece.
+ * into two pieces with roughly equal numbers of parts per piece. 
  * It is designed to be used within a single processor to divide its
  * parts into two sets (e.g., in serial_rcb).
  */

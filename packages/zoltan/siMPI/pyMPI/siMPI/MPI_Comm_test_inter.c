@@ -18,5 +18,6 @@
 int MPI_Comm_test_inter ( MPI_Comm comm, int *flag )
 {
   _MPI_COVERAGE();
-  return PMPI_Comm_test_inter (comm, flag);
+  return PMPI_Comm_test_inter (comm, flag); 
 }
+

@@ -1,48 +1,11 @@
-/*
- * @HEADER
- *
- * ***********************************************************************
- *
- *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
- *
- * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
- * the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Corporation nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Questions? Contact Karen Devine	kddevin@sandia.gov
- *                    Erik Boman	egboman@sandia.gov
- *
- * ***********************************************************************
- *
- * @HEADER
- */
+// @HEADER
+// *****************************************************************************
+//  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+//
+// Copyright 2012 NTESS and the Zoltan contributors.
+// SPDX-License-Identifier: BSD-3-Clause
+// *****************************************************************************
+// @HEADER
 
 
 #ifdef __cplusplus
@@ -58,9 +21,9 @@ extern "C" {
 
 /*
  * Scatter a ParMetis-style graph to all processors such that each proc
- * gets an even chunk of vertices and corresponding edges.
+ * gets an even chunk of vertices and corresponding edges. 
  * The entire graph structure is shuffled around; no attempt is made
- * to keep data local. Processor i receives nodes i*n/p through (i+1)*n/p.
+ * to keep data local. Processor i receives nodes i*n/p through (i+1)*n/p. 
  * This routine is only useful if the distribution is highly imbalanced!
  *
  * The input graph structure is lost and fresh memory is allocated
@@ -69,7 +32,7 @@ extern "C" {
  * This routine can also handle geometry data. The graph data may be NULL.
  *
  * The vertex communication plan is returned so it may be used to compute
- * the export lists after partitioning.
+ * the export lists after partitioning. 
  *
  * Currently the number of weights are inferred from zz->Obj_Weight_Dim
  * and zz->Edge_Weight_Dim. Perhaps these values should be input parameters.
@@ -127,8 +90,8 @@ int Zoltan_Scatter_Graph(
   if (xyz)
     old_xyz = *xyz;
 
-  old_num_obj = (int)(old_vtxdist[zz->Proc+1] - old_vtxdist[zz->Proc]);
-  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
+  old_num_obj = (int)(old_vtxdist[zz->Proc+1] - old_vtxdist[zz->Proc]); 
+  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
     printf("[%1d] Debug: Old number of objects = %d\n", zz->Proc, old_num_obj);
 
   /* Compute new distribution, *vtxdist */
@@ -142,8 +105,8 @@ int Zoltan_Scatter_Graph(
   MPI_Allreduce(&i, &use_graph, 1, MPI_INT, MPI_LOR, zz->Communicator);
   j = (old_vsize != NULL);
   MPI_Allreduce(&j, &use_vsize, 1, MPI_INT, MPI_LOR, zz->Communicator);
-  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
-    printf("[%1d] Debug: use_graph = %1d, use_vsize = %1d\n", zz->Proc,
+  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
+    printf("[%1d] Debug: use_graph = %1d, use_vsize = %1d\n", zz->Proc, 
           use_graph, use_vsize);
 
   /* Reset all data pointers to NULL for now */
@@ -162,7 +125,7 @@ int Zoltan_Scatter_Graph(
 
   /* Allocate new space for vertex data */
   num_obj = (int)((*vtxdist)[zz->Proc+1] - (*vtxdist)[zz->Proc]);
-  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
+  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
     printf("[%1d] Debug: New number of objects = %d\n", zz->Proc, num_obj);
   if (use_graph)
     *xadj = (indextype *) ZOLTAN_MALLOC((num_obj+1)*sizeof(indextype));
@@ -198,12 +161,12 @@ int Zoltan_Scatter_Graph(
   }
 
   /* Do the communication. To save memory, we do not pack all the data into
-   * a buffer, but send directly from the old arrays to the new arrays.
+   * a buffer, but send directly from the old arrays to the new arrays. 
    * We use the vertex communication plan for all the vertex-based arrays
    * and the edge communication plan for all the edge-based arrays.
    */
 
-  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
+  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
     printf("[%1d] Debug: Starting vertex-based communication.\n", zz->Proc);
 
   if (use_graph){
@@ -218,7 +181,7 @@ int Zoltan_Scatter_Graph(
   if (ndims){
     Zoltan_Comm_Do( *plan, TAG5, (char *) old_xyz, ndims*sizeof(realtype), (char *) *xyz);
   }
-  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
+  if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
     printf("[%1d] Debug: Finished vertex-based communication.\n", zz->Proc);
 
   if (use_graph){
@@ -229,27 +192,27 @@ int Zoltan_Scatter_Graph(
     for (i=num_obj; i>0; i--)
       (*xadj)[i] = (*xadj)[i-1];
     (*xadj)[0] = 0;
-
+  
     /* Allocate space for new edge data structures */
     num_edges = (*xadj)[num_obj];
     *adjncy = (indextype *) ZOLTAN_MALLOC(num_edges*sizeof(indextype));
-
+  
     if (ewgt_dim)
       *adjwgt = (weighttype *) ZOLTAN_MALLOC(ewgt_dim*num_edges*sizeof(weighttype));
-
+  
     /* Set up the communication plan for the edge data. */
     ptr = proclist2 = (int *) ZOLTAN_MALLOC(old_xadj[old_num_obj] * sizeof(int));
     for (i=0; i<old_num_obj; i++)
       for (j=0; j<old_xadj[i]; j++)
         *ptr++ = proclist[i];
     if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) {
-      printf("[%1d] Debug: Allocated proclist of length " TPL_IDX_SPEC " for edges.\n",
+      printf("[%1d] Debug: Allocated proclist of length " TPL_IDX_SPEC " for edges.\n", 
              zz->Proc, old_xadj[old_num_obj]);
     }
 
-    Zoltan_Comm_Create(&plan2, (int)old_xadj[old_num_obj], proclist2, zz->Communicator,
+    Zoltan_Comm_Create(&plan2, (int)old_xadj[old_num_obj], proclist2, zz->Communicator, 
                    TAG1, &nrecv);
-
+  
     if (nrecv != num_edges){
       sprintf(msg,"Proc %d received %d edges but expected %d.",
         zz->Proc, nrecv, num_edges);
@@ -267,19 +230,19 @@ int Zoltan_Scatter_Graph(
       ZOLTAN_TRACE_EXIT(zz, yo);
       return ZOLTAN_FATAL;
     }
-
-    if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
+  
+    if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
       printf("[%1d] Debug: Starting edge-based communication.\n", zz->Proc);
-
+  
     /* Do the communication. */
     Zoltan_Comm_Do( plan2, TAG2, (char *) old_adjncy, sizeof(indextype), (char *) *adjncy);
     if (ewgt_dim){
       Zoltan_Comm_Do( plan2, TAG3, (char *) old_adjwgt, ewgt_dim*sizeof(weighttype), (char *) *adjwgt);
     }
-
-    if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL)
+  
+    if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) 
       printf("[%1d] Debug: Finished edge-based communication.\n", zz->Proc);
-
+  
     /* Free the comm. plan for edge data */
     Zoltan_Comm_Destroy(&plan2);
 

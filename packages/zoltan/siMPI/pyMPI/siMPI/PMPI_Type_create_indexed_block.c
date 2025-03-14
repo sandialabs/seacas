@@ -15,13 +15,14 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Type_create_indexed_block(
-        int count,
-        int blocklength,
-        int array_of_displacements[],
-        MPI_Datatype old_type,
+int PMPI_Type_create_indexed_block( 
+        int count, 
+        int blocklength, 
+        int array_of_displacements[], 
+        MPI_Datatype old_type, 
         MPI_Datatype *newtype )
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
 }
+

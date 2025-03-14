@@ -18,5 +18,6 @@
 int MPI_File_close(MPI_File *fh)
 {
   _MPI_COVERAGE();
-  return PMPI_File_close(fh);
+  return PMPI_File_close(fh); 
 }
+

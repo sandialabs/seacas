@@ -18,5 +18,6 @@
 int MPIO_Test(MPIO_Request *request, int *flag, MPI_Status *status)
 {
   _MPI_COVERAGE();
-  return PMPIO_Test(request, flag, status);
+  return PMPIO_Test(request, flag, status); 
 }
+

@@ -25,3 +25,4 @@ int PMPI_Group_rank ( MPI_Group group, int *rank )
   *rank = _MPI_RANK;
   return MPI_SUCCESS;
 }
+

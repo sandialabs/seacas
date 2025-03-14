@@ -18,5 +18,6 @@
 int MPI_Comm_remote_group ( MPI_Comm comm, MPI_Group *group )
 {
   _MPI_COVERAGE();
-  return PMPI_Comm_remote_group (comm, group);
+  return PMPI_Comm_remote_group (comm, group); 
 }
+
