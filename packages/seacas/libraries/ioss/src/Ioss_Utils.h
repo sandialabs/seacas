@@ -506,10 +506,10 @@ namespace Ioss {
      *  \param[in] sb Compute the offset for element sides in this SideBlock
      *  \returns The offset.
      */
+    IOSS_NODISCARD static int64_t get_side_offset(const Ioss::SideBlock *sb);
+
     IOSS_NODISCARD static int64_t get_side_offset(const Ioss::ElementTopology *parent_topo,
                                                   const Ioss::ElementTopology *side_topo);
-
-    IOSS_NODISCARD static int64_t get_side_offset(const Ioss::SideBlock *sb);
 
     IOSS_NODISCARD static unsigned int hash(const std::string &name);
 
