@@ -28,11 +28,10 @@ else
   CC=mpicc
 fi
 MPICC=$(CC); export MPICC
-CFLAGS="-fPIC -I${INSTALL_PATH}/include"; export CFLAGS
+CFLAGS="-fPIC"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS
 AR_FLAGS="cru"; export AR_FLAGS
 
-LDFLAGS="-L${INSTALL_PATH}/lib"; export LDFLAGS
 ./configure --disable-fortran ${USE_SHARED} ${USE_BB} --disable-cxx --prefix=${INSTALL_PATH}
 
 echo ""
