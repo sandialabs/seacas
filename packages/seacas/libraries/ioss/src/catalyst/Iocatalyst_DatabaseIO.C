@@ -639,7 +639,7 @@ namespace Iocatalyst {
         return this->NodeMap;
       }
 
-      if (this->DBNode[detail::NODEBLOCKS].number_of_children() == 0) { 
+      if (this->DBNode[detail::NODEBLOCKS].number_of_children() == 0) {
         std::ostringstream errmsg;
         fmt::print(errmsg, "ERROR in {} no nodeblocks found, unable to create NodeMap\n", __func__);
         IOSS_ERROR(errmsg);
@@ -647,7 +647,7 @@ namespace Iocatalyst {
 
       auto &&idsNode = this->DBNode[detail::NODEBLOCKS][0][detail::FIELDS][detail::IDS];
 
-      auto   node_ids = const_cast<void *>(idsNode[detail::VALUE].element_ptr(0));
+      auto node_ids = const_cast<void *>(idsNode[detail::VALUE].element_ptr(0));
       this->NodeMap.set_size(idsNode[detail::COUNT].as_int64());
       if (idsNode[detail::TYPE].as_int8() == Ioss::Field::BasicType::INT32) {
         this->NodeMap.set_map(reinterpret_cast<int32_t *>(node_ids),

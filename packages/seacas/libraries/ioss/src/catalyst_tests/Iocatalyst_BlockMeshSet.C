@@ -292,8 +292,8 @@ namespace Iocatalyst {
   void BlockMeshSet::writeUnstructuredBlockDefinitions(IOSSparams &iop)
   {
     int              spatialDims = 3;
-    Ioss::NodeBlock *nodeBlock =
-        new Ioss::NodeBlock(iop.databaseIO, iop.nodeBlockName, getNumLocalPointsInMeshSet(), spatialDims);
+    Ioss::NodeBlock *nodeBlock   = new Ioss::NodeBlock(iop.databaseIO, iop.nodeBlockName,
+                                                       getNumLocalPointsInMeshSet(), spatialDims);
     iop.region->add(nodeBlock);
     for (auto bm : bms) {
       Ioss::ElementBlock *elemBlock = new Ioss::ElementBlock(
@@ -343,8 +343,8 @@ namespace Iocatalyst {
           globalElemIds.push_back(bm.getGlobalIDForBlockID(ids[i]));
           for (int j = 0; j < conn.size(); j++) {
             connectivity[(i * 8) + j] = conn[j];
-	  }
-	}
+          }
+        }
         elemBlock->put_field_data("connectivity_raw", connectivity);
       }
       else {

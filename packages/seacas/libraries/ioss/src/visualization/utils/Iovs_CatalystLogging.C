@@ -1,10 +1,10 @@
 #include "Ioss_Utils.h"
 #include "visualization/utils/Iovs_CatalystLogging.h"
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <fstream>
 #include <iostream>
 #include <time.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 
 namespace Iovs {
 

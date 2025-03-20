@@ -22,7 +22,7 @@ namespace Iocatalyst {
   public:
     inline static const std::string CATALYST_DATABASE_TYPE  = "catalyst";
     inline static const std::string CATALYST_DUMMY_DATABASE = "dummy.db";
-    inline static const std::string NODE_BLOCK_NAME = "nodeblock";
+    inline static const std::string NODE_BLOCK_NAME         = "nodeblock";
 
     class IOSSparams
     {
@@ -43,8 +43,8 @@ namespace Iocatalyst {
       std::unique_ptr<Ioss::Region> region;
       conduit_cpp::Node             conduitNode;
       Ioss::PropertyManager         dbProps;
-      std::string       nodeBlockName;
-      bool              writeConnectivityRaw;
+      std::string                   nodeBlockName;
+      bool                          writeConnectivityRaw;
 
     private:
       IOSSparams();
