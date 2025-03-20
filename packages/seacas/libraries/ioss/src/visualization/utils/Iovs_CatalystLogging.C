@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <time.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 namespace Iovs {
 
@@ -40,9 +42,7 @@ namespace Iovs {
       std::fstream logFile;
       logFile.open(getLogFilePath(), std::ios::out | std::ios::app);
       if (!logFile) {
-        std::ostringstream errmsg;
-        errmsg << "Unable to open Catalyst log file: " << getLogFilePath() << "\n";
-        IOSS_ERROR(errmsg);
+        fmt::print(Ioss::OUTPUT(), "\tUnable to open Catalyst log file: {}\n", getLogFilePath());
       }
       else {
         std::vector<std::string> headers = getLogFileHeaders();

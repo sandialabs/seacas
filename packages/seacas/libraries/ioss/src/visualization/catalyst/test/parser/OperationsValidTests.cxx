@@ -6,7 +6,7 @@
 
 #include "OperationsValidTests.h"
 #include "CatalystTestFixture.h"
-#include "catch.hpp"
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE_METHOD(CatalystTestFixture, "OperationBaseline", "[operationsValid]")
 {

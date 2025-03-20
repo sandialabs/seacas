@@ -8,7 +8,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.8.0)
 
 PROJECT(CatalystIossAdapter)
 
-SET(CMAKE_CXX_STANDARD 14)
+SET(CMAKE_CXX_STANDARD 17)
 
 SET(PVCSA_VERSION CACHE STRING "Version string to append to catalyst adapter library.")
 

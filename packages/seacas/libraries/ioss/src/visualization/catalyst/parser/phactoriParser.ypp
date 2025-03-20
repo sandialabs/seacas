@@ -1001,7 +1001,7 @@ bool check_representation(YYLTYPE * llocp,
 bool check_nodeID(YYLTYPE * llocp,
                   yyscan_t yyscanner,
                   ParseData& pd,
-                  int id)
+                  unsigned int id)
 {
   if(pd.checkNodeIDRange)
     {
@@ -1019,7 +1019,7 @@ bool check_nodeID(YYLTYPE * llocp,
 bool check_elementID(YYLTYPE * llocp,
                      yyscan_t yyscanner,
                      ParseData& pd,
-                     int id)
+                     unsigned int id)
 {
   if(pd.checkElementIDRange)
     {
@@ -1443,7 +1443,7 @@ void threshold_or_contour_shortcut_command(ParseData& pd,
   a[1] = variable_name;
   a[2] = r;
   Json::Value d(Json::arrayValue);
-  for(int i=0;i<values.size();i++)
+  for(unsigned int i=0;i<values.size();i++)
     d[i] = values[i];
   a[3] = d;
 
@@ -1534,7 +1534,7 @@ void vector_command(ParseData& pd,
                     std::vector<T>& values)
 {
   Json::Value a(Json::arrayValue);
-  for(int i=0;i<values.size();i++)
+  for(unsigned int i=0;i<values.size();i++)
     a[i] = values[i];
 
   if (pd.cb == TOKCATALYST)
@@ -1570,7 +1570,7 @@ void string_vector_command(ParseData& pd,
                            std::vector<std::string>& values)
 {
   Json::Value a(Json::arrayValue);
-  for(int i=0;i<values.size();i++)
+  for(unsigned int i=0;i<values.size();i++)
     a[i] = values[i];
 
   if (pd.cb == TOKGROUP ||
