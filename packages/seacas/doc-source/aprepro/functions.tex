@@ -287,16 +287,46 @@ The syntax is:
 \end{apinp}
 
 The \cmd{elseif()} and \cmd{else} are optional.  Note that if \var{expression} is a simple \var{variable}, then its value will be zero or false if it is undefined; a zero value evaluates to false and a non-zero value is true. The \cmd{if} construct can be nested multiple levels.
-A warning message will be printed if improper nesting is detected. The \cmd{if(expression)},
-\cmd{elseif(expression)}, \cmd{else}, and \cmd{endif} are the
-only text parsed on a line. Text that follows these on the same line is
-ignored.  For example:
+A warning message will be printed if improper nesting is detected. 
+
+The \cmd{else}, and \cmd{endif} are the only text parsed on a
+line. Text that follows these on the same line is ignored.  The
+\cmd{if}, and \cmd{elseif} will conditionally output the text that
+follows on the line depending on the result of the expression.
+However, the newline at the end of the line will be suppressed which
+can cause unexpected behavior since that output will be concatenated
+with the next line that aprepro outputs.  For example:
 
 \begin{apinp}
-\{if(a > 10 && b < 10)\} This will be ignored no matter what
-\ldots Lines processed if \var{a} > 10 and \var{b} < 10.
-\{endif\}
+\{\{\var{a}=11\}\}
+\{if(\var{a} > 10)\}  Printed if \var{a} > 10, newline will be removed.
+\ldots Lines processed if var{a} > 10.
+\{elseif(\var{a} == 10)\}  Printed if \var{a}==10, newline will be removed.
+\ldots Lines processed if \var{a} == 10.
+\{else\} This will be ignored no matter what
+\ldots Lines processed if \var{a} <= 10.
+\{endif\} This will be ignored no matter what
 \end{apinp}
+
+Will give the output:
+\begin{apout}
+  Printed if \var{a} > 10, newline will be removed. \ldots Lines processed if \var{a} > 10.
+\end{apout}
+
+The same input above if run with \var{a} == 10 will give the output:
+\begin{apout}
+  Printed if \var{a}==10, newline will be removed. ...Lines processed if \var{a} == 10.
+\end{apout}
+
+Note the concatenation of the text following the \cmd{if()} or
+\cmd{elseif()} and the text on the following line\footnote{This
+potentially confusing and dangerous behavior is a side effect of
+maintaining backward compatability with the now deprecated
+\cmd{ifdef()} behavior and the desire to have a lone \cmd{if()} or
+\cmd{elseif()} command not insert empty blank lines in the
+output.}. It is recommended that the \cmd{if()}, \cmd{elseif()},
+\cmd{else}, and \cmd{endif} be the only text on the line to avoid
+unexpected output.
 
 \subsection{Switch Statements}
 The \cmd{switch} statement is a control construct which allows the value of a variable or expression to change the control flow via a multi-way branch.
