@@ -264,7 +264,7 @@ namespace Iovs {
     sa->InsertNextValue(cmInit.resultsOutputFilename);
     sa->InsertNextValue(cmInit.catalystOutputDirectory);
 
-    for (int i = 0; i < cmInit.catalystData.size(); i++) {
+    for (size_t i = 0; i < cmInit.catalystData.size(); i++) {
       sa->InsertNextValue(cmInit.catalystData[i]);
     }
 
@@ -391,8 +391,6 @@ namespace Iovs {
 
     if (this->logging.find(id) != this->logging.end()) {
       vtksys::SystemInformation sysInfo;
-      vtkProcessModule         *pm   = vtkProcessModule::GetProcessModule();
-      vtkMPIController         *mpic = vtkMPIController::SafeDownCast(pm->GetGlobalController());
       double                    measurements[3];
       measurements[0]                = sysInfo.GetProcMemoryUsed() * (1.0 / 1024.0); // Store in MB
       measurements[1]                = sysInfo.GetHostMemoryUsed() * (1.0 / 1024.0);

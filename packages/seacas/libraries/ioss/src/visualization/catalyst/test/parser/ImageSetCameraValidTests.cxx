@@ -5,8 +5,8 @@
 // See packages/seacas/LICENSE for details
 
 #include "CatalystTestFixture.h"
-#include "catch.hpp"
 #include "ImageSetCameraValidTests.h"
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE_METHOD(CatalystTestFixture, "ImagesetCameraLookAtAbsolutePoint", "[ImageSetCameraValid]")
 {
