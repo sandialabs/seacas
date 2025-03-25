@@ -47,6 +47,7 @@ namespace {
 
   GlobalZgcMap generate_global_zgc(const PartVector &part_mesh);
   GlobalBcMap  generate_global_bc(const PartVector &part_mesh);
+  GlobalZgcMap consolidate_zgc(const GlobalZgcMap &zgc_map);
 
   void   info_structuredblock(const Ioss::Region &region);
   void   resolve_offsets(const PartVector &part_mesh, GlobalBlockMap &all_blocks);
@@ -271,6 +272,11 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   // Need a consistent set of ZGC for each zone unioned across the proc-local-zones...
   // Skip the ZGC that are "from_decomp"
   GlobalZgcMap global_zgc = generate_global_zgc(part_mesh);
+
+  // At this point, we Have a consistent set of zgc for each zone, but
+  // possibly multiples due to parallel decomposition.  See if there
+  // are "similar" zgc that can be consolidated.
+  global_zgc = consolidate_zgc(global_zgc);
 
   // Create output file...
   Ioss::PropertyManager properties{};
@@ -507,6 +513,45 @@ namespace {
       }
     }
     return global_zgc;
+  }
+
+  GlobalZgcMap consolidate_zgc(const GlobalZgcMap &zgc_map)
+  {
+    // Check all `zgc` in `zgc_map` and consolidate the ones that are "similar"
+    // * Same zone that they are associated with
+    // * Similar connectionName
+    //   - We assume that the `zgc_map` is sorted such that the "base" zgc is first
+    //    and then the similar ones follow.  This means that the base will have 
+    //    a name that is a subset of the similar ones following.
+
+    GlobalZgcMap consolidated;
+
+    std::string zone_name{};
+    std::string conn_name{};
+    Ioss::ZoneConnectivity zgc_test{};
+    for (const auto &zgc : zgc_map) {
+      if (zone_name.empty() ) {
+	zone_name = zgc.first.first;
+	conn_name = zgc.first.second;
+	zgc_test = zgc.second;
+	continue;
+      }
+
+      if (zone_name == zgc.first.first && Ioss::Utils::substr_equal(conn_name, zgc.first.second)) {
+	union_zgc_range(zgc_test, zgc.second);
+	continue;
+      }
+
+      // If we make it to this point, then we don't have a similar zgc, so 
+      // save the one we were working on and reset to gather the next set.
+      consolidated.emplace(std::make_pair(zone_name, conn_name), zgc_test);
+      zone_name = zgc.first.first;
+      conn_name = zgc.first.second;
+      zgc_test = zgc.second;
+    }
+    // Handle the last one..
+    consolidated.emplace(std::make_pair(zone_name, conn_name), zgc_test);
+    return consolidated;
   }
 
   GlobalBcMap generate_global_bc(const PartVector &part_mesh)
