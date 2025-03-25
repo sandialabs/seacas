@@ -27,7 +27,7 @@ then
 else
   CC=mpicc
 fi
-MPICC=$(CC); export MPICC
+MPICC=${CC}; export MPICC
 CFLAGS="-fPIC"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS
 AR_FLAGS="cru"; export AR_FLAGS
