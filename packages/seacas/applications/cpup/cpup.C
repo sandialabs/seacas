@@ -521,33 +521,33 @@ namespace {
     // * Same zone that they are associated with
     // * Similar connectionName
     //   - We assume that the `zgc_map` is sorted such that the "base" zgc is first
-    //    and then the similar ones follow.  This means that the base will have 
+    //    and then the similar ones follow.  This means that the base will have
     //    a name that is a subset of the similar ones following.
 
     GlobalZgcMap consolidated;
 
-    std::string zone_name{};
-    std::string conn_name{};
+    std::string            zone_name{};
+    std::string            conn_name{};
     Ioss::ZoneConnectivity zgc_test{};
     for (const auto &zgc : zgc_map) {
-      if (zone_name.empty() ) {
-	zone_name = zgc.first.first;
-	conn_name = zgc.first.second;
-	zgc_test = zgc.second;
-	continue;
+      if (zone_name.empty()) {
+        zone_name = zgc.first.first;
+        conn_name = zgc.first.second;
+        zgc_test  = zgc.second;
+        continue;
       }
 
       if (zone_name == zgc.first.first && Ioss::Utils::substr_equal(conn_name, zgc.first.second)) {
-	union_zgc_range(zgc_test, zgc.second);
-	continue;
+        union_zgc_range(zgc_test, zgc.second);
+        continue;
       }
 
-      // If we make it to this point, then we don't have a similar zgc, so 
+      // If we make it to this point, then we don't have a similar zgc, so
       // save the one we were working on and reset to gather the next set.
       consolidated.emplace(std::make_pair(zone_name, conn_name), zgc_test);
       zone_name = zgc.first.first;
       conn_name = zgc.first.second;
-      zgc_test = zgc.second;
+      zgc_test  = zgc.second;
     }
     // Handle the last one..
     consolidated.emplace(std::make_pair(zone_name, conn_name), zgc_test);
