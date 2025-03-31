@@ -195,12 +195,12 @@ namespace Ioss {
       return stat_fs.f_fstypename;
 #else
       /* linux statfs defines that 0x6969 is NFS filesystem */
-      if (fs_stats.f_type == 0x0BD00BD0)
-        return "lustre";
-      if (fs_stats.f_type == 0x47504653)
-        return "gpfs";
-      if (fs_stats.f_type == 0x6969)
-        return "nfs";
+      if (stat_fs.f_type == 0x0BD00BD0)
+	return "lustre";
+      if (stat_fs.f_type == 0x47504653)
+	return "gpfs";
+      if (stat_fs.f_type == 0x6969)
+	return "nfs";
 #endif
     }
 #endif
