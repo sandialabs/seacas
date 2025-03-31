@@ -856,7 +856,7 @@ if [ "$ADIOS2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_ADIOS2" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
-	adios2_version="v2.10.1"
+	adios2_version="v2.10.2"
         echo "${txtgrn}+++ ADIOS2 ${adios2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/adios2 || exit
