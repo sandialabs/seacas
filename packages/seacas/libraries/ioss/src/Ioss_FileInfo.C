@@ -170,7 +170,7 @@ namespace Ioss {
   }
 
   std::string_view FileInfo::filesystem_type() const
-    {
+  {
 #if !defined(__IOSS_WINDOWS__)
     auto tmp_path = pathname();
     if (tmp_path.empty()) {
@@ -196,16 +196,16 @@ namespace Ioss {
 #else
       /* linux statfs defines that 0x6969 is NFS filesystem */
       if (fs_stats.f_type == 0x0BD00BD0)
-	return "lustre";
+        return "lustre";
       if (fs_stats.f_type == 0x47504653)
-	return "gpfs";
+        return "gpfs";
       if (fs_stats.f_type == 0x6969)
-	return "nfs";
+        return "nfs";
 #endif
     }
 #endif
     return "unknown";
-    }
+  }
 
   //: Return TRUE if file is on an NFS filesystem...
   bool FileInfo::is_nfs() const
