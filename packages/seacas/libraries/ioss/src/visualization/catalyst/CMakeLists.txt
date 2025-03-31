@@ -37,11 +37,9 @@ IF("${isSystemDir}" STREQUAL "-1")
 ENDIF()
 
 INCLUDE_DIRECTORIES("manager")
-INCLUDE_DIRECTORIES("parser")
 INCLUDE_DIRECTORIES("../../")
 
 ADD_SUBDIRECTORY(manager)
-ADD_SUBDIRECTORY(parser)
 ADD_LIBRARY(${PVCSA_LIBRARY_NAME} SHARED manager/CatalystManager.cxx
                                          manager/CatalystMeshWriter.cxx
                                          exodus/CatalystExodusMesh.cxx
@@ -56,7 +54,6 @@ TARGET_LINK_LIBRARIES(${PVCSA_LIBRARY_NAME}
     INTERFACE
       VTK::PythonUsed
     PRIVATE
-      phactori_parser
       ParaView::PythonCatalyst)
 
 OPTION(BUILD_IOSS_2_CATALYST_APPLICATION

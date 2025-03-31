@@ -9,7 +9,6 @@
 #include "../exodus/CatalystExodusMesh.h"
 #include "CatalystMeshWriter.h"
 #include "CatalystPythonPaths.h"
-#include "PhactoriParserInterface.h"
 #include "vtkCPInputDataDescription.h"
 #include "vtkCPProcessor.h"
 #include "vtkCPPythonPipeline.h"
@@ -502,24 +501,6 @@ namespace Iovs {
         mw->writeCatalystMeshFilePerProc(vobj, timeStep);
       }
     }
-  }
-
-  void CatalystManager::parsePhactoriFile(const std::string &filepath, ParseResult &pres)
-  {
-
-    PhactoriParserInterface::ParseInfo pinfo;
-    PhactoriParserInterface::parseFile(filepath, pinfo);
-    pres.jsonParseResult = pinfo.jsonParseResult;
-    pres.parseFailed     = pinfo.parseFailed;
-  }
-
-  void CatalystManager::parsePhactoriString(const std::string &phactori, ParseResult &pres)
-  {
-
-    PhactoriParserInterface::ParseInfo pinfo;
-    PhactoriParserInterface::parseString(phactori, pinfo);
-    pres.jsonParseResult = pinfo.jsonParseResult;
-    pres.parseFailed     = pinfo.parseFailed;
   }
 
   extern "C" {

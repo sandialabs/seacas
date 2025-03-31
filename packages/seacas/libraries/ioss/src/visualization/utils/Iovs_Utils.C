@@ -167,23 +167,6 @@ namespace Iovs {
         this->broadCastString(cmInit.catalystBlockJSON, dbinfo);
       }
     }
-    else if (props.exists("PHACTORI_INPUT_SYNTAX_SCRIPT")) {
-      std::string phactoriFilePath = props.get("PHACTORI_INPUT_SYNTAX_SCRIPT").get_string();
-      CatalystManagerBase::ParseResult pres;
-      if (dbinfo.parallelUtils->parallel_rank() == 0) {
-        this->getCatalystManager().parsePhactoriFile(phactoriFilePath, pres);
-      }
-      this->broadCastStatusCode(pres.parseFailed, dbinfo);
-      if (pres.parseFailed) {
-        std::ostringstream errmsg;
-        errmsg << "Unable to parse input file: " << phactoriFilePath << "\n";
-        IOSS_ERROR(errmsg);
-      }
-      else {
-        this->broadCastString(pres.jsonParseResult, dbinfo);
-        cmInit.catalystBlockJSON = pres.jsonParseResult;
-      }
-    }
 
     cmInit.writeCatalystMeshOneFile = false;
     if (props.exists("WRITE_CATALYST_MESH_ONE_FILE_WITH_PREFIX")) {
