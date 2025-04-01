@@ -184,6 +184,10 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     cs2_names = input_region_2.get_database()->internal_change_set_describe();
   }
 
+  if (cs1_names.empty() && cs2_names.empty()) {
+    overall_result &= compare_database_internal(input_region_1, input_region_2, options);
+  }
+  else {
   for (const auto &cs1_name : cs1_names) {
     auto it = std::find(cs2_names.cbegin(), cs2_names.cend(), cs1_name);
     if (it == cs2_names.cend()) {
@@ -197,6 +201,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
       continue;
     }
     overall_result &= compare_database_internal(input_region_1, input_region_2, options);
+  }
   }
   return overall_result;
 }
