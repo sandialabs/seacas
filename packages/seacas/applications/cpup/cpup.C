@@ -43,6 +43,7 @@ namespace {
   using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
   using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
   using GlobalIJKMap   = std::map<const std::string, Ioss::IJK_t>;
+  using GlobalAssembly = std::map<std::string, std::vector<std::string>>;
   using PartVector     = std::vector<std::unique_ptr<Ioss::Region>>;
 
   GlobalZgcMap generate_global_zgc(const PartVector &part_mesh);
@@ -239,6 +240,8 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
   GlobalBlockMap all_blocks;
   GlobalIJKMap   global_block;
+  GlobalAssembly global_assemblies;
+
   for (const auto &part : part_mesh) {
     const auto &blocks = part->get_structured_blocks();
     for (const auto &block : blocks) {
@@ -255,6 +258,18 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
         if (zgc_name == part_name) {
           zgc.m_fromDecomp = true;
         }
+      }
+    }
+
+    // proc-0 should have all the assemblies, but the membership of the
+    // assemblies requires all parts to be read...
+    const auto &assems = part->get_assemblies();
+    for (const auto &assem : assems) {
+      const auto &members = assem->get_members();
+      auto &assem_members = global_assemblies[assem->name()];
+      for (const auto &member : members) {
+	const auto [member_name, member_proc] = Iocgns::Utils::decompose_name(member->name(), true);
+	assem_members.push_back(member_name);
       }
     }
   }
@@ -321,7 +336,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     }
   }
 
-  // Copy the sidesets and assemblies from the proc-0 input file to the output file...
+  // Copy the sidesets from the proc-0 input file to the output file...
   auto       &part  = part_mesh[0];
   const auto &ssets = part->get_sidesets();
   for (const auto &sset : ssets) {
@@ -329,10 +344,18 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     output_region.add(oss);
   }
 
-  const auto &assems = part->get_assemblies();
-  for (const auto &assem : assems) {
-    auto *oass = new Ioss::Assembly(*assem);
-    output_region.add(oass);
+  // Add assemblies to the output file...
+  int id = 1;
+  for (auto &[name, members] : global_assemblies) {
+    Ioss::Utils::uniquify(members);
+    auto *assembly = new Ioss::Assembly(dbo, name);
+    assembly->property_add(Ioss::Property("id", id++));
+    for (const auto &block_name : members) {
+      auto *block = output_region.get_structured_block(block_name);
+      assert(block);
+      assembly->add(block);
+    }
+    output_region.add(assembly);
   }
 
   if (debug_level & 4) {
