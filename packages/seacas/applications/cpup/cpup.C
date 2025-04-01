@@ -265,11 +265,11 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     // assemblies requires all parts to be read...
     const auto &assems = part->get_assemblies();
     for (const auto &assem : assems) {
-      const auto &members = assem->get_members();
-      auto &assem_members = global_assemblies[assem->name()];
+      const auto &members       = assem->get_members();
+      auto       &assem_members = global_assemblies[assem->name()];
       for (const auto &member : members) {
-	const auto [member_name, member_proc] = Iocgns::Utils::decompose_name(member->name(), true);
-	assem_members.push_back(member_name);
+        const auto [member_name, member_proc] = Iocgns::Utils::decompose_name(member->name(), true);
+        assem_members.push_back(member_name);
       }
     }
   }

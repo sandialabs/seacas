@@ -1145,19 +1145,19 @@ namespace Iocgns {
 
       int idx = 0;
       for (const auto &sb : blocks) {
-        unsigned    assem_hash = assem_ids[idx++];
-	if (assem_hash > 0) {
-	  std::string name       = assembly_hash_map[assem_hash];
-	  auto       *assembly   = get_region()->get_assembly(name);
-	  assert(assembly != nullptr);
-	  if (!sb->property_exists("assembly")) {
-	    assembly->add(sb);
-	    Ioss::StructuredBlock *new_sb = const_cast<Ioss::StructuredBlock *>(sb);
-	    new_sb->property_add(Ioss::Property("assembly", assembly->name()));
-	  }
-	  SMART_ASSERT(sb->get_property("assembly").get_string() == assembly->name())
-	    (sb->get_property("assembly").get_string())(assembly->name());
-	}
+        unsigned assem_hash = assem_ids[idx++];
+        if (assem_hash > 0) {
+          std::string name     = assembly_hash_map[assem_hash];
+          auto       *assembly = get_region()->get_assembly(name);
+          assert(assembly != nullptr);
+          if (!sb->property_exists("assembly")) {
+            assembly->add(sb);
+            Ioss::StructuredBlock *new_sb = const_cast<Ioss::StructuredBlock *>(sb);
+            new_sb->property_add(Ioss::Property("assembly", assembly->name()));
+          }
+          SMART_ASSERT(sb->get_property("assembly").get_string() == assembly->name())
+          (sb->get_property("assembly").get_string())(assembly->name());
+        }
       }
     }
 #endif
