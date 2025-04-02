@@ -12,11 +12,11 @@
 #include <Ioss_NodeBlock.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
+#include <algorithm>
 #include <catalyst/Iocatalyst_CatalystManager.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
 #include <catalyst_tests/Iocatalyst_BlockMeshSet.h>
 #include <unordered_set>
-#include <algorithm>
 
 namespace Iocatalyst {
 
@@ -349,13 +349,13 @@ namespace Iocatalyst {
       std::string conn_name = "connectivity";
       if (iop.writeConnectivityRaw) {
         conn_name = "connectivity_raw";
-	for (int i = 0; i < connectivity.size(); i++) {
-	  auto it = std::find(globalPointIds.begin(), globalPointIds.end(), connectivity[i]);
-	  if (it != globalPointIds.end()) {
-            int index = std::distance(globalPointIds.begin(), it);
-	    connectivity[i] = index + 1;
-	  }
-	}
+        for (int i = 0; i < connectivity.size(); i++) {
+          auto it = std::find(globalPointIds.begin(), globalPointIds.end(), connectivity[i]);
+          if (it != globalPointIds.end()) {
+            int index       = std::distance(globalPointIds.begin(), it);
+            connectivity[i] = index + 1;
+          }
+        }
       }
       elemBlock->put_field_data(conn_name, connectivity);
       elemBlock->put_field_data("ids", globalElemIds);
