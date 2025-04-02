@@ -68,7 +68,6 @@ namespace Iocatalyst {
     int           getNumPartitionBlocks() const;
     IDList        getPartitionBlockIDs() const;
     BlockConn     getBlockConnectivityPointIDs(ID blockID) const;
-    BlockConn     getPartitionBlockConnectivityPointIDs(ID blockID) const;
     static Extent getGlobalBlockExtents() { return {I_GLOBAL, J_GLOBAL, K_GLOBAL}; };
     ID            getGlobalIDForBlockID(ID blockID);
 
