@@ -236,30 +236,6 @@ namespace Iocatalyst {
     return conn;
   }
 
-  BlockMesh::BlockConn BlockMesh::getPartitionBlockConnectivityPointIDs(ID blockID) const
-  {
-    BlockConn conn;
-    Extent bounds = {extents.i + BLOCK_OFFSET, extents.j + BLOCK_OFFSET, extents.k + BLOCK_OFFSET};
-    Extent e      = getCoordsForID(blockID, bounds);
-    e.i -= partitionStart.i;
-    e.j -= partitionStart.j;
-    e.k -= partitionStart.k;
-
-    bounds = {partitionExtents.i + BLOCK_OFFSET, partitionExtents.j + BLOCK_OFFSET,
-              partitionExtents.k + BLOCK_OFFSET};
-
-    conn[0] = getIDfromCoords({e.i, e.j, e.k}, bounds);
-    conn[1] = getIDfromCoords({e.i + 1, e.j, e.k}, bounds);
-    conn[2] = getIDfromCoords({e.i + 1, e.j + 1, e.k}, bounds);
-    conn[3] = getIDfromCoords({e.i, e.j + 1, e.k}, bounds);
-    conn[4] = getIDfromCoords({e.i, e.j, e.k + 1}, bounds);
-    conn[5] = getIDfromCoords({e.i + 1, e.j, e.k + 1}, bounds);
-    conn[6] = getIDfromCoords({e.i + 1, e.j + 1, e.k + 1}, bounds);
-    conn[7] = getIDfromCoords({e.i, e.j + 1, e.k + 1}, bounds);
-
-    return conn;
-  }
-
   BlockMesh::ID BlockMesh::getGlobalIDForBlockID(ID blockID)
   {
     auto coords = getCoordsForID(blockID, getExtents());

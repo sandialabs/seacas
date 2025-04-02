@@ -12,6 +12,7 @@
 #include <Ioss_NodeBlock.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
+#include <algorithm>
 #include <catalyst/Iocatalyst_CatalystManager.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
 #include <catalyst_tests/Iocatalyst_BlockMeshSet.h>
@@ -337,27 +338,26 @@ namespace Iocatalyst {
       BlockMesh::IDList globalElemIds;
       BlockMesh::IDList ids = bm.getPartitionBlockIDs();
 
-      if (iop.writeConnectivityRaw) {
-        for (int i = 0; i < ids.size(); i++) {
-          BlockMesh::BlockConn conn = bm.getPartitionBlockConnectivityPointIDs(ids[i]);
-          globalElemIds.push_back(bm.getGlobalIDForBlockID(ids[i]));
-          for (int j = 0; j < conn.size(); j++) {
-            connectivity[(i * 8) + j] = conn[j];
-          }
+      for (int i = 0; i < ids.size(); i++) {
+        BlockMesh::BlockConn conn = bm.getBlockConnectivityPointIDs(ids[i]);
+        globalElemIds.push_back(bm.getGlobalIDForBlockID(ids[i]));
+        for (int j = 0; j < conn.size(); j++) {
+          connectivity[(i * 8) + j] = bm.getGlobalIDForPointID(conn[j]);
         }
-        elemBlock->put_field_data("connectivity_raw", connectivity);
-      }
-      else {
-        for (int i = 0; i < ids.size(); i++) {
-          BlockMesh::BlockConn conn = bm.getBlockConnectivityPointIDs(ids[i]);
-          globalElemIds.push_back(bm.getGlobalIDForBlockID(ids[i]));
-          for (int j = 0; j < conn.size(); j++) {
-            connectivity[(i * 8) + j] = bm.getGlobalIDForPointID(conn[j]);
-          }
-        }
-        elemBlock->put_field_data("connectivity", connectivity);
       }
 
+      std::string conn_name = "connectivity";
+      if (iop.writeConnectivityRaw) {
+        conn_name = "connectivity_raw";
+        for (int i = 0; i < connectivity.size(); i++) {
+          auto it = std::find(globalPointIds.begin(), globalPointIds.end(), connectivity[i]);
+          if (it != globalPointIds.end()) {
+            int index       = std::distance(globalPointIds.begin(), it);
+            connectivity[i] = index + 1;
+          }
+        }
+      }
+      elemBlock->put_field_data(conn_name, connectivity);
       elemBlock->put_field_data("ids", globalElemIds);
     }
   }
