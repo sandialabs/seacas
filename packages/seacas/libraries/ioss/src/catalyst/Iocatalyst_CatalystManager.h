@@ -50,6 +50,8 @@ namespace Iocatalyst {
     inline static const std::string TIME                       = "time";
     inline static const std::string TIMESTEP                   = "timestep";
     inline static const std::string TYPE                       = "type";
+    inline static const std::string PHACTORI_DRIVER_SCRIPT_PATH =
+	"PHACTORI_DRIVER_SCRIPT_PATH";
 
     static CatalystManager &getInstance()
     {
@@ -57,7 +59,7 @@ namespace Iocatalyst {
       return instance;
     }
 
-    std::string getCatalystPythonDriverPath() { return "/todo/create/real/path"; }
+    std::string getCatalystPythonDriverPath();
 
     conduit_cpp::Node getInitializeConduit();
 
