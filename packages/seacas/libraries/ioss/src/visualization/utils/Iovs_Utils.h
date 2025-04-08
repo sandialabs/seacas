@@ -81,13 +81,13 @@ namespace Iovs {
     void loadPluginLibrary();
     void setPythonPathForParaViewPythonZipFile(std::string &paraviewPythonZipFilePath);
 
-    void  getCatalystPluginPath(std::string &catalystPluginPath);
+    void getCatalystPluginPath(std::string &catalystPluginPath);
 
     std::string getCatalystAdapterInstallDirectory();
 
     void *getDlHandle();
 
-    void *dlHandle          = nullptr;
+    void *dlHandle = nullptr;
 
 #if defined(__APPLE__)
     const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY = "libcatalystioss.dylib";

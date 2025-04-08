@@ -286,10 +286,9 @@ namespace Iovs {
       throw std::runtime_error(dlerror());
     }
 #else
-    this->dlHandle          = nullptr;
+    this->dlHandle = nullptr;
 #endif
   }
-
 
   void Utils::getCatalystPluginPath(std::string &catalystPluginPath)
   {
@@ -304,7 +303,7 @@ namespace Iovs {
     }
 
     catalystPluginPath =
-      catalystInsDir + std::string(CATALYST_INSTALL_LIB_DIR) + CATALYST_PLUGIN_DYNAMIC_LIBRARY;
+        catalystInsDir + std::string(CATALYST_INSTALL_LIB_DIR) + CATALYST_PLUGIN_DYNAMIC_LIBRARY;
   }
 
   void Utils::setPythonPathForParaViewPythonZipFile(std::string &paraviewPythonZipFilePath)

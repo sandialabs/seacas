@@ -70,10 +70,7 @@ protected:
     setenv(CatalystManager::PHACTORI_DRIVER_SCRIPT_PATH.c_str(), phactoriDriverPath.c_str(), 1);
   }
 
-  void unsetPhactoriEnvVar()
-  {
-    unsetenv(CatalystManager::PHACTORI_DRIVER_SCRIPT_PATH.c_str());
-  }
+  void unsetPhactoriEnvVar() { unsetenv(CatalystManager::PHACTORI_DRIVER_SCRIPT_PATH.c_str()); }
 };
 
 TEST_F(LoggingTest, LoggingDefault)
@@ -121,8 +118,7 @@ TEST_F(ManagerTest, CATALYST_BLOCK_PARSE_JSON_STRING)
   setPhactoriEnvVar();
   initialize();
   EXPECT_EQ(catalystProps.catalystBlockJSON, jsonScript);
-  EXPECT_EQ(phactoriDriverPath,
-            CatalystManager::getInstance().getCatalystPythonDriverPath());
+  EXPECT_EQ(phactoriDriverPath, CatalystManager::getInstance().getCatalystPythonDriverPath());
   unsetPhactoriEnvVar();
 }
 
@@ -138,21 +134,18 @@ TEST_F(ManagerTest, PHACTORI_JSON_SCRIPT)
   setPhactoriEnvVar();
   initialize();
   EXPECT_EQ(catalystProps.catalystBlockJSON, jsonScript);
-  EXPECT_EQ(phactoriDriverPath,
-            CatalystManager::getInstance().getCatalystPythonDriverPath());
+  EXPECT_EQ(phactoriDriverPath, CatalystManager::getInstance().getCatalystPythonDriverPath());
   remove(jsonFileName.c_str());
   unsetPhactoriEnvVar();
 }
 
 TEST_F(ManagerTest, PHACTORI_DRIVER_PATH)
 {
-  EXPECT_THROW(CatalystManager::getInstance().getCatalystPythonDriverPath(),
-	       std::runtime_error);
+  EXPECT_THROW(CatalystManager::getInstance().getCatalystPythonDriverPath(), std::runtime_error);
 
   setPhactoriEnvVar();
   initialize();
-  EXPECT_EQ(phactoriDriverPath,
-            CatalystManager::getInstance().getCatalystPythonDriverPath());
+  EXPECT_EQ(phactoriDriverPath, CatalystManager::getInstance().getCatalystPythonDriverPath());
   unsetPhactoriEnvVar();
 }
 

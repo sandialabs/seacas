@@ -428,7 +428,7 @@ namespace Iovs_exodus {
      *       should be in the original order...
      */
 
-    if(this->globalNodeAndElementIDsCreated) {
+    if (this->globalNodeAndElementIDsCreated) {
       return num_to_get;
     }
 
@@ -506,7 +506,7 @@ namespace Iovs_exodus {
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+my_element_count'
 
-    if(idsCreated) {
+    if (idsCreated) {
       return num_to_get;
     }
 
@@ -527,7 +527,7 @@ namespace Iovs_exodus {
   {
     elemMap.set_size(elementCount);
     return handle_block_ids(eb, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
-        this->globalNodeAndElementIDsCreated);
+                            this->globalNodeAndElementIDsCreated);
   }
 
   const Ioss::Map &DatabaseIO::get_node_map() const

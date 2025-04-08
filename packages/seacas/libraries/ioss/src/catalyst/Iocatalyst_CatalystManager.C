@@ -126,7 +126,7 @@ namespace Iocatalyst {
     else {
       std::ostringstream errmsg;
       errmsg << "Error: environment variable " << PHACTORI_DRIVER_SCRIPT_PATH
-	     << " not set to the full path of PhactoriDriver.py";
+             << " not set to the full path of PhactoriDriver.py";
       IOSS_ERROR(errmsg);
     }
     return driverPath;
