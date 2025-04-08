@@ -20,7 +20,7 @@
 *  [SPACK](#spack)
 *  [Docker](#docker)
 *  [CMake Example Usage](#cmake-example-usage)
-*  [Requred Software: Mac](#required-software)
+*  [Required Software: Mac](#required-software)
 *  [License](#license)
 *  [Contact information](#contact-information)
 *  NOTE: The old imake-based build has been removed.
