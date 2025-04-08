@@ -606,10 +606,15 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
-	    patch < ../CGNS-Allow-more-liberal-version-matching.patch
+            patch < ../CGNS-Allow-more-liberal-version-matching.patch
             if [[ $? != 0 ]]
             then
-		echo 1>&2 ${txtred}Problems applying CGNS Version patch. Continuing, but look here if errors building. Files written may not be readable by older libraries.${txtrst}
+                echo 1>&2 ${txtred}Problems applying CGNS Version patch. Continuing, but look here if errors building. Files written may not be readable by older libraries.${txtrst}
+            fi
+            patch < ../CGNS-ZLIB.patch
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}Problems applying CGNS ZLIB patch.${txtrst}
             fi
             rm -rf build
             mkdir build
