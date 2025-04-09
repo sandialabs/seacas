@@ -54,7 +54,8 @@ if (SEACASExodus_ENABLE_SHARED)
 endif()
 
 # Many users of the SEACAS installations still want a static exodus library...
-if (SEACASExodus_ENABLE_STATIC)
+# But if only building a static library, it will be added in the `TRIBITS_ADD_LIBRARY` call.
+if (SEACASExodus_ENABLE_STATIC AND SEACASExodus_ENABLE_SHARED)
    # NOTE: If use `TRIBITS_ADD_LIBRARY` here, then both exodus and exodus_static linked to all executables.
    ADD_LIBRARY(
            exodus_static
