@@ -606,7 +606,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
-            patch < ../CGNS-Allow-more-liberal-version-matching.patch
+            patch -p1 < ../CGNS-Allow-more-liberal-version-matching.patch
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}Problems applying CGNS Version patch. Continuing, but look here if errors building. Files written may not be readable by older libraries.${txtrst}
