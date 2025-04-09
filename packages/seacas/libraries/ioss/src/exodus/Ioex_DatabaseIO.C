@@ -1558,7 +1558,6 @@ namespace Ioex {
           }
           if (ss_name[0] != '\0') {
             Ioss::Utils::fixup_name(Data(ss_name));
-            Ioex::decode_surface_name(fs_map, fs_set, Data(ss_name));
           }
         }
       }
