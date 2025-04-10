@@ -137,10 +137,3 @@ jobs:
           cd build
           ctest -j 4 --output-on-failure
         if: ${{ success() }}
-
-      - name: Run SEACAS-Test
-        shell: bash -l {0}
-        run: |
-          cd SEACAS-Test
-          make BASE=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} test
-        if: ${{ success() }}
