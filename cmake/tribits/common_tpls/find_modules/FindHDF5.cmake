@@ -361,7 +361,7 @@ else()
         set(target ${HDF5_${_component}_TARGET})
         if ( TARGET ${target} )
           set(HDF5_${_component}_LIBRARY ${target})
-          list(APPEND HDF5_LIBRARIES ${HDF5_${_component}_LIBRARY})
+          list(PREPEND HDF5_LIBRARIES ${HDF5_${_component}_LIBRARY})
         endif()  
       endforeach()
 
