@@ -143,9 +143,8 @@ namespace {
     }
   }
 
-  void calc_bounding_box(size_t ndim, std::vector<double> &coordinates,
-                         double &xmin, double &ymin, double &zmin, double &xmax, double &ymax,
-                         double &zmax)
+  void calc_bounding_box(size_t ndim, std::vector<double> &coordinates, double &xmin, double &ymin,
+                         double &zmin, double &xmax, double &ymax, double &zmax)
   {
     xmin = DBL_MAX;
     ymin = DBL_MAX;
@@ -1347,7 +1346,7 @@ namespace Ioss {
   {
     std::vector<double> coordinates;
     nb->get_field_data("mesh_model_coordinates", coordinates);
-    auto ndim  = nb->get_property("component_degree").get_int();
+    auto ndim = nb->get_property("component_degree").get_int();
 
     double xmin, ymin, zmin, xmax, ymax, zmax;
     calc_bounding_box(ndim, coordinates, xmin, ymin, zmin, xmax, ymax, zmax);
