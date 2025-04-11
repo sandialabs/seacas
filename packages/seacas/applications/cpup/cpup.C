@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -269,7 +269,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
       auto       &assem_members = global_assemblies[assem->name()];
       for (const auto &member : members) {
         const auto [member_name, member_proc] = Iocgns::Utils::decompose_name(member->name(), true);
-        assem_members.push_back(member_name);
+        assem_members.push_back(std::move(member_name));
       }
     }
   }
