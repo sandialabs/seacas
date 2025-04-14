@@ -80,23 +80,24 @@
 
 namespace {
   extern "C" {
-    // From private CGNS header: `cgio_internal_type.h`
-    typedef struct _cgns_io_ctx_t {
-      /* Flag indicating if HDF5 file accesses is PARALLEL or NATIVE */
-      char hdf5_access[64];
+  // From private CGNS header: `cgio_internal_type.h`
+  typedef struct _cgns_io_ctx_t
+  {
+    /* Flag indicating if HDF5 file accesses is PARALLEL or NATIVE */
+    char hdf5_access[64];
 #if CG_BUILD_PARALLEL
-      /* MPI-2 info object */
-      MPI_Comm pcg_mpi_comm;
-      int pcg_mpi_comm_size;
-      int pcg_mpi_comm_rank;
-      /* flag indicating if mpi_initialized was called */
-      int pcg_mpi_initialized;
-      MPI_Info pcg_mpi_info;
-      int64_t default_pio_mode;
+    /* MPI-2 info object */
+    MPI_Comm pcg_mpi_comm;
+    int      pcg_mpi_comm_size;
+    int      pcg_mpi_comm_rank;
+    /* flag indicating if mpi_initialized was called */
+    int      pcg_mpi_initialized;
+    MPI_Info pcg_mpi_info;
+    int64_t  default_pio_mode;
 #endif
-    } cgns_io_ctx_t;
-    
-    extern cgns_io_ctx_t ctx_cgio; /* located in cgns_io.c */
+  } cgns_io_ctx_t;
+
+  extern cgns_io_ctx_t ctx_cgio; /* located in cgns_io.c */
   }
 
   // There is a bug in the CGNS library (4.4.0 and before) where it
@@ -122,26 +123,26 @@ namespace {
 #if CG_BUILD_PARALLEL
       m_wasSet = strcmp(ctx_cgio.hdf5_access, "PARALLEL") == 0;
       if (m_wasSet != yes_no) {
-	m_changed = true;
-	if (yes_no) {
-	  strcpy(ctx_cgio.hdf5_access,"PARALLEL");
-	}
-	else {
-	  strcpy(ctx_cgio.hdf5_access,"NATIVE");
-	}
+        m_changed = true;
+        if (yes_no) {
+          strcpy(ctx_cgio.hdf5_access, "PARALLEL");
+        }
+        else {
+          strcpy(ctx_cgio.hdf5_access, "NATIVE");
+        }
       }
 #endif
     }
-    ~ParallelGuard() 
+    ~ParallelGuard()
     {
 #if CG_BUILD_PARALLEL
       if (m_changed) {
-	if (m_wasSet) {
-	  strcpy(ctx_cgio.hdf5_access,"PARALLEL");
-	}
-	else {
-	  strcpy(ctx_cgio.hdf5_access,"NATIVE");
-	}
+        if (m_wasSet) {
+          strcpy(ctx_cgio.hdf5_access, "PARALLEL");
+        }
+        else {
+          strcpy(ctx_cgio.hdf5_access, "NATIVE");
+        }
       }
 #endif
     }
@@ -2074,7 +2075,7 @@ namespace Iocgns {
       return 0;
     }
 
-    ParallelGuard serial(0);
+    ParallelGuard         serial(0);
     Ioss::Field::RoleType role = field.get_role();
     if (role == Ioss::Field::TRANSIENT) {
       // Get the StructuredBlock that this NodeBlock is contained in:
@@ -2145,7 +2146,7 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     ParallelGuard serial(0);
-    size_t num_to_get = field.verify(data_size);
+    size_t        num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
 
       int                   base             = eb->get_property("base").get_int();
@@ -2285,7 +2286,7 @@ namespace Iocgns {
     int                   base = sb->get_property("base").get_int();
     int                   zone = Iocgns::Utils::get_db_zone(sb);
 
-    cgsize_t num_to_get = field.verify(data_size);
+    cgsize_t      num_to_get = field.verify(data_size);
     ParallelGuard serial(0);
 
     // In this routine, if isParallel, then reading file-per-processor; not parallel io from single
@@ -2476,9 +2477,9 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     ParallelGuard serial(0);
-    int base = sb->get_property("base").get_int();
-    int zone = Iocgns::Utils::get_db_zone(sb);
-    int sect = sb->get_property("section").get_int();
+    int           base = sb->get_property("base").get_int();
+    int           zone = Iocgns::Utils::get_db_zone(sb);
+    int           sect = sb->get_property("section").get_int();
 
     int64_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
@@ -2744,7 +2745,7 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     ParallelGuard serial(0);
-    size_t num_to_get = field.verify(data_size);
+    size_t        num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
 
       Ioss::Field::RoleType role = field.get_role();
@@ -3152,7 +3153,7 @@ namespace Iocgns {
   int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    ParallelGuard serial(0);
+    ParallelGuard            serial(0);
     const Ioss::EntityBlock *parent_block = sb->parent_block();
     if (parent_block == nullptr) {
       IOSS_ERROR(fmt::format(

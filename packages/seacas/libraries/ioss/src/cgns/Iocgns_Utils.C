@@ -1267,7 +1267,7 @@ size_t Iocgns::Utils::common_write_metadata(int file_ptr, const Ioss::Region &re
         bc_range[idx++] = bc.m_rangeEnd[i];
       }
       if (is_parallel_io) {
-	region.get_database()->progress(fmt::format("\t\tBC Range calculation, {}.", bc.m_bcName));
+        region.get_database()->progress(fmt::format("\t\tBC Range calculation, {}.", bc.m_bcName));
       }
     }
 
