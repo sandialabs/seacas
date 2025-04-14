@@ -37,7 +37,7 @@ jobs:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Fix C++ and C formatting issues detected by clang-format
-      uses: DoozyX/clang-format-lint-action@v0.18.2
+      uses: DoozyX/clang-format-lint-action@v0.20
       with:
         source: 'packages/seacas'
         exclude: 'packages/seacas/doc-source'
