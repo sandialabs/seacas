@@ -148,7 +148,7 @@ namespace {
     for (size_t i = 1; i < N; i++) {
       INT tmp = iv[i];
       for (j = i; v[tmp] < v[iv[j - 1]]; j--) {
-	assert(j >= 1);
+        assert(j >= 1);
         iv[j] = iv[j - 1];
       }
       iv[j] = tmp;

@@ -266,7 +266,7 @@ namespace {
     for (size_t i = 1; i < N; i++) {
       INT tmp = v[i];
       for (j = i; tmp < v[j - 1]; j--) {
-	assert(j >= 1);
+        assert(j >= 1);
         v[j] = v[j - 1];
       }
       v[j] = tmp;
@@ -634,7 +634,7 @@ namespace {
       for (j = i; is_less_than4(small_val1, small_val2, small_val3, small_val4, v1[j - 1],
                                 v2[j - 1], v3[j - 1], v4[j - 1]);
            j--) {
-	assert(j >= 1);
+        assert(j >= 1);
         v1[j] = v1[j - 1];
         v2[j] = v2[j - 1];
         v3[j] = v3[j - 1];
@@ -750,7 +750,7 @@ namespace {
       INT    small_val2 = v2[i];
       size_t j;
       for (j = i; is_less_than2(small_val1, small_val2, v1[j - 1], v2[j - 1]); j--) {
-	assert(j >= 1);
+        assert(j >= 1);
         v1[j] = v1[j - 1];
         v2[j] = v2[j - 1];
       }

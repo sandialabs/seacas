@@ -107,7 +107,7 @@ namespace {
       INT    tmp = iv[i];
       size_t j;
       for (j = i; v[tmp] < v[iv[j - 1]]; j--) {
-	assert(j >= 1);
+        assert(j >= 1);
         iv[j] = iv[j - 1];
       }
       iv[j] = tmp;
@@ -189,7 +189,7 @@ namespace {
       INT    tmp = v[i];
       size_t j;
       for (j = i; tmp < v[j - 1]; j--) {
-	assert(j >= 1);
+        assert(j >= 1);
         v[j] = v[j - 1];
       }
       v[j] = tmp;
