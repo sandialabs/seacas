@@ -1555,19 +1555,20 @@ namespace Ioex {
     }
   }
 
-  bool BaseDatabaseIO::begin_state_nl(int state, double time)
+  bool BaseDatabaseIO::begin_state_nl(int state, double a_time)
   {
     Ioss::SerializeIO serializeIO_(this);
 
-    time /= timeScaleFactor;
+    a_time /= timeScaleFactor;
 
     if (!is_input()) {
+      timeBeginStep = time(nullptr);
       if (get_file_per_state()) {
         // Close current file; create new file and output transient metadata...
         open_state_file(state);
         write_results_metadata(false, open_create_behavior());
       }
-      int ierr = ex_put_time(get_file_pointer(), get_database_step(state), &time);
+      int ierr = ex_put_time(get_file_pointer(), get_database_step(state), &a_time);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -1589,14 +1590,14 @@ namespace Ioex {
   }
 
   // common
-  bool BaseDatabaseIO::end_state_nl(int state, double time)
+  bool BaseDatabaseIO::end_state_nl(int state, double a_time)
   {
     Ioss::SerializeIO serializeIO_(this);
 
     if (!is_input()) {
       write_reduction_fields();
-      time /= timeScaleFactor;
-      finalize_write(state, time);
+      a_time /= timeScaleFactor;
+      finalize_write(state, a_time);
       if (minimizeOpenFiles) {
         free_file_pointer();
       }
@@ -2610,6 +2611,8 @@ namespace Ioex {
     //  flushInterval == 1 -- flush every step
     //
     //  flushInterval > 1 -- flush if step % flushInterval == 0
+    //
+    //  if time between begin_state and end_state is > 10 seconds,
 
     bool do_flush = true;
     if (flushInterval == 1) {
@@ -2641,6 +2644,24 @@ namespace Ioex {
       }
     }
 
+    if (flushInterval != 0 && !do_flush) {
+      // One last check -- if output took more than 10 seconds (arbitrary)
+      // then flush since the relative flush cost is outweighted by the time
+      // it took to do the output (Basically, we have a lot of data being output...)
+      time_t cur_time = time(nullptr);
+      if (cur_time - timeBeginStep >= 10) {
+        timeLastFlush = cur_time;
+        do_flush      = true;
+      }
+#ifdef SEACAS_HAVE_MPI
+      if (isParallel) {
+        int iflush = do_flush ? 1 : 0;
+        util().broadcast(iflush);
+        do_flush = iflush == 1;
+      }
+#endif
+    }
+      
     if (do_flush) {
       flush_database_nl();
     }
