@@ -2661,7 +2661,7 @@ namespace Ioex {
       }
 #endif
     }
-      
+
     if (do_flush) {
       flush_database_nl();
     }
