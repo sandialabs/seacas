@@ -658,7 +658,8 @@ namespace Ioex {
   }
 
   std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                              const std::string &basename, int length, bool lower_case_names, bool &db_has_name)
+                              const std::string &basename, int length, bool lower_case_names,
+                              bool &db_has_name)
   {
     std::vector<char> buffer(length + 1);
     buffer[0] = '\0';
@@ -669,12 +670,12 @@ namespace Ioex {
     if (buffer[0] != '\0') {
       std::string name{Data(buffer)};
       if (lower_case_names) {
-	Ioss::Utils::fixup_name(name);
+        Ioss::Utils::fixup_name(name);
       }
       // Filter out names of the form "basename_id" if the name
       // id doesn't match the id in the name...
       if (Ioss::Utils::substr_equal(basename, name)) {
-	int64_t name_id = extract_id(name);
+        int64_t name_id = extract_id(name);
 
         // See if name is truly of form "basename_name_id" (e.g. "surface_{id}")
         std::string tmp_name = Ioss::Utils::encode_entity_name(basename, name_id);
