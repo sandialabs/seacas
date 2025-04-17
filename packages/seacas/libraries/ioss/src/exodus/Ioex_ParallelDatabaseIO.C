@@ -1534,8 +1534,9 @@ namespace Ioex {
             side_set_name = alias;
           }
           else {
-            side_set_name = Ioex::get_entity_name(get_file_pointer(), EX_SIDE_SET, id, "surface",
-                                                  maximumNameLength, lowerCaseDatabaseNames, db_has_name);
+            side_set_name =
+                Ioex::get_entity_name(get_file_pointer(), EX_SIDE_SET, id, "surface",
+                                      maximumNameLength, lowerCaseDatabaseNames, db_has_name);
           }
 
           if (side_set_name == "universal_sideset") {
