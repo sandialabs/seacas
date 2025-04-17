@@ -274,6 +274,9 @@ namespace {
       if (!interFace.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
       }
+      if (interFace.lower_case_database_names) {
+        dbi->set_lower_case_database_names(true);
+      }
       if (interFace.outFiletype == "cgns") {
         // CGNS stores BCs (SideSets) on the zones which
         // correspond to element blocks.  If split input sideblocks
@@ -567,6 +570,9 @@ namespace {
     if (!interFace.lower_case_variable_names) {
       dbi1->set_lower_case_variable_names(false);
     }
+    if (interFace.lower_case_database_names) {
+      dbi1->set_lower_case_database_names(true);
+    }
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which
       // correspond to element blocks.  If split input sideblocks
@@ -617,6 +623,9 @@ namespace {
     }
     if (!interFace.lower_case_variable_names) {
       dbi2->set_lower_case_variable_names(false);
+    }
+    if (interFace.lower_case_database_names) {
+      dbi2->set_lower_case_database_names(true);
     }
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which

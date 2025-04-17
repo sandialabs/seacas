@@ -47,6 +47,7 @@ par_cgns         | Input/Output  | alias for parallel CGNS
  ----------|:--------:|------------
  LOGGING   | on/[off] | enable/disable logging of field input/output
  LOWER_CASE_VARIABLE_NAMES | [on]/off | Convert all variable names read from input database to lowercase; replace ' ' with '_'
+ LOWER_CASE_DATABASE_NAMES | on/[off] | Convert all block/set names read from input database to lowercase; replace ' ' with '_'
  USE_GENERIC_CANONICAL_NAMES | on/[off]  | use `block_{id}` as canonical name of an element block instead of the name (if any) stored on the database. The database name will be an alias.
  IGNORE_DATABASE_NAMES | on/[off] | Do not read any element block, nodeset, ... names if they exist on the database.  Use only the canonical generated names (entitytype + _ + id)
  IGNORE_ATTRIBUTE_NAMES   | on/[off] | Do not read the attribute names that may exist on an input database. Instead for an element block with N attributes, the fields will be named `attribute_1` ... `attribute_N`
