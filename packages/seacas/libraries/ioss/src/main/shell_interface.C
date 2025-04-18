@@ -331,10 +331,11 @@ void IOShell::Interface::enroll_options()
                   "\t\tVariable names are left as they appear in the input mesh file",
                   nullptr);
 
-  options_.enroll("lower_case_database_names", Ioss::GetLongOption::OptType::NoValue,
-                  "Lowercase all block/set/assembly names and replace spaces with underscores.\n"
-                  "\t\tBy default, block/set/assembly names are left as they appear in the input mesh file",
-                  nullptr);
+  options_.enroll(
+      "lower_case_database_names", Ioss::GetLongOption::OptType::NoValue,
+      "Lowercase all block/set/assembly names and replace spaces with underscores.\n"
+      "\t\tBy default, block/set/assembly names are left as they appear in the input mesh file",
+      nullptr);
 
   options_.enroll("retain_empty_blocks", Ioss::GetLongOption::OptType::NoValue,
                   "If any empty element blocks on input file, keep them and write to output file.\n"
