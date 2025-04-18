@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "add_to_log.h"
-#define FMT_DEPRECATED_OSTREAM
+
 #include "fmt/ostream.h"
 #include "fmt/ranges.h"
 #include "format_time.h"

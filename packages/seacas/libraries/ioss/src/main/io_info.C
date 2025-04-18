@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <tokenize.h>
 
-#define FMT_DEPRECATED_OSTREAM
 #include <cstddef>
 #include <cstdlib>
 #include <fmt/format.h>
