@@ -47,7 +47,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "7.0 (2024/11/08)";
+  std::string version = "7.1 (2025/04/18)";
 
   bool mem_stats = false;
 
@@ -274,9 +274,8 @@ namespace {
       if (!interFace.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
       }
-      if (interFace.lower_case_database_names) {
-        dbi->set_lower_case_database_names(true);
-      }
+      dbi->set_lower_case_database_names(interFace.lower_case_database_names);
+
       if (interFace.outFiletype == "cgns") {
         // CGNS stores BCs (SideSets) on the zones which
         // correspond to element blocks.  If split input sideblocks
@@ -570,9 +569,8 @@ namespace {
     if (!interFace.lower_case_variable_names) {
       dbi1->set_lower_case_variable_names(false);
     }
-    if (interFace.lower_case_database_names) {
-      dbi1->set_lower_case_database_names(true);
-    }
+    dbi1->set_lower_case_database_names(interFace.lower_case_database_names);
+
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which
       // correspond to element blocks.  If split input sideblocks
@@ -624,9 +622,8 @@ namespace {
     if (!interFace.lower_case_variable_names) {
       dbi2->set_lower_case_variable_names(false);
     }
-    if (interFace.lower_case_database_names) {
-      dbi2->set_lower_case_database_names(true);
-    }
+    dbi2->set_lower_case_database_names(interFace.lower_case_database_names);
+
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which
       // correspond to element blocks.  If split input sideblocks

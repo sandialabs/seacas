@@ -772,7 +772,7 @@ namespace Ioss {
     bool         isParallel{false}; //!< true if running in parallel
 
     mutable bool lowerCaseVariableNames{true};
-    mutable bool lowerCaseDatabaseNames{false};
+    mutable bool lowerCaseDatabaseNames{true};
     bool         usingParallelIO{false};
 
     // List of element blocks that should be omitted or included from
