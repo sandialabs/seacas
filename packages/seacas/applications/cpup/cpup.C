@@ -173,9 +173,12 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     // Query the system to see if the number of files exceeds the system limit and we
     // need to force use of minimize_open_files...
     int max_files = open_file_limit() - 1; // We also have an output file.
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Open file limit = {}\n", time_stamp(tsFormat), max_files);
+    }
     if (interFace.processor_count() > max_files) {
       minimize_open_files = true;
-      fmt::print("Single file mode... (Max open = {})\n", max_files);
+      fmt::print("INFO: Automatically setting single file mode... (Max open = {})\n", max_files);
     }
   }
 
