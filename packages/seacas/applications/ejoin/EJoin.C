@@ -215,6 +215,7 @@ int main(int argc, char *argv[])
       if (dbi[p]->int_byte_size_api() > int_byte_size) {
         int_byte_size = dbi[p]->int_byte_size_api();
       }
+      dbi[p]->set_lower_case_database_names(false);
     }
 
     for (size_t p = 0; p < interFace.inputFiles_.size(); p++) {

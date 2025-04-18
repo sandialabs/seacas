@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <tokenize.h>
 
-#define FMT_DEPRECATED_OSTREAM
 #include <cstddef>
 #include <cstdlib>
 #include <fmt/format.h>
@@ -666,6 +665,9 @@ namespace Ioss {
     if (interFace.use_generic_names()) {
       dbi->set_use_generic_canonical_name(true);
     }
+
+    dbi->set_lower_case_variable_names(false);
+    dbi->set_lower_case_database_names(false);
 
     if (interFace.surface_split_scheme() != Ioss::SPLIT_INVALID) {
       dbi->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_scheme()));
