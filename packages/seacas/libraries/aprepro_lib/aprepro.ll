@@ -1,7 +1,7 @@
 s"}/* -*- Mode: c++ -*- */
 
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1123,7 +1123,7 @@ integer {D}+({E})?
       if_state[if_lvl] = IF_SKIP;
     }
     else {
-      suppress_nl         = 1;
+      suppress_nl         = true;
       if_state[if_lvl]    = INITIAL;
       if_case_run[if_lvl] = true;
     }

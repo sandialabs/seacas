@@ -3573,7 +3573,7 @@ namespace SEAMS {
       if_state[if_lvl] = IF_SKIP;
     }
     else {
-      suppress_nl         = 1;
+      suppress_nl         = true;
       if_state[if_lvl]    = INITIAL;
       if_case_run[if_lvl] = true;
     }
