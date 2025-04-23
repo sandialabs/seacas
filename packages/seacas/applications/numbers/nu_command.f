@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2022, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -14,7 +14,7 @@ C        READ AND INTERPRET ALL INPUT DATA
       include 'exodusII.inc'
       CHARACTER*80 TITLE, COMMENT
       INTEGER IA(*)
-      DIMENSION A(*), TIME(*), MAT(6,*), DISP(NUMNP,*), CRD(NUMNP,*),
+      DIMENSION A(*), TIME(*), MAT(7,*), DISP(NUMNP,*), CRD(NUMNP,*),
      *   LINK(*), DENSTY(*), WAVE(*)
       INTEGER ITMSEL(*), ISEVOK(*)
       CHARACTER*(MXSTLN) NAMEGL(*), NAMENV(*), NAMEEL(*)

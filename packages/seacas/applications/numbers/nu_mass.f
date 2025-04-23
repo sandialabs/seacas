@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -7,7 +7,7 @@ C    See packages/seacas/LICENSE for details
       SUBROUTINE MASSPR (A, TIME, ITMSEL, DENS, MAT, DISP,
      *   NQUAD, LABEL)
 
-      DIMENSION A(*), TIME(*), DENS(*), MAT(6,*),
+      DIMENSION A(*), TIME(*), DENS(*), MAT(7,*),
      *   DISP(NUMNP,*)
       LOGICAL ITMSEL(*), ISABRT
       CHARACTER*16  LABEL(32)

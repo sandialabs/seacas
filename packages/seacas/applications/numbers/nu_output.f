@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -11,7 +11,7 @@ C    See packages/seacas/LICENSE for details
       CHARACTER*16 LABMAT(*)
       CHARACTER*16 ENGNOT, ENG1
       REAL MASS(*), DENS(*), VOLM(*), CG(*), ZI(*)
-      DIMENSION MAT(6,*), VOLMN(4,*), IELM(4,*)
+      DIMENSION MAT(7,*), VOLMN(4,*), IELM(4,*)
       LOGICAL AXI, FIRST
       CHARACTER*6 LABEL(3)
       DATA LABEL/'      ',' Area ','Volume'/
