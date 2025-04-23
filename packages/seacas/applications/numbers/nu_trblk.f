@@ -10,10 +10,12 @@ C    See packages/seacas/LICENSE for details
       IBEG = 0
       IEND = 0
       DO I=1, NELBLK
-        if (numlnk(i) .ne. nnodes) then
-          CALL PRTERR('WARNING',
-     *      'Support for non hex/quad meshes is experimental.')
-C          STOP 'Element Error'
+         if (nnodes .eq. 0) then
+            nnodes = numlnk(i)
+         else if (numlnk(i) .ne. nnodes) then
+          CALL PRTERR('ERROR',
+     *      'All blocks must be the same tet/hex/quad topology.')
+          stop
        endif
        IBEG = IEND + 1
        IEND = IEND + NUMELB(I)

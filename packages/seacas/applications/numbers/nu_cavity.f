@@ -6,8 +6,10 @@ C    See packages/seacas/LICENSE for details
 
       SUBROUTINE CAVITY (A, CRD, IDESS, NEESS, NNESS, IPEESS, IPNESS,
      *   LTEESS, LTNESS, FACESS, DISP, NUMNP, NDIM, NUMESS,
-     *   TIME, ITMSEL, TITLE, CENT, CENTER)
+     *   TIME, ITMSEL, TITLE, CENT, CENTER, NNODES)
 
+C     .. nnodes is number of nodes per element
+      
       include 'nu_io.blk'
       DIMENSION A(*), CRD(NUMNP,NDIM), IDESS(*), NEESS(*),
      *   NNESS(*), IPEESS(*), IPNESS(*), LTEESS(*), LTNESS(*),
@@ -27,8 +29,14 @@ C    See packages/seacas/LICENSE for details
          IFLG = IFND(NCAV)
          IPTR = IPNESS(IFLG)
          IF (NDIM .EQ. 3) THEN
-            CALL VOL3D( CRD, LTNESS(IPTR), NEESS(IFLG), VOLUME,
-     *         NDIM, NUMESS, CENT, NUMNP, CENTER)
+            if (nnodes .eq. 8) then
+               CALL VOL3D( CRD, LTNESS(IPTR), NEESS(IFLG), VOLUME,
+     *              NDIM, NUMESS, CENT, NUMNP, CENTER)
+            endif
+            if (nnodes .eq. 4) then
+               CALL TVOL3D( CRD, LTNESS(IPTR), NEESS(IFLG), VOLUME,
+     *              NDIM, NUMESS, CENT, NUMNP, CENTER)
+            endif
          ELSE
             CALL VOL2D( CRD, LTNESS(IPTR), NEESS(IFLG), VOLUME,
      *         NDIM, NUMESS, AXI, CENT, NUMNP, CENTER)

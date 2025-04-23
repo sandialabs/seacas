@@ -310,7 +310,7 @@ C ... For 3d, if no center specified use 0,0,0 unless user enters 'centroid'
          END IF
          CALL CAVITY (A, CRD, A(IBC1), A(IBC2), A(IBC3), A(IBC4),
      *      A(IBC5),A(IBC6), A(IBC7), A(IBC8), DISP, NUMNP, NDIM,
-     *      NUMESS, TIME, ITMSEL, TITLE, CENT, CENTER)
+     *      NUMESS, TIME, ITMSEL, TITLE, CENT, CENTER, MAT(7,1))
 
       ELSE IF (NAME .EQ. 'MCAVITY') THEN
          NUMCAV = 0
@@ -529,12 +529,12 @@ C-----------------------------------------------------------------------
             END IF
 
          ELSE IF (LISTYP .EQ. 'VOLUME') THEN
-           CALL PRVOL (ndim, CRD, link, numnp, numel, 8,
+           CALL PRVOL (ndim, CRD, link, numnp, numel, mat(7,1),
      &       a(ismp), IHARD)
            CALL PRTERR ('CMDSPEC',
      *       'Element Volumes were written to the list file')
          ELSE IF (LISTYP .EQ. 'NODALVOL') THEN
-           CALL PRNVOL (ndim, CRD, link, numnp, numel, 8,
+           CALL PRNVOL (ndim, CRD, link, numnp, numel, mat(7,1),
      &       a(ismp), IHARD)
            CALL PRTERR ('CMDSPEC',
      *       'Nodal Volumes were written to the list file')
@@ -861,13 +861,12 @@ C ----------------------------------------
             CALL MEMERR
             STOP 'MEMORY'
          END IF
-         NNODES = 2**NDIM
          IF (NDIM .EQ. 2) THEN
-            CALL CON2D(CRD, NDIM, NUMNP, LINK, NNODES, NUMEL, MAT,
+            CALL CON2D(CRD, NDIM, NUMNP, LINK, 2**NDIM, NUMEL, MAT,
      *         NELBLK, A(IELSEL), A(IASPEC), A(ISKEW), A(ITAPER),
      *         A(IAREA), A(ISUMR), A(IISUM), LTMP)
          ELSE
-            CALL CON3D(CRD, NDIM, NUMNP, LINK, NNODES, NUMEL, MAT,
+            CALL CON3D(CRD, NDIM, NUMNP, LINK, 2**NDIM, NUMEL, MAT,
      *         NELBLK, A(IELSEL), A(IASPEC), A(ISKEW), A(ITAPER),
      *         A(IAREA), A(ISUMR), A(IISUM), A(ISKX), A(ISKY), A(ISKZ),
      *         A(ITPX), A(ITPY), A(ITPZ), A(IJAC), LTMP)

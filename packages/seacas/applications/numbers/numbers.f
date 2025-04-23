@@ -133,7 +133,7 @@ C .. Get filename from command line.  If not specified, emit error message
 
       AXI    = .TRUE.
       EXODUS = .FALSE.
-      NNODES = 2**NDIM
+      NNODES = 0
 
       CALL MDRSRV ('CRD', IR, NUMNP*NDIM)
       IRX = IR
