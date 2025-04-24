@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -87,8 +87,13 @@ C ... REWIND EXODUS FILE TO BEGINNING OF TIMESTEPS
 C     NOTE: Positive delcav = shrink in cavity volume
 
             IF (NDIM .EQ. 3) THEN
-               CALL DVOL3D(CRD, DISP, LTNESS(IPTR),
-     *            NEESS(IFLG), DELCAV, NDIM, NUMNP)
+               if (nnodes .eq. 8) then
+                  CALL DVOL3D(CRD, DISP, LTNESS(IPTR),
+     *                 NEESS(IFLG), DELCAV, NDIM, NUMNP)
+               else
+                  CALL DTVOL3D(CRD, DISP, LTNESS(IPTR),
+     *                 NEESS(IFLG), DELCAV, NDIM, NUMNP)
+               end if
             ELSE
                CALL DVOL2D(CRD, DISP, LTNESS(IPTR),
      *            NEESS(IFLG), DELCAV, NDIM, AXI, NUMNP)
