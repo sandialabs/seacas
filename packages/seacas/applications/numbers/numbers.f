@@ -56,6 +56,8 @@ C             9 = BINARY MESH INPUT (GENESIS)
      &  ' ', ' ')
       call cpyrgt (ITERM, '1988')
       call cpyrgt (IHARD, '1988')
+      call PRTERR ('CMDSPEC',
+     $     'This version has some support for tet meshes')
 
 C ... GET FILENAMES:
 
@@ -140,7 +142,7 @@ C .. Get filename from command line.  If not specified, emit error message
       IRY = IR + NUMNP
       IRZ = IR + 2 * NUMNP
 
-      CALL MDRSRV ('MAT',  IM, 6*NELBLK)
+      CALL MDRSRV ('MAT',  IM, 7*NELBLK)
       CALL MDRSRV ('LINK', IX, 0)
 
       CALL MDRSRV ('DENS',ID, NELBLK)

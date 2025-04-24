@@ -31,7 +31,6 @@ C***********************************************************************
       
       VOLUME = 0.0
 
-      write (*,*) 'In tet cavity routine'
       IF (.NOT. CENTER) THEN
         XC = 0.0
         YC = 0.0

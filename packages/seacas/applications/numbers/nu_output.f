@@ -57,7 +57,7 @@ C    See packages/seacas/LICENSE for details
          IF (NDIM .EQ. 2 .AND. .NOT. AXI) THEN
             WRITE (IO, 90) ZI(4)
    90       FORMAT (5X,'Ixy = ',1PE15.8/)
-         ELSE IF (NDIM .EQ. 3) THEN
+         ELSE IF (NDIM .EQ. 3 .and. MAT(7,1) .EQ. 8) THEN
             WRITE (IO, 100) (ZI(I),I=4,6)
   100       FORMAT (5X,'Ixy = ',1PE15.8,'  Ixz = ',1PE15.8,
      *         '  Iyz = ',1PE15.8/)
