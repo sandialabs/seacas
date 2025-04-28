@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -257,7 +257,7 @@ namespace Ioss {
 
     IOSS_NODISCARD unsigned int hash() const { return hash_; }
 
-    IOSS_NODISCARD int64_t entity_count() const { return get_property("entity_count").get_int(); }
+    IOSS_NODISCARD int64_t entity_count() const;
 
     // COMPARE GroupingEntities
     IOSS_NODISCARD bool operator!=(const GroupingEntity &rhs) const;
@@ -372,6 +372,11 @@ Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
                                             const std::string &optional_value) const
 {
   return properties.get_optional(property_name, optional_value);
+}
+
+inline int64_t Ioss::GroupingEntity::entity_count() const 
+{ 
+  return get_property("entity_count").get_int(); 
 }
 
 /** \brief Get the names of all properties in the property manager for this entity.
