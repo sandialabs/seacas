@@ -374,9 +374,9 @@ Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
   return properties.get_optional(property_name, optional_value);
 }
 
-inline int64_t Ioss::GroupingEntity::entity_count() const 
-{ 
-  return get_property("entity_count").get_int(); 
+inline int64_t Ioss::GroupingEntity::entity_count() const
+{
+  return get_property("entity_count").get_int();
 }
 
 /** \brief Get the names of all properties in the property manager for this entity.
