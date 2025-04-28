@@ -560,10 +560,8 @@ namespace {
     Ioss::ZoneConnectivity zgc_test{};
     for (const auto &zgc : zgc_map) {
       if (zone_name.empty()) {
-        zone_name  = std::get<0>(zgc.first);
-        donor_name = std::get<1>(zgc.first);
-        conn_name  = std::get<2>(zgc.first);
-        zgc_test   = zgc.second;
+	std::tie(zone_name, donor_name, conn_name) = zgc.first;
+        zgc_test  = zgc.second;
         continue;
       }
 
@@ -576,10 +574,8 @@ namespace {
       // If we make it to this point, then we don't have a similar zgc, so
       // save the one we were working on and reset to gather the next set.
       consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_test);
-      zone_name  = std::get<0>(zgc.first);
-      donor_name = std::get<1>(zgc.first);
-      conn_name  = std::get<2>(zgc.first);
-      zgc_test   = zgc.second;
+      std::tie(zone_name, donor_name, conn_name) = zgc.first;
+      zgc_test  = zgc.second;
     }
     // Handle the last one..
     consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_test);
