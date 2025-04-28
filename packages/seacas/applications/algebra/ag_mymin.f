@@ -1,10 +1,10 @@
-C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
 C    See packages/seacas/LICENSE for details
 C=======================================================================
-      REAL FUNCTION MYMIN (PARM1, PARM2)
+      REAL FUNCTION FMYMIN (PARM1, PARM2)
 C=======================================================================
 
 C   --*** MYMIN *** (ALGEBRA) Minimum function
@@ -16,7 +16,7 @@ C   --
 C   --Parameters:
 C   --   PARM1, PARM2 - IN - the minimum parameters
 
-      MYMIN = MIN(PARM1, PARM2)
+      FMYMIN = MIN(PARM1, PARM2)
 
       RETURN
       END

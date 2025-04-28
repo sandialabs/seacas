@@ -1,10 +1,10 @@
-C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
 C    See packages/seacas/LICENSE for details
 C=======================================================================
-      REAL FUNCTION MYSIGN (PARM1, PARM2)
+      REAL FUNCTION FMYSIGN (PARM1, PARM2)
 C=======================================================================
 
 C   --*** MYSIGN *** (ALGEBRA) Maximum function
@@ -17,7 +17,7 @@ C   --
 C   --Parameters:
 C   --   PARM1, PARM2 - IN - the maximum parameters
 
-      MYSIGN = SIGN (PARM1, PARM2)
+      FMYSIGN = SIGN (PARM1, PARM2)
 
       RETURN
       END

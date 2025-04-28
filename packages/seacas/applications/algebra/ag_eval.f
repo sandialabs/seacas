@@ -1,9 +1,99 @@
-C    Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2023, 2025 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
 C    See packages/seacas/LICENSE for details
 C=======================================================================
+      real function fmyint(parm)
+      fmyint = int(parm)
+      return
+      end
+
+      real function fmynint(parm)
+      fmynint = nint(parm)
+      return
+      end
+
+      real function fmyabs(parm)
+      fmyabs = abs(parm)
+      return
+      end
+
+      real function fmydim(parm1, parm2)
+      fmydim = dim(parm1, parm2)
+      return
+      end
+
+      real function fmyexp(parm)
+      fmyexp = exp(parm)
+      return
+      end
+
+      real function fmylog(parm)
+      fmylog = log(parm)
+      return
+      end
+
+      real function fmylog10(parm)
+      fmylog10 = log10(parm)
+      return
+      end
+
+      real function fmysin(parm)
+      fmysin = sin(parm)
+      return
+      end
+
+      real function fmycos(parm)
+      fmycos = cos(parm)
+      return
+      end
+
+      real function fmytan(parm)
+      fmytan = tan(parm)
+      return
+      end
+
+      real function fmyasin(parm)
+      fmyasin = asin(parm)
+      return
+      end
+
+      real function fmyacos(parm)
+      fmyacos = acos(parm)
+      return
+      end
+
+      real function fmyatan(parm)
+      fmyatan = atan(parm)
+      return
+      end
+
+      real function fmyatan2(parm1, parm2)
+      fmyatan2 = atan2(parm1, parm2)
+      return
+      end
+
+      real function fmysinh(parm)
+      fmysinh = sinh(parm)
+      return
+      end
+
+      real function fmycosh(parm)
+      fmycosh = cosh(parm)
+      return
+      end
+
+      real function fmytanh(parm)
+      fmytanh = tanh(parm)
+      return
+      end
+
+      real function fmysqrt(parm)
+      fmysqrt = sqrt(parm)
+      return
+      end
+
       SUBROUTINE EVAL (STEP1, WSTEP1, MAXNE, MAXSTK,
      &   IXNODE, IXELB, IXELBO, IXELEM, ISEVOK, NEQN, NUMENT,
      &   NAMENT, TYPENT, INXENT, VALENT, ITMENT, IEVENT, VSZENT,
@@ -76,10 +166,11 @@ C   --   Uses NUMELO, NUMNPO of /DBOUT/
       CHARACTER*5 STRA
       INTEGER MERR
 
-      EXTERNAL MYSUM, MYMAX, MYMIN, MYSIGN, MYAMOD
-      EXTERNAL myint, mynint, myabs, mydim, myexp, mylog,
-     *  mylog10, mysin, mycos, mytan, myasin, myacos,
-     *  myatan, myatan2, mysinh, mycosh, mytanh, mysqrt
+      REAL EXTERNAL FMYSUM, FMYMAX, FMYMIN, FMYSIGN, FMYAMOD
+
+      REAL fmyint, fmynint, fmyabs, fmydim, fmyexp, fmylog,
+     *     fmylog10, fmysin, fmycos, fmytan, fmyasin, fmyacos,
+     *     fmyatan, fmyatan2, fmysinh, fmycosh, fmytanh, fmysqrt
 
       MERR = 0
       IOP2 = 0
@@ -301,7 +392,7 @@ C         --AINT
   180       CONTINUE
             call chkfnc ('AINT', nament(nent))
 
-            CALL DOFNC1 (MYINT,
+            CALL DOFNC1 (FMYINT,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -311,7 +402,7 @@ C         --ANINT
   190       CONTINUE
             call chkfnc ('ANINT', nament(nent))
 
-            CALL DOFNC1 (MYNINT,
+            CALL DOFNC1 (FMYNINT,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -321,7 +412,7 @@ C         --ABS
   200       CONTINUE
             call chkfnc ('ABS', nament(nent))
 
-            CALL DOFNC1 (MYABS,
+            CALL DOFNC1 (FMYABS,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -334,7 +425,7 @@ C         --MOD
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM+1), RDUM, *630)
-            CALL DOFNC2 (MYAMOD,
+            CALL DOFNC2 (FMYAMOD,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM+0), STACK(1,IPARM+1), STACK(1,ITOS))
@@ -343,7 +434,7 @@ C         --MOD
 C         --SIGN
   220       CONTINUE
             call chkfnc ('SIGN', nament(nent))
-            CALL DOFNC2 (MYSIGN,
+            CALL DOFNC2 (FMYSIGN,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM+0), STACK(1,IPARM+1), STACK(1,ITOS))
@@ -353,7 +444,7 @@ C         --DIM
   230       CONTINUE
             call chkfnc ('DIM', nament(nent))
 
-            CALL DOFNC2 (MYDIM,
+            CALL DOFNC2 (FMYDIM,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM+0), STACK(1,IPARM+1), STACK(1,ITOS))
@@ -363,7 +454,7 @@ C         --MAX
   240       CONTINUE
             call chkfnc ('MAX', nament(nent))
             DO 250 IX = 1, NPARM-1
-               CALL DOFNC2 (MYMAX,
+               CALL DOFNC2 (FMYMAX,
      &            IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &            NUMIX, IXNODE, IXELEM,
      &            STACK(1,IPARM+0), STACK(1,IPARM+IX), STACK(1,ITOS))
@@ -374,7 +465,7 @@ C         --MIN
   260       CONTINUE
             call chkfnc ('MIN', nament(nent))
             DO 270 IX = 1, NPARM-1
-               CALL DOFNC2 (MYMIN,
+               CALL DOFNC2 (FMYMIN,
      &            IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &            NUMIX, IXNODE, IXELEM,
      &            STACK(1,IPARM+0), STACK(1,IPARM+IX), STACK(1,ITOS))
@@ -389,7 +480,7 @@ C         --SQRT
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), RDUM, *630)
 
-            CALL DOFNC1 (MYSQRT,
+            CALL DOFNC1 (FMYSQRT,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -399,7 +490,7 @@ C         --EXP
   290       CONTINUE
             call chkfnc ('EXP', nament(nent))
 
-            CALL DOFNC1 (MYEXP,
+            CALL DOFNC1 (FMYEXP,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -413,7 +504,7 @@ C         --LOG
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), RDUM, *630)
 
-            CALL DOFNC1 (MYLOG,
+            CALL DOFNC1 (FMYLOG,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -427,7 +518,7 @@ C         --LOG10
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), RDUM, *630)
 
-            CALL DOFNC1 (MYLOG10,
+            CALL DOFNC1 (FMYLOG10,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -437,7 +528,7 @@ C         --SIN
   320       CONTINUE
             call chkfnc ('SIN', nament(nent))
 
-            CALL DOFNC1 (MYSIN,
+            CALL DOFNC1 (FMYSIN,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -447,7 +538,7 @@ C         --COS
   330       CONTINUE
             call chkfnc ('COS', nament(nent))
 
-            CALL DOFNC1 (MYCOS,
+            CALL DOFNC1 (FMYCOS,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -457,7 +548,7 @@ C         --TAN
   340       CONTINUE
             call chkfnc ('TAN', nament(nent))
 
-            CALL DOFNC1 (MYTAN,
+            CALL DOFNC1 (FMYTAN,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -472,7 +563,7 @@ C         --ASIN
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), RDUM, *630)
 
-            CALL DOFNC1 (MYASIN,
+            CALL DOFNC1 (FMYASIN,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -487,7 +578,7 @@ C         --ACOS
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), RDUM, *630)
 
-            CALL DOFNC1 (MYACOS,
+            CALL DOFNC1 (FMYACOS,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -497,7 +588,7 @@ C         --ATAN
   370       CONTINUE
             call chkfnc ('ATAN', nament(nent))
 
-            CALL DOFNC1 (MYATAN,
+            CALL DOFNC1 (FMYATAN,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -511,7 +602,7 @@ C         --ATAN2
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM+0), STACK(1,IPARM+1), *630)
 
-            CALL DOFNC2 (MYATAN2,
+            CALL DOFNC2 (FMYATAN2,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM+0), STACK(1,IPARM+1), STACK(1,ITOS))
@@ -521,7 +612,7 @@ C         --SINH
   390       CONTINUE
             call chkfnc ('SINH', nament(nent))
 
-            CALL DOFNC1 (MYSINH,
+            CALL DOFNC1 (FMYSINH,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -531,7 +622,7 @@ C         --COSH
   400       CONTINUE
             call chkfnc ('COSH', nament(nent))
 
-            CALL DOFNC1 (MYCOSH,
+            CALL DOFNC1 (FMYCOSH,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -541,7 +632,7 @@ C         --TANH
   410       CONTINUE
             call chkfnc ('TANH', nament(nent))
 
-            CALL DOFNC1 (MYTANH,
+            CALL DOFNC1 (FMYTANH,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -628,20 +719,10 @@ C         --IFGZ
      &         STACK(1,ITOS))
             GOTO 590
 
-C         --SUM
-  500       CONTINUE
-            CALL DOFNCG (MYSUM,
-     &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
-     &         NUMIX, IXNODE, IXELEM,
-     &         STACK(1,IPARM), STACK(1,ITOS))
-            IVTYPE = 'G'
-            LENARY = 1
-            GOTO 590
-
 C         --SMAX
   510       CONTINUE
             call chkfnc ('SMAX', nament(nent))
-            CALL DOFNCG (MYMAX,
+            CALL DOFNCG (FMYMAX,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -652,7 +733,17 @@ C         --SMAX
 C         --SMIN
   520       CONTINUE
             call chkfnc ('SMIN', nament(nent))
-            CALL DOFNCG (MYMIN,
+            CALL DOFNCG (FMYMIN,
+     &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
+     &         NUMIX, IXNODE, IXELEM,
+     &         STACK(1,IPARM), STACK(1,ITOS))
+            IVTYPE = 'G'
+            LENARY = 1
+            GOTO 590
+
+C         --SUM
+  500       CONTINUE
+            CALL DOFNCG (FFMYSUM,
      &         IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &         NUMIX, IXNODE, IXELEM,
      &         STACK(1,IPARM), STACK(1,ITOS))
@@ -665,7 +756,7 @@ C         --ENVMAX
             call chkfnc ('ENVMAX', nament(nent))
             ISTO = ITMENT(NENT)
             IF ((.NOT. STEP1) .OR. (.NOT. WSTEP1)) THEN
-               CALL DOFNC2 (MYMAX,
+               CALL DOFNC2 (FMYMAX,
      &            IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &            NUMIX, IXNODE, IXELEM,
      &            STACK(1,IPARM), VARVAL(1,ISTO), STACK(1,ITOS))
@@ -678,7 +769,7 @@ C         --ENVMIN
             call chkfnc ('ENVMIN', nament(nent))
             ISTO = ITMENT(NENT)
             IF ((.NOT. STEP1) .OR. (.NOT. WSTEP1)) THEN
-               CALL DOFNC2 (MYMIN,
+               CALL DOFNC2 (FMYMIN,
      &            IVTYPE, LENARY, NELBLK, IXELBO, ISEVOK(1,IEV),
      &            NUMIX, IXNODE, IXELEM,
      &            STACK(1,IPARM), VARVAL(1,ISTO), STACK(1,ITOS))
@@ -759,93 +850,3 @@ C   --Store the equation result into VARVAL
 
       RETURN 1
       END
-
-      real function myint(parm)
-      myint = int(parm)
-      return
-      end
-
-      real function mynint(parm)
-      mynint = nint(parm)
-      return
-      end
-
-      real function myabs(parm)
-      myabs = abs(parm)
-      return
-      end
-
-      real function mydim(parm1, parm2)
-      mydim = dim(parm1, parm2)
-      return
-      end
-
-      real function myexp(parm)
-      myexp = exp(parm)
-      return
-      end
-
-      real function mylog(parm)
-      mylog = log(parm)
-      return
-      end
-
-      real function mylog10(parm)
-      mylog10 = log10(parm)
-      return
-      end
-
-      real function mysin(parm)
-      mysin = sin(parm)
-      return
-      end
-
-      real function mycos(parm)
-      mycos = cos(parm)
-      return
-      end
-
-      real function mytan(parm)
-      mytan = tan(parm)
-      return
-      end
-
-      real function myasin(parm)
-      myasin = asin(parm)
-      return
-      end
-
-      real function myacos(parm)
-      myacos = acos(parm)
-      return
-      end
-
-      real function myatan(parm)
-      myatan = atan(parm)
-      return
-      end
-
-      real function myatan2(parm1, parm2)
-      myatan2 = atan2(parm1, parm2)
-      return
-      end
-
-      real function mysinh(parm)
-      mysinh = sinh(parm)
-      return
-      end
-
-      real function mycosh(parm)
-      mycosh = cosh(parm)
-      return
-      end
-
-      real function mytanh(parm)
-      mytanh = tanh(parm)
-      return
-      end
-
-      real function mysqrt(parm)
-      mysqrt = sqrt(parm)
-      return
-      end
