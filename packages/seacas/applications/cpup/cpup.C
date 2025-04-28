@@ -39,7 +39,8 @@ unsigned int debug_level = 0;
 namespace {
   std::string tsFormat = "[{:%H:%M:%S}] ";
 
-  using GlobalZgcMap   = std::map<std::tuple<std::string, std::string, std::string>, Ioss::ZoneConnectivity>;
+  using GlobalZgcMap =
+      std::map<std::tuple<std::string, std::string, std::string>, Ioss::ZoneConnectivity>;
   using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
   using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
   using GlobalIJKMap   = std::map<const std::string, Ioss::IJK_t>;
@@ -500,8 +501,8 @@ namespace {
 
         for (const auto &zgc : block->m_zoneConnectivity) {
           if (!zgc.m_fromDecomp) {
-	    std::string donor = Iocgns::Utils::decompose_name(zgc.m_donorName, true).first;
-            auto &gzgc = global_zgc[std::make_tuple(part_name, donor, zgc.m_connectionName)];
+            std::string donor = Iocgns::Utils::decompose_name(zgc.m_donorName, true).first;
+            auto       &gzgc  = global_zgc[std::make_tuple(part_name, donor, zgc.m_connectionName)];
             if (gzgc.m_connectionName.empty()) {
               // First time this ZGC has been found.  Copy from the per-proc instance and update...
               gzgc.m_connectionName = zgc.m_connectionName;
@@ -522,7 +523,7 @@ namespace {
             tmp_zgc.m_ownerRangeEnd[2] += own_off[2];
 
             // Now find the donor block...
-            auto tmp_donor    = Iocgns::Utils::decompose_name(zgc.m_donorName, true);
+            auto  tmp_donor   = Iocgns::Utils::decompose_name(zgc.m_donorName, true);
             auto *donor_block = part_mesh[tmp_donor.second]->get_structured_block(zgc.m_donorName);
             SMART_ASSERT(donor_block != nullptr);
             Ioss::IJK_t don_off = donor_block->get_ijk_offset();
@@ -559,14 +560,15 @@ namespace {
     Ioss::ZoneConnectivity zgc_test{};
     for (const auto &zgc : zgc_map) {
       if (zone_name.empty()) {
-        zone_name = std::get<0>(zgc.first);
-	donor_name = std::get<1>(zgc.first);
-        conn_name = std::get<2>(zgc.first);
-        zgc_test  = zgc.second;
+        zone_name  = std::get<0>(zgc.first);
+        donor_name = std::get<1>(zgc.first);
+        conn_name  = std::get<2>(zgc.first);
+        zgc_test   = zgc.second;
         continue;
       }
 
-      if (zone_name == std::get<0>(zgc.first) && donor_name == std::get<1>(zgc.first) && Ioss::Utils::substr_equal(conn_name, std::get<2>(zgc.first))) {
+      if (zone_name == std::get<0>(zgc.first) && donor_name == std::get<1>(zgc.first) &&
+          Ioss::Utils::substr_equal(conn_name, std::get<2>(zgc.first))) {
         union_zgc_range(zgc_test, zgc.second);
         continue;
       }
@@ -574,10 +576,10 @@ namespace {
       // If we make it to this point, then we don't have a similar zgc, so
       // save the one we were working on and reset to gather the next set.
       consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_test);
-      zone_name = std::get<0>(zgc.first);
+      zone_name  = std::get<0>(zgc.first);
       donor_name = std::get<1>(zgc.first);
-      conn_name = std::get<2>(zgc.first);
-      zgc_test  = zgc.second;
+      conn_name  = std::get<2>(zgc.first);
+      zgc_test   = zgc.second;
     }
     // Handle the last one..
     consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_test);
