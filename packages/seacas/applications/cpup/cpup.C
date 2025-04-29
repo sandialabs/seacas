@@ -557,28 +557,28 @@ namespace {
     std::string            zone_name{};
     std::string            donor_name{};
     std::string            conn_name{};
-    Ioss::ZoneConnectivity zgc_test{};
+    Ioss::ZoneConnectivity zgc_base{};
     for (const auto &zgc : zgc_map) {
       if (zone_name.empty()) {
 	std::tie(zone_name, donor_name, conn_name) = zgc.first;
-        zgc_test  = zgc.second;
+        zgc_base  = zgc.second;
         continue;
       }
 
       if (zone_name == std::get<0>(zgc.first) && donor_name == std::get<1>(zgc.first) &&
           Ioss::Utils::substr_equal(conn_name, std::get<2>(zgc.first))) {
-        union_zgc_range(zgc_test, zgc.second);
+        union_zgc_range(zgc_base, zgc.second);
         continue;
       }
 
       // If we make it to this point, then we don't have a similar zgc, so
       // save the one we were working on and reset to gather the next set.
-      consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_test);
+      consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_base);
       std::tie(zone_name, donor_name, conn_name) = zgc.first;
-      zgc_test  = zgc.second;
+      zgc_base  = zgc.second;
     }
     // Handle the last one..
-    consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_test);
+    consolidated.emplace(std::make_tuple(zone_name, donor_name, conn_name), zgc_base);
     return consolidated;
   }
 
