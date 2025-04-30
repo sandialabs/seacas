@@ -526,9 +526,10 @@ Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
     }
 
     if (common_zone_type != zone_type) {
-      IOSS_ERROR(fmt::format("ERROR: CGNS: Zone {} is not the same zone type as previous zones."
-                             " This is currently not allowed or supported (mixed structured/unstructured mesh).",
-                             zone));
+      IOSS_ERROR(fmt::format(
+          "ERROR: CGNS: Zone {} is not the same zone type as previous zones."
+          " This is currently not allowed or supported (mixed structured/unstructured mesh).",
+          zone));
     }
   }
 
