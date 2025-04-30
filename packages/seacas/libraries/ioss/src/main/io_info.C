@@ -503,7 +503,8 @@ namespace {
       if (interFace.adjacencies()) {
         Ioss::NameList blocks;
         fs->block_membership(blocks);
-        fmt::print("\n\t\tTouches {} element block(s):\t", blocks.size());
+	std::string type = region.mesh_type() == Ioss::MeshType::STRUCTURED ? "structured" : "element";
+        fmt::print("\n\t\tTouches {} {} block(s):\t", blocks.size(), type);
         for (const auto &block : blocks) {
           fmt::print("{}  ", block);
         }
