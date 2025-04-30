@@ -59,6 +59,7 @@ namespace {
   {
     Ioss::MeshCopyOptions options{};
     options.selected_times       = interFace.selected_times;
+    options.selected_steps       = interFace.selected_steps;
     options.rel_tolerance        = interFace.rel_tolerance;
     options.abs_tolerance        = interFace.abs_tolerance;
     options.tol_floor            = interFace.tol_floor;

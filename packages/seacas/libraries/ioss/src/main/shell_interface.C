@@ -285,6 +285,11 @@ void IOShell::Interface::enroll_options()
                   "comma-separated list of times that should be transferred to output database",
                   nullptr);
 
+  options_.enroll("select_steps", Ioss::GetLongOption::OptType::MandatoryValue,
+                  "comma-separated list of steps that should be transferred to output database\n"
+		  "\t\tEnter a negative value to count from end. -1 is last, -2 is second last.",
+                  nullptr);
+
   options_.enroll("append_after_time", Ioss::GetLongOption::OptType::MandatoryValue,
                   "add steps on input database after specified time on output database", nullptr);
 
@@ -790,6 +795,24 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         selected_times.push_back(time);
       }
       Ioss::sort(selected_times.begin(), selected_times.end());
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("select_steps");
+    if (temp != nullptr) {
+      if (!selected_times.empty()) {
+        if (my_processor == 0) {
+          fmt::print(stderr, "ERROR: Can not use both select_times and select_steps.\n");
+        }
+        return false;
+      }
+
+      auto step_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : step_str) {
+        auto step = std::stoi(str);
+        selected_steps.push_back(step);
+      }
     }
   }
 

@@ -630,7 +630,7 @@ namespace Ioss {
         " Element side sets  = {16:{24}}\t Element sides = {22:{23}}\t Sideset    = {31:{25}}\n"
         " Assemblies         = {40:{24}}\t                 {38:{23}s}\t Assembly   = {41:{25}}\t{54:{25}}\n"
         " Blobs              = {42:{24}}\t                 {38:{23}s}\t Blob       = {43:{25}}\t{55:{25}}\n\n"
-        " Time steps         = {32:{24}}\n",
+        " Time steps         = {32:{24}}",
         get_database()->get_filename(), mesh_type_string(),                /* 0, 1 */
         fmt::group_digits(get_property("spatial_dimension").get_int()),
 	fmt::group_digits(get_property("node_count").get_int()),
@@ -687,6 +687,13 @@ namespace Ioss {
 	fmt::group_digits(num_asm_red_vars),
         fmt::group_digits(num_blob_red_vars),
 	change_set_name, change_set_count);
+
+    if (num_ts > 0) {
+      fmt::print("\t({} to {})\n", stateTimes[0], stateTimes[num_ts-1]);
+    }
+    else {
+      fmt::print("\n");
+    }
     // clang-format on
   }
 
