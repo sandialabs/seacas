@@ -285,10 +285,11 @@ void IOShell::Interface::enroll_options()
                   "comma-separated list of times that should be transferred to output database",
                   nullptr);
 
-  options_.enroll("select_steps", Ioss::GetLongOption::OptType::MandatoryValue,
-                  "comma-separated 1-based list of steps that should be transferred to output database\n"
-		  "\t\tEnter a negative value to count from end. -1 is last, -2 is second last.",
-                  nullptr);
+  options_.enroll(
+      "select_steps", Ioss::GetLongOption::OptType::MandatoryValue,
+      "comma-separated 1-based list of steps that should be transferred to output database\n"
+      "\t\tEnter a negative value to count from end. -1 is last, -2 is second last.",
+      nullptr);
 
   options_.enroll("append_after_time", Ioss::GetLongOption::OptType::MandatoryValue,
                   "add steps on input database after specified time on output database", nullptr);
