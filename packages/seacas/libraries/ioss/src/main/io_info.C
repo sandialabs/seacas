@@ -485,24 +485,24 @@ namespace {
 
   void info_sidesets(Ioss::Region &region, const Info::Interface &interFace)
   {
-    const Ioss::SideSetContainer &fss = region.get_sidesets();
-    for (auto &fs : fss) {
-      fmt::print("\n{} id: {:6d}", name(fs), id(fs));
-      if (fs->property_exists("bc_type")) {
+    const Ioss::SideSetContainer &sss = region.get_sidesets();
+    for (auto &ss : sss) {
+      fmt::print("\n{} id: {:6d}", name(ss), id(ss));
+      if (ss->property_exists("bc_type")) {
 #if defined(SEACAS_HAVE_CGNS)
-        auto bc_type = fs->get_property("bc_type").get_int();
+        auto bc_type = ss->get_property("bc_type").get_int();
         fmt::print(", boundary condition type: {} ({})", BCTypeName[bc_type], bc_type);
 #else
-        fmt::print(", boundary condition type: {}", fs->get_property("bc_type").get_int());
+        fmt::print(", boundary condition type: {}", ss->get_property("bc_type").get_int());
 #endif
       }
-      info_aliases(region, fs, true, false);
-      Ioss::Utils::info_fields(fs, Ioss::Field::TRANSIENT, "\n\tTransient: ", "\n\t",
+      info_aliases(region, ss, true, false);
+      Ioss::Utils::info_fields(ss, Ioss::Field::TRANSIENT, "\n\tTransient: ", "\n\t",
                                interFace.field_details());
-      Ioss::Utils::info_fields(fs, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
+      Ioss::Utils::info_fields(ss, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       if (interFace.adjacencies()) {
         Ioss::NameList blocks;
-        fs->block_membership(blocks);
+        ss->block_membership(blocks);
         std::string type =
             region.mesh_type() == Ioss::MeshType::STRUCTURED ? "structured" : "element";
         fmt::print("\n\t\tTouches {} {} block(s):\t", blocks.size(), type);
@@ -511,17 +511,19 @@ namespace {
         }
       }
       fmt::print("\n");
-      const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
-      for (auto &fb : fbs) {
-        int64_t count      = fb->entity_count();
-        int64_t num_attrib = fb->get_property("attribute_count").get_int();
-        int64_t num_dist   = fb->get_property("distribution_factor_count").get_int();
-        fmt::print("\t{}, {:8} sides, {:3d} attributes, {:8} distribution factors.\n", name(fb),
-                   fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
-        info_df(fb, "\t\t");
-        Ioss::Utils::info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient: ", "\n\t\t",
+      const Ioss::SideBlockContainer &sbs = ss->get_side_blocks();
+      for (auto &sb : sbs) {
+        int64_t count      = sb->entity_count();
+        int64_t num_attrib = sb->get_property("attribute_count").get_int();
+        int64_t num_dist   = sb->get_property("distribution_factor_count").get_int();
+	std::string type   = (sb->topology() != nullptr) ? sb->topology()->name() : "unknown";
+	std::string ptype  = (sb->parent_element_topology() != nullptr) ? sb->parent_element_topology()->name() : "unknown";
+        fmt::print("\t{}, Topology: {}/{}, {:8} sides, {:8} distribution factors, {:3d} attributes.\n", name(sb),
+                   type, ptype, fmt::group_digits(count), fmt::group_digits(num_dist), num_attrib);
+        info_df(sb, "\t\t");
+        Ioss::Utils::info_fields(sb, Ioss::Field::TRANSIENT, "\t\tTransient: ", "\n\t\t",
                                  interFace.field_details());
-        Ioss::Utils::info_fields(fb, Ioss::Field::REDUCTION,
+        Ioss::Utils::info_fields(sb, Ioss::Field::REDUCTION,
                                  "\t\tTransient (Reduction):  ", "\n\t\t");
       }
     }
@@ -534,9 +536,9 @@ namespace {
       int64_t count      = ns->entity_count();
       int64_t num_attrib = ns->get_property("attribute_count").get_int();
       int64_t num_dist   = ns->get_property("distribution_factor_count").get_int();
-      fmt::print("\n{} id: {:6d}, {:8} nodes, {:3d} attributes, {:8} distribution factors.\n",
-                 name(ns), id(ns), fmt::group_digits(count), num_attrib,
-                 fmt::group_digits(num_dist));
+      fmt::print("\n{} id: {:6d}, {:8} nodes, {:8} distribution factors, {:3d} attributes.\n",
+                 name(ns), id(ns), fmt::group_digits(count),
+                 fmt::group_digits(num_dist), num_attrib);
       info_aliases(region, ns, false, true);
       info_df(ns, "\t");
       Ioss::Utils::info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
