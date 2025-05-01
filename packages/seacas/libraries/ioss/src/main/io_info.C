@@ -62,7 +62,7 @@
 // ========================================================================
 
 namespace {
-  void info_timesteps(Ioss::Region &region);
+  void info_timesteps(Ioss::Region &region, bool times_only);
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interFace);
   void info_edgeblock(Ioss::Region &region, const Info::Interface &interFace);
   void info_faceblock(Ioss::Region &region, const Info::Interface &interFace);
@@ -145,6 +145,26 @@ namespace {
   }
 } // namespace
 
+template<typename T>
+struct fmt::formatter<std::vector<T>> : fmt::formatter<T>
+{
+    auto format(const std::vector<T>& container, format_context& context) const -> format_context::iterator
+    {
+        auto&& out = context.out();
+        for (int i = 0; i < container.size(); ++i) {
+            const auto& elem = container[i];
+            if (i % 5 == 0 && i > 0) {
+                format_to(out, "\n");
+                format_to(out, "\t");
+            }
+            fmt::formatter<T>::format(elem, context);
+            format_to(out, ",");
+       }
+
+        return format_to(out, "");
+    }
+};
+
 void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates);
 
 namespace {
@@ -208,7 +228,7 @@ namespace {
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
     if (interFace.query_timesteps_only()) {
-      info_timesteps(region);
+      info_timesteps(region, false);
     }
     else {
       auto cs_list = Ioss::tokenize(interFace.change_set_name(), ",");
@@ -637,7 +657,7 @@ namespace {
     }
   }
 
-  void info_timesteps(Ioss::Region &region)
+  void info_timesteps(Ioss::Region &region, bool times_only)
   {
     int                 step_count = (int)region.get_property("state_count").get_int();
     std::vector<double> steps(step_count);
@@ -646,12 +666,27 @@ namespace {
       double db_time = region.get_state_time(step + 1);
       steps[step]    = db_time;
     }
-    auto mm = std::minmax_element(steps.begin(), steps.end());
 
-    fmt::print("\nThere are {} time steps on the database.\n", step_count);
-    fmt::print("\tMinimum Time = {:12.6e}, Maximum Time = {:12.6e}\n\n", *mm.first, *mm.second);
-
-    fmt::print("\tStep Times: {:12.6e}\n", fmt::join(steps, ", "));
+    if (!times_only) {
+      auto mm = std::minmax_element(steps.begin(), steps.end());
+      fmt::print("\nThere are {} time steps on the database.\n", step_count);
+      fmt::print("\tMinimum Time = {}, Maximum Time = {}\n\n", *mm.first, *mm.second);
+      fmt::print("\tStep Times: {}\n", fmt::join(steps, ", "));
+    }
+    else {
+      size_t width = Ioss::Utils::term_width();
+      std::string output = " Step Times: ";
+      for (const auto time : steps) {
+	output += fmt::format("{}, ", time);
+	if (output.length() > width - 20) {
+	  fmt::print("{}\n\t", output);
+	  output.clear();
+	}
+      }
+      if (!output.empty()) {
+	fmt::print("{}\n", output);
+      }
+    }
   }
 
 } // namespace
@@ -702,6 +737,9 @@ namespace Ioss {
           fmt::print("\nProcessor {}", proc);
         }
         region.output_summary(std::cout, true);
+	if (interFace.show_timestep_times()) {
+	  info_timesteps(region, true);
+	}
 
         if (!interFace.summary()) {
 

@@ -689,7 +689,8 @@ namespace Ioss {
 	change_set_name, change_set_count);
 
     if (num_ts > 0) {
-      fmt::print("\t({} to {})\n", stateTimes[0], stateTimes[num_ts-1]);
+      auto mm = std::minmax_element(stateTimes.begin(), stateTimes.end());
+      fmt::print("\t({} to {})\n", *mm.first, *mm.second);
     }
     else {
       fmt::print("\n");

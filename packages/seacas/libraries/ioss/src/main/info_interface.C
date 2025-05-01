@@ -164,6 +164,8 @@ void Info::Interface::enroll_options()
 
   options_.enroll("query_timesteps_only", Ioss::GetLongOption::OptType::NoValue,
                   "Only read and output the timestep data on the file", nullptr);
+  options_.enroll("show_timestep_times", Ioss::GetLongOption::OptType::NoValue,
+                  "Show the times for all timesteps. By default only shows minimum and maximum time.", nullptr);
   options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue, "Use 64-bit integers", nullptr);
   options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
                   nullptr);
@@ -217,6 +219,7 @@ bool Info::Interface::parse_options(int argc, char **argv)
   summary_         = options_.retrieve("summary") != nullptr;
   showConfig_      = options_.retrieve("configuration") != nullptr;
   queryTimeOnly_   = options_.retrieve("query_timesteps_only") != nullptr;
+  showTimes_       = options_.retrieve("show_timestep_times") != nullptr;
   fieldDetails_    = options_.retrieve("detailed_field_info") != nullptr;
 
   filetype_      = options_.get_option_value("db_type", filetype_);
