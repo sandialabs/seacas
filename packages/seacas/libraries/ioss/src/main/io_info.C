@@ -145,24 +145,24 @@ namespace {
   }
 } // namespace
 
-template<typename T>
-struct fmt::formatter<std::vector<T>> : fmt::formatter<T>
+template <typename T> struct fmt::formatter<std::vector<T>> : fmt::formatter<T>
 {
-    auto format(const std::vector<T>& container, format_context& context) const -> format_context::iterator
-    {
-        auto&& out = context.out();
-        for (int i = 0; i < container.size(); ++i) {
-            const auto& elem = container[i];
-            if (i % 5 == 0 && i > 0) {
-                format_to(out, "\n");
-                format_to(out, "\t");
-            }
-            fmt::formatter<T>::format(elem, context);
-            format_to(out, ",");
-       }
-
-        return format_to(out, "");
+  auto format(const std::vector<T> &container,
+              format_context       &context) const -> format_context::iterator
+  {
+    auto &&out = context.out();
+    for (int i = 0; i < container.size(); ++i) {
+      const auto &elem = container[i];
+      if (i % 5 == 0 && i > 0) {
+        format_to(out, "\n");
+        format_to(out, "\t");
+      }
+      fmt::formatter<T>::format(elem, context);
+      format_to(out, ",");
     }
+
+    return format_to(out, "");
+  }
 };
 
 void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates);
@@ -533,13 +533,17 @@ namespace {
       fmt::print("\n");
       const Ioss::SideBlockContainer &sbs = ss->get_side_blocks();
       for (auto &sb : sbs) {
-        int64_t count      = sb->entity_count();
-        int64_t num_attrib = sb->get_property("attribute_count").get_int();
-        int64_t num_dist   = sb->get_property("distribution_factor_count").get_int();
-	std::string type   = (sb->topology() != nullptr) ? sb->topology()->name() : "unknown";
-	std::string ptype  = (sb->parent_element_topology() != nullptr) ? sb->parent_element_topology()->name() : "unknown";
-        fmt::print("\t{}, Topology: {}/{}, {:8} sides, {:8} distribution factors, {:3d} attributes.\n", name(sb),
-                   type, ptype, fmt::group_digits(count), fmt::group_digits(num_dist), num_attrib);
+        int64_t     count      = sb->entity_count();
+        int64_t     num_attrib = sb->get_property("attribute_count").get_int();
+        int64_t     num_dist   = sb->get_property("distribution_factor_count").get_int();
+        std::string type       = (sb->topology() != nullptr) ? sb->topology()->name() : "unknown";
+        std::string ptype      = (sb->parent_element_topology() != nullptr)
+                                     ? sb->parent_element_topology()->name()
+                                     : "unknown";
+        fmt::print(
+            "\t{}, Topology: {}/{}, {:8} sides, {:8} distribution factors, {:3d} attributes.\n",
+            name(sb), type, ptype, fmt::group_digits(count), fmt::group_digits(num_dist),
+            num_attrib);
         info_df(sb, "\t\t");
         Ioss::Utils::info_fields(sb, Ioss::Field::TRANSIENT, "\t\tTransient: ", "\n\t\t",
                                  interFace.field_details());
@@ -557,8 +561,8 @@ namespace {
       int64_t num_attrib = ns->get_property("attribute_count").get_int();
       int64_t num_dist   = ns->get_property("distribution_factor_count").get_int();
       fmt::print("\n{} id: {:6d}, {:8} nodes, {:8} distribution factors, {:3d} attributes.\n",
-                 name(ns), id(ns), fmt::group_digits(count),
-                 fmt::group_digits(num_dist), num_attrib);
+                 name(ns), id(ns), fmt::group_digits(count), fmt::group_digits(num_dist),
+                 num_attrib);
       info_aliases(region, ns, false, true);
       info_df(ns, "\t");
       Ioss::Utils::info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
@@ -674,17 +678,17 @@ namespace {
       fmt::print("\tStep Times: {}\n", fmt::join(steps, ", "));
     }
     else {
-      size_t width = Ioss::Utils::term_width();
+      size_t      width  = Ioss::Utils::term_width();
       std::string output = " Step Times: ";
       for (const auto time : steps) {
-	output += fmt::format("{}, ", time);
-	if (output.length() > width - 20) {
-	  fmt::print("{}\n\t", output);
-	  output.clear();
-	}
+        output += fmt::format("{}, ", time);
+        if (output.length() > width - 20) {
+          fmt::print("{}\n\t", output);
+          output.clear();
+        }
       }
       if (!output.empty()) {
-	fmt::print("{}\n", output);
+        fmt::print("{}\n", output);
       }
     }
   }
@@ -737,9 +741,9 @@ namespace Ioss {
           fmt::print("\nProcessor {}", proc);
         }
         region.output_summary(std::cout, true);
-	if (interFace.show_timestep_times()) {
-	  info_timesteps(region, true);
-	}
+        if (interFace.show_timestep_times()) {
+          info_timesteps(region, true);
+        }
 
         if (!interFace.summary()) {
 

@@ -164,8 +164,9 @@ void Info::Interface::enroll_options()
 
   options_.enroll("query_timesteps_only", Ioss::GetLongOption::OptType::NoValue,
                   "Only read and output the timestep data on the file", nullptr);
-  options_.enroll("show_timestep_times", Ioss::GetLongOption::OptType::NoValue,
-                  "Show the times for all timesteps. By default only shows minimum and maximum time.", nullptr);
+  options_.enroll(
+      "show_timestep_times", Ioss::GetLongOption::OptType::NoValue,
+      "Show the times for all timesteps. By default only shows minimum and maximum time.", nullptr);
   options_.enroll("64-bit", Ioss::GetLongOption::OptType::NoValue, "Use 64-bit integers", nullptr);
   options_.enroll("version", Ioss::GetLongOption::OptType::NoValue, "Print version and exit",
                   nullptr);
