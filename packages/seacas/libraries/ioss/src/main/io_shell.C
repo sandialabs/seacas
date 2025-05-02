@@ -47,7 +47,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "7.0 (2024/11/08)";
+  std::string version = "7.1 (2025/04/18)";
 
   bool mem_stats = false;
 
@@ -59,6 +59,7 @@ namespace {
   {
     Ioss::MeshCopyOptions options{};
     options.selected_times       = interFace.selected_times;
+    options.selected_steps       = interFace.selected_steps;
     options.rel_tolerance        = interFace.rel_tolerance;
     options.abs_tolerance        = interFace.abs_tolerance;
     options.tol_floor            = interFace.tol_floor;
@@ -274,6 +275,8 @@ namespace {
       if (!interFace.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
       }
+      dbi->set_lower_case_database_names(interFace.lower_case_database_names);
+
       if (interFace.outFiletype == "cgns") {
         // CGNS stores BCs (SideSets) on the zones which
         // correspond to element blocks.  If split input sideblocks
@@ -308,16 +311,6 @@ namespace {
         if (!success) {
           return success;
         }
-      }
-
-      if (region.mesh_type() == Ioss::MeshType::HYBRID) {
-        if (rank == 0) {
-          fmt::print(stderr,
-                     "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
-                     "'Structured' mesh is supported at this time.\n",
-                     region.mesh_type_string());
-        }
-        return success;
       }
 
       // Get length of longest name on input file...
@@ -567,6 +560,8 @@ namespace {
     if (!interFace.lower_case_variable_names) {
       dbi1->set_lower_case_variable_names(false);
     }
+    dbi1->set_lower_case_database_names(interFace.lower_case_database_names);
+
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which
       // correspond to element blocks.  If split input sideblocks
@@ -586,14 +581,6 @@ namespace {
 
     // NOTE: 'input_region1' owns 'dbi1' pointer at this time...
     Ioss::Region input_region1(dbi1, "region_1");
-
-    if (input_region1.mesh_type() == Ioss::MeshType::HYBRID) {
-      fmt::print(stderr,
-                 "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
-                 "'Structured' mesh is supported at this time.\n",
-                 input_region1.mesh_type_string());
-      return false;
-    }
 
     // Get integer size being used on input file #1 and set it in
     // the interFace.
@@ -618,6 +605,8 @@ namespace {
     if (!interFace.lower_case_variable_names) {
       dbi2->set_lower_case_variable_names(false);
     }
+    dbi2->set_lower_case_database_names(interFace.lower_case_database_names);
+
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which
       // correspond to element blocks.  If split input sideblocks
@@ -637,14 +626,6 @@ namespace {
 
     // NOTE: 'input_region2' owns 'dbi2' pointer at this time...
     Ioss::Region input_region2(dbi2, "region_2");
-
-    if (input_region2.mesh_type() == Ioss::MeshType::HYBRID) {
-      fmt::print(stderr,
-                 "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
-                 "'Structured' mesh is supported at this time.\n",
-                 input_region2.mesh_type_string());
-      return false;
-    }
 
     // Get integer size being used on input file #1 and set it in
     // the interFace.

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -71,7 +71,7 @@ using real = double;
 
 namespace {
   std::string codename;
-  std::string version = "2.07 (2024-04-15)";
+  std::string version = "2.08 (2025-04-18)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -524,6 +524,7 @@ namespace {
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
+    dbi->set_lower_case_database_names(false);
   }
 
   void handle_help(const std::string &topic)

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -61,6 +61,10 @@ namespace IOShell {
     //! If non-empty, then it is a list of times that should be transferred to the output file.
     std::vector<double> selected_times{};
 
+    //! If non-empty, then it is a list of steps that should be transferred to the output file.
+    //  A negative value counts from end. -1 is last, -2 is second last...
+    std::vector<int> selected_steps{};
+
     //! If non-empty, then it is a list of element blocks, nodesets,
     //! sidesets that should be omitted from the output file
     std::vector<std::string> omitted_blocks{};
@@ -99,7 +103,8 @@ namespace IOShell {
     bool quiet{false};
     bool in_memory_read{false};
     bool in_memory_write{false};
-    bool lower_case_variable_names{true};
+    bool lower_case_variable_names{false};
+    bool lower_case_database_names{false};
     bool delete_timesteps{false};
     bool minimize_open_files{false};
     bool disable_field_recognition{false};

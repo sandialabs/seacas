@@ -285,6 +285,12 @@ void IOShell::Interface::enroll_options()
                   "comma-separated list of times that should be transferred to output database",
                   nullptr);
 
+  options_.enroll(
+      "select_steps", Ioss::GetLongOption::OptType::MandatoryValue,
+      "comma-separated 1-based list of steps that should be transferred to output database\n"
+      "\t\tEnter a negative value to count from end. -1 is last, -2 is second last.",
+      nullptr);
+
   options_.enroll("append_after_time", Ioss::GetLongOption::OptType::MandatoryValue,
                   "add steps on input database after specified time on output database", nullptr);
 
@@ -330,6 +336,12 @@ void IOShell::Interface::enroll_options()
                   "Do not lowercase variable names and replace spaces with underscores.\n"
                   "\t\tVariable names are left as they appear in the input mesh file",
                   nullptr);
+
+  options_.enroll(
+      "lower_case_database_names", Ioss::GetLongOption::OptType::NoValue,
+      "Lowercase all block/set/assembly names and replace spaces with underscores.\n"
+      "\t\tBy default, block/set/assembly names are left as they appear in the input mesh file",
+      nullptr);
 
   options_.enroll("retain_empty_blocks", Ioss::GetLongOption::OptType::NoValue,
                   "If any empty element blocks on input file, keep them and write to output file.\n"
@@ -666,6 +678,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   in_memory_write           = (options_.retrieve("memory_write") != nullptr);
   delete_timesteps          = (options_.retrieve("delete_timesteps") != nullptr);
   lower_case_variable_names = (options_.retrieve("native_variable_names") == nullptr);
+  lower_case_database_names = (options_.retrieve("lower_case_database_names") != nullptr);
   disable_field_recognition = (options_.retrieve("disable_field_recognition") != nullptr);
   retain_empty_blocks       = (options_.retrieve("retain_empty_blocks") != nullptr);
   boundary_sideset          = (options_.retrieve("boundary_sideset") != nullptr);
@@ -783,6 +796,24 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         selected_times.push_back(time);
       }
       Ioss::sort(selected_times.begin(), selected_times.end());
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("select_steps");
+    if (temp != nullptr) {
+      if (!selected_times.empty()) {
+        if (my_processor == 0) {
+          fmt::print(stderr, "ERROR: Can not use both select_times and select_steps.\n");
+        }
+        return false;
+      }
+
+      auto step_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : step_str) {
+        auto step = std::stoi(str);
+        selected_steps.push_back(step);
+      }
     }
   }
 

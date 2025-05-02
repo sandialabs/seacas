@@ -658,7 +658,8 @@ namespace Ioex {
   }
 
   std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                              const std::string &basename, int length, bool &db_has_name)
+                              const std::string &basename, int length, bool lower_case_names,
+                              bool &db_has_name)
   {
     std::vector<char> buffer(length + 1);
     buffer[0] = '\0';
@@ -667,16 +668,18 @@ namespace Ioex {
       exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
     if (buffer[0] != '\0') {
-      Ioss::Utils::fixup_name(Data(buffer));
+      std::string name{Data(buffer)};
+      if (lower_case_names) {
+        Ioss::Utils::fixup_name(name);
+      }
       // Filter out names of the form "basename_id" if the name
       // id doesn't match the id in the name...
-      size_t base_size = basename.size();
-      if (std::strncmp(basename.c_str(), Data(buffer), base_size) == 0) {
-        int64_t name_id = extract_id(Data(buffer));
+      if (Ioss::Utils::substr_equal(basename, name)) {
+        int64_t name_id = extract_id(name);
 
         // See if name is truly of form "basename_name_id" (e.g. "surface_{id}")
         std::string tmp_name = Ioss::Utils::encode_entity_name(basename, name_id);
-        if (tmp_name == Data(buffer)) {
+        if (tmp_name == name) {
           if (name_id > 0) {
             db_has_name = false;
             if (name_id != id) {
@@ -686,7 +689,7 @@ namespace Ioex {
                          "embedded id {}.\n"
                          "         This can cause issues later; the entity will be renamed to '{}' "
                          "(IOSS)\n\n",
-                         Data(buffer), id, name_id, new_name);
+                         name, id, name_id, new_name);
               return new_name;
             }
             return tmp_name;
@@ -694,7 +697,7 @@ namespace Ioex {
         }
       }
       db_has_name = true;
-      return {Data(buffer)};
+      return name;
     }
     db_has_name = false;
     return Ioss::Utils::encode_entity_name(basename, id);

@@ -987,7 +987,7 @@ if [ "$CATCH2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_CATCH2" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
     then
-        catch2_version="v3.8.0"
+        catch2_version="v3.8.1"
         echo "${txtgrn}+++ Catch2 ${catch2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/catch2 || exit
