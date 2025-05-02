@@ -658,7 +658,7 @@ namespace Ioex {
   }
 
   std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                              const std::string &basename, int length, bool lower_case_names,
+                              const std::string &basename, int length, bool lowercase_names,
                               bool &db_has_name)
   {
     std::vector<char> buffer(length + 1);
@@ -669,7 +669,7 @@ namespace Ioex {
     }
     if (buffer[0] != '\0') {
       std::string name{Data(buffer)};
-      if (lower_case_names) {
+      if (lowercase_names) {
         Ioss::Utils::fixup_name(name);
       }
       // Filter out names of the form "basename_id" if the name

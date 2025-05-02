@@ -338,9 +338,14 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll(
-      "lower_case_database_names", Ioss::GetLongOption::OptType::NoValue,
+      "lowercase_database_names", Ioss::GetLongOption::OptType::NoValue,
       "Lowercase all block/set/assembly names and replace spaces with underscores.\n"
       "\t\tBy default, block/set/assembly names are left as they appear in the input mesh file",
+      nullptr);
+
+  options_.enroll(
+      "lower_case_database_names", Ioss::GetLongOption::OptType::NoValue,
+      "[Deprecated] Use lowercase_database_names",
       nullptr);
 
   options_.enroll("retain_empty_blocks", Ioss::GetLongOption::OptType::NoValue,
@@ -677,8 +682,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   in_memory_read            = (options_.retrieve("memory_read") != nullptr);
   in_memory_write           = (options_.retrieve("memory_write") != nullptr);
   delete_timesteps          = (options_.retrieve("delete_timesteps") != nullptr);
-  lower_case_variable_names = (options_.retrieve("native_variable_names") == nullptr);
-  lower_case_database_names = (options_.retrieve("lower_case_database_names") != nullptr);
+  lowercase_variable_names  = (options_.retrieve("native_variable_names") == nullptr);
+  lowercase_database_names  = (options_.retrieve("lowercase_database_names") != nullptr);
+  lowercase_database_names  = (options_.retrieve("lower_case_database_names") != nullptr);
   disable_field_recognition = (options_.retrieve("disable_field_recognition") != nullptr);
   retain_empty_blocks       = (options_.retrieve("retain_empty_blocks") != nullptr);
   boundary_sideset          = (options_.retrieve("boundary_sideset") != nullptr);

@@ -272,10 +272,10 @@ namespace {
       if (mem_stats) {
         dbi->progress("Database Creation");
       }
-      if (!interFace.lower_case_variable_names) {
-        dbi->set_lower_case_variable_names(false);
+      if (!interFace.lowercase_variable_names) {
+        dbi->set_lowercase_variable_names(false);
       }
-      dbi->set_lower_case_database_names(interFace.lower_case_database_names);
+      dbi->set_lowercase_database_names(interFace.lowercase_database_names);
 
       if (interFace.outFiletype == "cgns") {
         // CGNS stores BCs (SideSets) on the zones which
@@ -557,10 +557,10 @@ namespace {
     if (mem_stats) {
       dbi1->progress("Database #1 Open");
     }
-    if (!interFace.lower_case_variable_names) {
-      dbi1->set_lower_case_variable_names(false);
+    if (!interFace.lowercase_variable_names) {
+      dbi1->set_lowercase_variable_names(false);
     }
-    dbi1->set_lower_case_database_names(interFace.lower_case_database_names);
+    dbi1->set_lowercase_database_names(interFace.lowercase_database_names);
 
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which
@@ -602,10 +602,10 @@ namespace {
     if (mem_stats) {
       dbi2->progress("Database #2 Open");
     }
-    if (!interFace.lower_case_variable_names) {
-      dbi2->set_lower_case_variable_names(false);
+    if (!interFace.lowercase_variable_names) {
+      dbi2->set_lowercase_variable_names(false);
     }
-    dbi2->set_lower_case_database_names(interFace.lower_case_database_names);
+    dbi2->set_lowercase_database_names(interFace.lowercase_database_names);
 
     if (interFace.outFiletype == "cgns") {
       // CGNS stores BCs (SideSets) on the zones which

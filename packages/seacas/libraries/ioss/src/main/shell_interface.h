@@ -103,8 +103,8 @@ namespace IOShell {
     bool quiet{false};
     bool in_memory_read{false};
     bool in_memory_write{false};
-    bool lower_case_variable_names{false};
-    bool lower_case_database_names{false};
+    bool lowercase_variable_names{false};
+    bool lowercase_database_names{false};
     bool delete_timesteps{false};
     bool minimize_open_files{false};
     bool disable_field_recognition{false};

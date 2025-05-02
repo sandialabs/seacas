@@ -126,7 +126,7 @@ namespace Ioex {
 
   IOSS_NODISCARD IOEX_EXPORT std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
                                                          const std::string &basename, int length,
-                                                         bool lower_case_names, bool &db_has_name);
+                                                         bool lowercase_names, bool &db_has_name);
 
   IOEX_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
                                     const std::vector<unsigned char> &node_connectivity_status);
