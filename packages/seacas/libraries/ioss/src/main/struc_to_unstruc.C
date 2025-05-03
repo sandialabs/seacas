@@ -139,7 +139,7 @@ namespace {
       std::exit(EXIT_FAILURE);
     }
 
-    dbi->set_lower_case_database_names(false);
+    dbi->set_lowercase_database_names(false);
 
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");

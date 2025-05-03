@@ -526,11 +526,23 @@ namespace Ioss {
       return duplicateFieldBehavior;
     }
 
+    void set_lowercase_variable_names(bool true_false) const
+    {
+      lowerCaseVariableNames = true_false;
+    }
+
+    void set_lowercase_database_names(bool true_false) const
+    {
+      lowerCaseDatabaseNames = true_false;
+    }
+
+    // Retain for backward compatibility
     void set_lower_case_variable_names(bool true_false) const
     {
       lowerCaseVariableNames = true_false;
     }
 
+    // Retain for backward compatibility
     void set_lower_case_database_names(bool true_false) const
     {
       lowerCaseDatabaseNames = true_false;

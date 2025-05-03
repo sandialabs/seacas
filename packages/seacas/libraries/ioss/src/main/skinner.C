@@ -207,7 +207,7 @@ namespace {
       dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
-    dbi->set_lower_case_database_names(false);
+    dbi->set_lowercase_database_names(false);
 
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");

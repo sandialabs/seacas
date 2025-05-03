@@ -46,8 +46,8 @@ par_cgns         | Input/Output  | alias for parallel CGNS
   Property | Value    | Description
  ----------|:--------:|------------
  LOGGING   | on/[off] | enable/disable logging of field input/output
- LOWER_CASE_VARIABLE_NAMES | [on]/off | Convert all variable names read from input database to lowercase; replace ' ' with '_'
- LOWER_CASE_DATABASE_NAMES | on/[off] | Convert all block/set names read from input database to lowercase; replace ' ' with '_'
+ LOWERCASE_VARIABLE_NAMES | [on]/off | Convert all variable names read from input database to lowercase; replace ' ' with '_'
+ LOWERCASE_DATABASE_NAMES | on/[off] | Convert all block/set names read from input database to lowercase; replace ' ' with '_'
  USE_GENERIC_CANONICAL_NAMES | on/[off]  | use `block_{id}` as canonical name of an element block instead of the name (if any) stored on the database. The database name will be an alias.
  IGNORE_DATABASE_NAMES | on/[off] | Do not read any element block, nodeset, ... names if they exist on the database.  Use only the canonical generated names (entitytype + _ + id)
  IGNORE_ATTRIBUTE_NAMES   | on/[off] | Do not read the attribute names that may exist on an input database. Instead for an element block with N attributes, the fields will be named `attribute_1` ... `attribute_N`
@@ -131,6 +131,11 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  CYCLE_COUNT           | {cycle}  | If using FILE_PER_STATE, then use {cycle} different files and then overwrite. Otherwise, there will be a maximum of {cycle} time steps in the file. See below.
  OVERLAY_COUNT         | {overlay}| If using FILE_PER_STATE, then put {overlay} timesteps worth of data into each file before going to next file. Otherwise, each output step in the file will be overwritten {overlay} times. See below.
  ENABLE_DATAWARP       | on/[off] | If the system supports Cray DataWarp (burst buffer), should it be used for buffering output files.
+## Deprecated Database-Related Properties
+ Property        | Value  | Description
+-----------------|:------:|-----------------------------------------------------------
+ LOWER_CASE_VARIABLE_NAMES | [on]/off | Use LOWERCASE_VARIABLE_NAMES
+ LOWER_CASE_DATABASE_NAMES | on/[off] | Use LOWERCASE_DATABASE_NAMES
 
 ### Cycle and Overlay Behavior:
 (Properties `CYCLE_COUNT`, `OVERLAY_COUNT`, and `FILE_PER_STATE`)
@@ -225,7 +230,7 @@ throughout the file.
  ENABLE_TRACING | on/[off] | show memory and elapsed time during some IOSS calls (mainly decomp).
  DECOMP_SHOW_PROGRESS | on/[off] | use `ENABLE_TRACING`.
  DECOMP_SHOW_HWM      | on/[off] | show high-water memory during autodecomp
- IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create
+ IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create/flush
  CHECK_PARALLEL_CONSISTENCY | on/[off] | check Ioss::GroupingEntity parallel consistency
  TIME_STATE_INPUT_OUTPUT | on/[off] | show the elapsed time for reading/writing each timestep's data
 
