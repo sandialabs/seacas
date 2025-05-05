@@ -21,7 +21,7 @@ namespace Ioss {
   };
 
 #define MAKE_CLASS(X)                                                                              \
-  class IOSS_EXPORT X final : public VariableType                                                        \
+  class IOSS_EXPORT X final : public VariableType                                                  \
   {                                                                                                \
   public:                                                                                          \
     IOSS_NODISCARD std::string label(int which, const char suffix_sep = '_') const override;       \
