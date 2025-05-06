@@ -5988,13 +5988,12 @@ class exodus:
         var_vals = (ctypes.c_double * num_values.value * num_steps)()
         EXODUS_LIB.ex_get_var_multi_time(
             self.fileId,
-            step,
             var_type,
             var_id,
             block_id,
             num_values,
-            s_step, 
-            e_step, 
+            s_step,
+            e_step,
             var_vals)
         return var_vals
 
