@@ -333,8 +333,13 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("native_variable_names", Ioss::GetLongOption::OptType::NoValue,
-                  "Do not lowercase variable names and replace spaces with underscores.\n"
+                  "[deprecated, now default] Do not lowercase variable names and replace spaces with underscores.\n"
                   "\t\tVariable names are left as they appear in the input mesh file",
+                  nullptr);
+
+  options_.enroll("lowercase_variable_names", Ioss::GetLongOption::OptType::NoValue,
+                  "Convert input variable names to lowercase and replace spaces with underscores.\n"
+                  "\t\tDefault is variable names are left as they appear in the input mesh file",
                   nullptr);
 
   options_.enroll(
@@ -680,7 +685,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   in_memory_read            = (options_.retrieve("memory_read") != nullptr);
   in_memory_write           = (options_.retrieve("memory_write") != nullptr);
   delete_timesteps          = (options_.retrieve("delete_timesteps") != nullptr);
-  lowercase_variable_names  = (options_.retrieve("native_variable_names") == nullptr);
+  lowercase_variable_names  = (options_.retrieve("lowercase_variable_names") != nullptr);
   lowercase_database_names  = (options_.retrieve("lowercase_database_names") != nullptr);
   lowercase_database_names  = (options_.retrieve("lower_case_database_names") != nullptr);
   disable_field_recognition = (options_.retrieve("disable_field_recognition") != nullptr);
