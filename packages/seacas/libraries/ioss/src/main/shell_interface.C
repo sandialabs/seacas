@@ -333,7 +333,8 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("native_variable_names", Ioss::GetLongOption::OptType::NoValue,
-                  "[deprecated, now default] Do not lowercase variable names and replace spaces with underscores.\n"
+                  "[deprecated, now default] Do not lowercase variable names and replace spaces "
+                  "with underscores.\n"
                   "\t\tVariable names are left as they appear in the input mesh file",
                   nullptr);
 
