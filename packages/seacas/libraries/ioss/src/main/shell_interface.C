@@ -239,12 +239,19 @@ void IOShell::Interface::enroll_options()
   options_.enroll("serialize_io_size", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run;\n\t\t0 to disable",
+                  nullptr);
+
+  options_.enroll("decomp_omit_blocks", Ioss::GetLongOption::OptType::MandatoryValue,
+                  "comma-separated list of element block ids that should NOT be ignored "
+                  "in\n"
+		  "\t\tthe parallel decomposition. Only valid for zoltan decomp methods: rcb, rib, hsfc",
                   nullptr, nullptr, true);
 #endif
 
   options_.enroll("select_change_sets", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Read only the specified change set(s) (comma-separated list) from the input "
-                  "file.  Use \"ALL\" for all change sets (default).",
+                  "file.\n"
+		  "\t\tUse \"ALL\" for all change sets (default).",
                   nullptr);
   options_.enroll(
       "extract_change_set", Ioss::GetLongOption::OptType::MandatoryValue,
@@ -736,6 +743,17 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       auto omit_str = Ioss::tokenize(std::string(temp), ",");
       for (const auto &str : omit_str) {
         omitted_sets.push_back(str);
+      }
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("decomp_omit_blocks");
+    if (temp != nullptr) {
+      auto omit_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : omit_str) {
+        auto id = std::stoi(str);
+        decomp_omitted_blocks.push_back(id);
       }
     }
   }
