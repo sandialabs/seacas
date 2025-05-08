@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -293,6 +293,11 @@ namespace Ioss {
     Utils::check_set_bool_property(props, "DECOMP_SHOW_PROGRESS", m_showProgress);
     if (!m_showProgress) {
       Utils::check_set_bool_property(props, "ENABLE_TRACING", m_showProgress);
+    }
+    if (props.exists("OMITTED_BLOCKS")) {
+      std::vector<int> blocks = props.get("OMITTED_BLOCKS").get_vec_int();
+      m_omittedBlocks.resize(blocks.size());
+      std::copy(blocks.begin(), blocks.end(), m_omittedBlocks.begin());
     }
 
     if (props.exists("PARMETIS_COMMON_NODE_COUNT") &&

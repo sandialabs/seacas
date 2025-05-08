@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -819,6 +819,7 @@ namespace Ioss {
     // file decomposition.
     // if m_fileBlockIndex[B] <= I && m_fileBlockIndex[B+1] < I
     std::vector<size_t> m_fileBlockIndex;
+    std::vector<int64_t> m_omittedBlocks;
 
   private:
     // This processor "manages" the elements on the exodus mesh file from

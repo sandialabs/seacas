@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -268,6 +268,7 @@ namespace Ioex {
     }
 
     void generate_adjacency_list(int filePtr, Ioss::Decomposition<INT> &decomposition);
+    void generate_omitted_block_weights(int filePtr, Ioss::Decomposition<INT> &decomposition);
 
     void get_common_set_data(int filePtr, ex_entity_type set_type,
                              std::vector<Ioss::SetDecompositionData> &sets,
