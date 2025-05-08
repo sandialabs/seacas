@@ -66,7 +66,7 @@ RETAIN_FREE_NODES | [on]/off | In auto-decomp, will nodes not connected to any e
 LOAD_BALANCE_THRESHOLD | {real} [1.4] | CGNS-Structured only -- Load imbalance permitted Load on Proc / Avg Load
 DECOMPOSITION_EXTRA | {name},{multiplier} | Specify the name of the element map or variable used if the decomposition method is `map` or `variable`.  If it contains a comma, the value following the comma is used to scale (divide) the values in the map/variable.  If it is 'auto', then all values will be scaled by `max_value/processorCount`
 DECOMP_OMITTED_BLOCK_IDS | {id_list} | A integer vector containing the
-element block ids that should be ignored during the parallel decomposition. The blocks will still appear in the decomposition, but will not affect the load balance.
+element block ids that should be ignored during the parallel decomposition. The blocks will still appear in the decomposition, but will not affect the load balance. If specified via `IOSS_PROPERTIES` can be a comma-separated string of ids.
 
 ### Valid values for Decomposition Method
 

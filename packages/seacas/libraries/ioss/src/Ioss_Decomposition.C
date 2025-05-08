@@ -11,6 +11,7 @@
 #include "Ioss_Enumerate.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Sort.h"
+#include "tokenize.h"
 #include "Ioss_Utils.h"
 #include <algorithm>
 #include <cassert>
@@ -294,12 +295,31 @@ namespace Ioss {
     if (!m_showProgress) {
       Utils::check_set_bool_property(props, "ENABLE_TRACING", m_showProgress);
     }
-    if (props.exists("DECOMP_OMITTED_BLOCK_IDS")) {
-      std::vector<int> blocks = props.get("DECOMP_OMITTED_BLOCK_IDS").get_vec_int();
-      m_omittedBlocks.resize(blocks.size());
-      std::copy(blocks.begin(), blocks.end(), m_omittedBlocks.begin());
-    }
 
+    // Difficult to specify an integer vector through the IOSS_PROPERTIES environment variable, 
+    // so if a string, parse into integer ids or if a single int, use it as is.
+    if (props.exists("DECOMP_OMITTED_BLOCK_IDS")) {
+      auto property = props.get("DECOMP_OMITTED_BLOCK_IDS");
+      if (property.get_type() == Ioss::Property::STRING) {
+	std::string id_string = property.get_string();
+	auto omit_str = Ioss::tokenize(id_string, ",");
+	for (const auto &str : omit_str) {
+	  auto id = std::stoi(str);
+	  m_omittedBlocks.push_back(id);
+	}
+      }
+      else if (property.get_type() == Ioss::Property::INTEGER) {
+	m_omittedBlocks.push_back(property.get_int());
+      }
+      else if (property.get_type() == Ioss::Property::VEC_INTEGER) {
+	std::vector<int> blocks = property.get_vec_int();
+	m_omittedBlocks.resize(blocks.size());
+	std::copy(blocks.begin(), blocks.end(), m_omittedBlocks.begin());
+      }
+      else {
+        IOSS_ERROR(fmt::format("ERROR: Unrecognized type for `DECOMP_OMITTED_BLOCK_IDS` property.  Should be VEC_INTEGER. Ignored.\n"));
+      }
+    }
     if (props.exists("PARMETIS_COMMON_NODE_COUNT") &&
         props.get("PARMETIS_COMMON_NODE_COUNT").get_int() > 0) {
       m_commonNodeCount = props.get("PARMETIS_COMMON_NODE_COUNT").get_int();
