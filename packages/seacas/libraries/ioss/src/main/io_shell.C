@@ -782,8 +782,7 @@ namespace {
     }
 
     if (!interFace.decomp_omitted_blocks.empty()) {
-      properties.add(Ioss::Property("DECOMP_OMITTED_BLOCK_IDS", 
-				    interFace.decomp_omitted_blocks));
+      properties.add(Ioss::Property("DECOMP_OMITTED_BLOCK_IDS", interFace.decomp_omitted_blocks));
     }
     if (interFace.retain_empty_blocks) {
       properties.add(Ioss::Property("RETAIN_EMPTY_BLOCKS", "YES"));

@@ -241,17 +241,18 @@ void IOShell::Interface::enroll_options()
                   "a parallel run;\n\t\t0 to disable",
                   nullptr);
 
-  options_.enroll("decomp_omit_blocks", Ioss::GetLongOption::OptType::MandatoryValue,
-                  "comma-separated list of element block ids that should NOT be ignored "
-                  "in\n"
-		  "\t\tthe parallel decomposition. Only valid for zoltan decomp methods: rcb, rib, hsfc",
-                  nullptr, nullptr, true);
+  options_.enroll(
+      "decomp_omit_blocks", Ioss::GetLongOption::OptType::MandatoryValue,
+      "comma-separated list of element block ids that should NOT be ignored "
+      "in\n"
+      "\t\tthe parallel decomposition. Only valid for zoltan decomp methods: rcb, rib, hsfc",
+      nullptr, nullptr, true);
 #endif
 
   options_.enroll("select_change_sets", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Read only the specified change set(s) (comma-separated list) from the input "
                   "file.\n"
-		  "\t\tUse \"ALL\" for all change sets (default).",
+                  "\t\tUse \"ALL\" for all change sets (default).",
                   nullptr);
   options_.enroll(
       "extract_change_set", Ioss::GetLongOption::OptType::MandatoryValue,
