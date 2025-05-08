@@ -526,10 +526,6 @@ namespace Ioex {
     }
 
     m_decomposition.show_progress(__func__);
-    // Range of elements currently handled by this processor [)
-    size_t p_start = decomp_elem_offset();
-    size_t p_end   = p_start + decomp_elem_count();
-
     size_t block_count = el_blocks.size();
     if (decomposition.m_fileBlockIndex.size() != block_count + 1) {
       std::ostringstream errmsg;
@@ -539,14 +535,13 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
 
-    std::vector<ex_block> ebs(block_count);
     std::vector<INT>      ids(block_count);
     ex_get_ids(filePtr, EX_ELEM_BLOCK, Data(ids));
 
     // Get the global element block index list at this time also.
     // The global element at index 'I' (0-based) is on block B
     // if global_block_index[B] <= I && global_block_index[B+1] < I
-
+    std::vector<ex_block> ebs(block_count);
     for (size_t b = 0; b < block_count; b++) {
       el_blocks[b].id_ = ids[b];
       ebs[b].id        = ids[b];
@@ -554,14 +549,17 @@ namespace Ioex {
       ex_get_block_param(filePtr, &ebs[b]);
     }
 
+
+    // Now, populate the weight vector...
     decomposition.m_weights.reserve(decomp_elem_count());
 
-    // Now, populate the vectors...
-    size_t offset = 0;
+    // Range of elements currently handled by this processor [)
+    size_t p_start = decomp_elem_offset();
+    size_t p_end   = p_start + decomp_elem_count();
+
+    size_t b_start = 0;
     for (const auto &block : ebs) {
-      // Range of elements in element block b [)
-      size_t b_start = offset; // offset is index of first element in this block...
-      offset += block.num_entry;
+      // Range of elements in element block b is [b_start,b_end)
       size_t b_end = b_start + block.num_entry;
 
       if (b_start < p_end && p_start < b_end) {
@@ -577,8 +575,8 @@ namespace Ioex {
           decomposition.m_weights.push_back(weight);
         }
       }
+      b_start = b_end;
     }
-    decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
   }
 
   template <typename INT>
