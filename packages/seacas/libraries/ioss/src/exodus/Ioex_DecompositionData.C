@@ -570,8 +570,8 @@ namespace Ioex {
         int64_t id      = block.id;
 
         bool omitted =
-            std::find(m_omittedBlocks.begin(), m_omittedBlocks.end(), id) != m_omittedBlocks.end();
-        float weight = omitted ? 0.0f, 1.0f;
+            std::find(decomposition.m_omittedBlocks.begin(), decomposition.m_omittedBlocks.end(), id) != decomposition.m_omittedBlocks.end();
+        float weight = omitted ? 0.0f : 1.0f;
         for (size_t elem = 0; elem < overlap; elem++) {
           decomposition.m_weights.push_back(weight);
         }
