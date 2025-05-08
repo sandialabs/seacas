@@ -516,8 +516,9 @@ namespace Ioex {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::generate_omitted_block_weights(int                       filePtr,
-							      Ioss::Decomposition<INT> &decomposition)
+  void
+  DecompositionData<INT>::generate_omitted_block_weights(int                       filePtr,
+                                                         Ioss::Decomposition<INT> &decomposition)
   {
     // This routine is assumed to be called *after* generate_adjacency...
     if (m_omittedBlocks.empty()) {
@@ -532,9 +533,9 @@ namespace Ioex {
     size_t block_count = el_blocks.size();
     if (decomposition.m_fileBlockIndex.size() != block_count + 1) {
       std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: The `generate_adjacency` function was not called prior to calling `generate_omitted_block_weights`\n"
-                 "       Contact gdsjaar@sandia.gov for more details.\n");
+      fmt::print(errmsg, "ERROR: The `generate_adjacency` function was not called prior to calling "
+                         "`generate_omitted_block_weights`\n"
+                         "       Contact gdsjaar@sandia.gov for more details.\n");
       IOSS_ERROR(errmsg);
     }
 
@@ -567,13 +568,14 @@ namespace Ioex {
 
       if (b_start < p_end && p_start < b_end) {
         // Some of this blocks elements are on this processor...
-        size_t  overlap       = std::min(b_end, p_end) - std::max(b_start, p_start);
-        int64_t id            = block.id;
+        size_t  overlap = std::min(b_end, p_end) - std::max(b_start, p_start);
+        int64_t id      = block.id;
 
-	bool omitted = std::find(m_omittedBlocks.begin(), m_omittedBlocks.end(), id) != m_omittedBlocks.end();
-	float weight = omitted ? 0.0f, 1.0f;
+        bool omitted =
+            std::find(m_omittedBlocks.begin(), m_omittedBlocks.end(), id) != m_omittedBlocks.end();
+        float weight = omitted ? 0.0f, 1.0f;
         for (size_t elem = 0; elem < overlap; elem++) {
-	  decomposition.m_weights.push_back(weight);
+          decomposition.m_weights.push_back(weight);
         }
       }
     }
