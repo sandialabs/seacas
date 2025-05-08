@@ -535,7 +535,7 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
 
-    std::vector<INT>      ids(block_count);
+    std::vector<INT> ids(block_count);
     ex_get_ids(filePtr, EX_ELEM_BLOCK, Data(ids));
 
     // Get the global element block index list at this time also.
@@ -548,7 +548,6 @@ namespace Ioex {
       ebs[b].type      = EX_ELEM_BLOCK;
       ex_get_block_param(filePtr, &ebs[b]);
     }
-
 
     // Now, populate the weight vector...
     decomposition.m_weights.reserve(decomp_elem_count());
