@@ -521,7 +521,7 @@ namespace Ioex {
                                                          Ioss::Decomposition<INT> &decomposition)
   {
     // This routine is assumed to be called *after* generate_adjacency...
-    if (m_omittedBlocks.empty()) {
+    if (decomposition.m_omittedBlocks.empty()) {
       return;
     }
 
@@ -542,8 +542,6 @@ namespace Ioex {
     std::vector<ex_block> ebs(block_count);
     std::vector<INT>      ids(block_count);
     ex_get_ids(filePtr, EX_ELEM_BLOCK, Data(ids));
-
-    size_t offset = 0;
 
     // Get the global element block index list at this time also.
     // The global element at index 'I' (0-based) is on block B
