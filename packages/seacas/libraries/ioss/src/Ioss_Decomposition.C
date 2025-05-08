@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -12,6 +12,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
+#include "tokenize.h"
 #include <algorithm>
 #include <cassert>
 #include <fmt/ostream.h>
@@ -295,6 +296,31 @@ namespace Ioss {
       Utils::check_set_bool_property(props, "ENABLE_TRACING", m_showProgress);
     }
 
+    // Difficult to specify an integer vector through the IOSS_PROPERTIES environment variable,
+    // so if a string, parse into integer ids or if a single int, use it as is.
+    if (props.exists("DECOMP_OMITTED_BLOCK_IDS")) {
+      auto property = props.get("DECOMP_OMITTED_BLOCK_IDS");
+      if (property.get_type() == Ioss::Property::STRING) {
+        std::string id_string = property.get_string();
+        auto        omit_str  = Ioss::tokenize(id_string, ",");
+        for (const auto &str : omit_str) {
+          auto id = std::stoi(str);
+          m_omittedBlocks.push_back(id);
+        }
+      }
+      else if (property.get_type() == Ioss::Property::INTEGER) {
+        m_omittedBlocks.push_back(property.get_int());
+      }
+      else if (property.get_type() == Ioss::Property::VEC_INTEGER) {
+        std::vector<int> blocks = property.get_vec_int();
+        m_omittedBlocks.resize(blocks.size());
+        std::copy(blocks.begin(), blocks.end(), m_omittedBlocks.begin());
+      }
+      else {
+        IOSS_ERROR(fmt::format("ERROR: Unrecognized type for `DECOMP_OMITTED_BLOCK_IDS` property.  "
+                               "Should be VEC_INTEGER. Ignored.\n"));
+      }
+    }
     if (props.exists("PARMETIS_COMMON_NODE_COUNT") &&
         props.get("PARMETIS_COMMON_NODE_COUNT").get_int() > 0) {
       m_commonNodeCount = props.get("PARMETIS_COMMON_NODE_COUNT").get_int();
@@ -1095,6 +1121,9 @@ namespace Ioss {
           sizeof(ZOLTAN_ID_TYPE), lib_global_id_type_size));
     }
 
+    if (!m_omittedBlocks.empty()) {
+      zz.Set_Param("OBJ_WEIGHT_DIM", "1");
+    }
     zz.Set_Param("NUM_GID_ENTRIES", std::to_string(num_global));
     zz.Set_Param("NUM_LID_ENTRIES", "0");
     zz.Set_Param("LB_METHOD", m_method);

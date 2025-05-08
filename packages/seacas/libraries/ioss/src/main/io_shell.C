@@ -47,7 +47,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "7.1 (2025/04/18)";
+  std::string version = "7.2 (2025/05/08)";
 
   bool mem_stats = false;
 
@@ -781,6 +781,9 @@ namespace {
       }
     }
 
+    if (!interFace.decomp_omitted_blocks.empty()) {
+      properties.add(Ioss::Property("DECOMP_OMITTED_BLOCK_IDS", interFace.decomp_omitted_blocks));
+    }
     if (interFace.retain_empty_blocks) {
       properties.add(Ioss::Property("RETAIN_EMPTY_BLOCKS", "YES"));
     }

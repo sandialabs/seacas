@@ -99,7 +99,7 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("float", Ioss::GetLongOption::OptType::NoValue,
-                  "Use 32-bit floating point values on output database; default is 64-bits",
+                  "Use 32-bit floating point values on output database; default is 64-bit doubles",
                   nullptr);
 
   options_.enroll("netcdf3", Ioss::GetLongOption::OptType::NoValue,
@@ -239,12 +239,20 @@ void IOShell::Interface::enroll_options()
   options_.enroll("serialize_io_size", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run;\n\t\t0 to disable",
-                  nullptr, nullptr, true);
+                  nullptr);
+
+  options_.enroll(
+      "decomp_omit_blocks", Ioss::GetLongOption::OptType::MandatoryValue,
+      "comma-separated list of element block ids that should NOT be ignored "
+      "in\n"
+      "\t\tthe parallel decomposition. Only valid for zoltan decomp methods: rcb, rib, hsfc",
+      nullptr, nullptr, true);
 #endif
 
   options_.enroll("select_change_sets", Ioss::GetLongOption::OptType::MandatoryValue,
                   "Read only the specified change set(s) (comma-separated list) from the input "
-                  "file.  Use \"ALL\" for all change sets (default).",
+                  "file.\n"
+                  "\t\tUse \"ALL\" for all change sets (default).",
                   nullptr);
   options_.enroll(
       "extract_change_set", Ioss::GetLongOption::OptType::MandatoryValue,
@@ -332,12 +340,6 @@ void IOShell::Interface::enroll_options()
                   "\t\tOptions are: TOPOLOGY(default), BLOCK, NO_SPLIT",
                   nullptr);
 
-  options_.enroll("native_variable_names", Ioss::GetLongOption::OptType::NoValue,
-                  "[deprecated, now default] Do not lowercase variable names and replace spaces "
-                  "with underscores.\n"
-                  "\t\tVariable names are left as they appear in the input mesh file",
-                  nullptr);
-
   options_.enroll("lowercase_variable_names", Ioss::GetLongOption::OptType::NoValue,
                   "Convert input variable names to lowercase and replace spaces with underscores.\n"
                   "\t\tDefault is variable names are left as they appear in the input mesh file",
@@ -345,12 +347,18 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll(
       "lowercase_database_names", Ioss::GetLongOption::OptType::NoValue,
-      "Lowercase all block/set/assembly names and replace spaces with underscores.\n"
-      "\t\tBy default, block/set/assembly names are left as they appear in the input mesh file",
+      "Convert all block/set/assembly names to lowercase and replace spaces with underscores.\n"
+      "\t\tDefault is block/set/assembly names are left as they appear in the input mesh file",
       nullptr);
 
   options_.enroll("lower_case_database_names", Ioss::GetLongOption::OptType::NoValue,
                   "[Deprecated] Use lowercase_database_names", nullptr);
+
+  options_.enroll("native_variable_names", Ioss::GetLongOption::OptType::NoValue,
+                  "[deprecated, now default] Do not lowercase variable names and replace spaces "
+                  "with underscores.\n"
+                  "\t\tVariable names are left as they appear in the input mesh file",
+                  nullptr);
 
   options_.enroll("retain_empty_blocks", Ioss::GetLongOption::OptType::NoValue,
                   "If any empty element blocks on input file, keep them and write to output file.\n"
@@ -736,6 +744,17 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       auto omit_str = Ioss::tokenize(std::string(temp), ",");
       for (const auto &str : omit_str) {
         omitted_sets.push_back(str);
+      }
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("decomp_omit_blocks");
+    if (temp != nullptr) {
+      auto omit_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : omit_str) {
+        auto id = std::stoi(str);
+        decomp_omitted_blocks.push_back(id);
       }
     }
   }
