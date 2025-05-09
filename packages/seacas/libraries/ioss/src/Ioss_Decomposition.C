@@ -323,9 +323,9 @@ namespace Ioss {
     }
     if (props.exists("DECOMP_OMITTED_BLOCK_NAMES")) {
       auto name_string = props.get("DECOMP_OMITTED_BLOCK_NAMES").get_string();
-      auto names = Ioss::tokenize(name_string, ",");
+      auto names       = Ioss::tokenize(name_string, ",");
       for (const auto &name : names) {
-	m_omittedBlockNames.push_back(name);
+        m_omittedBlockNames.push_back(name);
       }
     }
     if (props.exists("PARMETIS_COMMON_NODE_COUNT") &&
