@@ -321,6 +321,13 @@ namespace Ioss {
                                "Should be VEC_INTEGER. Ignored.\n"));
       }
     }
+    if (props.exists("DECOMP_OMITTED_BLOCK_NAMES")) {
+      auto name_string = props.get("DECOMP_OMITTED_BLOCK_NAMES").get_string();
+      auto names = Ioss::tokenize(name_string, ",");
+      for (const auto &name : names) {
+	m_omittedBlockNames.push_back(name);
+      }
+    }
     if (props.exists("PARMETIS_COMMON_NODE_COUNT") &&
         props.get("PARMETIS_COMMON_NODE_COUNT").get_int() > 0) {
       m_commonNodeCount = props.get("PARMETIS_COMMON_NODE_COUNT").get_int();
