@@ -748,6 +748,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
   }
 
+#if defined(SEACAS_HAVE_MPI)
   {
     const char *temp = options_.retrieve("decomp_omit_blocks");
     if (temp != nullptr) {
@@ -758,7 +759,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       }
     }
   }
-
+#endif
+  
   {
     const char *temp = options_.retrieve("surface_split_scheme");
     if (temp != nullptr) {
