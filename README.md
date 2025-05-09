@@ -49,7 +49,7 @@ libraries using the `install-tpl.sh` script, or you can install them
 manually as detailed in
 [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
-*  The script requires bash and wget, which you may need to install.
+*  The script requires bash and curl, which you may need to install.
 *  To use the script, simply type `bash ./install-tpl.sh`.
 *  The default behavior can be modified via a few environment variables:
 
@@ -285,7 +285,7 @@ recommended to use as current an MPI library as possible.
 
 * Automake is used to configure some of the TPL builds
 
-* wget is needed to download some of the TPL library source code.
+* curl is needed to download some of the TPL library source code.
 
 * python is required to use the `exodus.py` and `exomerge.py`
 Python interfaces to Exodus databases. Python3 is recommended.
