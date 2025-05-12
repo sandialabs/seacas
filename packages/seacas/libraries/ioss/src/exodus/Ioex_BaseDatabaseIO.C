@@ -1862,6 +1862,9 @@ namespace Ioex {
                 }
               }
               names[j] = "";
+	      if (i == 0) {
+		field.set_index(j);
+	      }
               break;
             }
           }
