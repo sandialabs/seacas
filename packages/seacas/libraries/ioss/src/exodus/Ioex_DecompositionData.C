@@ -521,8 +521,35 @@ namespace Ioex {
                                                          Ioss::Decomposition<INT> &decomposition)
   {
     // This routine is assumed to be called *after* generate_adjacency...
-    if (decomposition.m_omittedBlocks.empty()) {
+    if (decomposition.m_omittedBlocks.empty() && decomposition.m_omittedBlockNames.empty()) {
       return;
+    }
+
+    std::vector<INT> ids(block_count);
+    ex_get_ids(filePtr, EX_ELEM_BLOCK, Data(ids));
+
+    if (!decomposition.m_omittedBlockNames.empty()) {
+      // Need to determine the id of each block name in the list...
+      // Probably easiest to go through each id and get its name and
+      // see if it exists in `m_omittedBlockNames`
+      int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      size_t num_found = 0;
+      for (INT id : ids) {
+	bool db_has_name = false;
+	name = Ioex::Utils::get_entity_name(filePtr, EX_ELEM_BLOCK, id, "block", max_name_length, false, db_has_name);
+	if (db_has_name) {
+	  bool found = std::find(decomposition.m_omittedBlockNames.begin(), decomposition.m_omittedBlockNames.end(),
+				 name) != decomposition.m_omittedBlockNames.end();
+	  if (found) {
+	    fmt::print(stderr, "Found name {} with id {}\n", name, id);
+	    decomposition.m_omittedBlocks.push_back(id);
+	    num_found++;
+	    if (num_found == decomposition.m_omittedBlockNames.size()) {
+	      break;
+	    }
+	  }
+	}
+      }
     }
 
     m_decomposition.show_progress(__func__);
@@ -534,9 +561,6 @@ namespace Ioex {
                          "       Contact gdsjaar@sandia.gov for more details.\n");
       IOSS_ERROR(errmsg);
     }
-
-    std::vector<INT> ids(block_count);
-    ex_get_ids(filePtr, EX_ELEM_BLOCK, Data(ids));
 
     // Get the global element block index list at this time also.
     // The global element at index 'I' (0-based) is on block B
