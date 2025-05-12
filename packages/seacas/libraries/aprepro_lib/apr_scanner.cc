@@ -1034,7 +1034,7 @@ bool   switch_skip_to_endcase      = false;
 double switch_condition            = 0.0; // Value specified in "switch(condition)"
 
 // For substitution history
-size_t      curr_index = 0;
+int         curr_index = 0;
 std::string history_string;
 size_t      hist_start = 0;
 
