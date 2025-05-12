@@ -242,8 +242,14 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll(
-      "decomp_omit_blocks", Ioss::GetLongOption::OptType::MandatoryValue,
-      "comma-separated list of element block ids that should NOT be ignored "
+      "decomp_omit_block_ids", Ioss::GetLongOption::OptType::MandatoryValue,
+      "comma-separated list of element block ids that should be ignored "
+      "in\n"
+      "\t\tthe parallel decomposition. Only valid for zoltan decomp methods: rcb, rib, hsfc",
+      nullptr);
+  options_.enroll(
+      "decomp_omit_block_names", Ioss::GetLongOption::OptType::MandatoryValue,
+      "comma-separated list of element block names that should be ignored "
       "in\n"
       "\t\tthe parallel decomposition. Only valid for zoltan decomp methods: rcb, rib, hsfc",
       nullptr, nullptr, true);
@@ -750,13 +756,19 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
 #if defined(SEACAS_HAVE_MPI)
   {
-    const char *temp = options_.retrieve("decomp_omit_blocks");
+    const char *temp = options_.retrieve("decomp_omit_block_ids");
     if (temp != nullptr) {
       auto omit_str = Ioss::tokenize(std::string(temp), ",");
       for (const auto &str : omit_str) {
         auto id = std::stoi(str);
-        decomp_omitted_blocks.push_back(id);
+        decomp_omitted_block_ids.push_back(id);
       }
+    }
+  }
+  {
+    const char *temp = options_.retrieve("decomp_omit_block_names");
+    if (temp != nullptr) {
+      decomp_omitted_block_names = std::string(temp);
     }
   }
 #endif
