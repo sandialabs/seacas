@@ -75,7 +75,7 @@ namespace IOShell {
     //! still appear in the decomposed files, but will not affect the
     //! balance. Only active element blocks will be load-balanced.
     std::vector<int> decomp_omitted_block_ids{};
-    std::string decomp_omitted_block_names{};
+    std::string      decomp_omitted_block_names{};
 
     //! If non-zero, then put `split_times` timesteps in each file. Then close file and start new
     //! file.

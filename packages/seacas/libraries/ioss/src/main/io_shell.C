@@ -782,10 +782,12 @@ namespace {
     }
 
     if (!interFace.decomp_omitted_block_ids.empty()) {
-      properties.add(Ioss::Property("DECOMP_OMITTED_BLOCK_IDS", interFace.decomp_omitted_block_ids));
+      properties.add(
+          Ioss::Property("DECOMP_OMITTED_BLOCK_IDS", interFace.decomp_omitted_block_ids));
     }
     if (!interFace.decomp_omitted_block_names.empty()) {
-      properties.add(Ioss::Property("DECOMP_OMITTED_BLOCK_NAMES", interFace.decomp_omitted_block_names));
+      properties.add(
+          Ioss::Property("DECOMP_OMITTED_BLOCK_NAMES", interFace.decomp_omitted_block_names));
     }
     if (interFace.retain_empty_blocks) {
       properties.add(Ioss::Property("RETAIN_EMPTY_BLOCKS", "YES"));
