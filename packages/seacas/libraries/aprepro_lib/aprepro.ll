@@ -28,7 +28,7 @@ s"}/* -*- Mode: c++ -*- */
 #include "apr_tokenize.h"
 #include "fmt/format.h"
 #include "fmt/ostream.h"
-
+#include "fmt/ranges.h"
 
 #define YY_NO_UNISTD_H
 /* import the parser's token type into a local typedef */
@@ -568,7 +568,7 @@ integer {D}+({E})?
                              file_must_exist = true; }
 <INITIAL>{WS}"{"[Cc]"include"{WS}"("          { BEGIN(GET_FILENAME);
                              file_must_exist = false; }
-<GET_FILENAME>.+")"{WS}"}"{NL}* {
+<GET_FILENAME>.+")"{WS}"}" {
   aprepro.ap_file_list.top().lineno++;
   BEGIN(INITIAL);
   {
