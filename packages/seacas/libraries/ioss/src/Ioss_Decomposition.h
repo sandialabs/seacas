@@ -818,8 +818,8 @@ namespace Ioss {
     // The global element at index 'I' (0-based) is on block B in the
     // file decomposition.
     // if m_fileBlockIndex[B] <= I && m_fileBlockIndex[B+1] < I
-    std::vector<size_t>  m_fileBlockIndex;
-    std::vector<int64_t> m_omittedBlocks;
+    std::vector<size_t>      m_fileBlockIndex;
+    std::vector<int64_t>     m_omittedBlocks;
     std::vector<std::string> m_omittedBlockNames;
 
   private:

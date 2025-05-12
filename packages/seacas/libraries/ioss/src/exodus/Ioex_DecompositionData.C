@@ -525,6 +525,7 @@ namespace Ioex {
       return;
     }
 
+    size_t           block_count = el_blocks.size();
     std::vector<INT> ids(block_count);
     ex_get_ids(filePtr, EX_ELEM_BLOCK, Data(ids));
 
@@ -532,28 +533,35 @@ namespace Ioex {
       // Need to determine the id of each block name in the list...
       // Probably easiest to go through each id and get its name and
       // see if it exists in `m_omittedBlockNames`
-      int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      size_t num_found = 0;
+      int max_name_length = ex_inquire_int(filePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      max_name_length     = std::max(max_name_length, 32);
+      size_t num_found    = 0;
       for (INT id : ids) {
-	bool db_has_name = false;
-	name = Ioex::Utils::get_entity_name(filePtr, EX_ELEM_BLOCK, id, "block", max_name_length, false, db_has_name);
-	if (db_has_name) {
-	  bool found = std::find(decomposition.m_omittedBlockNames.begin(), decomposition.m_omittedBlockNames.end(),
-				 name) != decomposition.m_omittedBlockNames.end();
-	  if (found) {
-	    fmt::print(stderr, "Found name {} with id {}\n", name, id);
-	    decomposition.m_omittedBlocks.push_back(id);
-	    num_found++;
-	    if (num_found == decomposition.m_omittedBlockNames.size()) {
-	      break;
-	    }
-	  }
-	}
+        std::vector<char> buffer(max_name_length + 1);
+        buffer[0] = '\0';
+        ex_get_name(filePtr, EX_ELEM_BLOCK, id, Data(buffer));
+        if (buffer[0] != '\0') {
+          std::string name(Data(buffer));
+          bool        found = std::find(decomposition.m_omittedBlockNames.begin(),
+                                        decomposition.m_omittedBlockNames.end(),
+                                        name) != decomposition.m_omittedBlockNames.end();
+          if (found) {
+#if IOSS_DEBUG_OUTPUT
+            if (m_processor == 0) {
+              fmt::print(stderr, "Found name {} with id {}\n", name, id);
+            }
+#endif
+            decomposition.m_omittedBlocks.push_back(id);
+            num_found++;
+            if (num_found == decomposition.m_omittedBlockNames.size()) {
+              break;
+            }
+          }
+        }
       }
     }
 
     m_decomposition.show_progress(__func__);
-    size_t block_count = el_blocks.size();
     if (decomposition.m_fileBlockIndex.size() != block_count + 1) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: The `generate_adjacency` function was not called prior to calling "
