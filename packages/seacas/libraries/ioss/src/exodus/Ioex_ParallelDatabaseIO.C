@@ -806,12 +806,12 @@ namespace Ioex {
     assert(decomp != nullptr);
 
     if (!blockInclusions.empty()) {
-      fmt::print(Ioss::WarnOut(),
-		 "Parallel Decomposition does not handle block Inclusions; only element block Omissions.\n");
+      fmt::print(Ioss::WarnOut(), "Parallel Decomposition does not handle block Inclusions; only "
+                                  "element block Omissions.\n");
     }
     if (!assemblyInclusions.empty() || !assemblyOmissions.empty()) {
-      fmt::print(Ioss::WarnOut(),
-		 "Parallel Decomposition does not handle assembly Omissions/Inclusions; only element block Omissions.\n");
+      fmt::print(Ioss::WarnOut(), "Parallel Decomposition does not handle assembly "
+                                  "Omissions/Inclusions; only element block Omissions.\n");
     }
     if (!blockOmissions.empty()) {
       decomp->set_block_omissions(blockOmissions);
