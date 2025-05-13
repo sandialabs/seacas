@@ -342,6 +342,19 @@ namespace Ioss {
   }
 
   template IOSS_EXPORT void
+  Decomposition<int>::set_block_omissions(const Ioss::NameList &omissions);
+  template IOSS_EXPORT void
+  Decomposition<int64_t>::set_block_omissions(const Ioss::NameList &omissions);
+
+  template <typename INT>
+  void Decomposition<INT>::set_block_omissions(const Ioss::NameList &omissions)
+  {
+    for (const auto &name : omissions) {
+      m_omittedBlockNames.push_back(name);
+    }
+  }
+
+  template IOSS_EXPORT void
   Decomposition<int>::generate_entity_distributions(size_t global_node_count,
                                                     size_t global_element_count);
   template IOSS_EXPORT void

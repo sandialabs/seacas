@@ -185,6 +185,8 @@ namespace Ioss {
     Decomposition &operator=(Decomposition const &) = default;
     Decomposition &operator=(Decomposition &&)      = default;
 
+    void set_block_omissions(const Ioss::NameList &omissions);
+
     IOSS_NODISCARD size_t global_node_count() const { return m_globalNodeCount; }
     IOSS_NODISCARD size_t global_elem_count() const { return m_globalElementCount; }
     IOSS_NODISCARD size_t ioss_node_count() const { return nodeGTL.size(); }

@@ -68,6 +68,8 @@ namespace Ioex {
     IOSS_NODISCARD virtual std::vector<double> &centroids() = 0;
     IOSS_NODISCARD virtual std::vector<float>  &weights()   = 0;
 
+    virtual void set_block_omissions(const Ioss::NameList &omissions) = 0;
+
     Ioss_MPI_Comm comm_;
 
     int m_processor{0};
@@ -138,6 +140,11 @@ namespace Ioex {
 
     IOSS_NODISCARD std::vector<double> &centroids() { return m_decomposition.m_centroids; }
     IOSS_NODISCARD std::vector<float> &weights() { return m_decomposition.m_weights; }
+
+    void set_block_omissions(const Ioss::NameList &omissions)
+    {
+      m_decomposition.set_block_omissions(omissions);
+    }
 
     template <typename T>
     void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const
