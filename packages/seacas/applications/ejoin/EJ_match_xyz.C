@@ -25,14 +25,7 @@ namespace {
 
   double max3(double x, double y, double z)
   {
-    double max = x;
-    if (y > max) {
-      max = y;
-    }
-    if (z > max) {
-      max = z;
-    }
-    return max;
+    return std::max({x, y, z});
   }
 
   void find_range(const std::vector<double> &coord, vector3d &min, vector3d &max)
@@ -41,25 +34,13 @@ namespace {
       min.set(coord[0], coord[1], coord[2]);
       max = min;
       for (size_t i = 3; i < coord.size(); i += 3) {
-        if (min.x > coord[i + 0]) {
-          min.x = coord[i + 0];
-        }
-        if (min.y > coord[i + 1]) {
-          min.y = coord[i + 1];
-        }
-        if (min.z > coord[i + 2]) {
-          min.z = coord[i + 2];
-        }
-
-        if (max.x < coord[i + 0]) {
-          max.x = coord[i + 0];
-        }
-        if (max.y < coord[i + 1]) {
-          max.y = coord[i + 1];
-        }
-        if (max.z < coord[i + 2]) {
-          max.z = coord[i + 2];
-        }
+	min.x = std::min(min.x, coord[i + 0]);
+	min.y = std::min(min.y, coord[i + 1]);
+	min.z = std::min(min.z, coord[i + 2]);
+	
+	max.x = std::max(max.x, coord[i + 0]);
+	max.y = std::max(max.y, coord[i + 1]);
+	max.z = std::max(max.z, coord[i + 2]);
       }
     }
     else {
