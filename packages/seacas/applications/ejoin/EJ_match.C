@@ -23,10 +23,7 @@ namespace {
                    std::vector<INT> &j_inrange, const RealVector &j_coord, size_t j_offset,
                    double epsilon, int XYZ, std::vector<INT> &local_node_map);
 
-  double max3(double x, double y, double z)
-  {
-    return std::max({x, y, z});
-  }
+  double max3(double x, double y, double z) { return std::max({x, y, z}); }
 
   void find_range(const std::vector<double> &coord, vector3d &min, vector3d &max)
   {
@@ -34,13 +31,13 @@ namespace {
       min.set(coord[0], coord[1], coord[2]);
       max = min;
       for (size_t i = 3; i < coord.size(); i += 3) {
-	min.x = std::min(min.x, coord[i + 0]);
-	min.y = std::min(min.y, coord[i + 1]);
-	min.z = std::min(min.z, coord[i + 2]);
-	
-	max.x = std::max(max.x, coord[i + 0]);
-	max.y = std::max(max.y, coord[i + 1]);
-	max.z = std::max(max.z, coord[i + 2]);
+        min.x = std::min(min.x, coord[i + 0]);
+        min.y = std::min(min.y, coord[i + 1]);
+        min.z = std::min(min.z, coord[i + 2]);
+
+        max.x = std::max(max.x, coord[i + 0]);
+        max.y = std::max(max.y, coord[i + 1]);
+        max.z = std::max(max.z, coord[i + 2]);
       }
     }
     else {
@@ -217,8 +214,8 @@ template void match_node_xyz(RegionVector &part_mesh, double tolerance,
 
 template <typename INT>
 void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
-                        std::vector<INT> &global_node_map, std::vector<INT> &local_node_map,
-                        const SystemInterface &interFace)
+                         std::vector<INT> &global_node_map, std::vector<INT> &local_node_map,
+                         const SystemInterface &interFace)
 {
   // See if any omitted element blocks...
   handle_omitted_blocks(part_mesh, local_node_map);
@@ -232,13 +229,13 @@ void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
 }
 
 template void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
-                                 std::vector<int>      &global_node_map,
-                                 std::vector<int>      &local_node_map,
-                                 const SystemInterface &interFace);
+                                  std::vector<int>      &global_node_map,
+                                  std::vector<int>      &local_node_map,
+                                  const SystemInterface &interFace);
 template void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
-                                 std::vector<int64_t>  &global_node_map,
-                                 std::vector<int64_t>  &local_node_map,
-                                 const SystemInterface &interFace);
+                                  std::vector<int64_t>  &global_node_map,
+                                  std::vector<int64_t>  &local_node_map,
+                                  const SystemInterface &interFace);
 namespace {
   template <typename INT>
   void do_matching(std::vector<INT> &i_inrange, const RealVector &i_coord, size_t i_offset,

@@ -401,7 +401,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   }
   else if (interFace.match_nodeset_nodes()) {
     match_nodeset_nodes(part_mesh, interFace.tolerance(), global_node_map, local_node_map,
-                       interFace);
+                        interFace);
   }
   else {
     // Eliminate all nodes that were only connected to the omitted element blocks (if any).
