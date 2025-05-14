@@ -28,7 +28,8 @@ namespace {
 } // namespace
 
 template <typename INT>
-void select_nodeset_nodes(RegionVector &part_mesh, std::vector<INT> &local_node_map, const Omissions &nset_match)
+void select_nodeset_nodes(RegionVector &part_mesh, std::vector<INT> &local_node_map,
+                          const Omissions &nset_match)
 {
   for (auto &entry : local_node_map) {
     if (entry >= 0) {
@@ -42,37 +43,36 @@ void select_nodeset_nodes(RegionVector &part_mesh, std::vector<INT> &local_node_
     if (nset_match[p].empty()) {
       continue;
     }
-    const Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
+    const Ioss::NodeBlock *nb       = part_mesh[p]->get_node_blocks()[0];
     size_t                 loc_size = nb->entity_count();
-	 
+
     for (const auto &ns_name : nset_match[p]) {
       if (ns_name == "ALL") {
-	// Punt for now...
-	continue;
+        // Punt for now...
+        continue;
       }
 
       const Ioss::NodeSet *ns = part_mesh[p]->get_nodeset(ns_name);
       if (ns != nullptr) {
-	std::vector<INT> ns_nodes;
-	ns->get_field_data("ids_raw", ns_nodes);
-	for (auto node : ns_nodes) {
-	  local_node_map[offset + node - 1] = offset + node -1;
-	}
+        std::vector<INT> ns_nodes;
+        ns->get_field_data("ids_raw", ns_nodes);
+        for (auto node : ns_nodes) {
+          local_node_map[offset + node - 1] = offset + node - 1;
+        }
       }
       else {
-	fmt::print(stderr, "ERROR: Could not find {} on part {}.\n",
-		   ns_name, p+1);
-	exit(EXIT_FAILURE);
+        fmt::print(stderr, "ERROR: Could not find {} on part {}.\n", ns_name, p + 1);
+        exit(EXIT_FAILURE);
       }
     }
     offset += loc_size;
   }
 }
 
-template 
-void select_nodeset_nodes(RegionVector &part_mesh, std::vector<int> &local_node_map, const Omissions &nset_match);
-template 
-void select_nodeset_nodes(RegionVector &part_mesh, std::vector<int64_t> &local_node_map, const Omissions &nset_match);
+template void select_nodeset_nodes(RegionVector &part_mesh, std::vector<int> &local_node_map,
+                                   const Omissions &nset_match);
+template void select_nodeset_nodes(RegionVector &part_mesh, std::vector<int64_t> &local_node_map,
+                                   const Omissions &nset_match);
 
 template <typename INT>
 void eliminate_omitted_nodes(RegionVector &part_mesh, std::vector<INT> &global_node_map,

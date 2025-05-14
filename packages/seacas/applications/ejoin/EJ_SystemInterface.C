@@ -113,9 +113,10 @@ void SystemInterface::enroll_options()
                   "Combine nodes if they are within tolerance distance of each other.", nullptr);
 
   options_.enroll("match_nodeset_nodes", GetLongOption::MandatoryValue,
-                  "Combine nodes in the specified nodeset(s) if they are within `tolerance` distance of each other.\n"
+                  "Combine nodes in the specified nodeset(s) if they are within `tolerance` "
+                  "distance of each other.\n"
                   "\t\tSpecify nodesets in each part as p#:id1:id2,p#:id2,id4...",
-		  nullptr);
+                  nullptr);
 
 #if 0
   options_.enroll("match_elem_ids", GetLongOption::NoValue,

@@ -23,4 +23,5 @@ void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local
                           std::vector<INT> &global_element_map);
 
 template <typename INT>
-void select_nodeset_nodes(RegionVector &part_mesh, std::vector<INT> &local_node_map, const Omissions &nset_match);
+void select_nodeset_nodes(RegionVector &part_mesh, std::vector<INT> &local_node_map,
+                          const Omissions &nset_match);
