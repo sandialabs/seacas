@@ -131,7 +131,6 @@ namespace Ioex {
   IOEX_EXPORT std::vector<ex_assembly> get_exodus_assemblies(int exoid);
   IOEX_EXPORT void cleanup_exodus_assembly_vector(std::vector<ex_assembly> &assemblies);
 
-
   IOEX_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
                                     const std::vector<unsigned char> &node_connectivity_status);
 
