@@ -24,7 +24,7 @@ public:
   double tolerance() const { return tolerance_; }
   bool   match_node_ids() const { return matchNodeIds_; }
   bool   match_node_xyz() const { return matchNodeXYZ_; }
-  bool   match_node_nodeset() const { return !nsetMatch_.empty(); }
+  bool   match_nodeset_nodes() const { return !nsetMatch_.empty(); }
   bool   match_elem_ids() const { return matchElemIds_; }
   bool   omit_nodesets() const { return omitNodesets_; }
   bool   omit_sidesets() const { return omitSidesets_; }

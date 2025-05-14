@@ -235,7 +235,7 @@ template void match_node_xyz(RegionVector &part_mesh, double tolerance,
                              std::vector<int64_t> &local_node_map);
 
 template <typename INT>
-void match_node_nodeset(RegionVector &part_mesh, double tolerance,
+void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
                         std::vector<INT> &global_node_map, std::vector<INT> &local_node_map,
                         const SystemInterface &interFace)
 {
@@ -250,11 +250,11 @@ void match_node_nodeset(RegionVector &part_mesh, double tolerance,
   match_nodes(part_mesh, tolerance, global_node_map, local_node_map);
 }
 
-template void match_node_nodeset(RegionVector &part_mesh, double tolerance,
+template void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
                                  std::vector<int>      &global_node_map,
                                  std::vector<int>      &local_node_map,
                                  const SystemInterface &interFace);
-template void match_node_nodeset(RegionVector &part_mesh, double tolerance,
+template void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
                                  std::vector<int64_t>  &global_node_map,
                                  std::vector<int64_t>  &local_node_map,
                                  const SystemInterface &interFace);

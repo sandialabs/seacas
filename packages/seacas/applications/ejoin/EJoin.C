@@ -399,8 +399,8 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   else if (interFace.match_node_xyz()) {
     match_node_xyz(part_mesh, interFace.tolerance(), global_node_map, local_node_map);
   }
-  else if (interFace.match_node_nodeset()) {
-    match_node_nodeset(part_mesh, interFace.tolerance(), global_node_map, local_node_map,
+  else if (interFace.match_nodeset_nodes()) {
+    match_nodeset_nodes(part_mesh, interFace.tolerance(), global_node_map, local_node_map,
                        interFace);
   }
   else {
