@@ -125,7 +125,8 @@ public:
   bool doL1Norm{false};
   bool doL2Norm{false};
   bool pedantic{false}; // Be most picky on what is different (not fully picky yet)
-  bool allowPermutation{false}; // Allow element connectivity to be permuted -- same nodes; different order.
+  bool allowPermutation{
+      false}; // Allow element connectivity to be permuted -- same nodes; different order.
 
   bool interpolating{false}; // Interpolate times on file2 to match times on file1;
   bool by_name{false};       // Match entities by name instead of by id.

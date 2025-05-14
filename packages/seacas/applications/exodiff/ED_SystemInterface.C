@@ -391,7 +391,7 @@ void SystemInterface::enroll_options()
                   "If the -partial switch used, print the elements that did not match.", nullptr);
   options_.enroll("allow_permuted_connectivity", GetLongOption::NoValue,
                   "The element connectivities are the same if they match\n"
-		  "\t\texactly *OR* are a permutation of each other.",
+                  "\t\texactly *OR* are a permutation of each other.",
                   nullptr);
   options_.enroll("ignore_dups", GetLongOption::NoValue,
                   "If two elements/nodes are in the same location in map or partial\n"
