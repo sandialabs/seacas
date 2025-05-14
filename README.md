@@ -323,6 +323,9 @@ mingw-w64-x86_64-cmake mingw-w64-x86_64-fmt
 There is also a Visual Studio build performed at each commit to the
 SEACAS git repository.  See the file `.appveyor.yml` for more details.
 
+### Windows Powershell
+A script provided by a user shows how they build on Windows using Powershell.  See [WIKI: Windows Powershell Script](https://github.com/sandialabs/seacas/wiki/Windows-Powershell-Script).
+
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the [LICENSE](LICENSE) file for details.
