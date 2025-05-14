@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-#include "EJ_match_xyz.h"
+#include "EJ_match.h"
 
 template <typename INT>
 void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,

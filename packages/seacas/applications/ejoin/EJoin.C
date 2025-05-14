@@ -37,7 +37,7 @@
 #include "EJ_SystemInterface.h"
 #include "EJ_Version.h"
 #include "EJ_mapping.h"
-#include "EJ_match_xyz.h"
+#include "EJ_match.h"
 #include "EJ_vector3d.h"
 
 #ifdef SEACAS_HAVE_MPI
