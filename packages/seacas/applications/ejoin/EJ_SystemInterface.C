@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2024 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -111,6 +111,11 @@ void SystemInterface::enroll_options()
 
   options_.enroll("match_node_coordinates", GetLongOption::NoValue,
                   "Combine nodes if they are within tolerance distance of each other.", nullptr);
+
+  options_.enroll("match_nodeset_nodes", GetLongOption::MandatoryValue,
+                  "Combine nodes in the specified nodeset(s) if they are within `tolerance` distance of each other.\n"
+                  "\t\tSpecify nodesets in each part as p#:id1:id2,p#:id2,id4...",
+		  nullptr);
 
 #if 0
   options_.enroll("match_elem_ids", GetLongOption::NoValue,
@@ -273,6 +278,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   nsetOmissions_.resize(part_count);
   ssetOmissions_.resize(part_count);
   assemblyOmissions_.resize(part_count);
+  nsetMatch_.resize(part_count);
 
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
@@ -350,6 +356,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("extract_blocks");
     if (temp != nullptr) {
       parse_omissions(temp, &blockInclusions_, "block", true);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("match_nodeset_nodes");
+    if (temp != nullptr) {
+      parse_omissions(temp, &nsetMatch_, "nodelist", true);
     }
   }
 
