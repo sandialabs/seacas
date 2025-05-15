@@ -258,6 +258,7 @@ namespace Ioss {
     IOSS_NODISCARD unsigned int hash() const { return hash_; }
 
     IOSS_NODISCARD int64_t entity_count() const;
+    int64_t reset_entity_count(int64_t new_entity_count) const;
 
     // COMPARE GroupingEntities
     IOSS_NODISCARD bool operator!=(const GroupingEntity &rhs) const;
@@ -376,7 +377,14 @@ Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
 
 inline int64_t Ioss::GroupingEntity::entity_count() const
 {
-  return get_property("entity_count").get_int();
+  return entityCount;
+}
+
+inline int64_t Ioss::GroupingEntity::reset_entity_count(int64_t new_entity_count) const
+{
+  int64_t save_entity_count = entityCount;
+  entityCount = new_entity_count;
+  return save_entity_count;
 }
 
 /** \brief Get the names of all properties in the property manager for this entity.

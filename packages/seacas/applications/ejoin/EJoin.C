@@ -149,17 +149,12 @@ namespace {
   // This only handles the entity count.
   void add_to_entity_count(Ioss::GroupingEntity *ge, int64_t entity_count_increment)
   {
-    auto ec_property = ge->get_property("entity_count");
-    auto old_count   = ec_property.get_int();
-
-    auto origin = ec_property.get_origin();
-    ge->property_erase("entity_count");
-    ge->property_add(Ioss::Property("entity_count", entity_count_increment + old_count, origin));
-
+    int64_t new_count = ge->entity_count() + entity_count_increment;
+    ge->reset_entity_count(new_count);
     auto field_names = ge->field_describe();
     for (const auto &field_name : field_names) {
       const auto &field_ref = ge->get_fieldref(field_name);
-      const_cast<Ioss::Field &>(field_ref).reset_count(entity_count_increment + old_count);
+      const_cast<Ioss::Field &>(field_ref).reset_count(new_count);
     }
   }
 } // namespace
