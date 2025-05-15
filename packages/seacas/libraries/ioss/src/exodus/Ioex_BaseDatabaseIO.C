@@ -3138,7 +3138,7 @@ namespace Ioex {
           df_count += block->get_property("distribution_factor_count").get_int();
         }
         auto *new_entity = const_cast<Ioss::SideSet *>(set);
-        new_entity->property_add(Ioss::Property("entity_count", entity_count));
+        new_entity->reset_entity_count(entity_count);
         new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
       }
       m_groupCount[EX_SIDE_SET] = ssets.size();

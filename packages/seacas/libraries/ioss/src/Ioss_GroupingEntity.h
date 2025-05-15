@@ -298,7 +298,6 @@ namespace Ioss {
     virtual int64_t internal_get_zc_field_data(const Field &field, void **data,
                                                size_t *data_size) const = 0;
 
-    int64_t entityCount = 0;
 
 #if defined(IOSS_THREADSAFE)
     mutable std::mutex m_;
@@ -313,6 +312,7 @@ namespace Ioss {
 
     DatabaseIO *database_ = nullptr;
 
+    mutable int64_t entityCount = 0;
     mutable int64_t attributeCount = 0;
     State           entityState    = STATE_CLOSED;
     unsigned int    hash_          = 0;
