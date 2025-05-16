@@ -131,7 +131,7 @@ namespace {
   void transfer_elementblock(const Ioss::Region &region, Ioss::Region &output_region,
                              bool create_assemblies, bool debug);
   void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
-  void transfer_nodesets(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
+  void transfer_nodesets(const Ioss::Region &region, Ioss::Region &output_region, bool combine_similar, bool debug);
   void transfer_sidesets(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void create_nodal_nodeset(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_fields(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
@@ -158,6 +158,8 @@ namespace {
     }
   }
 } // namespace
+
+std::map<Ioss::GroupingEntity*, std::vector<std::pair<Ioss::GroupingEntity*, size_t>>> output_input_map;
 
 template <typename INT>
 double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT dummy);
@@ -442,7 +444,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       create_nodal_nodeset(*part_mesh[p], output_region, false);
     }
     if (!interFace.omit_nodesets()) {
-      transfer_nodesets(*part_mesh[p], output_region, false);
+      transfer_nodesets(*part_mesh[p], output_region, interFace.combine_similar(Ioss::NODESET), false);
     }
     if (!interFace.omit_sidesets()) {
       transfer_sidesets(*part_mesh[p], output_region, false);
@@ -768,6 +770,7 @@ namespace {
     size_t count = region.get_property("node_count").get_int();
     auto  *ns    = new Ioss::NodeSet(output_region.get_database(), name, count);
     output_region.add(ns);
+    output_input_map[ns].emplace_back(nullptr, 0);
   }
 
   // Output the bulk data for a nodeset on the output region
@@ -841,9 +844,8 @@ namespace {
     }
   }
 
-  void transfer_nodesets(const Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  void transfer_nodesets(const Ioss::Region &region, Ioss::Region &output_region, bool combine_similar, bool /*debug*/)
   {
-    bool               combine_similar = false;
     const std::string &prefix          = region.name();
 
     const Ioss::NodeSetContainer &nss = region.get_nodesets();
@@ -854,6 +856,7 @@ namespace {
         if (ons != nullptr) {
           if (combine_similar) {
             // Combine nodesets with similar names...
+	    output_input_map[ons].emplace_back(ns, ons->entity_count());
             size_t count = ns->entity_count();
             add_to_entity_count(ons, count);
             continue;
@@ -866,12 +869,10 @@ namespace {
             }
           }
         }
-        ns->property_add(Ioss::Property("name_in_output", name));
-        if (debug) {
-          fmt::print(stderr, "{}, ", name);
-        }
+	// This is a new output nodeset at this point...
         size_t count    = ns->entity_count();
         auto  *node_set = new Ioss::NodeSet(output_region.get_database(), name, count);
+	output_input_map[node_set].emplace_back(ns, 0);
         output_region.add(node_set);
         set_id(ns, node_set);
       }
@@ -1010,41 +1011,37 @@ namespace {
   void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
                       const std::vector<INT> &local_node_map)
   {
-    if (output_region.get_nodesets().empty()) {
+    const auto &output_nodesets = output_region.get_nodesets();
+    if (output_nodesets.empty()) {
       return;
     }
 
-    for (const auto &pm : part_mesh) {
-      size_t                        node_offset = pm->get_property("node_offset").get_int();
-      const Ioss::NodeSetContainer &ins         = pm->get_nodesets();
-      for (const auto &in : ins) {
-        if (!entity_is_omitted(in)) {
-          std::vector<INT> nodelist;
-          in->get_field_data("ids", nodelist);
+    for (const auto &ons : output_nodesets) {
+      if (output_input_map.find(ons) != output_input_map.end()) {
+	const auto &ons_inputs = output_input_map[ons];
+	if (!ons_inputs.empty()) {
+	  int64_t count = ons->entity_count();
+	  std::vector<INT> nodelist(count);
+	  std::vector<double> df(count);
+	  for (const auto &[ins, offset] : ons_inputs) {
+	    if (ins != nullptr) {
+	      ins->get_field_data("ids", &nodelist[offset], -1);
 
-          std::string    name = pm->name() + "_" + in->name();
-          Ioss::NodeSet *ons  = output_region.get_nodeset(name);
-          if (ons == nullptr) {
-            name = in->name();
-            ons  = output_region.get_nodeset(name);
-          }
-          SMART_ASSERT(ons != nullptr)(name);
-          SMART_ASSERT(in->entity_count() == ons->entity_count());
-
-          // This needs to make sure that the nodelist comes back as local id (1..numnodes)
-          for (auto &node : nodelist) {
-            size_t loc_node = pm->node_global_to_local(node, true) - 1;
-            auto   gpos     = local_node_map[node_offset + loc_node];
-            if (gpos >= 0) {
-              node = gpos + 1;
-            }
-          }
-          ons->put_field_data("ids_raw", nodelist);
-
-          std::vector<double> df;
-          in->get_field_data("distribution_factors", df);
-          ons->put_field_data("distribution_factors", df);
-        }
+	      auto *input_region = dynamic_cast<const Ioss::Region*>(ins->contained_in());
+	      size_t node_offset = input_region->get_property("node_offset").get_int();
+	      for (int64_t i = 0; i < ins->entity_count(); i++) {
+		size_t loc_node = input_region->node_global_to_local(nodelist[offset+i], true) - 1;
+		auto   gpos     = local_node_map[node_offset + loc_node];
+		if (gpos >= 0) {
+		  nodelist[offset+i] = gpos + 1;
+		}
+	      }
+	      ins->get_field_data("distribution_factors", &df[offset], -1);
+	    }
+	  }
+	  ons->put_field_data("ids_raw", nodelist);
+	  ons->put_field_data("distribution_factors", df);
+	}
       }
     }
   }
