@@ -49,6 +49,7 @@ public:
   int step_max() const { return stepMax_; }
   int step_interval() const { return stepInterval_; }
 
+  bool combine_similar(Ioss::EntityType type) const {return true;}
   vector3d                offset() const { return offset_; }
   const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
   const StringIdVector   &global_var_names() const { return globalVarNames_; }
