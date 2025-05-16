@@ -58,7 +58,7 @@ namespace {
                            const StringIdVector &variable_list, const SystemInterface &interFace);
   bool define_element_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
                              const StringIdVector &variable_list);
-  bool define_nset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
+  bool define_nset_fields(const Ioss::Region &output_region, 
                           const StringIdVector &variable_list);
   bool define_sset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
                           const StringIdVector &variable_list);
@@ -74,7 +74,7 @@ namespace {
                            const std::vector<INT> &local_node_map,
                            const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
-  void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_nodeset(Ioss::Region &output_region, 
                       const std::vector<INT> &local_node_map);
   template <typename INT>
   void output_sideset(Ioss::Region &output_region, RegionVector &part_mesh,
@@ -484,7 +484,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   output_nodal_nodeset(output_region, part_mesh, interFace, local_node_map);
 
   if (!interFace.omit_nodesets()) {
-    output_nodeset(output_region, part_mesh, local_node_map);
+    output_nodeset(output_region, local_node_map);
   }
   if (!interFace.omit_sidesets()) {
     output_sideset(output_region, part_mesh, local_element_map);
@@ -511,7 +511,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   error |= define_element_fields(output_region, part_mesh, interFace.elem_var_names());
 
   if (!interFace.omit_nodesets()) {
-    error |= define_nset_fields(output_region, part_mesh, interFace.nset_var_names());
+    error |= define_nset_fields(output_region, interFace.nset_var_names());
   }
   if (!interFace.omit_sidesets()) {
     error |= define_sset_fields(output_region, part_mesh, interFace.sset_var_names());
@@ -1012,7 +1012,7 @@ namespace {
   }
 
   template <typename INT>
-  void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_nodeset(Ioss::Region &output_region, 
                       const std::vector<INT> &local_node_map)
   {
     const auto &output_nodesets = output_region.get_nodesets();
@@ -1212,7 +1212,7 @@ namespace {
     }
   }
 
-  void output_nset(Ioss::Region &output_region, RegionVector &part_mesh)
+  void output_nset(Ioss::Region &output_region)
   {
     const auto &output_nodesets = output_region.get_nodesets();
     if (output_nodesets.empty()) {
@@ -1319,7 +1319,7 @@ namespace {
     output_element(output_region, part_mesh);
     output_nodal_nodeset_fields(output_region, part_mesh, interFace);
     if (!interFace.omit_nodesets()) {
-      output_nset(output_region, part_mesh);
+      output_nset(output_region);
     }
     if (!interFace.omit_sidesets()) {
       output_sset(output_region, part_mesh);
@@ -1492,7 +1492,7 @@ namespace {
     return error;
   }
 
-  bool define_nset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
+  bool define_nset_fields(const Ioss::Region &output_region, 
                           const StringIdVector &variable_list)
   {
     bool error = false;
