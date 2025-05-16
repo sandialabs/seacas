@@ -446,7 +446,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       create_nodal_nodeset(*part_mesh[p], output_region, false);
     }
     if (!interFace.omit_nodesets()) {
-      transfer_nodesets(*part_mesh[p], output_region, interFace.combine_similar(Ioss::NODESET),
+      transfer_nodesets(*part_mesh[p], output_region, interFace.combine_nodesets(),
                         false);
     }
     if (!interFace.omit_sidesets()) {

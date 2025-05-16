@@ -118,6 +118,20 @@ void SystemInterface::enroll_options()
                   "\t\tSpecify nodesets in each part as p#:id1:id2,p#:id2,id4...",
                   nullptr);
 
+  options_.enroll("tolerance", GetLongOption::MandatoryValue,
+                  "Maximum distance between two nodes to be considered colocated.", nullptr,
+                  nullptr, true);
+
+  options_.enroll("combine_nodesets", GetLongOption::NoValue,
+                  "Should input nodesets with the same name be combined into a single nodeset on output.",
+                  nullptr);
+  options_.enroll("combine_sidesets", GetLongOption::NoValue,
+                  "Should input sidesets with the same name be combined into a single sideset on output.",
+                  nullptr);
+  options_.enroll("combine_element_blocks", GetLongOption::NoValue,
+                  "Should element blocks with the same name and topology be combined into a single element block on output.",
+                  nullptr, nullptr, true);
+
 #if 0
   options_.enroll("match_elem_ids", GetLongOption::NoValue,
                   "Combine elements if their global ids match and they are compatible.\n"
@@ -129,10 +143,6 @@ void SystemInterface::enroll_options()
                   "\t\tand they are compatible (same element type, nodes match).",
                   nullptr);
 #endif
-
-  options_.enroll("tolerance", GetLongOption::MandatoryValue,
-                  "Maximum distance between two nodes to be considered colocated.", nullptr,
-                  nullptr, true);
 
   options_.enroll(
       "block_prefix", GetLongOption::MandatoryValue,
@@ -435,6 +445,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
   disableFieldRecognition_ = options_.retrieve("disable_field_recognition") != nullptr;
   useNetcdf4_              = options_.retrieve("netcdf4") != nullptr;
   ignoreElementIds_        = options_.retrieve("ignore_element_ids") != nullptr;
+  combineNodesets_         = options_.retrieve("combine_nodesets") != nullptr;
+  combineSidesets_         = options_.retrieve("combine_sidesets") != nullptr;
+  combineElementBlocks_    = options_.retrieve("combine_element_blocks") != nullptr;
 
   if (options_.retrieve("64-bit") != nullptr) {
     ints64bit_ = true;
