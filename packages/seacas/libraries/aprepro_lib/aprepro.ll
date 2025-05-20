@@ -30,6 +30,7 @@ s"}/* -*- Mode: c++ -*- */
 #include "fmt/ostream.h"
 #include "fmt/ranges.h"
 
+#define register /*as nothing*/
 #define YY_NO_UNISTD_H
 /* import the parser's token type into a local typedef */
 typedef SEAMS::Parser::token token;
@@ -136,7 +137,7 @@ integer {D}+({E})?
   {WS}"{IMMUTABLE(ON)}"     { aprepro.stateImmutable = true;    }
   {WS}"{IMMUTABLE(OFF)}"            { aprepro.stateImmutable = aprepro.ap_options.immutable; }
 
-  {WS}"{"[Ll]"oop"{WS}"(" {
+  (?i:{WS}"{loop"{WS}"(") {
     BEGIN(GET_LOOP_VAR);
   }
 }
@@ -233,7 +234,7 @@ integer {D}+({E})?
 }
 
 <LOOP>{
-  {WS}"{"[Ee]"nd"[Ll]"oop".*"\n" {
+  (?i-s:{WS}"{endloop".*"\n") {
     outer_file->lineno++;
     if(loop_lvl > 0)
       --loop_lvl;
@@ -257,13 +258,13 @@ integer {D}+({E})?
     }
   }
 
-  {WS}"{"[Ll]"oop"{WS}"(".*"\n"  {
+  (?i-s:{WS}"{loop"{WS}"(".*"\n")  {
     loop_lvl++; /* Nested Loop */
     (*tmp_file) << yytext;
     outer_file->lineno++;
   }
 
-  {WS}"{"[Aa]"bort"[Ll]"oop".*"\n" {
+  (?i-s:{WS}"{abortloop".*"\n") {
     if(aprepro.ap_options.interactive ||
        aprepro.string_interactive())
     {
@@ -291,7 +292,7 @@ integer {D}+({E})?
 }
 
 <LOOP_SKIP>{
-  {WS}"{"[Ee]"nd"[Ll]"oop".*"\n" {
+  (?i-s:{WS}"{endloop".*"\n") {
     aprepro.ap_file_list.top().lineno++;
     if(loop_lvl > 0)
       --loop_lvl;
@@ -302,12 +303,12 @@ integer {D}+({E})?
     }
   }
 
-  {WS}"{"[Ll]"oop"{WS}"(".*"\n" {
+  (?i-s:{WS}"loop"{WS}"(".*"\n") {
     loop_lvl++; /* Nested Loop */
     aprepro.ap_file_list.top().lineno++;
   }
 
-  {WS}"{"[Aa]"bort"[Ll]"oop".*"\n" {
+  (?i-s:{WS}"{abortloop".*"\n") {
     if(aprepro.ap_options.interactive ||
        aprepro.string_interactive())
     {
@@ -383,7 +384,7 @@ integer {D}+({E})?
    * where they would eat up any leading whitespace on
    * a line.
    */
-  {WS}"{"[Ii]"fdef"{WS}"(" {
+  (?i:{WS}"{ifdef"{WS}"(") {
     // Used to avoid undefined variable warnings in old ifdef/ifndef construct
     aprepro.inIfdefGetvar = true;
     unput('(');
@@ -397,7 +398,7 @@ integer {D}+({E})?
     curr_index = 0;
   }
 
-  {WS}"{"[Ii]"fndef"{WS}"(" {
+  (?i:{WS}"{ifndef"{WS}"(") {
     // Used to avoid undefined variable warnings in old ifdef/ifndef construct
     aprepro.inIfdefGetvar = true;
     unput('(');
@@ -423,23 +424,23 @@ integer {D}+({E})?
    * NOTE: if_lvl was not incremented, so don't need to decrement when
    *       endif found.
    */
-  {WS}"{"[Ee]"nd"[Ii]"f}".*"\n"     {
+  (?i-s:{WS}"{endif}".*"\n")     {
     aprepro.ap_file_list.top().lineno++;
     if (--if_skip_level == 0)
       BEGIN(IF_SKIP);
   }
 
-  {WS}"{"[Ii]"fdef"{WS}"(".*"\n"  {
+  (?i-s:{WS}"{ifdef"{WS}"(".*"\n")  {
     aprepro.ap_file_list.top().lineno++;
     if_skip_level++;
   }
 
-  {WS}"{"[Ii]"f"{WS}"(".*"\n"  {
+  (?i-s:{WS}"{if"{WS}"(".*"\n")  {
     aprepro.ap_file_list.top().lineno++;
     if_skip_level++;
   }
 
-  {WS}"{"[Ii]"fndef"{WS}"(".*"\n" {
+  (?i-s:{WS}"{ifndef"{WS}"(".*"\n") {
     aprepro.ap_file_list.top().lineno++;
     if_skip_level++;
   }
@@ -454,7 +455,7 @@ integer {D}+({E})?
    * skip the entire block up and including the endif.
    * The (IF_WHILE_SKIP) start condition handles this skipping.
    */
-  {WS}"{"[Ii]"fdef"{WS}"("  {
+  (?i-s:{WS}"{Iifdef"{WS}"(")  {
     if (aprepro.ap_options.debugging)
       fprintf (stderr, "DEBUG IF: 'ifdef'  found while skipping at line %d\n",
                aprepro.ap_file_list.top().lineno);
@@ -462,7 +463,7 @@ integer {D}+({E})?
     BEGIN(IF_WHILE_SKIP);
   }
 
-  {WS}"{"[Ii]"f"{WS}"("  {
+  (?i-s:{WS}"{if"{WS}"(")  {
     if (aprepro.ap_options.debugging)
       fprintf (stderr, "DEBUG IF: 'ifdef'  found while skipping at line %d\n",
                aprepro.ap_file_list.top().lineno);
@@ -470,7 +471,7 @@ integer {D}+({E})?
     BEGIN(IF_WHILE_SKIP);
   }
 
-  {WS}"{"[Ii]"fndef"{WS}"(" {
+  (?i-s:{WS}"{ifndef"{WS}"(") {
     if (aprepro.ap_options.debugging)
       fprintf (stderr, "DEBUG IF: 'ifndef'  found while skipping at line %d\n",
                aprepro.ap_file_list.top().lineno);
@@ -479,7 +480,7 @@ integer {D}+({E})?
   }
 }
 
-{WS}"{"[Ee]"lse}".*"\n"  {
+(?i-s:{WS}"{else}".*"\n")  {
   aprepro.ap_file_list.top().lineno++;
   if (aprepro.ap_options.debugging)
     fprintf (stderr, "DEBUG IF: 'else'   at level = %d at line %d\n",
@@ -507,7 +508,7 @@ integer {D}+({E})?
 }
 
 <IF_SKIP>{
-  {WS}"{"{WS}[Ee]"lse"[Ii]"f".*"\n"  {
+  (?i-s:{WS}"{"{WS}"elseif".*"\n")  {
     /* If any previous 'block' of this if has executed, then
      * just skip this block; otherwise see if condition is
      * true and execute this block
@@ -538,7 +539,7 @@ integer {D}+({E})?
    }
 }
 
-{WS}"{"[Ee]"nd"[Ii]"f}".*"\n"     {
+(?i-s:{WS}"{endif}".*"\n")     {
 
     if(YY_START == VERBATIM) {
       if(echo) ECHO;
@@ -563,9 +564,9 @@ integer {D}+({E})?
     aprepro.ap_file_list.top().lineno++;
   }
 
-<INITIAL>{WS}"{"[Ii]"nclude"{WS}"("           { BEGIN(GET_FILENAME);
+<INITIAL>(?i:{WS}"{include"{WS}"(")           { BEGIN(GET_FILENAME);
                              file_must_exist = true; }
-<INITIAL>{WS}"{"[Cc]"include"{WS}"("          { BEGIN(GET_FILENAME);
+<INITIAL>(?i:{WS}"{cinclude"){WS}"("          { BEGIN(GET_FILENAME);
                              file_must_exist = false; }
 <GET_FILENAME>.+")"{WS}"}"[^\n]*{NL}  {
   aprepro.ap_file_list.top().lineno++;
@@ -743,8 +744,8 @@ integer {D}+({E})?
     return(token::LBRACE);
   }
 
-[Ee][Xx][Ii][Tt] |
-[Qq][Uu][Ii][Tt] {
+(?i:exit) |
+(?i:quit) {
   if (aprepro.ap_options.end_on_exit) {
     if (echo) ECHO;
     return((token::yytokentype)-1);
