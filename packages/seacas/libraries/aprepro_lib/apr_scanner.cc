@@ -997,7 +997,6 @@ typedef SEAMS::Parser::token_type token_type;
  * by default returns 0, which is not of token_type. */
 #define yyterminate() return token::END
 
-#define show(x) *(aprepro->infoStream) << "<" << x << ">" << std::flush;
 namespace SEAMS {
   extern bool echo;
   void        yyerror(const char *s);
