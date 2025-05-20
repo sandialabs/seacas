@@ -126,12 +126,13 @@ void SystemInterface::enroll_options()
       "combine_nodesets", GetLongOption::NoValue,
       "Should input nodesets with the same name be combined into a single nodeset on output.",
       nullptr);
-  options_.enroll(
-      "combine_sidesets", GetLongOption::NoValue,
-      "[Not Implemented] Should input sidesets with the same name be combined into a single sideset on output.",
-      nullptr);
+  options_.enroll("combine_sidesets", GetLongOption::NoValue,
+                  "[Not Implemented] Should input sidesets with the same name be combined into a "
+                  "single sideset on output.",
+                  nullptr);
   options_.enroll("combine_element_blocks", GetLongOption::NoValue,
-                  "[Not Implemented] Should element blocks with the same name and topology be combined into a single "
+                  "[Not Implemented] Should element blocks with the same name and topology be "
+                  "combined into a single "
                   "element block on output.",
                   nullptr, nullptr, true);
 
