@@ -108,6 +108,7 @@ size_t hist_start = 0;
 
 qstring \"[^\"\n]*[\"\n]
 mlstring \'[^\']*[\']
+COM   "#"|"$"|"//"
 D     [0-9]
 E     [Ee][+-]?{D}+
 L     [A-Za-z_]
@@ -128,6 +129,9 @@ integer {D}+({E})?
 }
 
 <INITIAL>{
+  /* Aprepro "comment" -- skip entire line */
+  "{#}".*"\n"       { yytext++; yytext[1]=' '; if (echo) ECHO; aprepro.ap_file_list.top().lineno++; }
+  
   "{VERBATIM(ON)}"   { BEGIN(VERBATIM);  }
   {WS}"{ECHO}" |
   {WS}"{ECHO(ON)}"          { echo = true;      }
@@ -234,7 +238,7 @@ integer {D}+({E})?
 }
 
 <LOOP>{
-  (?i-s:{WS}"{endloop".*"\n") {
+  (?i-s:{COM}*{WS}"{endloop".*"\n") {
     outer_file->lineno++;
     if(loop_lvl > 0)
       --loop_lvl;
@@ -258,13 +262,13 @@ integer {D}+({E})?
     }
   }
 
-  (?i-s:{WS}"{loop"{WS}"(".*"\n")  {
+  (?i-s:{COM}*{WS}"{loop"{WS}"(".*"\n")  {
     loop_lvl++; /* Nested Loop */
     (*tmp_file) << yytext;
     outer_file->lineno++;
   }
 
-  (?i-s:{WS}"{abortloop".*"\n") {
+  (?i-s:{COM}*{WS}"{abortloop".*"\n") {
     if(aprepro.ap_options.interactive ||
        aprepro.string_interactive())
     {
@@ -292,7 +296,7 @@ integer {D}+({E})?
 }
 
 <LOOP_SKIP>{
-  (?i-s:{WS}"{endloop".*"\n") {
+  (?i-s:{COM}*{WS}"{endloop".*"\n") {
     aprepro.ap_file_list.top().lineno++;
     if(loop_lvl > 0)
       --loop_lvl;
@@ -303,12 +307,12 @@ integer {D}+({E})?
     }
   }
 
-  (?i-s:{WS}"loop"{WS}"(".*"\n") {
+  (?i-s:{COM}*{WS}"{loop"{WS}"(".*"\n") {
     loop_lvl++; /* Nested Loop */
     aprepro.ap_file_list.top().lineno++;
   }
 
-  (?i-s:{WS}"{abortloop".*"\n") {
+  (?i-s:{COM}*{WS}"{abortloop".*"\n") {
     if(aprepro.ap_options.interactive ||
        aprepro.string_interactive())
     {
@@ -412,6 +416,30 @@ integer {D}+({E})?
     unput('{');
     curr_index = 0;
   }
+
+  (?i:{COM}*{WS}"{"{WS}"if"{WS}"(") {
+    // This lets us strip leading optional '#' and spaces
+    unput('(');
+    unput('f');
+    unput('i');
+    unput('_');
+    unput('{');
+    curr_index = 0;
+  }
+
+  (?i:{COM}*{WS}"{"{WS}"elseif"{WS}"(") {
+    // This lets us strip leading optional '#' and spaces
+    unput('(');
+    unput('f');
+    unput('i');
+    unput('e');
+    unput('s');
+    unput('l');
+    unput('e');
+    unput('_');
+    unput('{');
+    curr_index = 0;
+  }
 }
 
 <IF_WHILE_SKIP>{
@@ -424,7 +452,7 @@ integer {D}+({E})?
    * NOTE: if_lvl was not incremented, so don't need to decrement when
    *       endif found.
    */
-  (?i-s:{WS}"{endif}".*"\n")     {
+  (?i-s:{COM}*{WS}"{endif}".*"\n")     {
     aprepro.ap_file_list.top().lineno++;
     if (--if_skip_level == 0)
       BEGIN(IF_SKIP);
@@ -435,7 +463,7 @@ integer {D}+({E})?
     if_skip_level++;
   }
 
-  (?i-s:{WS}"{if"{WS}"(".*"\n")  {
+  (?i-s:{COM}*{WS}"{"{WS}"if"{WS}"(".*"\n")  {
     aprepro.ap_file_list.top().lineno++;
     if_skip_level++;
   }
@@ -455,7 +483,7 @@ integer {D}+({E})?
    * skip the entire block up and including the endif.
    * The (IF_WHILE_SKIP) start condition handles this skipping.
    */
-  (?i-s:{WS}"{Iifdef"{WS}"(")  {
+  (?i-s:{WS}"{ifdef"{WS}"(")  {
     if (aprepro.ap_options.debugging)
       fprintf (stderr, "DEBUG IF: 'ifdef'  found while skipping at line %d\n",
                aprepro.ap_file_list.top().lineno);
@@ -463,9 +491,9 @@ integer {D}+({E})?
     BEGIN(IF_WHILE_SKIP);
   }
 
-  (?i-s:{WS}"{if"{WS}"(")  {
+  (?i-s:{COM}*{WS}"{"{WS}"if"{WS}"(")  {
     if (aprepro.ap_options.debugging)
-      fprintf (stderr, "DEBUG IF: 'ifdef'  found while skipping at line %d\n",
+      fprintf (stderr, "DEBUG IF: 'if'  found while skipping at line %d\n",
                aprepro.ap_file_list.top().lineno);
     if_skip_level = 1;
     BEGIN(IF_WHILE_SKIP);
@@ -480,7 +508,7 @@ integer {D}+({E})?
   }
 }
 
-(?i-s:{WS}"{else}".*"\n")  {
+(?i-s:{COM}*{WS}"{else}".*"\n")  {
   aprepro.ap_file_list.top().lineno++;
   if (aprepro.ap_options.debugging)
     fprintf (stderr, "DEBUG IF: 'else'   at level = %d at line %d\n",
@@ -508,7 +536,7 @@ integer {D}+({E})?
 }
 
 <IF_SKIP>{
-  (?i-s:{WS}"{"{WS}"elseif".*"\n")  {
+  (?i-s:{COM}*{WS}"{"{WS}"elseif".*"\n")  {
     /* If any previous 'block' of this if has executed, then
      * just skip this block; otherwise see if condition is
      * true and execute this block
@@ -539,7 +567,7 @@ integer {D}+({E})?
    }
 }
 
-(?i-s:{WS}"{endif}".*"\n")     {
+(?i-s:{COM}*{WS}"{endif}".*"\n")     {
 
     if(YY_START == VERBATIM) {
       if(echo) ECHO;
