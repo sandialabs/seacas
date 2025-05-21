@@ -123,6 +123,7 @@ integer {D}+({E})?
 %%
 <VERBATIM>{
   "{VERBATIM(OFF)}" { BEGIN(INITIAL);   }
+  "{APREPRO(ON)}".*"\n" { echo = true; BEGIN(INITIAL);   }
   [A-Za-z0-9_ ]* |
     .               { if (echo) ECHO; }
     "\n"            { if (echo) ECHO; aprepro.ap_file_list.top().lineno++; }
@@ -133,6 +134,7 @@ integer {D}+({E})?
   "{#}".*"\n"       { yytext++; yytext[1]=' '; if (echo) ECHO; aprepro.ap_file_list.top().lineno++; }
   
   "{VERBATIM(ON)}"   { BEGIN(VERBATIM);  }
+  "{APREPRO(OFF)}"   { echo = false; BEGIN(VERBATIM);  }
   {WS}"{ECHO}" |
   {WS}"{ECHO(ON)}"          { echo = true;      }
   {WS}"{NOECHO}" |
