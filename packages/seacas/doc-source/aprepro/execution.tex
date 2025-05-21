@@ -12,7 +12,7 @@ The effects of the parameters are:
 --dumpvars (-D) & Dump all variables at end of run \\
 --dumpvars\_json (-J) & Dump all variables at end of run in json format \\
 --version (-v) &  Print version number to stderr           \\
---comment char (-c char) &  Change comment character to 'char'       \\
+--comment char (-c char) &  Change comment character to 'char' \footnote{NOTE: The comment is not recognized by \aprepro{}. It is just the character that \aprepro{} will output at the beginning of certain informational lines such as the variable dump and the version echo at the beginning of execution.   See section~\ref{sec:comments} for a way to "comment" or skip the processing of one or more lines.}   \\
 --immutable (-X) &  All variables are immutable--cannot be modified \\
 --errors\_fatal (-f) & Exit program with nonzero status if errors are encountered \\
 --errors\_and\_warnings\_fatal (-F) & Exit program with nonzero status if warnings are encountered \\
@@ -20,6 +20,8 @@ The effects of the parameters are:
 --interactive (-i) &  Interactive use, no buffering of output.       \\
 --include path (-I path) &  Include file or include path. Any variables defined in the include file will be immutable.\\
 --one\_based\_index (-1) & Array indexing is one-based (default = zero-based) \\
+--full\_precision (-p) &  Floating point output uses as many digits as needed to reproduce the in-memory value. [default] \\
+--legacy\_output\_format (-L) &  Floating point output uses the legacy \code{"\%.10g"} format.\\
 --exit\_on (-e) &  If this is enabled, \aprepro{} will exit when any of the strings
 EXIT, Exit, exit, QUIT, Quit, or quit are entered. Otherwise, \aprepro{} will exit at end of
 file. \\

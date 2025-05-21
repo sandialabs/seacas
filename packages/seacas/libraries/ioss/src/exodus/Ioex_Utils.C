@@ -813,6 +813,44 @@ namespace Ioex {
     }
   }
 
+  std::vector<ex_assembly> get_exodus_assemblies(int exoid)
+  {
+    std::vector<ex_assembly> assemblies;
+    int                      nassem = ex_inquire_int(exoid, EX_INQ_ASSEMBLY);
+    if (nassem > 0) {
+      assemblies.resize(nassem);
+
+      int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (auto &assembly : assemblies) {
+        assembly.name = new char[max_name_length + 1];
+      }
+
+      int ierr = ex_get_assemblies(exoid, Data(assemblies));
+      if (ierr < 0) {
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+      }
+
+      // Now allocate space for member list and get assemblies again...
+      for (auto &assembly : assemblies) {
+        assembly.entity_list = new int64_t[assembly.entity_count];
+      }
+
+      ierr = ex_get_assemblies(exoid, Data(assemblies));
+      if (ierr < 0) {
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+      }
+    }
+    return assemblies;
+  }
+
+  void cleanup_exodus_assembly_vector(std::vector<ex_assembly> &assemblies)
+  {
+    for (const auto &assembly : assemblies) {
+      delete[] assembly.entity_list;
+      delete[] assembly.name;
+    }
+  }
+
   bool filter_node_list(Ioss::Int64Vector                &nodes,
                         const std::vector<unsigned char> &node_connectivity_status)
   {
