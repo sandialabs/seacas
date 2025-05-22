@@ -58,8 +58,7 @@ namespace {
                            const StringIdVector &variable_list, const SystemInterface &interFace);
   bool define_element_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
                              const StringIdVector &variable_list);
-  bool define_nset_fields(const Ioss::Region &output_region, 
-                          const StringIdVector &variable_list);
+  bool define_nset_fields(const Ioss::Region &output_region, const StringIdVector &variable_list);
   bool define_sset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
                           const StringIdVector &variable_list);
   void define_nodal_nodeset_fields(const Ioss::Region &output_region, const RegionVector &part_mesh,
@@ -74,8 +73,7 @@ namespace {
                            const std::vector<INT> &local_node_map,
                            const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
-  void output_nodeset(Ioss::Region &output_region, 
-                      const std::vector<INT> &local_node_map);
+  void output_nodeset(Ioss::Region &output_region, const std::vector<INT> &local_node_map);
   template <typename INT>
   void output_sideset(Ioss::Region &output_region, RegionVector &part_mesh,
                       const std::vector<INT> &local_element_map);
@@ -446,8 +444,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       create_nodal_nodeset(*part_mesh[p], output_region, false);
     }
     if (!interFace.omit_nodesets()) {
-      transfer_nodesets(*part_mesh[p], output_region, interFace.combine_nodesets(),
-                         false);
+      transfer_nodesets(*part_mesh[p], output_region, interFace.combine_nodesets(), false);
     }
     if (!interFace.omit_sidesets()) {
       transfer_sidesets(*part_mesh[p], output_region, false);
@@ -1012,8 +1009,7 @@ namespace {
   }
 
   template <typename INT>
-  void output_nodeset(Ioss::Region &output_region, 
-                      const std::vector<INT> &local_node_map)
+  void output_nodeset(Ioss::Region &output_region, const std::vector<INT> &local_node_map)
   {
     const auto &output_nodesets = output_region.get_nodesets();
     if (output_nodesets.empty()) {
@@ -1492,8 +1488,7 @@ namespace {
     return error;
   }
 
-  bool define_nset_fields(const Ioss::Region &output_region,
-                          const StringIdVector &variable_list)
+  bool define_nset_fields(const Ioss::Region &output_region, const StringIdVector &variable_list)
   {
     bool error = false;
     // Nodeset fields...

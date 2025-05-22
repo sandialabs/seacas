@@ -122,14 +122,17 @@ void SystemInterface::enroll_options()
                   "Maximum distance between two nodes to be considered colocated.", nullptr,
                   nullptr, true);
 
-  options_.enroll("combine_nodesets", GetLongOption::NoValue,
-                  "Should input nodesets with the same name be combined into a single nodeset on output.",
-                  nullptr);
+  options_.enroll(
+      "combine_nodesets", GetLongOption::NoValue,
+      "Should input nodesets with the same name be combined into a single nodeset on output.",
+      nullptr);
   options_.enroll("combine_sidesets", GetLongOption::NoValue,
-                  "[Not Implemented] Should input sidesets with the same name be combined into a single sideset on output.",
+                  "[Not Implemented] Should input sidesets with the same name be combined into a "
+                  "single sideset on output.",
                   nullptr);
   options_.enroll("combine_element_blocks", GetLongOption::NoValue,
-                  "[Not Implemented] Should element blocks with the same name and topology be combined into a single element block on output.",
+                  "[Not Implemented] Should element blocks with the same name and topology be "
+                  "combined into a single element block on output.",
                   nullptr, nullptr, true);
 
 #if 0
