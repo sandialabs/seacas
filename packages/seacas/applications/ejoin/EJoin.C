@@ -1019,7 +1019,7 @@ namespace {
     for (const auto &ons : output_nodesets) {
       if (output_input_map.find(ons) != output_input_map.end()) {
         const auto &ons_inputs = output_input_map[ons];
-        if (!ons_inputs.empty()) {
+        if (!ons_inputs.empty() && (ons_inputs[0].first != nullptr && ons_inputs[0].second != 0)) {
           int64_t             count = ons->entity_count();
           std::vector<INT>    nodelist(count);
           std::vector<double> df(count);
@@ -1218,7 +1218,7 @@ namespace {
     for (const auto &ons : output_nodesets) {
       if (output_input_map.find(ons) != output_input_map.end()) {
         const auto &ons_inputs = output_input_map[ons];
-        if (!ons_inputs.empty()) {
+        if (!ons_inputs.empty() && (ons_inputs[0].first != nullptr && ons_inputs[0].second != 0)) {
           Ioss::NameList fields = ons->field_describe(Ioss::Field::TRANSIENT);
           int64_t        count  = ons->entity_count();
 
@@ -1507,7 +1507,7 @@ namespace {
     for (const auto &ons : output_nodesets) {
       if (output_input_map.find(ons) != output_input_map.end()) {
         const auto &ons_inputs = output_input_map[ons];
-        if (!ons_inputs.empty()) {
+        if (!ons_inputs.empty() && (ons_inputs[0].first != nullptr && ons_inputs[0].second != 0)) {
           int64_t count             = ons->entity_count();
           const auto &[ins, offset] = ons_inputs[0];
           if (ins != nullptr) {
