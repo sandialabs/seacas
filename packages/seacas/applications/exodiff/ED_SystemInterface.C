@@ -781,6 +781,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("ignore_nans") != nullptr) {
     ignore_nans = true;
   }
+  if (options_.retrieve("ignore_dups") != nullptr) {
+    ignore_dups = true;
+  }
   allowPermutation = (options_.retrieve("allow_permuted_connectivity") != nullptr);
 
   if (options_.retrieve("ignore_steps") != nullptr) {
