@@ -49,7 +49,9 @@ public:
   int step_max() const { return stepMax_; }
   int step_interval() const { return stepInterval_; }
 
-  bool combine_similar(Ioss::EntityType type) const {return true;}
+  bool combine_nodesets() const {return combineNodesets_;}
+  bool combine_sidesets() const {return combineSidesets_;}
+  bool combine_element_blocks() const {return combineElementBlocks_;}
   vector3d                offset() const { return offset_; }
   const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
   const StringIdVector   &global_var_names() const { return globalVarNames_; }
@@ -112,6 +114,10 @@ private:
   bool ints64bit_{false};
   bool useNetcdf4_{false};
   bool ignoreElementIds_{false};
+
+  bool combineElementBlocks_{false};
+  bool combineNodesets_{false};
+  bool combineSidesets_{false};
 
   bool createAssemblies_{true};
 
