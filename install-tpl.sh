@@ -155,8 +155,8 @@ USE_PROXY=$(check_valid USE_PROXY) || exit
 
 if [ "${USE_PROXY}" == "YES" ]
 then
-    export http_proxy="http://proxy.sandia.gov:80"
-    export https_proxy="https://proxy.sandia.gov:80"
+    export http_proxy="proxy.sandia.gov:80"
+    export https_proxy="proxy.sandia.gov:80"
 fi
 
 echo "Current Location = $(pwd)"
