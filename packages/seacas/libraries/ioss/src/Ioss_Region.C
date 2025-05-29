@@ -1751,9 +1751,10 @@ namespace Ioss {
         aliases_[type].insert(std::make_pair(uname, canon));
       }
 
-      std::string lname = Ioss::Utils::lowercase(alias);
-      if (lname != alias && lname != canon) {
-        aliases_[type].insert(std::make_pair(lname, canon));
+      std::string fname = alias;
+      Ioss::Utils::fixup_name(fname);
+      if (fname != alias && fname != canon) {
+        aliases_[type].insert(std::make_pair(fname, canon));
       }
 
       bool result;
