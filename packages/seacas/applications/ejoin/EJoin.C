@@ -439,7 +439,8 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
 
   // Add element blocks, nodesets, sidesets
   for (size_t p = 0; p < part_count; p++) {
-    transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(), interFace.combine_element_blocks(), false);
+    transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(),
+                          interFace.combine_element_blocks(), false);
     if (interFace.convert_nodes_to_nodesets(p + 1)) {
       create_nodal_nodeset(*part_mesh[p], output_region, false);
     }
@@ -624,24 +625,24 @@ namespace {
     for (const auto &eb : ebs) {
       if (!entity_is_omitted(eb)) {
         std::string name = eb->name();
-	auto *oeb = output_region.get_element_block(name);
-	if (oeb != nullptr) {
-	  if (combine_similar) {
+        auto       *oeb  = output_region.get_element_block(name);
+        if (oeb != nullptr) {
+          if (combine_similar) {
             // Combine element blocks with similar names...
             output_input_map[oeb].emplace_back(eb, oeb->entity_count());
             size_t count = eb->entity_count();
             add_to_entity_count(oeb, count);
             continue;
-	  }
-	  else {
-	    name = prefix + "_" + eb->name();
-	    if (output_region.get_element_block(name) != nullptr) {
-	      fmt::print(stderr, "ERROR: Duplicate element blocks named '{}'\n", name);
-	      exit(EXIT_FAILURE);
-	    }
-	  }
+          }
+          else {
+            name = prefix + "_" + eb->name();
+            if (output_region.get_element_block(name) != nullptr) {
+              fmt::print(stderr, "ERROR: Duplicate element blocks named '{}'\n", name);
+              exit(EXIT_FAILURE);
+            }
+          }
         }
-	// This is a new element block at this point...
+        // This is a new element block at this point...
         eb->property_add(Ioss::Property("name_in_output", name));
 
         std::string type     = eb->topology()->name();
@@ -649,7 +650,7 @@ namespace {
 
         if (num_elem > 0) {
           auto *ebn = new Ioss::ElementBlock(output_region.get_database(), name, type, num_elem);
-	  output_input_map[ebn].emplace_back(eb, 0);
+          output_input_map[ebn].emplace_back(eb, 0);
           ebn->property_add(Ioss::Property("original_block_order", used_blocks++));
           output_region.add(ebn);
           transfer_fields(eb, ebn, Ioss::Field::ATTRIBUTE);
@@ -984,30 +985,30 @@ namespace {
       if (output_input_map.find(oeb) != output_input_map.end()) {
         const auto &oeb_inputs = output_input_map[oeb];
         if (!oeb_inputs.empty()) {
-          int64_t             count = oeb->entity_count();
-	  int64_t             nnpe  = oeb->topology()->number_nodes();
-          std::vector<INT>    connectivity(count * nnpe);
+          int64_t          count = oeb->entity_count();
+          int64_t          nnpe  = oeb->topology()->number_nodes();
+          std::vector<INT> connectivity(count * nnpe);
           for (const auto &[ieb, offset] : oeb_inputs) {
             if (ieb != nullptr) {
               ieb->get_field_data("connectivity_raw", &connectivity[offset * nnpe], -1);
 
               auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
               size_t node_offset  = input_region->get_property("node_offset").get_int();
-	      for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
-		// connectivity is in part-local node ids [1..num_node]
-		// loc_node = the position of node in the local [0..num_node)
-		// local_node_map[node_offset+loc_node] gives the position of this node in the global
-		// list
-		size_t loc_node = connectivity[offset * nnpe + i] - 1;
-		SMART_ASSERT(node_offset + loc_node < local_node_map.size());
-		auto gpos = local_node_map[node_offset + loc_node];
-		if (gpos >= 0) {
-		  connectivity[offset * nnpe + i] = gpos + 1;
-		}
-	      }
+              for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
+                // connectivity is in part-local node ids [1..num_node]
+                // loc_node = the position of node in the local [0..num_node)
+                // local_node_map[node_offset+loc_node] gives the position of this node in the
+                // global list
+                size_t loc_node = connectivity[offset * nnpe + i] - 1;
+                SMART_ASSERT(node_offset + loc_node < local_node_map.size());
+                auto gpos = local_node_map[node_offset + loc_node];
+                if (gpos >= 0) {
+                  connectivity[offset * nnpe + i] = gpos + 1;
+                }
+              }
             }
           }
-	  oeb->put_field_data("connectivity_raw", connectivity);
+          oeb->put_field_data("connectivity_raw", connectivity);
         }
       }
     }
@@ -1193,20 +1194,20 @@ namespace {
     if (output_input_map.find(out_entity) != output_input_map.end()) {
       const auto &out_entity_inputs = output_input_map[out_entity];
       if (!out_entity_inputs.empty()) {
-	Ioss::NameList fields = out_entity->field_describe(Ioss::Field::TRANSIENT);
-	int64_t        count  = out_entity->entity_count();
-	
-	for (const auto &field : fields) {
-	  int64_t comp_count =
-	    out_entity->get_field(field).get_component_count(Ioss::Field::InOut::OUTPUT);
-	  std::vector<double> field_data(comp_count * count);
-	  for (const auto &[ieb, offset] : out_entity_inputs) {
-	    if (ieb != nullptr) {
-	      ieb->get_field_data(field, &field_data[comp_count * offset], -1);
-	    }
-	  }
-	  out_entity->put_field_data(field, field_data);
-	}
+        Ioss::NameList fields = out_entity->field_describe(Ioss::Field::TRANSIENT);
+        int64_t        count  = out_entity->entity_count();
+
+        for (const auto &field : fields) {
+          int64_t comp_count =
+              out_entity->get_field(field).get_component_count(Ioss::Field::InOut::OUTPUT);
+          std::vector<double> field_data(comp_count * count);
+          for (const auto &[ieb, offset] : out_entity_inputs) {
+            if (ieb != nullptr) {
+              ieb->get_field_data(field, &field_data[comp_count * offset], -1);
+            }
+          }
+          out_entity->put_field_data(field, field_data);
+        }
       }
     }
   }
@@ -1232,7 +1233,7 @@ namespace {
 
     for (const auto &ons : output_nodesets) {
       output_entity_fields(ons);
-    }      
+    }
   }
 
   void output_sset(Ioss::Region &output_region, RegionVector &part_mesh)
