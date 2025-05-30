@@ -127,7 +127,7 @@ namespace {
   }
 
   void transfer_elementblock(const Ioss::Region &region, Ioss::Region &output_region,
-                             bool create_assemblies, bool debug);
+                             bool create_assemblies, bool combine_similar, bool debug);
   void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_nodesets(const Ioss::Region &region, Ioss::Region &output_region,
                          bool combine_similar, bool debug);
@@ -439,7 +439,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
 
   // Add element blocks, nodesets, sidesets
   for (size_t p = 0; p < part_count; p++) {
-    transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(), false);
+    transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(), interFace.combine_element_blocks(), false);
     if (interFace.convert_nodes_to_nodesets(p + 1)) {
       create_nodal_nodeset(*part_mesh[p], output_region, false);
     }
@@ -477,7 +477,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
 
   output_nodeblock(output_region, part_mesh, local_node_map, global_node_map);
   output_elementblock(output_region, part_mesh, local_node_map, local_element_map,
-                      interFace.ignore_element_ids());
+                      interFace.ignore_element_ids() || interFace.combine_element_blocks());
   output_nodal_nodeset(output_region, part_mesh, interFace, local_node_map);
 
   if (!interFace.omit_nodesets()) {
@@ -613,7 +613,7 @@ namespace {
   }
 
   void transfer_elementblock(const Ioss::Region &region, Ioss::Region &output_region,
-                             bool create_assemblies, bool debug)
+                             bool create_assemblies, bool combine_similar, bool /* debug */)
   {
     static int         used_blocks = 0;
     const std::string &prefix      = region.name();
@@ -624,23 +624,32 @@ namespace {
     for (const auto &eb : ebs) {
       if (!entity_is_omitted(eb)) {
         std::string name = eb->name();
-        if (output_region.get_element_block(name) != nullptr) {
-          name = prefix + "_" + eb->name();
-          if (output_region.get_element_block(name) != nullptr) {
-            fmt::print(stderr, "ERROR: Duplicate element blocks named '{}'\n", name);
-            exit(EXIT_FAILURE);
-          }
+	auto *oeb = output_region.get_element_block(name);
+	if (oeb != nullptr) {
+	  if (combine_similar) {
+            // Combine element blocks with similar names...
+            output_input_map[oeb].emplace_back(eb, oeb->entity_count());
+            size_t count = eb->entity_count();
+            add_to_entity_count(oeb, count);
+            continue;
+	  }
+	  else {
+	    name = prefix + "_" + eb->name();
+	    if (output_region.get_element_block(name) != nullptr) {
+	      fmt::print(stderr, "ERROR: Duplicate element blocks named '{}'\n", name);
+	      exit(EXIT_FAILURE);
+	    }
+	  }
         }
+	// This is a new element block at this point...
         eb->property_add(Ioss::Property("name_in_output", name));
 
-        if (debug) {
-          fmt::print(stderr, "{}, ", name);
-        }
         std::string type     = eb->topology()->name();
         size_t      num_elem = eb->entity_count();
 
         if (num_elem > 0) {
           auto *ebn = new Ioss::ElementBlock(output_region.get_database(), name, type, num_elem);
+	  output_input_map[ebn].emplace_back(eb, 0);
           ebn->property_add(Ioss::Property("original_block_order", used_blocks++));
           output_region.add(ebn);
           transfer_fields(eb, ebn, Ioss::Field::ATTRIBUTE);
@@ -950,6 +959,7 @@ namespace {
 
     const Ioss::ElementBlockContainer &ebs = output_region.get_element_blocks();
 
+    // Ids...
     size_t           element_count = output_region.get_property("element_count").get_int();
     std::vector<INT> ids(element_count);
 
@@ -970,39 +980,34 @@ namespace {
     SMART_ASSERT(element_offset == element_count);
 
     // Connectivity...
-    for (const auto &pm : part_mesh) {
-      const Ioss::ElementBlockContainer &iebs        = pm->get_element_blocks();
-      size_t                             node_offset = pm->get_property("node_offset").get_int();
+    for (const auto &oeb : ebs) {
+      if (output_input_map.find(oeb) != output_input_map.end()) {
+        const auto &oeb_inputs = output_input_map[oeb];
+        if (!oeb_inputs.empty()) {
+          int64_t             count = oeb->entity_count();
+	  int64_t             nnpe  = oeb->topology()->number_nodes();
+          std::vector<INT>    connectivity(count * nnpe);
+          for (const auto &[ieb, offset] : oeb_inputs) {
+            if (ieb != nullptr) {
+              ieb->get_field_data("connectivity_raw", &connectivity[offset * nnpe], -1);
 
-      for (const auto &ieb : iebs) {
-        if (entity_is_omitted(ieb)) {
-          continue;
-        }
-        std::string         name = pm->name() + "_" + ieb->name();
-        Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
-        if (oeb == nullptr) {
-          name = ieb->name();
-          oeb  = output_region.get_element_block(name);
-        }
-        if (oeb != nullptr) {
-          std::vector<INT> connectivity;
-          ieb->get_field_data("connectivity_raw", connectivity);
-
-          SMART_ASSERT(ieb->entity_count() == oeb->entity_count());
-          for (auto &node : connectivity) {
-            // connectivity is in part-local node ids [1..num_node]
-            // loc_node = the position of node in the local [0..num_node)
-            // local_node_map[node_offset+loc_node] gives the position of this node in the global
-            // list
-            size_t loc_node = node - 1;
-            SMART_ASSERT(node_offset + loc_node < local_node_map.size());
-            auto gpos = local_node_map[node_offset + loc_node];
-            if (gpos >= 0) {
-              node = gpos + 1;
+              auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+              size_t node_offset  = input_region->get_property("node_offset").get_int();
+	      for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
+		// connectivity is in part-local node ids [1..num_node]
+		// loc_node = the position of node in the local [0..num_node)
+		// local_node_map[node_offset+loc_node] gives the position of this node in the global
+		// list
+		size_t loc_node = connectivity[offset * nnpe + i] - 1;
+		SMART_ASSERT(node_offset + loc_node < local_node_map.size());
+		auto gpos = local_node_map[node_offset + loc_node];
+		if (gpos >= 0) {
+		  connectivity[offset * nnpe + i] = gpos + 1;
+		}
+	      }
             }
           }
-          oeb->put_field_data("connectivity_raw", connectivity);
-          transfer_field_data(ieb, oeb, Ioss::Field::ATTRIBUTE);
+	  oeb->put_field_data("connectivity_raw", connectivity);
         }
       }
     }
@@ -1183,28 +1188,38 @@ namespace {
     }
   }
 
+  void output_entity_fields(Ioss::GroupingEntity *out_entity)
+  {
+    if (output_input_map.find(out_entity) != output_input_map.end()) {
+      const auto &out_entity_inputs = output_input_map[out_entity];
+      if (!out_entity_inputs.empty()) {
+	Ioss::NameList fields = out_entity->field_describe(Ioss::Field::TRANSIENT);
+	int64_t        count  = out_entity->entity_count();
+	
+	for (const auto &field : fields) {
+	  int64_t comp_count =
+	    out_entity->get_field(field).get_component_count(Ioss::Field::InOut::OUTPUT);
+	  std::vector<double> field_data(comp_count * count);
+	  for (const auto &[ieb, offset] : out_entity_inputs) {
+	    if (ieb != nullptr) {
+	      ieb->get_field_data(field, &field_data[comp_count * offset], -1);
+	    }
+	  }
+	  out_entity->put_field_data(field, field_data);
+	}
+      }
+    }
+  }
+
   void output_element(Ioss::Region &output_region, RegionVector &part_mesh)
   {
-    for (const auto &pm : part_mesh) {
-      const Ioss::ElementBlockContainer &iebs = pm->get_element_blocks();
-      for (const auto &ieb : iebs) {
-        if (!entity_is_omitted(ieb)) {
-          std::string         name = pm->name() + "_" + ieb->name();
-          Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
-          if (oeb == nullptr) {
-            name = ieb->name();
-            oeb  = output_region.get_element_block(name);
-          }
-          if (oeb != nullptr) {
-            Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
-            for (const auto &field : fields) {
-              if (oeb->field_exists(field)) {
-                transfer_field_data_internal(ieb, oeb, field);
-              }
-            }
-          }
-        }
-      }
+    const auto &output_element_blocks = output_region.get_element_blocks();
+    if (output_element_blocks.empty()) {
+      return;
+    }
+
+    for (const auto &oeb : output_element_blocks) {
+      output_entity_fields(oeb);
     }
   }
 
@@ -1216,26 +1231,8 @@ namespace {
     }
 
     for (const auto &ons : output_nodesets) {
-      if (output_input_map.find(ons) != output_input_map.end()) {
-        const auto &ons_inputs = output_input_map[ons];
-        if (!ons_inputs.empty()) {
-          Ioss::NameList fields = ons->field_describe(Ioss::Field::TRANSIENT);
-          int64_t        count  = ons->entity_count();
-
-          for (const auto &field : fields) {
-            int64_t comp_count =
-                ons->get_field(field).get_component_count(Ioss::Field::InOut::OUTPUT);
-            std::vector<double> field_data(comp_count * count);
-            for (const auto &[ins, offset] : ons_inputs) {
-              if (ins != nullptr) {
-                ins->get_field_data(field, &field_data[comp_count * offset], -1);
-              }
-            }
-            ons->put_field_data(field, field_data);
-          }
-        }
-      }
-    }
+      output_entity_fields(ons);
+    }      
   }
 
   void output_sset(Ioss::Region &output_region, RegionVector &part_mesh)
@@ -1448,25 +1445,30 @@ namespace {
     if (!variable_list.empty() && variable_list[0].first == "none") {
       return error;
     }
+
     bool           subsetting_fields = !variable_list.empty() && variable_list[0].first != "all";
     Ioss::NameList defined_fields;
 
-    for (const auto &pm : part_mesh) {
-      const Ioss::ElementBlockContainer &iebs = pm->get_element_blocks();
-      for (const auto &ieb : iebs) {
-        if (!entity_is_omitted(ieb)) {
-          std::string         name = pm->name() + "_" + ieb->name();
-          Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
-          if (oeb == nullptr) {
-            name = ieb->name();
-            oeb  = output_region.get_element_block(name);
-          }
-          if (oeb != nullptr) {
-            size_t         id     = oeb->get_property("id").get_int();
+    const auto &output_blocks = output_region.get_element_blocks();
+    if (output_blocks.empty()) {
+      return error;
+    }
+
+    for (const auto &oeb : output_blocks) {
+      if (output_input_map.find(oeb) != output_input_map.end()) {
+        const auto &oeb_inputs = output_input_map[oeb];
+        if (!oeb_inputs.empty()) {
+          int64_t count             = oeb->entity_count();
+          const auto &[ieb, offset] = oeb_inputs[0];
+          if (ieb != nullptr) {
+            // Here we assume that the element block fields are the
+            // same on all parts if combining blocks
+            size_t         id     = ieb->get_property("id").get_int();
             Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
             for (const auto &field_name : fields) {
               if (valid_variable(field_name, id, variable_list)) {
                 Ioss::Field field = ieb->get_field(field_name);
+                field.reset_count(count);
                 oeb->field_add(std::move(field));
                 if (subsetting_fields) {
                   defined_fields.push_back(field_name);
@@ -1477,6 +1479,7 @@ namespace {
         }
       }
     }
+
     // Now that we have defined all fields, check `variable_list` and make
     // sure that all fields that have been explicitly specified now exist
     // on `output_region`...
