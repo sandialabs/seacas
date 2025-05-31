@@ -1067,8 +1067,10 @@ namespace {
           int64_t             count = ons->entity_count();
           std::vector<INT>    nodelist(count);
           std::vector<double> df(count);
+	  bool found_one = false;
           for (const auto &[ins, offset] : ons_inputs) {
             if (ins != nullptr) {
+	      found_one = true;
               ins->get_field_data("ids", &nodelist[offset], -1);
 
               auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
@@ -1084,8 +1086,10 @@ namespace {
               ins->get_field_data("distribution_factors", &df[offset], -1);
             }
           }
-          ons->put_field_data("ids_raw", nodelist);
-          ons->put_field_data("distribution_factors", df);
+	  if (found_one) {
+	    ons->put_field_data("ids_raw", nodelist);
+	    ons->put_field_data("distribution_factors", df);
+	  }
         }
       }
     }

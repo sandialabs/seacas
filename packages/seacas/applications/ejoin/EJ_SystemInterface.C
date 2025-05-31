@@ -113,8 +113,8 @@ void SystemInterface::enroll_options()
                   "Combine nodes if they are within tolerance distance of each other.", nullptr);
 
   options_.enroll("match_nodeset_nodes", GetLongOption::MandatoryValue,
-                  "Combine nodes in the specified nodeset(s) if they are within `tolerance` "
-                  "distance of each other.\n"
+                  "Combine nodes in the specified nodeset(s) if they are within\n"
+		  "\t\t`tolerance` distance of each other.\n"
                   "\t\tSpecify nodesets in each part as p#:id1:id2,p#:id2,id4...",
                   nullptr);
 
@@ -127,12 +127,13 @@ void SystemInterface::enroll_options()
       "Should input nodesets with the same name be combined into a single nodeset on output.",
       nullptr);
   options_.enroll("combine_sidesets", GetLongOption::NoValue,
-                  "[Not Implemented] Should input sidesets with the same name be combined into a "
+                  "Should input sidesets with the same name be combined into a "
                   "single sideset on output.",
                   nullptr);
   options_.enroll("combine_element_blocks", GetLongOption::NoValue,
-                  "[Not Implemented] Should element blocks with the same name and topology be "
-                  "combined into a single element block on output.",
+                  "Should element blocks with the same name and topology be "
+                  "combined into a\n"
+		  "\t\tsingle element block on output.",
                   nullptr, nullptr, true);
 
 #if 0
@@ -233,7 +234,8 @@ void SystemInterface::enroll_options()
                   nullptr);
 
   options_.enroll("quantize_nsd", GetLongOption::MandatoryValue,
-                  "Use the lossy quantize compression method.  Value specifies number of digits to "
+                  "Use the lossy quantize compression method.\n"
+		  "\t\tValue specifies number of digits to "
                   "retain (1..15) [exodus only]",
                   nullptr, nullptr, true);
 
