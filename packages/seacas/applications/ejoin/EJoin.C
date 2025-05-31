@@ -793,7 +793,7 @@ namespace {
           }
         }
         // This is a new sideset at this point...
-
+        ss->property_add(Ioss::Property("name_in_output", name));
         auto *surf = new Ioss::SideSet(output_region.get_database(), name);
         output_input_map[surf].emplace_back(ss, 0);
         set_id(ss, surf);
