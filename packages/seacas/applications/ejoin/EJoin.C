@@ -1231,15 +1231,19 @@ namespace {
         int64_t        count  = out_entity->entity_count();
 
         for (const auto &field : fields) {
+	  bool found_field = false;
           int64_t comp_count =
               out_entity->get_field(field).get_component_count(Ioss::Field::InOut::OUTPUT);
           std::vector<double> field_data(comp_count * count);
           for (const auto &[ieb, offset] : out_entity_inputs) {
             if (ieb != nullptr) {
+	      found_field = true;
               ieb->get_field_data(field, &field_data[comp_count * offset], -1);
             }
           }
-          out_entity->put_field_data(field, field_data);
+	  if (found_field) {
+	    out_entity->put_field_data(field, field_data);
+	  }
         }
       }
     }
