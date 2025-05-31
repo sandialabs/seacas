@@ -364,10 +364,6 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  if (options_.retrieve("omit_part_assemblies") != nullptr) {
-    createAssemblies_ = false;
-  }
-
   {
     const char *temp = options_.retrieve("extract_blocks");
     if (temp != nullptr) {
@@ -447,16 +443,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
+  createAssemblies_        = options_.retrieve("omit_part_assemblies") != nullptr;
   disableFieldRecognition_ = options_.retrieve("disable_field_recognition") != nullptr;
   useNetcdf4_              = options_.retrieve("netcdf4") != nullptr;
   ignoreElementIds_        = options_.retrieve("ignore_element_ids") != nullptr;
   combineNodesets_         = options_.retrieve("combine_nodesets") != nullptr;
   combineSidesets_         = options_.retrieve("combine_sidesets") != nullptr;
   combineElementBlocks_    = options_.retrieve("combine_element_blocks") != nullptr;
-
-  if (options_.retrieve("64-bit") != nullptr) {
-    ints64bit_ = true;
-  }
+  ints64bit_               = options_.retrieve("64-bit") != nullptr;
 
   zlib_ = (options_.retrieve("zlib") != nullptr);
   szip_ = (options_.retrieve("szip") != nullptr);
