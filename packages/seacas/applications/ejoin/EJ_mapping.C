@@ -256,7 +256,8 @@ template void build_reverse_node_map(Ioss::Region &global, RegionVector &part_me
                                      std::vector<int64_t> &local_node_map);
 
 template <typename INT>
-std::vector<INT> build_local_element_map(RegionVector &part_mesh, Ioss::Region &output_region, const IO_map &output_input_map)
+std::vector<INT> build_local_element_map(RegionVector &part_mesh, Ioss::Region &output_region,
+                                         const IO_map &output_input_map)
 {
   INT element_offset = 0;
   for (auto &pm : part_mesh) {
@@ -265,39 +266,41 @@ std::vector<INT> build_local_element_map(RegionVector &part_mesh, Ioss::Region &
     element_offset += local_elem_count;
   }
 
-  std::vector<INT> local_element_map(element_offset, -1);
+  std::vector<INT>                   local_element_map(element_offset, -1);
   const Ioss::ElementBlockContainer &ebs = output_region.get_element_blocks();
-  
+
   size_t global = 0;
   for (const auto &oeb : ebs) {
     const auto &itr = output_input_map.find(oeb);
     assert(itr != output_input_map.end());
     const auto &[key, oeb_inputs] = *itr;
-      for (const auto &[ieb, offset] : oeb_inputs) {
-	if (ieb != nullptr) {
-	  int64_t ieb_count = ieb->entity_count();
-	  
-	  auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
-	  size_t ireg_offset = input_region->get_property("element_offset").get_int();
-	  size_t ieb_offset  = dynamic_cast<Ioss::EntityBlock*>(ieb)->get_offset();
-	  
-	  // Element block `ieb` has `ieb_count` elements that run
-	  // from `ieb_offset` to `ieb_offset + ieb_count` in
-	  // `input_region` In `local_element_map, they run from
-	  // `ireg_offset + ieb_offset` to `ireg_offset +
-	  // ieb_offset + ieb_count`.
-	  for (int64_t i = 0; i < ieb_count; i++) {
-	    local_element_map[ireg_offset + ieb_offset + i] = global++;
-	  }
-	}
+    for (const auto &[ieb, offset] : oeb_inputs) {
+      if (ieb != nullptr) {
+        int64_t ieb_count = ieb->entity_count();
+
+        auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+        size_t ireg_offset  = input_region->get_property("element_offset").get_int();
+        size_t ieb_offset   = dynamic_cast<Ioss::EntityBlock *>(ieb)->get_offset();
+
+        // Element block `ieb` has `ieb_count` elements that run
+        // from `ieb_offset` to `ieb_offset + ieb_count` in
+        // `input_region` In `local_element_map, they run from
+        // `ireg_offset + ieb_offset` to `ireg_offset +
+        // ieb_offset + ieb_count`.
+        for (int64_t i = 0; i < ieb_count; i++) {
+          local_element_map[ireg_offset + ieb_offset + i] = global++;
+        }
+      }
     }
   }
   return local_element_map;
 }
 
-template std::vector<int>     build_local_element_map(RegionVector &part_mesh, Ioss::Region &output_region, 
+template std::vector<int>     build_local_element_map(RegionVector &part_mesh,
+                                                      Ioss::Region &output_region,
                                                       const IO_map &output_input_map);
-template std::vector<int64_t> build_local_element_map(RegionVector &part_mesh, Ioss::Region &output_region, 
+template std::vector<int64_t> build_local_element_map(RegionVector &part_mesh,
+                                                      Ioss::Region &output_region,
                                                       const IO_map &output_input_map);
 
 template <typename INT>

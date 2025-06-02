@@ -447,7 +447,8 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   //
   // This needs to be constructed after the element blocks are
   // combined.
-  std::vector<INT> local_element_map = build_local_element_map<INT>(part_mesh, output_region, output_input_map);
+  std::vector<INT> local_element_map =
+      build_local_element_map<INT>(part_mesh, output_region, output_input_map);
 
   if (!interFace.information_record_parts().empty()) {
     const std::vector<int> &info_parts = interFace.information_record_parts();
@@ -725,47 +726,46 @@ namespace {
       const auto &itr = output_input_map.find(oss);
       assert(itr != output_input_map.end());
       const auto &[key, oss_inputs] = *itr;
-        for (const auto &[gss, offset] : oss_inputs) {
-          if (gss != nullptr) {
-            auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
-            assert(iss != nullptr);
-            if (*(iss->contained_in()) == region) {
-              const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
+      for (const auto &[gss, offset] : oss_inputs) {
+        if (gss != nullptr) {
+          auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
+          assert(iss != nullptr);
+          if (*(iss->contained_in()) == region) {
+            const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
 
-              for (const auto &sb : sbs) {
-                std::string sbname = sb->name();
-                auto       *osb    = oss->get_side_block(sbname);
-                if (osb != nullptr) {
-                  if (combine_similar) {
-                    // Combine side blocks with similar names...
-                    output_input_map[osb].emplace_back(sb, osb->entity_count());
-                    size_t count = sb->entity_count();
-                    add_to_entity_count(osb, count);
-                    continue;
-                  }
-                  else {
-                    sbname = prefix + "_" + sb->name();
-                    if (oss->get_side_block(sbname) != nullptr) {
-                      fmt::print(stderr, "ERROR: Duplicate sideset sideblocks named '{}'\n",
-                                 sbname);
-                      exit(EXIT_FAILURE);
-                    }
+            for (const auto &sb : sbs) {
+              std::string sbname = sb->name();
+              auto       *osb    = oss->get_side_block(sbname);
+              if (osb != nullptr) {
+                if (combine_similar) {
+                  // Combine side blocks with similar names...
+                  output_input_map[osb].emplace_back(sb, osb->entity_count());
+                  size_t count = sb->entity_count();
+                  add_to_entity_count(osb, count);
+                  continue;
+                }
+                else {
+                  sbname = prefix + "_" + sb->name();
+                  if (oss->get_side_block(sbname) != nullptr) {
+                    fmt::print(stderr, "ERROR: Duplicate sideset sideblocks named '{}'\n", sbname);
+                    exit(EXIT_FAILURE);
                   }
                 }
-                // This is a new sideblock at this point...
-                sb->property_add(Ioss::Property("name_in_output", sbname));
-                std::string sbtype   = sb->topology()->name();
-                std::string partype  = sb->parent_element_topology()->name();
-                size_t      num_side = sb->entity_count();
-                auto *block = new Ioss::SideBlock(output_region.get_database(), sbname, sbtype,
-                                                  partype, num_side);
-                output_input_map[block].emplace_back(sb, 0);
-                oss->add(block);
               }
+              // This is a new sideblock at this point...
+              sb->property_add(Ioss::Property("name_in_output", sbname));
+              std::string sbtype   = sb->topology()->name();
+              std::string partype  = sb->parent_element_topology()->name();
+              size_t      num_side = sb->entity_count();
+              auto       *block = new Ioss::SideBlock(output_region.get_database(), sbname, sbtype,
+                                                      partype, num_side);
+              output_input_map[block].emplace_back(sb, 0);
+              oss->add(block);
             }
           }
         }
       }
+    }
   }
 
   void transfer_sidesets(const Ioss::Region &region, Ioss::Region &output_region,
@@ -1029,33 +1029,33 @@ namespace {
       const auto &itr = output_input_map.find(oeb);
       assert(itr != output_input_map.end());
       const auto &[key, oeb_inputs] = *itr;
-        if (!oeb_inputs.empty()) {
-          int64_t          count = oeb->entity_count();
-          int64_t          nnpe  = oeb->topology()->number_nodes();
-          std::vector<INT> connectivity(count * nnpe);
-          for (const auto &[ieb, offset] : oeb_inputs) {
-            if (ieb != nullptr) {
-              ieb->get_field_data("connectivity_raw", &connectivity[offset * nnpe], -1);
+      if (!oeb_inputs.empty()) {
+        int64_t          count = oeb->entity_count();
+        int64_t          nnpe  = oeb->topology()->number_nodes();
+        std::vector<INT> connectivity(count * nnpe);
+        for (const auto &[ieb, offset] : oeb_inputs) {
+          if (ieb != nullptr) {
+            ieb->get_field_data("connectivity_raw", &connectivity[offset * nnpe], -1);
 
-              auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
-              size_t node_offset  = input_region->get_property("node_offset").get_int();
-              for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
-                // connectivity is in part-local node ids [1..num_node]
-                // loc_node = the position of node in the local [0..num_node)
-                // local_node_map[node_offset+loc_node] gives the position of this node in the
-                // global list
-                size_t loc_node = connectivity[offset * nnpe + i] - 1;
-                SMART_ASSERT(node_offset + loc_node < local_node_map.size());
-                auto gpos = local_node_map[node_offset + loc_node];
-                if (gpos >= 0) {
-                  connectivity[offset * nnpe + i] = gpos + 1;
-                }
+            auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+            size_t node_offset  = input_region->get_property("node_offset").get_int();
+            for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
+              // connectivity is in part-local node ids [1..num_node]
+              // loc_node = the position of node in the local [0..num_node)
+              // local_node_map[node_offset+loc_node] gives the position of this node in the
+              // global list
+              size_t loc_node = connectivity[offset * nnpe + i] - 1;
+              SMART_ASSERT(node_offset + loc_node < local_node_map.size());
+              auto gpos = local_node_map[node_offset + loc_node];
+              if (gpos >= 0) {
+                connectivity[offset * nnpe + i] = gpos + 1;
               }
             }
           }
-          oeb->put_field_data("connectivity_raw", connectivity);
         }
+        oeb->put_field_data("connectivity_raw", connectivity);
       }
+    }
   }
 
   template <typename INT>
@@ -1066,35 +1066,34 @@ namespace {
       const auto &itr = output_input_map.find(ons);
       assert(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
-        if (!ons_inputs.empty()) {
-          int64_t             count = ons->entity_count();
-          std::vector<INT>    nodelist(count);
-          std::vector<double> df(count);
-          bool                found_one = false;
-          for (const auto &[ins, offset] : ons_inputs) {
-            if (ins != nullptr) {
-              found_one = true;
-              ins->get_field_data("ids", &nodelist[offset], -1);
+      if (!ons_inputs.empty()) {
+        int64_t             count = ons->entity_count();
+        std::vector<INT>    nodelist(count);
+        std::vector<double> df(count);
+        bool                found_one = false;
+        for (const auto &[ins, offset] : ons_inputs) {
+          if (ins != nullptr) {
+            found_one = true;
+            ins->get_field_data("ids", &nodelist[offset], -1);
 
-              auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
-              size_t node_offset  = input_region->get_property("node_offset").get_int();
-              for (int64_t i = 0; i < ins->entity_count(); i++) {
-                size_t loc_node =
-                    input_region->node_global_to_local(nodelist[offset + i], true) - 1;
-                auto gpos = local_node_map[node_offset + loc_node];
-                if (gpos >= 0) {
-                  nodelist[offset + i] = gpos + 1;
-                }
+            auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
+            size_t node_offset  = input_region->get_property("node_offset").get_int();
+            for (int64_t i = 0; i < ins->entity_count(); i++) {
+              size_t loc_node = input_region->node_global_to_local(nodelist[offset + i], true) - 1;
+              auto   gpos     = local_node_map[node_offset + loc_node];
+              if (gpos >= 0) {
+                nodelist[offset + i] = gpos + 1;
               }
-              ins->get_field_data("distribution_factors", &df[offset], -1);
             }
-          }
-          if (found_one) {
-            ons->put_field_data("ids_raw", nodelist);
-            ons->put_field_data("distribution_factors", df);
+            ins->get_field_data("distribution_factors", &df[offset], -1);
           }
         }
+        if (found_one) {
+          ons->put_field_data("ids_raw", nodelist);
+          ons->put_field_data("distribution_factors", df);
+        }
       }
+    }
   }
 
   template <typename INT>
@@ -1103,37 +1102,37 @@ namespace {
     // Get output sideblocks in the output sideset `oss`
     const Ioss::SideBlockContainer &osbs = oss->get_side_blocks();
     for (const auto &osb : osbs) {
-    const auto &itr = output_input_map.find(osb);
-    assert(itr != output_input_map.end());
-    const auto &[key, osb_inputs] = *itr;
-        if (!osb_inputs.empty()) {
-          int64_t          count = osb->entity_count();
-          std::vector<INT> elem_side_list(count * 2);
+      const auto &itr = output_input_map.find(osb);
+      assert(itr != output_input_map.end());
+      const auto &[key, osb_inputs] = *itr;
+      if (!osb_inputs.empty()) {
+        int64_t          count = osb->entity_count();
+        std::vector<INT> elem_side_list(count * 2);
 
-          for (const auto &[isb, offset] : osb_inputs) {
-            if (isb != nullptr) {
-              isb->get_field_data("element_side_raw", &elem_side_list[offset * 2], -1);
-              auto *input_region = isb->contained_in()->contained_in();
-              SMART_ASSERT(input_region != nullptr);
-              size_t element_offset = input_region->get_property("element_offset").get_int();
+        for (const auto &[isb, offset] : osb_inputs) {
+          if (isb != nullptr) {
+            isb->get_field_data("element_side_raw", &elem_side_list[offset * 2], -1);
+            auto *input_region = isb->contained_in()->contained_in();
+            SMART_ASSERT(input_region != nullptr);
+            size_t element_offset = input_region->get_property("element_offset").get_int();
 
-              // The 'elem_side_list' contains
-              // (local_element_position,side_ordinal) pairs. The
-              // 'local_element_position' is 1-based offset in the
-              // current part.  Need to map to its location in the
-              // output region...
-              for (int64_t i = 0; i < isb->entity_count() * 2;
-                   i += 2) { // just modify the elem part of the pair...
-                size_t local_position = elem_side_list[2 * offset + i] - 1;
-                auto   gpos           = local_element_map[element_offset + local_position];
-                SMART_ASSERT(gpos >= 0)(gpos)(i); // Inactive elements should be filtered by Ioss
-                elem_side_list[2 * offset + i] = gpos + 1;
-              }
+            // The 'elem_side_list' contains
+            // (local_element_position,side_ordinal) pairs. The
+            // 'local_element_position' is 1-based offset in the
+            // current part.  Need to map to its location in the
+            // output region...
+            for (int64_t i = 0; i < isb->entity_count() * 2;
+                 i += 2) { // just modify the elem part of the pair...
+              size_t local_position = elem_side_list[2 * offset + i] - 1;
+              auto   gpos           = local_element_map[element_offset + local_position];
+              SMART_ASSERT(gpos >= 0)(gpos)(i); // Inactive elements should be filtered by Ioss
+              elem_side_list[2 * offset + i] = gpos + 1;
             }
           }
-          osb->put_field_data("element_side_raw", elem_side_list);
         }
+        osb->put_field_data("element_side_raw", elem_side_list);
       }
+    }
   }
 
   template <typename INT>
@@ -1288,7 +1287,7 @@ namespace {
       assert(itr != output_input_map.end());
       const auto &[key, oss_inputs] = *itr;
       if (!oss_inputs.empty()) {
-	output_sideblock_fields(oss);
+        output_sideblock_fields(oss);
       }
     }
   }
@@ -1428,26 +1427,26 @@ namespace {
       assert(itr != output_input_map.end());
       const auto &[key, oeb_inputs] = *itr;
       if (!oeb_inputs.empty()) {
-          int64_t count             = oeb->entity_count();
-          const auto &[ieb, offset] = oeb_inputs[0];
-          if (ieb != nullptr) {
-            // Here we assume that the element block fields are the
-            // same on all parts if combining blocks
-            size_t         id     = ieb->get_property("id").get_int();
-            Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
-            for (const auto &field_name : fields) {
-              if (valid_variable(field_name, id, variable_list)) {
-                Ioss::Field field = ieb->get_field(field_name);
-                field.reset_count(count);
-                oeb->field_add(std::move(field));
-                if (subsetting_fields) {
-                  defined_fields.push_back(field_name);
-                }
+        int64_t count             = oeb->entity_count();
+        const auto &[ieb, offset] = oeb_inputs[0];
+        if (ieb != nullptr) {
+          // Here we assume that the element block fields are the
+          // same on all parts if combining blocks
+          size_t         id     = ieb->get_property("id").get_int();
+          Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
+          for (const auto &field_name : fields) {
+            if (valid_variable(field_name, id, variable_list)) {
+              Ioss::Field field = ieb->get_field(field_name);
+              field.reset_count(count);
+              oeb->field_add(std::move(field));
+              if (subsetting_fields) {
+                defined_fields.push_back(field_name);
               }
             }
           }
         }
       }
+    }
 
     // Now that we have defined all fields, check `variable_list` and make
     // sure that all fields that have been explicitly specified now exist
@@ -1481,24 +1480,24 @@ namespace {
       assert(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (!ons_inputs.empty()) {
-	int64_t count             = ons->entity_count();
-	const auto &[ins, offset] = ons_inputs[0];
-	if (ins != nullptr) {
-	  // Here we assume that the nodeset fields are the same on all parts if combining
-	  // nodesets
-	  size_t         id     = ins->get_property("id").get_int();
-	  Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
-	  for (const auto &field_name : fields) {
-	    if (valid_variable(field_name, id, variable_list)) {
-	      Ioss::Field field = ins->get_field(field_name);
-	      field.reset_count(count);
-	      ons->field_add(std::move(field));
-	      if (subsetting_fields) {
-		defined_fields.push_back(field_name);
-	      }
-	    }
-	  }
-	}
+        int64_t count             = ons->entity_count();
+        const auto &[ins, offset] = ons_inputs[0];
+        if (ins != nullptr) {
+          // Here we assume that the nodeset fields are the same on all parts if combining
+          // nodesets
+          size_t         id     = ins->get_property("id").get_int();
+          Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
+          for (const auto &field_name : fields) {
+            if (valid_variable(field_name, id, variable_list)) {
+              Ioss::Field field = ins->get_field(field_name);
+              field.reset_count(count);
+              ons->field_add(std::move(field));
+              if (subsetting_fields) {
+                defined_fields.push_back(field_name);
+              }
+            }
+          }
+        }
       }
     }
     // Now that we have defined all fields, check `variable_list` and make
@@ -1526,21 +1525,21 @@ namespace {
       assert(itr != output_input_map.end());
       const auto &[key, osb_inputs] = *itr;
 
-        int64_t     count      = osb->entity_count();
-        for (const auto &[isb, offset] : osb_inputs) {
-          if (isb != nullptr) {
-            auto fields = isb->field_describe(Ioss::Field::TRANSIENT);
-            for (const auto &field_name : fields) {
-              if (valid_variable(field_name, id, variable_list)) {
-                Ioss::Field field = isb->get_field(field_name);
-                if (!osb->field_exists(field_name)) {
-                  field.reset_count(count);
-                  osb->field_add(std::move(field));
-                  if (subsetting_fields) {
-                    defined_fields.push_back(field_name);
-                  }
+      int64_t count = osb->entity_count();
+      for (const auto &[isb, offset] : osb_inputs) {
+        if (isb != nullptr) {
+          auto fields = isb->field_describe(Ioss::Field::TRANSIENT);
+          for (const auto &field_name : fields) {
+            if (valid_variable(field_name, id, variable_list)) {
+              Ioss::Field field = isb->get_field(field_name);
+              if (!osb->field_exists(field_name)) {
+                field.reset_count(count);
+                osb->field_add(std::move(field));
+                if (subsetting_fields) {
+                  defined_fields.push_back(field_name);
                 }
               }
+            }
           }
         }
       }
