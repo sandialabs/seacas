@@ -256,8 +256,17 @@ template void build_reverse_node_map(Ioss::Region &global, RegionVector &part_me
                                      std::vector<int64_t> &local_node_map);
 
 template <typename INT>
-void build_local_element_map(RegionVector &part_mesh, std::vector<INT> &local_element_map)
+std::vector<INT> build_local_element_map(RegionVector &part_mesh, const IO_map &output_input_map)
 {
+  INT element_offset = 0;
+  for (auto &pm : part_mesh) {
+    pm->property_add(Ioss::Property("element_offset", element_offset));
+    INT local_elem_count = pm->get_property("element_count").get_int();
+    element_offset += local_elem_count;
+  }
+
+  std::vector<INT> local_element_map(element_offset, -1);
+
   size_t global = 0;
   size_t offset = 0;
   for (auto &p : part_mesh) {
@@ -282,11 +291,13 @@ void build_local_element_map(RegionVector &part_mesh, std::vector<INT> &local_el
       offset += num_elem;
     }
   }
+  return local_element_map;
 }
 
-template void build_local_element_map(RegionVector &part_mesh, std::vector<int> &local_element_map);
-template void build_local_element_map(RegionVector         &part_mesh,
-                                      std::vector<int64_t> &local_element_map);
+template std::vector<int>     build_local_element_map(RegionVector &part_mesh,
+                                                      const IO_map &output_input_map);
+template std::vector<int64_t> build_local_element_map(RegionVector &part_mesh,
+                                                      const IO_map &output_input_map);
 
 template <typename INT>
 void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local_element_map,

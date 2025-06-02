@@ -355,29 +355,16 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     fmt::print(stderr, "{}", time_stamp(tsFormat));
   }
 
-  INT node_offset    = 0;
-  INT element_offset = 0;
+  INT node_offset = 0;
   for (auto &pm : part_mesh) {
     pm->property_add(Ioss::Property("node_offset", node_offset));
-    pm->property_add(Ioss::Property("element_offset", element_offset));
     INT local_node_count = pm->get_property("node_count").get_int();
-    INT local_elem_count = pm->get_property("element_count").get_int();
     node_offset += local_node_count;
-    element_offset += local_elem_count;
   }
 
   INT              node_count = node_offset; // Sum of nodes in part meshes.
   std::vector<INT> local_node_map(node_count);
   std::vector<INT> global_node_map;
-
-  // This is the map from local element position to global element
-  // position (0-based). If there are no element block omissions, then
-  // the map is simply [0..number_elements). If there are omissions,
-  // Then local_element_map[j] will be -1 for an omitted element.
-  // If not omitted, local_element_map[part_offset+j] gives the global
-  // position of local element j in the current part.
-  std::vector<INT> local_element_map(element_offset);
-  build_local_element_map(part_mesh, local_element_map);
 
   // Need a map from local node to global node.  Position in the map
   // is part_mesh.offset+local_node_position Return value is position
@@ -449,6 +436,19 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       transfer_assembly(*part_mesh[p], output_region, false);
     }
   }
+
+  // This is the map from local element position to global element
+  // position (0-based). If there are no element block omissions or
+  // combinations, then the map is simply [0..number_elements). If
+  // there are omissions, Then local_element_map[j] will be -1 for an
+  // omitted element.  If there are element block combinations, then
+  // the map will not be 0..number_elements. If not omitted,
+  // local_element_map[part_offset+j] gives the global position of
+  // local element j in the current part.
+  //
+  // This needs to be constructed after the element blocks are
+  // combined.
+  std::vector<INT> local_element_map = build_local_element_map<INT>(part_mesh, output_input_map);
 
   if (!interFace.information_record_parts().empty()) {
     const std::vector<int> &info_parts = interFace.information_record_parts();
@@ -729,36 +729,39 @@ namespace {
           if (gss != nullptr) {
             auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
             assert(iss != nullptr);
-            const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
+            if (*(iss->contained_in()) == region) {
+              const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
 
-            for (const auto &sb : sbs) {
-              std::string sbname = sb->name();
-              auto       *osb    = oss->get_side_block(sbname);
-              if (osb != nullptr) {
-                if (combine_similar) {
-                  // Combine side blocks with similar names...
-                  output_input_map[osb].emplace_back(sb, osb->entity_count());
-                  size_t count = sb->entity_count();
-                  add_to_entity_count(osb, count);
-                  continue;
-                }
-                else {
-                  sbname = prefix + "_" + sb->name();
-                  if (oss->get_side_block(sbname) != nullptr) {
-                    fmt::print(stderr, "ERROR: Duplicate sideset sideblocks named '{}'\n", sbname);
-                    exit(EXIT_FAILURE);
+              for (const auto &sb : sbs) {
+                std::string sbname = sb->name();
+                auto       *osb    = oss->get_side_block(sbname);
+                if (osb != nullptr) {
+                  if (combine_similar) {
+                    // Combine side blocks with similar names...
+                    output_input_map[osb].emplace_back(sb, osb->entity_count());
+                    size_t count = sb->entity_count();
+                    add_to_entity_count(osb, count);
+                    continue;
+                  }
+                  else {
+                    sbname = prefix + "_" + sb->name();
+                    if (oss->get_side_block(sbname) != nullptr) {
+                      fmt::print(stderr, "ERROR: Duplicate sideset sideblocks named '{}'\n",
+                                 sbname);
+                      exit(EXIT_FAILURE);
+                    }
                   }
                 }
+                // This is a new sideblock at this point...
+                sb->property_add(Ioss::Property("name_in_output", sbname));
+                std::string sbtype   = sb->topology()->name();
+                std::string partype  = sb->parent_element_topology()->name();
+                size_t      num_side = sb->entity_count();
+                auto *block = new Ioss::SideBlock(output_region.get_database(), sbname, sbtype,
+                                                  partype, num_side);
+                output_input_map[block].emplace_back(sb, 0);
+                oss->add(block);
               }
-              // This is a new sideblock at this point...
-              sb->property_add(Ioss::Property("name_in_output", sbname));
-              std::string sbtype   = sb->topology()->name();
-              std::string partype  = sb->parent_element_topology()->name();
-              size_t      num_side = sb->entity_count();
-              auto       *block = new Ioss::SideBlock(output_region.get_database(), sbname, sbtype,
-                                                      partype, num_side);
-              output_input_map[block].emplace_back(sb, 0);
-              oss->add(block);
             }
           }
         }
