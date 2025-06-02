@@ -19,7 +19,7 @@ void build_reverse_node_map(Ioss::Region &output_region, RegionVector &part_mesh
                             std::vector<INT> &global_node_map, std::vector<INT> &local_node_map);
 
 template <typename INT>
-std::vector<INT> build_local_element_map(RegionVector &part_mesh, const IO_map &output_input_map);
+std::vector<INT> build_local_element_map(RegionVector &part_mesh, Ioss::Region &output_region, const IO_map &output_input_map);
 
 template <typename INT>
 void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local_element_map,

@@ -153,8 +153,7 @@ namespace {
   }
 } // namespace
 
-std::map<Ioss::GroupingEntity *, std::vector<std::pair<Ioss::GroupingEntity *, size_t>>>
-    output_input_map;
+IO_map output_input_map;
 
 template <typename INT>
 double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT dummy);
@@ -448,7 +447,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   //
   // This needs to be constructed after the element blocks are
   // combined.
-  std::vector<INT> local_element_map = build_local_element_map<INT>(part_mesh, output_input_map);
+  std::vector<INT> local_element_map = build_local_element_map<INT>(part_mesh, output_region, output_input_map);
 
   if (!interFace.information_record_parts().empty()) {
     const std::vector<int> &info_parts = interFace.information_record_parts();
@@ -723,8 +722,9 @@ namespace {
     const Ioss::SideSetContainer &osss   = output_region.get_sidesets();
 
     for (const auto &oss : osss) {
-      if (output_input_map.find(oss) != output_input_map.end()) {
-        const auto &oss_inputs = output_input_map[oss];
+      const auto &itr = output_input_map.find(oss);
+      assert(itr != output_input_map.end());
+      const auto &[key, oss_inputs] = *itr;
         for (const auto &[gss, offset] : oss_inputs) {
           if (gss != nullptr) {
             auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
@@ -766,7 +766,6 @@ namespace {
           }
         }
       }
-    }
   }
 
   void transfer_sidesets(const Ioss::Region &region, Ioss::Region &output_region,
@@ -1027,8 +1026,9 @@ namespace {
 
     // Connectivity...
     for (const auto &oeb : ebs) {
-      if (output_input_map.find(oeb) != output_input_map.end()) {
-        const auto &oeb_inputs = output_input_map[oeb];
+      const auto &itr = output_input_map.find(oeb);
+      assert(itr != output_input_map.end());
+      const auto &[key, oeb_inputs] = *itr;
         if (!oeb_inputs.empty()) {
           int64_t          count = oeb->entity_count();
           int64_t          nnpe  = oeb->topology()->number_nodes();
@@ -1056,7 +1056,6 @@ namespace {
           oeb->put_field_data("connectivity_raw", connectivity);
         }
       }
-    }
   }
 
   template <typename INT>
@@ -1064,8 +1063,9 @@ namespace {
   {
     const auto &output_nodesets = output_region.get_nodesets();
     for (const auto &ons : output_nodesets) {
-      if (output_input_map.find(ons) != output_input_map.end()) {
-        const auto &ons_inputs = output_input_map[ons];
+      const auto &itr = output_input_map.find(ons);
+      assert(itr != output_input_map.end());
+      const auto &[key, ons_inputs] = *itr;
         if (!ons_inputs.empty()) {
           int64_t             count = ons->entity_count();
           std::vector<INT>    nodelist(count);
@@ -1095,7 +1095,6 @@ namespace {
           }
         }
       }
-    }
   }
 
   template <typename INT>
@@ -1104,8 +1103,9 @@ namespace {
     // Get output sideblocks in the output sideset `oss`
     const Ioss::SideBlockContainer &osbs = oss->get_side_blocks();
     for (const auto &osb : osbs) {
-      if (output_input_map.find(osb) != output_input_map.end()) {
-        const auto &osb_inputs = output_input_map[osb];
+    const auto &itr = output_input_map.find(osb);
+    assert(itr != output_input_map.end());
+    const auto &[key, osb_inputs] = *itr;
         if (!osb_inputs.empty()) {
           int64_t          count = osb->entity_count();
           std::vector<INT> elem_side_list(count * 2);
@@ -1134,7 +1134,6 @@ namespace {
           osb->put_field_data("element_side_raw", elem_side_list);
         }
       }
-    }
   }
 
   template <typename INT>
@@ -1231,8 +1230,9 @@ namespace {
 
   void output_entity_fields(Ioss::GroupingEntity *out_entity)
   {
-    if (output_input_map.find(out_entity) != output_input_map.end()) {
-      const auto &out_entity_inputs = output_input_map[out_entity];
+    const auto &itr = output_input_map.find(out_entity);
+    if (itr != output_input_map.end()) {
+      const auto &[key, out_entity_inputs] = *itr;
       if (!out_entity_inputs.empty()) {
         Ioss::NameList fields = out_entity->field_describe(Ioss::Field::TRANSIENT);
         int64_t        count  = out_entity->entity_count();
@@ -1284,11 +1284,11 @@ namespace {
   {
     const Ioss::SideSetContainer &output_sidesets = output_region.get_sidesets();
     for (const auto &oss : output_sidesets) {
-      if (output_input_map.find(oss) != output_input_map.end()) {
-        const auto &oss_inputs = output_input_map[oss];
-        if (!oss_inputs.empty()) {
-          output_sideblock_fields(oss);
-        }
+      const auto &itr = output_input_map.find(oss);
+      assert(itr != output_input_map.end());
+      const auto &[key, oss_inputs] = *itr;
+      if (!oss_inputs.empty()) {
+	output_sideblock_fields(oss);
       }
     }
   }
@@ -1424,9 +1424,10 @@ namespace {
     }
 
     for (const auto &oeb : output_blocks) {
-      if (output_input_map.find(oeb) != output_input_map.end()) {
-        const auto &oeb_inputs = output_input_map[oeb];
-        if (!oeb_inputs.empty()) {
+      const auto &itr = output_input_map.find(oeb);
+      assert(itr != output_input_map.end());
+      const auto &[key, oeb_inputs] = *itr;
+      if (!oeb_inputs.empty()) {
           int64_t count             = oeb->entity_count();
           const auto &[ieb, offset] = oeb_inputs[0];
           if (ieb != nullptr) {
@@ -1447,7 +1448,6 @@ namespace {
           }
         }
       }
-    }
 
     // Now that we have defined all fields, check `variable_list` and make
     // sure that all fields that have been explicitly specified now exist
@@ -1477,28 +1477,28 @@ namespace {
     }
 
     for (const auto &ons : output_nodesets) {
-      if (output_input_map.find(ons) != output_input_map.end()) {
-        const auto &ons_inputs = output_input_map[ons];
-        if (!ons_inputs.empty()) {
-          int64_t count             = ons->entity_count();
-          const auto &[ins, offset] = ons_inputs[0];
-          if (ins != nullptr) {
-            // Here we assume that the nodeset fields are the same on all parts if combining
-            // nodesets
-            size_t         id     = ins->get_property("id").get_int();
-            Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
-            for (const auto &field_name : fields) {
-              if (valid_variable(field_name, id, variable_list)) {
-                Ioss::Field field = ins->get_field(field_name);
-                field.reset_count(count);
-                ons->field_add(std::move(field));
-                if (subsetting_fields) {
-                  defined_fields.push_back(field_name);
-                }
-              }
-            }
-          }
-        }
+      const auto &itr = output_input_map.find(ons);
+      assert(itr != output_input_map.end());
+      const auto &[key, ons_inputs] = *itr;
+      if (!ons_inputs.empty()) {
+	int64_t count             = ons->entity_count();
+	const auto &[ins, offset] = ons_inputs[0];
+	if (ins != nullptr) {
+	  // Here we assume that the nodeset fields are the same on all parts if combining
+	  // nodesets
+	  size_t         id     = ins->get_property("id").get_int();
+	  Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
+	  for (const auto &field_name : fields) {
+	    if (valid_variable(field_name, id, variable_list)) {
+	      Ioss::Field field = ins->get_field(field_name);
+	      field.reset_count(count);
+	      ons->field_add(std::move(field));
+	      if (subsetting_fields) {
+		defined_fields.push_back(field_name);
+	      }
+	    }
+	  }
+	}
       }
     }
     // Now that we have defined all fields, check `variable_list` and make
@@ -1522,8 +1522,10 @@ namespace {
     const Ioss::SideBlockContainer &osbs = oss->get_side_blocks();
 
     for (const auto &osb : osbs) {
-      if (output_input_map.find(osb) != output_input_map.end()) {
-        const auto &osb_inputs = output_input_map[osb];
+      const auto &itr = output_input_map.find(osb);
+      assert(itr != output_input_map.end());
+      const auto &[key, osb_inputs] = *itr;
+
         int64_t     count      = osb->entity_count();
         for (const auto &[isb, offset] : osb_inputs) {
           if (isb != nullptr) {
@@ -1539,7 +1541,6 @@ namespace {
                   }
                 }
               }
-            }
           }
         }
       }
