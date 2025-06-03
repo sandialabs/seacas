@@ -1109,7 +1109,6 @@ namespace {
 	    count += ins->entity_count();
 	  }
 	}
-	bool duplicate_nodes = count != ons->entity_count();
 
 	std::vector<INT>    nodelist(count);
         std::vector<double> df(count);
@@ -1132,6 +1131,7 @@ namespace {
           }
         }
         if (found_one) {
+	  bool duplicate_nodes = count != ons->entity_count();
 	  if (duplicate_nodes) {
 	    // Check to see if actually using df (not all 0.0 or 1.0)
 	    auto mm = std::minmax_element(df.begin(), df.end());
@@ -1144,7 +1144,8 @@ namespace {
 	      }
 	      std::sort(ids_df.begin(), ids_df.end(), [](auto &a, auto &b) { return a.first < b.first; });
 	      auto new_size = unique(ids_df);
-	      SMART_ASSERT(new_size == ons->entity_count())(new_size)(ons->entity_count());
+	      ids_df.resize(new_size);
+	      SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
 	      for (size_t i = 0; i < new_size; i++) {
 		nodelist[i] = ids_df[i].first;
 		df[i] = ids_df[i].second;
