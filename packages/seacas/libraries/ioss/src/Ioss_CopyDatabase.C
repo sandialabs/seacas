@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <random>
 #include <numeric>
+#include <random>
 
 #include "Ioss_CopyDatabase.h"
 #include "Ioss_DataPool.h"
@@ -414,19 +414,17 @@ namespace {
       std::mt19937       g(rd());
       std::shuffle(selected_steps.begin() + 1, selected_steps.end(), g);
     }
-    
+
     if (options.sort_times) {
-      std::vector<std::pair<double,size_t>> times;
+      std::vector<std::pair<double, size_t>> times;
       for (size_t i = 1; i <= selected_steps.size() - 1; i++) {
-	times.emplace_back(region.get_state_time(i), selected_steps[i]);
+        times.emplace_back(region.get_state_time(i), selected_steps[i]);
       }
-      std::sort(times.begin(), times.end(), [](auto &a, auto &b) {
-	  return a.first < b.first;
-	});
+      std::sort(times.begin(), times.end(), [](auto &a, auto &b) { return a.first < b.first; });
 
       size_t i = 1;
       for (auto &[time, step] : times) {
-	selected_steps[i++] = step;
+        selected_steps[i++] = step;
       }
     }
 
