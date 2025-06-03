@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
         auto            *transform = Ioss::Transform::create("offset3D");
-        assert(transform != nullptr);
+        SMART_ASSERT(transform != nullptr);
         std::vector<double> values(3);
         values[0] = offset.x * p;
         values[1] = offset.y * p;
@@ -708,7 +708,7 @@ namespace {
             auto output_name = member->get_property("name_in_output").get_string();
 
             auto *entity = output_region.get_entity(output_name, member_type);
-            assert(entity != nullptr);
+            SMART_ASSERT(entity != nullptr);
             asn->add(entity);
           }
         }
@@ -724,12 +724,12 @@ namespace {
 
     for (const auto &oss : osss) {
       const auto &itr = output_input_map.find(oss);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, oss_inputs] = *itr;
       for (const auto &[gss, offset] : oss_inputs) {
         if (gss != nullptr) {
           auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
-          assert(iss != nullptr);
+          SMART_ASSERT(iss != nullptr);
           if (*(iss->contained_in()) == region) {
             const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
 
@@ -1027,7 +1027,7 @@ namespace {
     // Connectivity...
     for (const auto &oeb : ebs) {
       const auto &itr = output_input_map.find(oeb);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, oeb_inputs] = *itr;
       if (!oeb_inputs.empty()) {
         int64_t          count = oeb->entity_count();
@@ -1103,7 +1103,7 @@ namespace {
     const Ioss::SideBlockContainer &osbs = oss->get_side_blocks();
     for (const auto &osb : osbs) {
       const auto &itr = output_input_map.find(osb);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, osb_inputs] = *itr;
       if (!osb_inputs.empty()) {
         int64_t          count = osb->entity_count();
@@ -1284,7 +1284,7 @@ namespace {
     const Ioss::SideSetContainer &output_sidesets = output_region.get_sidesets();
     for (const auto &oss : output_sidesets) {
       const auto &itr = output_input_map.find(oss);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, oss_inputs] = *itr;
       if (!oss_inputs.empty()) {
         output_sideblock_fields(oss);
@@ -1424,7 +1424,7 @@ namespace {
 
     for (const auto &oeb : output_blocks) {
       const auto &itr = output_input_map.find(oeb);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, oeb_inputs] = *itr;
       if (!oeb_inputs.empty()) {
         int64_t count             = oeb->entity_count();
@@ -1477,7 +1477,7 @@ namespace {
 
     for (const auto &ons : output_nodesets) {
       const auto &itr = output_input_map.find(ons);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (!ons_inputs.empty()) {
         int64_t count             = ons->entity_count();
@@ -1522,7 +1522,7 @@ namespace {
 
     for (const auto &osb : osbs) {
       const auto &itr = output_input_map.find(osb);
-      assert(itr != output_input_map.end());
+      SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, osb_inputs] = *itr;
 
       int64_t count = osb->entity_count();
