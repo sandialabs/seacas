@@ -75,7 +75,8 @@ namespace {
                            const std::vector<INT> &local_node_map,
                            const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
-    void output_nodeset(Ioss::Region &output_region, const std::vector<INT> &local_node_map, bool nodes_consolidated);
+  void output_nodeset(Ioss::Region &output_region, const std::vector<INT> &local_node_map,
+                      bool nodes_consolidated);
   template <typename INT>
   void output_sideset(Ioss::Region &output_region, const std::vector<INT> &local_element_map);
   template <typename INT>
@@ -161,7 +162,8 @@ namespace {
   }
 
   template <typename INT>
-    void check_for_duplicate_nodeset_nodes(Ioss::Region &output_region, const std::vector<INT> &local_node_map);
+  void check_for_duplicate_nodeset_nodes(Ioss::Region           &output_region,
+                                         const std::vector<INT> &local_node_map);
 } // namespace
 
 IO_map output_input_map;
@@ -438,9 +440,11 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     }
     if (!interFace.omit_nodesets()) {
       transfer_nodesets(*part_mesh[p], output_region, interFace.combine_nodesets(), false);
-      if (merged > 0 && interFace.combine_nodesets() && (interFace.match_node_xyz() || interFace.match_nodeset_nodes() || interFace.match_node_ids())) {
-	// Get the nodelist for each combined nodeset and see if contains duplicate nodes...
-	check_for_duplicate_nodeset_nodes(output_region, local_node_map);
+      if (merged > 0 && interFace.combine_nodesets() &&
+          (interFace.match_node_xyz() || interFace.match_nodeset_nodes() ||
+           interFace.match_node_ids())) {
+        // Get the nodelist for each combined nodeset and see if contains duplicate nodes...
+        check_for_duplicate_nodeset_nodes(output_region, local_node_map);
       }
     }
     if (!interFace.omit_sidesets()) {
@@ -1073,26 +1077,26 @@ namespace {
     }
   }
 
-  template <typename INT>
-  size_t unique(std::vector<std::pair<INT, double>> &out)
-    {
-      if (out.empty()) {
-        return 0;
-      }
-      size_t i    = 1;
-      size_t pos  = 1;
-      std::pair<INT,double> oldv = out[0];
-      for (; i < out.size(); ++i) {
-	std::pair<INT, double> newv   = out[i];
-        out[pos] = newv;
-        pos += (newv.first != oldv.first);
-        oldv = newv;
-      }
-      return pos;
+  template <typename INT> size_t unique(std::vector<std::pair<INT, double>> &out)
+  {
+    if (out.empty()) {
+      return 0;
     }
+    size_t                 i    = 1;
+    size_t                 pos  = 1;
+    std::pair<INT, double> oldv = out[0];
+    for (; i < out.size(); ++i) {
+      std::pair<INT, double> newv = out[i];
+      out[pos]                    = newv;
+      pos += (newv.first != oldv.first);
+      oldv = newv;
+    }
+    return pos;
+  }
 
   template <typename INT>
-    void output_nodeset(Ioss::Region &output_region, const std::vector<INT> &local_node_map, bool nodes_consolidated)
+  void output_nodeset(Ioss::Region &output_region, const std::vector<INT> &local_node_map,
+                      bool nodes_consolidated)
   {
     const auto &output_nodesets = output_region.get_nodesets();
     for (const auto &ons : output_nodesets) {
@@ -1100,17 +1104,18 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (!ons_inputs.empty()) {
-        int64_t             count = ons->entity_count();
+        int64_t count = ons->entity_count();
 
-	// The size of the input nodeset nodelists may be more than the size of the output nodeset nodelist due to node consolidation...
-	if (nodes_consolidated) {
-	  count = 0;
-	  for (const auto &[ins, offset] : ons_inputs) {
-	    count += ins->entity_count();
-	  }
-	}
+        // The size of the input nodeset nodelists may be more than the size of the output nodeset
+        // nodelist due to node consolidation...
+        if (nodes_consolidated) {
+          count = 0;
+          for (const auto &[ins, offset] : ons_inputs) {
+            count += ins->entity_count();
+          }
+        }
 
-	std::vector<INT>    nodelist(count);
+        std::vector<INT>    nodelist(count);
         std::vector<double> df(count);
         bool                found_one = false;
         for (const auto &[ins, offset] : ons_inputs) {
@@ -1131,30 +1136,31 @@ namespace {
           }
         }
         if (found_one) {
-	  bool duplicate_nodes = count != ons->entity_count();
-	  if (duplicate_nodes) {
-	    // Check to see if actually using df (not all 0.0 or 1.0)
-	    auto mm = std::minmax_element(df.begin(), df.end());
-	    if (*mm.first != *mm.second) {
-	      // Need to handle that nodelist is uniquified 
-	      std::vector<std::pair<INT, double>> ids_df;
-	      ids_df.reserve(count);
-	      for (int64_t i = 0; i < count; i++) {
-		ids_df.emplace_back(nodelist[i], df[i]);
-	      }
-	      std::sort(ids_df.begin(), ids_df.end(), [](auto &a, auto &b) { return a.first < b.first; });
-	      auto new_size = unique(ids_df);
-	      ids_df.resize(new_size);
-	      SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
-	      for (size_t i = 0; i < new_size; i++) {
-		nodelist[i] = ids_df[i].first;
-		df[i] = ids_df[i].second;
-	      }
-	    }
-	    else {
-	      Ioss::Utils::uniquify(nodelist);
-	    }
-	  }
+          bool duplicate_nodes = count != ons->entity_count();
+          if (duplicate_nodes) {
+            // Check to see if actually using df (not all 0.0 or 1.0)
+            auto mm = std::minmax_element(df.begin(), df.end());
+            if (*mm.first != *mm.second) {
+              // Need to handle that nodelist is uniquified
+              std::vector<std::pair<INT, double>> ids_df;
+              ids_df.reserve(count);
+              for (int64_t i = 0; i < count; i++) {
+                ids_df.emplace_back(nodelist[i], df[i]);
+              }
+              std::sort(ids_df.begin(), ids_df.end(),
+                        [](auto &a, auto &b) { return a.first < b.first; });
+              auto new_size = unique(ids_df);
+              ids_df.resize(new_size);
+              SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
+              for (size_t i = 0; i < new_size; i++) {
+                nodelist[i] = ids_df[i].first;
+                df[i]       = ids_df[i].second;
+              }
+            }
+            else {
+              Ioss::Utils::uniquify(nodelist);
+            }
+          }
           ons->put_field_data("ids_raw", nodelist);
           ons->put_field_data("distribution_factors", df);
         }
@@ -1770,7 +1776,8 @@ namespace {
   }
 
   template <typename INT>
-    void check_for_duplicate_nodeset_nodes(Ioss::Region &output_region, const std::vector<INT> &local_node_map)
+  void check_for_duplicate_nodeset_nodes(Ioss::Region           &output_region,
+                                         const std::vector<INT> &local_node_map)
   {
     const auto &output_nodesets = output_region.get_nodesets();
     for (const auto &ons : output_nodesets) {
@@ -1778,9 +1785,9 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (ons_inputs.size() >= 2) {
-        int64_t             count = ons->entity_count();
-        std::vector<INT>    nodelist(count);
-        int found = 0;
+        int64_t          count = ons->entity_count();
+        std::vector<INT> nodelist(count);
+        int              found = 0;
         for (const auto &[ins, offset] : ons_inputs) {
           if (ins != nullptr) {
             ++found;
@@ -1798,12 +1805,12 @@ namespace {
           }
         }
         if (found >= 2) {
-	  auto size_pre = nodelist.size();
-	  Ioss::Utils::uniquify(nodelist);
-	  auto size_post = nodelist.size();
-	  if (size_pre != size_post) {
-	    reset_entity_count(ons, size_post);
-	  }
+          auto size_pre = nodelist.size();
+          Ioss::Utils::uniquify(nodelist);
+          auto size_post = nodelist.size();
+          if (size_pre != size_post) {
+            reset_entity_count(ons, size_post);
+          }
         }
       }
     }
