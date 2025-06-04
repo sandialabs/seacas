@@ -31,6 +31,7 @@
 #include <exodusII.h>
 
 #include <Ionit_Initializer.h>
+#include <Ioss_Enumerate.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
@@ -1868,8 +1869,8 @@ namespace {
             // output position accounting for eliminating duplicate nodes.
             std::vector<std::pair<INT, INT>> ids_pos;
             ids_pos.reserve(size_pre);
-            for (size_t i = 0; i < size_pre; i++) {
-              ids_pos.emplace_back(nodelist[i], i);
+            for (auto [i, id] : Ioss::enumerate(nodelist)) {
+              ids_pos.emplace_back(id, i);
             }
             std::sort(ids_pos.begin(), ids_pos.end());
             fmt::print(stderr, "Sorted vector for nodeset {}: {}\n", ons->name(),
@@ -1881,11 +1882,9 @@ namespace {
 
             auto &map_vector = nodeset_in_out_map[ons];
             map_vector.reserve(new_size);
-            for (size_t i = 0; i < new_size; i++) {
-              map_vector.push_back(ids_pos[i].second);
+            for (const auto &[id, pos] : ids_pos) {
+              map_vector.push_back(pos);
             }
-            fmt::print(stderr, "Map vector for nodeset {}: {}\n", ons->name(),
-                       fmt::join(map_vector, ", "));
           }
         }
       }
