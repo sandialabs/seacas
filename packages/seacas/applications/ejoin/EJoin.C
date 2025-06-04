@@ -84,7 +84,8 @@ namespace {
                             SystemInterface &interFace, const std::vector<INT> &local_node_map);
   template <typename INT>
   void output_transient_state(Ioss::Region &output_region, RegionVector &part_mesh, double time,
-                              const std::vector<INT> &local_node_map, SystemInterface &interFace, bool merged);
+                              const std::vector<INT> &local_node_map, SystemInterface &interFace,
+                              bool merged);
   void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_assembly_omissions(RegionVector &part_mesh, const Omissions &omit);
@@ -596,7 +597,8 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   for (int step = ts_min - 1; step < ts_max; step += ts_step) {
     int ostep = output_region.add_state(global_times[step]);
     output_region.begin_state(ostep);
-    output_transient_state(output_region, part_mesh, global_times[step], local_node_map, interFace, merged);
+    output_transient_state(output_region, part_mesh, global_times[step], local_node_map, interFace,
+                           merged);
     fmt::print("\rWrote step {:4}/{:4}, time {:8.4e}", step + 1, nsteps, global_times[step]);
     output_region.end_state(ostep);
     steps++;
@@ -1082,12 +1084,12 @@ namespace {
     if (out.empty()) {
       return 0;
     }
-    size_t                 i    = 1;
-    size_t                 pos  = 1;
+    size_t            i    = 1;
+    size_t            pos  = 1;
     std::pair<INT, T> oldv = out[0];
     for (; i < out.size(); ++i) {
       std::pair<INT, T> newv = out[i];
-      out[pos]                    = newv;
+      out[pos]               = newv;
       pos += (newv.first != oldv.first);
       oldv = newv;
     }
@@ -1336,88 +1338,93 @@ namespace {
   }
 
   template <typename INT>
-  void output_nodeset_fields(Ioss::Region &output_region, const std::vector<INT> &local_node_map, bool nodes_consolidated)
+  void output_nodeset_fields(Ioss::Region &output_region, const std::vector<INT> &local_node_map,
+                             bool nodes_consolidated)
   {
-    // NOTE: The handling of merged nodes is very inefficient currently since it is done once per timestep...
-    //       See if can store the map somewhere and use it.  It is initially built in output_nodeset...
+    // NOTE: The handling of merged nodes is very inefficient currently since it is done once per
+    // timestep...
+    //       See if can store the map somewhere and use it.  It is initially built in
+    //       output_nodeset...
     const auto &output_nodesets = output_region.get_nodesets();
     if (nodes_consolidated) {
       // The size of the input nodeset nodelists may be more than the size of the output nodeset
       // nodelist due to node consolidation...
       for (const auto &ons : output_nodesets) {
-	const auto &itr = output_input_map.find(ons);
-	SMART_ASSERT(itr != output_input_map.end());
-	const auto &[key, ons_inputs] = *itr;
-	int64_t count = 0;
-	for (const auto &[ins, offset] : ons_inputs) {
-	  count += ins->entity_count();
-	}
+        const auto &itr = output_input_map.find(ons);
+        SMART_ASSERT(itr != output_input_map.end());
+        const auto &[key, ons_inputs] = *itr;
+        int64_t count                 = 0;
+        for (const auto &[ins, offset] : ons_inputs) {
+          count += ins->entity_count();
+        }
 
-	if (count == ons->entity_count()) {
-	  output_entity_fields(ons);
-	}
-	else {
-	  // There is at least one duplicated node that is removed.  Need to map nodeset fields to account for deleted node(s)
-	  Ioss::NameList fields = ons->field_describe(Ioss::Field::TRANSIENT);
-	  if (fields.empty()) {
-	    continue;
-	  }
-	  
-	  // Need to get the mapping of the input nodelist node position to the output position...
-	  std::vector<INT>    nodelist(count);
-	  for (const auto &[ins, offset] : ons_inputs) {
-	    if (ins != nullptr) {
-	      ins->get_field_data("ids", &nodelist[offset], -1);
-	      
-	      auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
-	      size_t node_offset  = input_region->get_property("node_offset").get_int();
-	      for (int64_t i = 0; i < ins->entity_count(); i++) {
-		size_t loc_node = input_region->node_global_to_local(nodelist[offset + i], true) - 1;
-		auto   gpos     = local_node_map[node_offset + loc_node];
-		if (gpos >= 0) {
-		  nodelist[offset + i] = gpos + 1;
-		}
-	      }
-	    }
-	  }
-	  std::vector<std::pair<INT, INT>> ids_pos;
-	  ids_pos.reserve(count);
-	  for (int64_t i = 0; i < count; i++) {
-	    ids_pos.emplace_back(nodelist[i], i);
-	  }
-	  std::sort(ids_pos.begin(), ids_pos.end(),
-		    [](auto &a, auto &b) { return a.first < b.first; });
-	  auto new_size = unique(ids_pos);
-	  ids_pos.resize(new_size);
-	  SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
-	  // After this, the `nodelist` maps the fields read from ins to the output position...
-	  for (int64_t i = 0; i < count; i++) {
-	    nodelist[i] = ids_pos[i].second;
-	  }
-	  // Now get each field, map to correct output position and output...
-	  for (const auto &field_name : fields) {
-	    size_t comp_count = ons->get_field(field_name).raw_storage()->component_count();
-	    std::vector<double> field_data(count * comp_count);
-	    
-	    for (const auto &[ins, offset] : ons_inputs) {
-	      if (ins != nullptr) {
-		ins->get_field_data(field_name, &field_data[comp_count * offset], -1);
-	      }
-	    }
-	    std::vector<double> out_field(comp_count * ons->entity_count());
-	    for (int64_t i = 0; i < ons->entity_count(); i++) {
-	      for (size_t j = 0; j < comp_count; j++) {
-		out_field[comp_count * i + j] = field_data[comp_count * nodelist[i] + j];
-	      }
-	    }
-	    ons->put_field_data(field_name, out_field);
-	  }
-	}
+        if (count == ons->entity_count()) {
+          output_entity_fields(ons);
+        }
+        else {
+          // There is at least one duplicated node that is removed.  Need to map nodeset fields to
+          // account for deleted node(s)
+          Ioss::NameList fields = ons->field_describe(Ioss::Field::TRANSIENT);
+          if (fields.empty()) {
+            continue;
+          }
+
+          // Need to get the mapping of the input nodelist node position to the output position...
+          std::vector<INT> nodelist(count);
+          for (const auto &[ins, offset] : ons_inputs) {
+            if (ins != nullptr) {
+              ins->get_field_data("ids", &nodelist[offset], -1);
+
+              auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
+              size_t node_offset  = input_region->get_property("node_offset").get_int();
+              for (int64_t i = 0; i < ins->entity_count(); i++) {
+                size_t loc_node =
+                    input_region->node_global_to_local(nodelist[offset + i], true) - 1;
+                auto gpos = local_node_map[node_offset + loc_node];
+                if (gpos >= 0) {
+                  nodelist[offset + i] = gpos + 1;
+                }
+              }
+            }
+          }
+          std::vector<std::pair<INT, INT>> ids_pos;
+          ids_pos.reserve(count);
+          for (int64_t i = 0; i < count; i++) {
+            ids_pos.emplace_back(nodelist[i], i);
+          }
+          std::sort(ids_pos.begin(), ids_pos.end(),
+                    [](auto &a, auto &b) { return a.first < b.first; });
+          auto new_size = unique(ids_pos);
+          ids_pos.resize(new_size);
+          SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
+          // After this, the `nodelist` maps the fields read from ins to the output position...
+          for (int64_t i = 0; i < count; i++) {
+            nodelist[i] = ids_pos[i].second;
+          }
+          // Now get each field, map to correct output position and output...
+          for (const auto &field_name : fields) {
+            size_t comp_count = ons->get_field(field_name).raw_storage()->component_count();
+            std::vector<double> field_data(count * comp_count);
+
+            for (const auto &[ins, offset] : ons_inputs) {
+              if (ins != nullptr) {
+                ins->get_field_data(field_name, &field_data[comp_count * offset], -1);
+              }
+            }
+            std::vector<double> out_field(comp_count * ons->entity_count());
+            for (int64_t i = 0; i < ons->entity_count(); i++) {
+              for (size_t j = 0; j < comp_count; j++) {
+                out_field[comp_count * i + j] = field_data[comp_count * nodelist[i] + j];
+              }
+            }
+            ons->put_field_data(field_name, out_field);
+          }
+        }
       }
     }
     else {
       for (const auto &ons : output_nodesets) {
-	output_entity_fields(ons);
+        output_entity_fields(ons);
       }
     }
   }
@@ -1445,7 +1452,8 @@ namespace {
 
   template <typename INT>
   void output_transient_state(Ioss::Region &output_region, RegionVector &part_mesh, double time,
-                              const std::vector<INT> &local_node_map, SystemInterface &interFace, bool merged)
+                              const std::vector<INT> &local_node_map, SystemInterface &interFace,
+                              bool merged)
   {
     // Determine which state on each input mesh corresponds to 'time'
     std::vector<int> steps(part_mesh.size());
