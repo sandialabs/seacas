@@ -70,6 +70,13 @@ namespace IOShell {
     std::vector<std::string> omitted_blocks{};
     std::vector<std::string> omitted_sets{};
 
+    //! If non-empty, a list of element block ids and/or names that
+    //! should be omitted in a parallel decomposition. The blocks will
+    //! still appear in the decomposed files, but will not affect the
+    //! balance. Only active element blocks will be load-balanced.
+    std::vector<int> decomp_omitted_block_ids{};
+    std::string      decomp_omitted_block_names{};
+
     //! If non-zero, then put `split_times` timesteps in each file. Then close file and start new
     //! file.
     // If `split_cyclic == 0`, then filenames will be
@@ -124,6 +131,8 @@ namespace IOShell {
     bool delete_qa{false};
     bool delete_info{false};
     bool line_decomp{false};
+    bool sort_times{false};
+    bool shuffle_times{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

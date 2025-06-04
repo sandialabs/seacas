@@ -804,6 +804,19 @@ namespace Ioex {
       decomp = std::make_unique<DecompositionData<int>>(properties, util().communicator());
     }
     assert(decomp != nullptr);
+
+    if (!blockInclusions.empty()) {
+      fmt::print(Ioss::WarnOut(), "Parallel Decomposition does not handle block Inclusions; only "
+                                  "element block Omissions.\n");
+    }
+    if (!assemblyInclusions.empty() || !assemblyOmissions.empty()) {
+      fmt::print(Ioss::WarnOut(), "Parallel Decomposition does not handle assembly "
+                                  "Omissions/Inclusions; only element block Omissions.\n");
+    }
+    if (!blockOmissions.empty()) {
+      decomp->set_block_omissions(blockOmissions);
+    }
+
     decomp->decompose_model(exoid, get_filename());
 
     read_region();

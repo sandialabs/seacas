@@ -783,7 +783,7 @@ namespace Ioss {
     mutable bool usingDataWarp{false};
     bool         isParallel{false}; //!< true if running in parallel
 
-    mutable bool lowerCaseVariableNames{true};
+    mutable bool lowerCaseVariableNames{false};
     mutable bool lowerCaseDatabaseNames{false};
     bool         usingParallelIO{false};
 

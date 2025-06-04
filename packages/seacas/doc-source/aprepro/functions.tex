@@ -235,6 +235,26 @@ by square brackets will return the integer value of that variable or
 expression truncated toward zero. For example \cmd{[sqrt(2)]} will return the value
 \cmd{1}.
 
+\subsection{Comments}\label{sec:comments}
+\aprepro{} typically ignores all "comment characters" on a line--if it finds an open brace, it starts evaluating the function and then echoes the results to the output.  This is usually the desired behavior; however, there are times when it is desirable to have \aprepro{} ignore all text on a line and just echo it to the output even if it contains an open and closed brace.  This can be done by putting the character sequence \cmd{\{\#\}} at the beginning of the line.  This will be echoed as \cmd{\#} followed by the remaining text on the line with no evaluation.  For example:
+\begin{apinp}
+# Commenting out the next line for some reason
+\{#\} \{include("some_file.txt")\}
+\end{apinp}
+
+This will produce the following output:
+\begin{apout}
+# Commenting out the next line for some reason
+# {include("some_file.txt")}
+\end{apout}
+
+Other methods of skipping the processing of one or more lines of input include:
+\begin{itemize}
+\item surrounding the lines with \cmd{\{APREPRO(OFF\textbar{}ON)\}}
+\item surrounding the lines with \cmd{\{VERBATIM(ON\textbar{}OFF)\}}
+\item surrounding the lines with \code{\{if(0)\}}\ldots{}lines\ldots{}\code{\{endif\}}
+\end{itemize}
+
 \subsection{File Inclusion}\label{sec:inclusion} \aprepro{} can read input from multiple
 files using the \cmd{include()}, \cmd{cinclude()}, and \cmd{import()} functions. If a line
 of the form:
@@ -270,6 +290,8 @@ in one file that is included in the other files.
 
 If \cmd{ECHO(OFF)} is in effect during in an included file, \cmd{ECHO(ON)}
 will automatically be executed at the end of the included file.
+
+If the line begins with one or more of the characters \cmd{\#}, \cmd{\$}, or \cmd{//}, followed by whitespace, the characters and whitespace will be removed and not appear in the output.
 
 \subsection{Conditionals} Portions of an input file can be conditionally processed
 through the use of the \cmd{if(expression)}, \cmd{elseif(expression)}, \cmd{else}, and \cmd{endif}
@@ -328,6 +350,8 @@ output.}. It is recommended that the \cmd{if()}, \cmd{elseif()},
 \cmd{else}, and \cmd{endif} be the only text on the line to avoid
 unexpected output.
 
+If the line begins with one or more of the characters \cmd{\#}, \cmd{\$}, or \cmd{//}, followed by whitespace, the characters and whitespace will be removed and not appear in the output.
+
 \subsection{Switch Statements}
 The \cmd{switch} statement is a control construct which allows the value of a variable or expression to change the control flow via a multi-way branch.
 The construct is begun with a \cmd{switch(expression)} statement followed by one or more \cmd{case(expression)} statements and an optional \cmd{default} statement. The construct is ended with an \cmd{endswitch} statement.  The expression in the \cmd{switch(expression)} statement is evaluated and compared to each \cmd{case(expression)} statement in order.  If the values of the two expressions are equal, then the code following that \cmd{case(expression)} is evaluated up to the next \cmd{case()} or \cmd{default} statement. If the expressions in more than one \cmd{case()} match the initial \cmd{switch()} expression, only the first one will be activated.  If none of the \cmd{case()} expressions match the \cmd{switch()} expression, then the code following the \cmd{default} command will be evaluated. An example of the syntax is:
@@ -352,6 +376,8 @@ The construct is begun with a \cmd{switch(expression)} statement followed by one
 Switch constructs cannot be nested, but a \cmd{switch()} can be used inside an \cmd{if()} construct and an \cmd{if()} can be used inside a \cmd{case()} construct.
 The \cmd{switch(expression)}, \cmd{case(expression)}, \cmd{default}, and \cmd{endswitch} are the only text parsed on a line. Text that follows these on the same line is
 ignored.
+
+If the line begins with one or more of the characters \cmd{\#}, \cmd{\$}, or \cmd{//}, followed by whitespace, the characters and whitespace will be removed and not appear in the output.
 
 \subsection{Loops} Repeated processing of a group of lines can be controlled
 with the \cmd{loop(control)}, and \cmd{endloop} commands. The syntax is:
@@ -421,6 +447,8 @@ A couple examples of using loops are shown here:
 \{endloop\}
 \end{apinp}
 
+If the line begins with one or more of the characters \cmd{\#}, \cmd{\$}, or \cmd{//}, followed by whitespace, the characters and whitespace will be removed and not appear in the output.
+
 \subsection{ECHO}\label{echo} The printing of lines to the output file can be controlled
 through the use of the \cmd{ECHO(OFF)} and \cmd{ECHO(ON)}
 commands. The syntax is:
@@ -456,13 +484,25 @@ commands. The syntax is:
 \{VERBATIM(OFF)\}
 \ldots These lines will be printed to output and processed
 \end{apinp}
+
+\subsection{APREPRO} Skip processing and outputting all lines using the \cmd{APREPRO(OFF)} and \cmd{APREPRO(ON)}
+commands. The syntax is:
+
+\begin{apinp}
+\{APREPRO(OFF)\}
+\ldots These lines will be skipped completely--not processed or printed
+\{APREPRO(ON)\}
+\ldots These lines will be printed to output and processed
+\end{apinp}
+
 NOTE:  there  is  a  major  difference  between  the  \cmd{ECHO/NOECHO} commands,
-the \cmd{Ifdef/Endif }commands, and the \cmd{VERBATIM(ON\textbar{}OFF)} commands:
+the \cmd{Ifdef/Endif }commands, the \cmd{VERBATIM(ON\textbar{}OFF)} , and the \cmd{APREPRO(OFF\textbar{}ON)} commands:
 
 \begin{itemize}
 \item \cmd{ECHO(ON\textbar{}OFF)} Lines processed, but not printed if \cmd{ECHO(OFF)}
-\item \cmd{Ifdef/Endif} Lines not processed or printed if in \cmd{Ifndef} block
+\item \cmd{if/endif} Lines not processed or printed if in the false portion of the \cmd{if/elseif/else/endif} block.
 \item \cmd{VERBATIM(ON\textbar{}OFF)} Lines not processed, but are printed.
+\item \cmd{APREPRO(OFF\textbar{}ON)} Lines not processed and not printed.
 \end{itemize}
 
 \subsection{IMMUTABLE}\label{immutable_block} Variables can either be
