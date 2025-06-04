@@ -2600,6 +2600,8 @@ class exodus:
         """
         if self.numBlob is None:
             return 0
+        if (isinstance(self.numBlob, int)):
+            return self.numBlob
         return self.numBlob.value
 
     def get_blob(self, object_id):
