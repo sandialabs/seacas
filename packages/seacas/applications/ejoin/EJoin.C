@@ -45,6 +45,10 @@
 #include <mpi.h>
 #endif
 
+// Globals...
+std::map<Ioss::NodeSet*, std::vector<size_t>> nodeset_in_out_map;
+IO_map output_input_map;
+
 namespace {
   const std::string tsFormat    = "[%H:%M:%S] ";
   unsigned int      debug_level = 0;
@@ -166,8 +170,6 @@ namespace {
   void check_for_duplicate_nodeset_nodes(Ioss::Region           &output_region,
                                          const std::vector<INT> &local_node_map);
 } // namespace
-
-IO_map output_input_map;
 
 template <typename INT>
 double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT dummy);
@@ -1140,29 +1142,15 @@ namespace {
           }
         }
         if (found_one) {
-          bool duplicate_nodes = count != ons->entity_count();
-          if (duplicate_nodes) {
-            // Check to see if actually using df (not all 0.0 or 1.0)
-            auto mm = std::minmax_element(df.begin(), df.end());
-            if (*mm.first != *mm.second) {
-              // Need to handle that nodelist is uniquified
-              std::vector<std::pair<INT, double>> ids_df;
-              ids_df.reserve(count);
-              for (int64_t i = 0; i < count; i++) {
-                ids_df.emplace_back(nodelist[i], df[i]);
-              }
-              std::sort(ids_df.begin(), ids_df.end(),
-                        [](auto &a, auto &b) { return a.first < b.first; });
-              auto new_size = unique(ids_df);
-              SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
-              for (size_t i = 0; i < new_size; i++) {
-                nodelist[i] = ids_df[i].first;
-                df[i]       = ids_df[i].second;
-              }
-            }
-            else {
-              Ioss::Utils::uniquify(nodelist);
-            }
+          if (count != ons->entity_count()) {
+	    const auto &ns_itr = nodeset_in_out_map.find(ons);
+	    SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
+	    const auto &[ns_key, map] = *ns_itr;
+	    SMART_ASSERT(ns_key == ons);
+	    for (size_t i = 0; i < map.size(); i++) {
+	      nodelist[i] = nodelist[map[i]];
+	      df[i]       = df[map[i]];
+	    }
           }
           ons->put_field_data("ids_raw", nodelist);
           ons->put_field_data("distribution_factors", df);
@@ -1338,9 +1326,7 @@ namespace {
     }
   }
 
-  template <typename INT>
-  void output_nodeset_fields(Ioss::Region &output_region, const std::vector<INT> &local_node_map,
-                             bool nodes_consolidated)
+  void output_nodeset_fields(Ioss::Region &output_region, bool nodes_consolidated)
   {
     // NOTE: The handling of merged nodes is very inefficient currently since it is done once per
     // timestep...
@@ -1370,37 +1356,12 @@ namespace {
             continue;
           }
 
-          // Need to get the mapping of the input nodelist node position to the output position...
-          std::vector<INT> nodelist(count);
-          for (const auto &[ins, offset] : ons_inputs) {
-            if (ins != nullptr) {
-              ins->get_field_data("ids", &nodelist[offset], -1);
+          // Get the mapping of the input nodelist node position to the output position...
+	  const auto &ns_itr = nodeset_in_out_map.find(ons);
+	  SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
+	  const auto &[ns_key, map] = *ns_itr;
+	  SMART_ASSERT(ns_key == ons);
 
-              auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
-              size_t node_offset  = input_region->get_property("node_offset").get_int();
-              for (int64_t i = 0; i < ins->entity_count(); i++) {
-                size_t loc_node =
-                    input_region->node_global_to_local(nodelist[offset + i], true) - 1;
-                auto gpos = local_node_map[node_offset + loc_node];
-                if (gpos >= 0) {
-                  nodelist[offset + i] = gpos + 1;
-                }
-              }
-            }
-          }
-          std::vector<std::pair<INT, INT>> ids_pos;
-          ids_pos.reserve(count);
-          for (int64_t i = 0; i < count; i++) {
-            ids_pos.emplace_back(nodelist[i], i);
-          }
-          std::sort(ids_pos.begin(), ids_pos.end(),
-                    [](auto &a, auto &b) { return a.first < b.first; });
-          auto new_size = unique(ids_pos);
-          SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
-          // After this, the `nodelist` maps the fields read from ins to the output position...
-          for (int64_t i = 0; i < count; i++) {
-            nodelist[i] = ids_pos[i].second;
-          }
           // Now get each field, map to correct output position and output...
           for (const auto &field_name : fields) {
             size_t comp_count = ons->get_field(field_name).raw_storage()->component_count();
@@ -1411,13 +1372,12 @@ namespace {
                 ins->get_field_data(field_name, &field_data[comp_count * offset], -1);
               }
             }
-            std::vector<double> out_field(comp_count * ons->entity_count());
             for (int64_t i = 0; i < ons->entity_count(); i++) {
               for (size_t j = 0; j < comp_count; j++) {
-                out_field[comp_count * i + j] = field_data[comp_count * nodelist[i] + j];
+                field_data[comp_count * i + j] = field_data[comp_count * map[i] + j];
               }
             }
-            ons->put_field_data(field_name, out_field);
+            ons->put_field_data(field_name, field_data);
           }
         }
       }
@@ -1489,7 +1449,7 @@ namespace {
     output_element_fields(output_region);
     output_nodal_nodeset_fields(output_region, part_mesh, interFace);
     if (!interFace.omit_nodesets()) {
-      output_nodeset_fields(output_region, local_node_map, merged > 0);
+      output_nodeset_fields(output_region, merged > 0);
     }
     if (!interFace.omit_sidesets()) {
       output_sideset_fields(output_region);
@@ -1893,10 +1853,33 @@ namespace {
         }
         if (found >= 2) {
           auto size_pre = nodelist.size();
-          Ioss::Utils::uniquify(nodelist);
-          auto size_post = nodelist.size();
+	  auto size_post = size_pre;
+	  {
+	    auto tmp_nodelist = nodelist;
+	    Ioss::Utils::uniquify(tmp_nodelist);
+	    size_post = tmp_nodelist.size();
+	  }
           if (size_pre != size_post) {
             reset_entity_count(ons, size_post);
+
+	    // Create a map for `ons` that maps the combined ins positions into the 
+	    // output position accounting for eliminating duplicate nodes.
+	    std::vector<std::pair<INT, INT>> ids_pos;
+	    ids_pos.reserve(size_pre);
+	    for (size_t i = 0; i < size_pre; i++) {
+	      ids_pos.emplace_back(nodelist[i], i);
+	    }
+	    std::sort(ids_pos.begin(), ids_pos.end(),
+		      [](auto &a, auto &b) { return a.first < b.first; });
+	    auto new_size = unique(ids_pos);
+	    SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
+	    SMART_ASSERT(new_size == size_post);
+
+	    auto &map_vector = nodeset_in_out_map[ons];
+	    map_vector.reserve(new_size);
+	    for (size_t i = 0; i < new_size; i++) {
+	      map_vector.push_back(ids_pos[i].second);
+	    }
           }
         }
       }
