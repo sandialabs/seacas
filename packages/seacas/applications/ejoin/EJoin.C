@@ -46,8 +46,8 @@
 #endif
 
 // Globals...
-std::map<Ioss::NodeSet*, std::vector<size_t>> nodeset_in_out_map;
-IO_map output_input_map;
+std::map<Ioss::NodeSet *, std::vector<size_t>> nodeset_in_out_map;
+IO_map                                         output_input_map;
 
 namespace {
   const std::string tsFormat    = "[%H:%M:%S] ";
@@ -1143,14 +1143,14 @@ namespace {
         }
         if (found_one) {
           if (count != ons->entity_count()) {
-	    const auto &ns_itr = nodeset_in_out_map.find(ons);
-	    SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
-	    const auto &[ns_key, map] = *ns_itr;
-	    SMART_ASSERT(ns_key == ons);
-	    for (size_t i = 0; i < map.size(); i++) {
-	      nodelist[i] = nodelist[map[i]];
-	      df[i]       = df[map[i]];
-	    }
+            const auto &ns_itr = nodeset_in_out_map.find(ons);
+            SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
+            const auto &[ns_key, map] = *ns_itr;
+            SMART_ASSERT(ns_key == ons);
+            for (size_t i = 0; i < map.size(); i++) {
+              nodelist[i] = nodelist[map[i]];
+              df[i]       = df[map[i]];
+            }
           }
           ons->put_field_data("ids_raw", nodelist);
           ons->put_field_data("distribution_factors", df);
@@ -1357,10 +1357,10 @@ namespace {
           }
 
           // Get the mapping of the input nodelist node position to the output position...
-	  const auto &ns_itr = nodeset_in_out_map.find(ons);
-	  SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
-	  const auto &[ns_key, map] = *ns_itr;
-	  SMART_ASSERT(ns_key == ons);
+          const auto &ns_itr = nodeset_in_out_map.find(ons);
+          SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
+          const auto &[ns_key, map] = *ns_itr;
+          SMART_ASSERT(ns_key == ons);
 
           // Now get each field, map to correct output position and output...
           for (const auto &field_name : fields) {
@@ -1852,34 +1852,34 @@ namespace {
           }
         }
         if (found >= 2) {
-          auto size_pre = nodelist.size();
-	  auto size_post = size_pre;
-	  {
-	    auto tmp_nodelist = nodelist;
-	    Ioss::Utils::uniquify(tmp_nodelist);
-	    size_post = tmp_nodelist.size();
-	  }
+          auto size_pre  = nodelist.size();
+          auto size_post = size_pre;
+          {
+            auto tmp_nodelist = nodelist;
+            Ioss::Utils::uniquify(tmp_nodelist);
+            size_post = tmp_nodelist.size();
+          }
           if (size_pre != size_post) {
             reset_entity_count(ons, size_post);
 
-	    // Create a map for `ons` that maps the combined ins positions into the 
-	    // output position accounting for eliminating duplicate nodes.
-	    std::vector<std::pair<INT, INT>> ids_pos;
-	    ids_pos.reserve(size_pre);
-	    for (size_t i = 0; i < size_pre; i++) {
-	      ids_pos.emplace_back(nodelist[i], i);
-	    }
-	    std::sort(ids_pos.begin(), ids_pos.end(),
-		      [](auto &a, auto &b) { return a.first < b.first; });
-	    auto new_size = unique(ids_pos);
-	    SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
-	    SMART_ASSERT(new_size == size_post);
+            // Create a map for `ons` that maps the combined ins positions into the
+            // output position accounting for eliminating duplicate nodes.
+            std::vector<std::pair<INT, INT>> ids_pos;
+            ids_pos.reserve(size_pre);
+            for (size_t i = 0; i < size_pre; i++) {
+              ids_pos.emplace_back(nodelist[i], i);
+            }
+            std::sort(ids_pos.begin(), ids_pos.end(),
+                      [](auto &a, auto &b) { return a.first < b.first; });
+            auto new_size = unique(ids_pos);
+            SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
+            SMART_ASSERT(new_size == size_post);
 
-	    auto &map_vector = nodeset_in_out_map[ons];
-	    map_vector.reserve(new_size);
-	    for (size_t i = 0; i < new_size; i++) {
-	      map_vector.push_back(ids_pos[i].second);
-	    }
+            auto &map_vector = nodeset_in_out_map[ons];
+            map_vector.reserve(new_size);
+            for (size_t i = 0; i < new_size; i++) {
+              map_vector.push_back(ids_pos[i].second);
+            }
           }
         }
       }
