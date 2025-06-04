@@ -1093,6 +1093,8 @@ namespace {
       pos += (newv.first != oldv.first);
       oldv = newv;
     }
+    out.resize(pos);
+    out.shrink_to_fit();
     return pos;
   }
 
@@ -1152,7 +1154,6 @@ namespace {
               std::sort(ids_df.begin(), ids_df.end(),
                         [](auto &a, auto &b) { return a.first < b.first; });
               auto new_size = unique(ids_df);
-              ids_df.resize(new_size);
               SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
               for (size_t i = 0; i < new_size; i++) {
                 nodelist[i] = ids_df[i].first;
@@ -1395,7 +1396,6 @@ namespace {
           std::sort(ids_pos.begin(), ids_pos.end(),
                     [](auto &a, auto &b) { return a.first < b.first; });
           auto new_size = unique(ids_pos);
-          ids_pos.resize(new_size);
           SMART_ASSERT((int64_t)new_size == ons->entity_count())(new_size)(ons->entity_count());
           // After this, the `nodelist` maps the fields read from ins to the output position...
           for (int64_t i = 0; i < count; i++) {
