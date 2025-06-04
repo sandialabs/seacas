@@ -2592,7 +2592,7 @@ class exodus:
         """
         get the number of blobs in the model
 
-        >>> num_assembly = exo.num_blob()
+        >>> num_blob = exo.num_blob()
 
         Returns
         -------
