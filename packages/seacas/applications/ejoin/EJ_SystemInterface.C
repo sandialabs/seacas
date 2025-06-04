@@ -113,14 +113,28 @@ void SystemInterface::enroll_options()
                   "Combine nodes if they are within tolerance distance of each other.", nullptr);
 
   options_.enroll("match_nodeset_nodes", GetLongOption::MandatoryValue,
-                  "Combine nodes in the specified nodeset(s) if they are within `tolerance` "
-                  "distance of each other.\n"
+                  "Combine nodes in the specified nodeset(s) if they are within\n"
+                  "\t\t`tolerance` distance of each other.\n"
                   "\t\tSpecify nodesets in each part as p#:id1:id2,p#:id2,id4...",
                   nullptr);
 
   options_.enroll("tolerance", GetLongOption::MandatoryValue,
                   "Maximum distance between two nodes to be considered colocated.", nullptr,
                   nullptr, true);
+
+  options_.enroll(
+      "combine_nodesets", GetLongOption::NoValue,
+      "Input nodesets with the same name will be combined into a single nodeset on output.",
+      nullptr);
+  options_.enroll("combine_sidesets", GetLongOption::NoValue,
+                  "Input sidesets with the same name will be combined into a "
+                  "single sideset on output.",
+                  nullptr);
+  options_.enroll("combine_element_blocks", GetLongOption::NoValue,
+                  "Element blocks with the same name and topology will be "
+                  "combined into a\n"
+                  "\t\tsingle element block on output.",
+                  nullptr, nullptr, true);
 
 #if 0
   options_.enroll("match_elem_ids", GetLongOption::NoValue,
@@ -220,7 +234,8 @@ void SystemInterface::enroll_options()
                   nullptr);
 
   options_.enroll("quantize_nsd", GetLongOption::MandatoryValue,
-                  "Use the lossy quantize compression method.  Value specifies number of digits to "
+                  "Use the lossy quantize compression method.\n"
+                  "\t\tValue specifies number of digits to "
                   "retain (1..15) [exodus only]",
                   nullptr, nullptr, true);
 
@@ -276,10 +291,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
   size_t part_count = inputFiles_.size();
   blockOmissions_.resize(part_count);
   blockInclusions_.resize(part_count);
-  nsetOmissions_.resize(part_count);
-  ssetOmissions_.resize(part_count);
+  nodesetOmissions_.resize(part_count);
+  sidesetOmissions_.resize(part_count);
   assemblyOmissions_.resize(part_count);
-  nsetMatch_.resize(part_count);
+  nodesetMatch_.resize(part_count);
 
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
@@ -349,10 +364,6 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  if (options_.retrieve("omit_part_assemblies") != nullptr) {
-    createAssemblies_ = false;
-  }
-
   {
     const char *temp = options_.retrieve("extract_blocks");
     if (temp != nullptr) {
@@ -363,7 +374,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("match_nodeset_nodes");
     if (temp != nullptr) {
-      parse_omissions(temp, &nsetMatch_, "nodelist", true);
+      parse_omissions(temp, &nodesetMatch_, "nodelist", true);
     }
   }
 
@@ -374,7 +385,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         omitNodesets_ = true;
       }
       else {
-        parse_omissions(temp, &nsetOmissions_, "nodelist", false);
+        parse_omissions(temp, &nodesetOmissions_, "nodelist", false);
       }
     }
     else {
@@ -389,7 +400,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         omitSidesets_ = true;
       }
       else {
-        parse_omissions(temp, &ssetOmissions_, "surface", false);
+        parse_omissions(temp, &sidesetOmissions_, "surface", false);
       }
     }
     else {
@@ -421,24 +432,25 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("nsetvar");
     if (temp != nullptr) {
-      parse_variable_names(temp, &nsetVarNames_);
+      parse_variable_names(temp, &nodesetVarNames_);
     }
   }
 
   {
     const char *temp = options_.retrieve("ssetvar");
     if (temp != nullptr) {
-      parse_variable_names(temp, &ssetVarNames_);
+      parse_variable_names(temp, &sidesetVarNames_);
     }
   }
 
+  createAssemblies_        = options_.retrieve("omit_part_assemblies") != nullptr;
   disableFieldRecognition_ = options_.retrieve("disable_field_recognition") != nullptr;
   useNetcdf4_              = options_.retrieve("netcdf4") != nullptr;
   ignoreElementIds_        = options_.retrieve("ignore_element_ids") != nullptr;
-
-  if (options_.retrieve("64-bit") != nullptr) {
-    ints64bit_ = true;
-  }
+  combineNodesets_         = options_.retrieve("combine_nodesets") != nullptr;
+  combineSidesets_         = options_.retrieve("combine_sidesets") != nullptr;
+  combineElementBlocks_    = options_.retrieve("combine_element_blocks") != nullptr;
+  ints64bit_               = options_.retrieve("64-bit") != nullptr;
 
   zlib_ = (options_.retrieve("zlib") != nullptr);
   szip_ = (options_.retrieve("szip") != nullptr);

@@ -7,6 +7,9 @@
 
 #include "EJ_CodeTypes.h"
 
+using IO_map =
+    std::map<Ioss::GroupingEntity *, std::vector<std::pair<Ioss::GroupingEntity *, size_t>>>;
+
 template <typename INT>
 void eliminate_omitted_nodes(RegionVector &part_mesh, std::vector<INT> &global_node_map,
                              std::vector<INT> &local_node_map, bool fill_global);
@@ -16,7 +19,8 @@ void build_reverse_node_map(Ioss::Region &output_region, RegionVector &part_mesh
                             std::vector<INT> &global_node_map, std::vector<INT> &local_node_map);
 
 template <typename INT>
-void build_local_element_map(RegionVector &part_mesh, std::vector<INT> &local_element_map);
+std::vector<INT> build_local_element_map(RegionVector &part_mesh, Ioss::Region &output_region,
+                                         const IO_map &output_input_map);
 
 template <typename INT>
 void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local_element_map,
