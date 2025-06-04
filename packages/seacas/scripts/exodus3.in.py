@@ -1,5 +1,5 @@
 """
-exodus.py v 1.21.4 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.21.5 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -78,10 +78,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.21.4 (seacas-py3)"
+EXODUS_PY_VERSION = "1.21.5 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.21.4 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.21.5 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2023 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -704,6 +704,7 @@ class exodus:
         else:
             self.use_numpy = False
 
+        self.numBlob = numBlob
         self.EXODUS_LIB = EXODUS_LIB
         self.fileName = str(file)
         self.basename = basename(file)
@@ -2597,6 +2598,8 @@ class exodus:
         -------
         num_blob : int
         """
+        if self.numBlob is None:
+            return 0
         return self.numBlob.value
 
     def get_blob(self, object_id):
