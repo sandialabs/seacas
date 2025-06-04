@@ -1871,8 +1871,9 @@ namespace {
             for (size_t i = 0; i < size_pre; i++) {
               ids_pos.emplace_back(nodelist[i], i);
             }
-            std::sort(ids_pos.begin(), ids_pos.end(),
-                      [](auto &a, auto &b) { return a.first < b.first; });
+            std::sort(ids_pos.begin(), ids_pos.end());
+	    fmt::print(stderr, "Sorted vector for nodeset {}: {}\n", ons->name(), fmt::join(ids_pos, ", "));
+
             auto new_size = unique(ids_pos);
             SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
             SMART_ASSERT(new_size == size_post);
