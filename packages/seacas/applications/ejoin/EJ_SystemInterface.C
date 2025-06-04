@@ -124,14 +124,14 @@ void SystemInterface::enroll_options()
 
   options_.enroll(
       "combine_nodesets", GetLongOption::NoValue,
-      "Should input nodesets with the same name be combined into a single nodeset on output.",
+      "Input nodesets with the same name will be combined into a single nodeset on output.",
       nullptr);
   options_.enroll("combine_sidesets", GetLongOption::NoValue,
-                  "Should input sidesets with the same name be combined into a "
+                  "Input sidesets with the same name will be combined into a "
                   "single sideset on output.",
                   nullptr);
   options_.enroll("combine_element_blocks", GetLongOption::NoValue,
-                  "Should element blocks with the same name and topology be "
+                  "Element blocks with the same name and topology will be "
                   "combined into a\n"
                   "\t\tsingle element block on output.",
                   nullptr, nullptr, true);
@@ -291,10 +291,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
   size_t part_count = inputFiles_.size();
   blockOmissions_.resize(part_count);
   blockInclusions_.resize(part_count);
-  nsetOmissions_.resize(part_count);
-  ssetOmissions_.resize(part_count);
+  nodesetOmissions_.resize(part_count);
+  sidesetOmissions_.resize(part_count);
   assemblyOmissions_.resize(part_count);
-  nsetMatch_.resize(part_count);
+  nodesetMatch_.resize(part_count);
 
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
@@ -374,7 +374,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("match_nodeset_nodes");
     if (temp != nullptr) {
-      parse_omissions(temp, &nsetMatch_, "nodelist", true);
+      parse_omissions(temp, &nodesetMatch_, "nodelist", true);
     }
   }
 
@@ -385,7 +385,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         omitNodesets_ = true;
       }
       else {
-        parse_omissions(temp, &nsetOmissions_, "nodelist", false);
+        parse_omissions(temp, &nodesetOmissions_, "nodelist", false);
       }
     }
     else {
@@ -400,7 +400,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         omitSidesets_ = true;
       }
       else {
-        parse_omissions(temp, &ssetOmissions_, "surface", false);
+        parse_omissions(temp, &sidesetOmissions_, "surface", false);
       }
     }
     else {
@@ -432,14 +432,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("nsetvar");
     if (temp != nullptr) {
-      parse_variable_names(temp, &nsetVarNames_);
+      parse_variable_names(temp, &nodesetVarNames_);
     }
   }
 
   {
     const char *temp = options_.retrieve("ssetvar");
     if (temp != nullptr) {
-      parse_variable_names(temp, &ssetVarNames_);
+      parse_variable_names(temp, &sidesetVarNames_);
     }
   }
 

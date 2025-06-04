@@ -223,7 +223,7 @@ void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
   // Select all nodes that are in the listed nodeset(s)...
   // On return, `local_node_map` will have >=0 entries for all nodeset nodes.
   // entries = -1 for active, but non-nodeset, and -2 for omitted nodes.
-  select_nodeset_nodes(part_mesh, local_node_map, interFace.nset_match());
+  select_nodeset_nodes(part_mesh, local_node_map, interFace.nodeset_match());
 
   match_nodes(part_mesh, tolerance, global_node_map, local_node_map);
 }

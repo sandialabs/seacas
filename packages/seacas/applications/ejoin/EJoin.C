@@ -1,4 +1,3 @@
-
 // Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
@@ -93,8 +92,8 @@ namespace {
   void output_transient_state(Ioss::Region &output_region, RegionVector &part_mesh, double time,
                               const std::vector<INT> &local_node_map, SystemInterface &interFace,
                               bool merged);
-  void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit);
-  void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit);
+  void process_nodeset_omissions(RegionVector &part_mesh, const Omissions &omit);
+  void process_sideset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_assembly_omissions(RegionVector &part_mesh, const Omissions &omit);
 
   int count_omissions(Ioss::Region *region)
@@ -269,8 +268,8 @@ int main(int argc, char *argv[])
       }
     }
 
-    process_nset_omissions(part_mesh, interFace.nset_omissions());
-    process_sset_omissions(part_mesh, interFace.sset_omissions());
+    process_nodeset_omissions(part_mesh, interFace.nodeset_omissions());
+    process_sideset_omissions(part_mesh, interFace.sideset_omissions());
     process_assembly_omissions(part_mesh, interFace.assembly_omissions());
 
     double time = 0.0;
@@ -529,10 +528,10 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   error |= define_element_fields(output_region, interFace.elem_var_names());
 
   if (!interFace.omit_nodesets()) {
-    error |= define_nodeset_fields(output_region, interFace.nset_var_names());
+    error |= define_nodeset_fields(output_region, interFace.nodeset_var_names());
   }
   if (!interFace.omit_sidesets()) {
-    error |= define_sideset_fields(output_region, interFace.sset_var_names());
+    error |= define_sideset_fields(output_region, interFace.sideset_var_names());
   }
 
   output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
@@ -1753,7 +1752,7 @@ namespace {
     return error;
   }
 
-  void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit)
+  void process_nodeset_omissions(RegionVector &part_mesh, const Omissions &omit)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
@@ -1777,7 +1776,7 @@ namespace {
     }
   }
 
-  void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit)
+  void process_sideset_omissions(RegionVector &part_mesh, const Omissions &omit)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {

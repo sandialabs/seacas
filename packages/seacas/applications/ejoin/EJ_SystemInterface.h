@@ -24,7 +24,7 @@ public:
   double tolerance() const { return tolerance_; }
   bool   match_node_ids() const { return matchNodeIds_; }
   bool   match_node_xyz() const { return matchNodeXYZ_; }
-  bool   match_nodeset_nodes() const { return !nsetMatch_.empty(); }
+  bool   match_nodeset_nodes() const { return !nodesetMatch_.empty(); }
   bool   match_elem_ids() const { return matchElemIds_; }
   bool   omit_nodesets() const { return omitNodesets_; }
   bool   omit_sidesets() const { return omitSidesets_; }
@@ -57,15 +57,15 @@ public:
   const StringIdVector   &global_var_names() const { return globalVarNames_; }
   const StringIdVector   &node_var_names() const { return nodeVarNames_; }
   const StringIdVector   &elem_var_names() const { return elemVarNames_; }
-  const StringIdVector   &nset_var_names() const { return nsetVarNames_; }
-  const StringIdVector   &sset_var_names() const { return ssetVarNames_; }
+  const StringIdVector   &nodeset_var_names() const { return nodesetVarNames_; }
+  const StringIdVector   &sideset_var_names() const { return sidesetVarNames_; }
 
   const Omissions &block_inclusions() const { return blockInclusions_; }
   const Omissions &block_omissions() const { return blockOmissions_; }
-  const Omissions &nset_omissions() const { return nsetOmissions_; }
-  const Omissions &sset_omissions() const { return ssetOmissions_; }
+  const Omissions &nodeset_omissions() const { return nodesetOmissions_; }
+  const Omissions &sideset_omissions() const { return sidesetOmissions_; }
   const Omissions &assembly_omissions() const { return assemblyOmissions_; }
-  const Omissions &nset_match() const { return nsetMatch_; }
+  const Omissions &nodeset_match() const { return nodesetMatch_; }
 
   const std::string &block_prefix() const { return blockPrefix_; }
 
@@ -129,10 +129,10 @@ private:
   Omissions blockInclusions_;
   Omissions blockOmissions_;
   Omissions assemblyOmissions_;
-  Omissions nsetOmissions_;
-  Omissions ssetOmissions_;
+  Omissions nodesetOmissions_;
+  Omissions sidesetOmissions_;
 
-  Omissions nsetMatch_;
+  Omissions nodesetMatch_;
 
   std::vector<int> nodesetConvertParts_;
   std::vector<int> infoRecordParts_;
@@ -140,6 +140,6 @@ private:
   StringIdVector globalVarNames_;
   StringIdVector nodeVarNames_;
   StringIdVector elemVarNames_;
-  StringIdVector nsetVarNames_;
-  StringIdVector ssetVarNames_;
+  StringIdVector nodesetVarNames_;
+  StringIdVector sidesetVarNames_;
 };
