@@ -1882,7 +1882,8 @@ namespace {
             for (size_t i = 0; i < new_size; i++) {
               map_vector.push_back(ids_pos[i].second);
             }
-	    fmt::print(stderr, "Map vector for nodeset {}: {}\n", ons->name(), fmt::join(map_vector, ", "));
+            fmt::print(stderr, "Map vector for nodeset {}: {}\n", ons->name(),
+                       fmt::join(map_vector, ", "));
           }
         }
       }
