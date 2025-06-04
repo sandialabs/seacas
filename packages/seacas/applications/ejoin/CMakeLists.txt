@@ -18,6 +18,7 @@ TRIBITS_ADD_EXECUTABLE(
 
 TRIBITS_SUBPACKAGE_POSTPROCESS()
 
+if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
 TRIBITS_ADD_ADVANCED_TEST(ejoin_combine_nes_nodeset_merge
    TEST_0 EXEC ejoin ARGS --output combine_nes.g --match_nodeset_nodes p1:2,p2:1 --omit_nodeset p1:2,p2:1 --combine_element --combine_sideset --combine_nodeset ${CMAKE_CURRENT_SOURCE_DIR}/test/2block1.g ${CMAKE_CURRENT_SOURCE_DIR}/test/2block2.g
      NOEXEPREFIX NOEXESUFFIX
@@ -57,3 +58,4 @@ TRIBITS_ADD_ADVANCED_TEST(ejoin_combine_ns_nodeset_merge
   COMM serial
   XHOSTTYPE Windows
   )
+endif()
