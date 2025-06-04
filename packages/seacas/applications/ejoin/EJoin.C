@@ -22,8 +22,10 @@
 #include <unistd.h>
 #include <vector>
 
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
 #include "add_to_log.h"
-#include "fmt/ostream.h"
 #include "time_stamp.h"
 
 #include <exodusII.h>
@@ -1880,6 +1882,7 @@ namespace {
             for (size_t i = 0; i < new_size; i++) {
               map_vector.push_back(ids_pos[i].second);
             }
+	    fmt::print(stderr, "Map vector for nodeset {}: {}\n", ons->name(), fmt::join(map_vector, ", "));
           }
         }
       }
