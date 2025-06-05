@@ -645,9 +645,15 @@ namespace {
     for (const auto &eb : ebs) {
       if (!entity_is_omitted(eb)) {
         std::string name = eb->name();
+	name = eb->get_optional_property("ejoin_combine_into", name);
         auto       *oeb  = output_region.get_element_block(name);
         if (oeb != nullptr) {
           if (combine_similar) {
+	    if (oeb->topology() != eb->topology()) {
+              fmt::print(stderr, "ERROR: The topology ('{}') for element block '{}' does not match\n       the topology ('{}') for element block '{}'.\n       They cannot be combined.\n\n", 
+			 oeb->topology()->name(), oeb->name(), eb->topology()->name(), eb->name());
+              exit(EXIT_FAILURE);
+	    }
             // Combine element blocks with similar names...
             output_input_map[oeb].emplace_back(eb, oeb->entity_count());
             size_t count = eb->entity_count();
