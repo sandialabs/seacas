@@ -71,8 +71,9 @@ void select_nodeset_nodes(const RegionVector &part_mesh, std::vector<INT> &local
 
 template void select_nodeset_nodes(const RegionVector &part_mesh, std::vector<int> &local_node_map,
                                    const Omissions &nset_match);
-template void select_nodeset_nodes(const RegionVector &part_mesh, std::vector<int64_t> &local_node_map,
-                                   const Omissions &nset_match);
+template void select_nodeset_nodes(const RegionVector   &part_mesh,
+                                   std::vector<int64_t> &local_node_map,
+                                   const Omissions      &nset_match);
 
 template <typename INT>
 void eliminate_omitted_nodes(const RegionVector &part_mesh, std::vector<INT> &global_node_map,
@@ -117,9 +118,10 @@ void eliminate_omitted_nodes(const RegionVector &part_mesh, std::vector<INT> &gl
   }
 }
 
-template void eliminate_omitted_nodes(const RegionVector &part_mesh, std::vector<int> &global_node_map,
+template void eliminate_omitted_nodes(const RegionVector &part_mesh,
+                                      std::vector<int>   &global_node_map,
                                       std::vector<int> &local_node_map, bool fill_global);
-template void eliminate_omitted_nodes(const RegionVector         &part_mesh,
+template void eliminate_omitted_nodes(const RegionVector   &part_mesh,
                                       std::vector<int64_t> &global_node_map,
                                       std::vector<int64_t> &local_node_map, bool fill_global);
 
@@ -278,13 +280,13 @@ std::vector<INT> build_local_element_map(const RegionVector &part_mesh, Ioss::Re
       if (ieb != nullptr) {
         int64_t ieb_count = ieb->entity_count();
 
-        auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
-	Ioss::Utils::check_dynamic_cast(input_region);
-        size_t ireg_offset  = input_region->get_property("element_offset").get_int();
+        auto *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+        Ioss::Utils::check_dynamic_cast(input_region);
+        size_t ireg_offset = input_region->get_property("element_offset").get_int();
 
-	auto *input_eb = dynamic_cast<const Ioss::EntityBlock*>(ieb);
-	Ioss::Utils::check_dynamic_cast(input_eb);
-        size_t ieb_offset   = input_eb->get_offset();
+        auto *input_eb = dynamic_cast<const Ioss::EntityBlock *>(ieb);
+        Ioss::Utils::check_dynamic_cast(input_eb);
+        size_t ieb_offset = input_eb->get_offset();
 
         // Element block `ieb` has `ieb_count` elements that run
         // from `ieb_offset` to `ieb_offset + ieb_count` in
@@ -301,11 +303,11 @@ std::vector<INT> build_local_element_map(const RegionVector &part_mesh, Ioss::Re
 }
 
 template std::vector<int>     build_local_element_map(const RegionVector &part_mesh,
-                                                      Ioss::Region &output_region,
-                                                      const IO_map &output_input_map);
+                                                      Ioss::Region       &output_region,
+                                                      const IO_map       &output_input_map);
 template std::vector<int64_t> build_local_element_map(const RegionVector &part_mesh,
-                                                      Ioss::Region &output_region,
-                                                      const IO_map &output_input_map);
+                                                      Ioss::Region       &output_region,
+                                                      const IO_map       &output_input_map);
 
 template <typename INT>
 void generate_element_ids(const RegionVector &part_mesh, const std::vector<INT> &local_element_map,
@@ -385,9 +387,9 @@ void generate_element_ids(const RegionVector &part_mesh, const std::vector<INT> 
   }
 }
 
-template void generate_element_ids(const RegionVector           &part_mesh,
+template void generate_element_ids(const RegionVector     &part_mesh,
                                    const std::vector<int> &local_element_map,
                                    std::vector<int>       &global_element_map);
-template void generate_element_ids(const RegionVector               &part_mesh,
+template void generate_element_ids(const RegionVector         &part_mesh,
                                    const std::vector<int64_t> &local_element_map,
                                    std::vector<int64_t>       &global_element_map);

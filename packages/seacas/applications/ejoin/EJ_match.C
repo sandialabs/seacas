@@ -98,8 +98,8 @@ namespace {
   }
 
   template <typename INT>
-  void match_nodes(const RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
-                   std::vector<INT> &local_node_map)
+  void match_nodes(const RegionVector &part_mesh, double tolerance,
+                   std::vector<INT> &global_node_map, std::vector<INT> &local_node_map)
   {
     size_t part_count = part_mesh.size();
     enum { X = 0, Y = 1, Z = 2 };
@@ -198,8 +198,8 @@ namespace {
 } // namespace
 
 template <typename INT>
-void match_node_xyz(const RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
-                    std::vector<INT> &local_node_map)
+void match_node_xyz(const RegionVector &part_mesh, double tolerance,
+                    std::vector<INT> &global_node_map, std::vector<INT> &local_node_map)
 {
   // See if any omitted element blocks...
   handle_omitted_blocks(part_mesh, local_node_map);

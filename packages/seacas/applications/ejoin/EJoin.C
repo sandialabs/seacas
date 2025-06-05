@@ -88,11 +88,12 @@ namespace {
   void output_sideset(Ioss::Region &output_region, const std::vector<INT> &local_element_map);
   template <typename INT>
   void output_nodal_nodeset(Ioss::Region &output_region, const RegionVector &part_mesh,
-                            const SystemInterface &interFace, const std::vector<INT> &local_node_map);
+                            const SystemInterface  &interFace,
+                            const std::vector<INT> &local_node_map);
   template <typename INT>
-  void output_transient_state(Ioss::Region &output_region, const RegionVector &part_mesh, double time,
-                              const std::vector<INT> &local_node_map, SystemInterface &interFace,
-                              bool merged);
+  void output_transient_state(Ioss::Region &output_region, const RegionVector &part_mesh,
+                              double time, const std::vector<INT> &local_node_map,
+                              SystemInterface &interFace, bool merged);
   void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit);
   void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit);
   void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit);
@@ -213,7 +214,7 @@ int main(int argc, char *argv[])
 
     const Omissions                &omissions  = interFace.block_omissions();
     const Omissions                &inclusions = interFace.block_inclusions();
-    RegionVector part_mesh(interFace.inputFiles_.size());
+    RegionVector                    part_mesh(interFace.inputFiles_.size());
     std::vector<Ioss::DatabaseIO *> dbi(interFace.inputFiles_.size());
     for (size_t p = 0; p < interFace.inputFiles_.size(); p++) {
       dbi[p] = Ioss::IOFactory::create("exodusII", interFace.inputFiles_[p], Ioss::READ_RESTART,
@@ -304,24 +305,24 @@ int main(int argc, char *argv[])
   }
 }
 
-void process_specified_combines(const RegionVector &part_mesh, const std::string &split, Ioss::EntityType type)
+void process_specified_combines(const RegionVector &part_mesh, const std::string &split,
+                                Ioss::EntityType type)
 {
   const auto combines = Ioss::tokenize(split, ";");
   for (const auto &combine : combines) {
-    size_t end = combine.find(':');
-    auto output_name = combine.substr(0, end);
-    auto inputs = combine.substr(end+1);
-    auto input_names = Ioss::tokenize(inputs, ",");
- 
+    size_t end         = combine.find(':');
+    auto   output_name = combine.substr(0, end);
+    auto   inputs      = combine.substr(end + 1);
+    auto   input_names = Ioss::tokenize(inputs, ",");
+
     fmt::print(stderr, "Output {}:\t", output_name);
     for (const auto *part : part_mesh) {
       for (const auto &name : input_names) {
-	auto *entity = part->get_entity(name, type);
-	if (entity != nullptr) {
-	  fmt::print(stderr, "{}:{}, ",
-		     part->name(), name);
-	  entity->property_add(Ioss::Property(std::string("ejoin_combine_into"), output_name));
-	}
+        auto *entity = part->get_entity(name, type);
+        if (entity != nullptr) {
+          fmt::print(stderr, "{}:{}, ", part->name(), name);
+          entity->property_add(Ioss::Property(std::string("ejoin_combine_into"), output_name));
+        }
       }
     }
     fmt::print("\n");
@@ -476,7 +477,6 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
     process_specified_combines(part_mesh, ns_combines, Ioss::NODESET);
   }
 
-  
   // Add element blocks, nodesets, sidesets
   for (size_t p = 0; p < part_count; p++) {
     transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(),
@@ -686,15 +686,18 @@ namespace {
     for (const auto &eb : ebs) {
       if (!entity_is_omitted(eb)) {
         std::string name = eb->name();
-	name = eb->get_optional_property("ejoin_combine_into", name);
-        auto       *oeb  = output_region.get_element_block(name);
+        name             = eb->get_optional_property("ejoin_combine_into", name);
+        auto *oeb        = output_region.get_element_block(name);
         if (oeb != nullptr) {
-          if (combine_similar ||eb->property_exists("ejoin_combine_into")) {
-	    if (oeb->topology() != eb->topology()) {
-              fmt::print(stderr, "ERROR: The topology ('{}') for element block '{}' does not match\n       the topology ('{}') for element block '{}'.\n       They cannot be combined.\n\n", 
-			 oeb->topology()->name(), oeb->name(), eb->topology()->name(), eb->name());
+          if (combine_similar || eb->property_exists("ejoin_combine_into")) {
+            if (oeb->topology() != eb->topology()) {
+              fmt::print(
+                  stderr,
+                  "ERROR: The topology ('{}') for element block '{}' does not match\n       the "
+                  "topology ('{}') for element block '{}'.\n       They cannot be combined.\n\n",
+                  oeb->topology()->name(), oeb->name(), eb->topology()->name(), eb->name());
               exit(EXIT_FAILURE);
-	    }
+            }
             // Combine element blocks with similar names...
             output_input_map[oeb].emplace_back(eb, oeb->entity_count());
             size_t count = eb->entity_count();
@@ -801,7 +804,7 @@ namespace {
       for (const auto &[gss, offset] : oss_inputs) {
         if (gss != nullptr) {
           auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
-	  Ioss::Utils::check_dynamic_cast(iss);
+          Ioss::Utils::check_dynamic_cast(iss);
           if (*(iss->contained_in()) == region) {
             const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
 
@@ -849,10 +852,10 @@ namespace {
     for (const auto &ss : sss) {
       if (!entity_is_omitted(ss)) {
         std::string name = ss->name();
-	name = ss->get_optional_property("ejoin_combine_into", name);
-        auto       *oss  = output_region.get_sideset(name);
+        name             = ss->get_optional_property("ejoin_combine_into", name);
+        auto *oss        = output_region.get_sideset(name);
         if (oss != nullptr) {
-          if (combine_similar ||ss->property_exists("ejoin_combine_into")) {
+          if (combine_similar || ss->property_exists("ejoin_combine_into")) {
             // Combine sidesets with similar names...
             output_input_map[oss].emplace_back(ss, oss->entity_count());
             size_t count = ss->entity_count();
@@ -904,7 +907,8 @@ namespace {
   // consisting of all the nodes in the input region.
   template <typename INT>
   void output_nodal_nodeset(Ioss::Region &output_region, const RegionVector &part_mesh,
-                            const SystemInterface &interFace, const std::vector<INT> &local_node_map)
+                            const SystemInterface  &interFace,
+                            const std::vector<INT> &local_node_map)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
@@ -980,10 +984,10 @@ namespace {
     for (const auto &ns : nss) {
       if (!entity_is_omitted(ns)) {
         std::string name = ns->name();
-	name = ns->get_optional_property("ejoin_combine_into", name);
-        auto       *ons  = output_region.get_nodeset(name);
+        name             = ns->get_optional_property("ejoin_combine_into", name);
+        auto *ons        = output_region.get_nodeset(name);
         if (ons != nullptr) {
-          if (combine_similar ||ns->property_exists("ejoin_combine_into")) {
+          if (combine_similar || ns->property_exists("ejoin_combine_into")) {
             // Combine nodesets with similar names...
             output_input_map[ons].emplace_back(ns, ons->entity_count());
             size_t count = ns->entity_count();
@@ -1111,9 +1115,9 @@ namespace {
           if (ieb != nullptr) {
             ieb->get_field_data("connectivity_raw", &connectivity[offset * nnpe], -1);
 
-            auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
-	    Ioss::Utils::check_dynamic_cast(input_region);
-            size_t node_offset  = input_region->get_property("node_offset").get_int();
+            auto *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+            Ioss::Utils::check_dynamic_cast(input_region);
+            size_t node_offset = input_region->get_property("node_offset").get_int();
             for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
               // connectivity is in part-local node ids [1..num_node]
               // loc_node = the position of node in the local [0..num_node)
@@ -1181,9 +1185,9 @@ namespace {
             found_one = true;
             ins->get_field_data("ids", &nodelist[offset], -1);
 
-            auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
-	    Ioss::Utils::check_dynamic_cast(input_region);
-            size_t node_offset  = input_region->get_property("node_offset").get_int();
+            auto *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
+            Ioss::Utils::check_dynamic_cast(input_region);
+            size_t node_offset = input_region->get_property("node_offset").get_int();
             for (int64_t i = 0; i < ins->entity_count(); i++) {
               size_t loc_node = input_region->node_global_to_local(nodelist[offset + i], true) - 1;
               auto   gpos     = local_node_map[node_offset + loc_node];
@@ -1359,8 +1363,8 @@ namespace {
           std::vector<double> field_data(comp_count * count);
           for (const auto &[ieb, offset] : out_entity_inputs) {
             if (ieb != nullptr && ieb->field_exists(field)) {
-	      found_field = true;
-	      ieb->get_field_data(field, &field_data[comp_count * offset], -1);
+              found_field = true;
+              ieb->get_field_data(field, &field_data[comp_count * offset], -1);
             }
           }
           if (found_field) {
@@ -1464,9 +1468,9 @@ namespace {
   }
 
   template <typename INT>
-  void output_transient_state(Ioss::Region &output_region, const RegionVector &part_mesh, double time,
-                              const std::vector<INT> &local_node_map, SystemInterface &interFace,
-                              bool merged)
+  void output_transient_state(Ioss::Region &output_region, const RegionVector &part_mesh,
+                              double time, const std::vector<INT> &local_node_map,
+                              SystemInterface &interFace, bool merged)
   {
     // Determine which state on each input mesh corresponds to 'time'
     std::vector<int> steps(part_mesh.size());
@@ -1599,25 +1603,25 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, oeb_inputs] = *itr;
       if (!oeb_inputs.empty()) {
-        int64_t count             = oeb->entity_count();
+        int64_t count = oeb->entity_count();
         for (const auto &[ieb, offset] : oeb_inputs) {
           if (ieb != nullptr) {
-	    size_t         id     = ieb->get_property("id").get_int();
-	    Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
-	    for (const auto &field_name : fields) {
-	      if (valid_variable(field_name, id, variable_list)) {
-		Ioss::Field field = ieb->get_field(field_name);
-		field.reset_count(count);
-		if (!oeb->field_exists(field_name)) {
-		  oeb->field_add(std::move(field));
-		  if (subsetting_fields) {
-		    defined_fields.push_back(field_name);
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+            size_t         id     = ieb->get_property("id").get_int();
+            Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
+            for (const auto &field_name : fields) {
+              if (valid_variable(field_name, id, variable_list)) {
+                Ioss::Field field = ieb->get_field(field_name);
+                field.reset_count(count);
+                if (!oeb->field_exists(field_name)) {
+                  oeb->field_add(std::move(field));
+                  if (subsetting_fields) {
+                    defined_fields.push_back(field_name);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
 
@@ -1653,22 +1657,22 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (!ons_inputs.empty()) {
-        int64_t count             = ons->entity_count();
+        int64_t count = ons->entity_count();
         for (const auto &[ins, offset] : ons_inputs) {
           if (ins != nullptr) {
-	    size_t         id     = ins->get_property("id").get_int();
-	    Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
-	    for (const auto &field_name : fields) {
-	      if (valid_variable(field_name, id, variable_list)) {
-		if (!ons->field_exists(field_name)) {
-		  Ioss::Field field = ins->get_field(field_name);
-		  field.reset_count(count);
-		  ons->field_add(std::move(field));
-		  if (subsetting_fields) {
-		    defined_fields.push_back(field_name);
-		  }
-		}
-	      }
+            size_t         id     = ins->get_property("id").get_int();
+            Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
+            for (const auto &field_name : fields) {
+              if (valid_variable(field_name, id, variable_list)) {
+                if (!ons->field_exists(field_name)) {
+                  Ioss::Field field = ins->get_field(field_name);
+                  field.reset_count(count);
+                  ons->field_add(std::move(field));
+                  if (subsetting_fields) {
+                    defined_fields.push_back(field_name);
+                  }
+                }
+              }
             }
           }
         }
@@ -1895,9 +1899,9 @@ namespace {
             ++found;
             ins->get_field_data("ids", &nodelist[offset], -1);
 
-            auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
-	    Ioss::Utils::check_dynamic_cast(input_region);
-            size_t node_offset  = input_region->get_property("node_offset").get_int();
+            auto *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
+            Ioss::Utils::check_dynamic_cast(input_region);
+            size_t node_offset = input_region->get_property("node_offset").get_int();
             for (int64_t i = 0; i < ins->entity_count(); i++) {
               size_t loc_node = input_region->node_global_to_local(nodelist[offset + i], true) - 1;
               auto   gpos     = local_node_map[node_offset + loc_node];

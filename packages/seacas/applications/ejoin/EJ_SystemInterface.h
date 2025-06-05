@@ -49,12 +49,12 @@ public:
   int step_max() const { return stepMax_; }
   int step_interval() const { return stepInterval_; }
 
-  bool                    combine_nodesets() const { return combineNodesets_; }
-  bool                    combine_sidesets() const { return combineSidesets_; }
-  bool                    combine_element_blocks() const { return combineElementBlocks_; }
-  const std::string &elementblock_combines() const {return elementBlockCombines_; }
-  const std::string &nodeset_combines() const {return nodesetCombines_; }
-  const std::string &sideset_combines() const {return sidesetCombines_; }
+  bool               combine_nodesets() const { return combineNodesets_; }
+  bool               combine_sidesets() const { return combineSidesets_; }
+  bool               combine_element_blocks() const { return combineElementBlocks_; }
+  const std::string &elementblock_combines() const { return elementBlockCombines_; }
+  const std::string &nodeset_combines() const { return nodesetCombines_; }
+  const std::string &sideset_combines() const { return sidesetCombines_; }
 
   vector3d                offset() const { return offset_; }
   const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
