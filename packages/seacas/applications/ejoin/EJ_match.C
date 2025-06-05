@@ -47,7 +47,7 @@ namespace {
   }
 
   template <typename INT>
-  bool handle_omitted_blocks(RegionVector &part_mesh, std::vector<INT> &local_node_map)
+  bool handle_omitted_blocks(const RegionVector &part_mesh, std::vector<INT> &local_node_map)
   {
     bool has_omissions = false;
     for (auto &elem : part_mesh) {
@@ -98,7 +98,7 @@ namespace {
   }
 
   template <typename INT>
-  void match_nodes(RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
+  void match_nodes(const RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
                    std::vector<INT> &local_node_map)
   {
     size_t part_count = part_mesh.size();
@@ -198,7 +198,7 @@ namespace {
 } // namespace
 
 template <typename INT>
-void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
+void match_node_xyz(const RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
                     std::vector<INT> &local_node_map)
 {
   // See if any omitted element blocks...
@@ -206,14 +206,14 @@ void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> 
   match_nodes(part_mesh, tolerance, global_node_map, local_node_map);
 }
 
-template void match_node_xyz(RegionVector &part_mesh, double tolerance,
+template void match_node_xyz(const RegionVector &part_mesh, double tolerance,
                              std::vector<int> &global_node_map, std::vector<int> &local_node_map);
-template void match_node_xyz(RegionVector &part_mesh, double tolerance,
+template void match_node_xyz(const RegionVector &part_mesh, double tolerance,
                              std::vector<int64_t> &global_node_map,
                              std::vector<int64_t> &local_node_map);
 
 template <typename INT>
-void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
+void match_nodeset_nodes(const RegionVector &part_mesh, double tolerance,
                          std::vector<INT> &global_node_map, std::vector<INT> &local_node_map,
                          const SystemInterface &interFace)
 {
@@ -228,11 +228,11 @@ void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
   match_nodes(part_mesh, tolerance, global_node_map, local_node_map);
 }
 
-template void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
+template void match_nodeset_nodes(const RegionVector &part_mesh, double tolerance,
                                   std::vector<int>      &global_node_map,
                                   std::vector<int>      &local_node_map,
                                   const SystemInterface &interFace);
-template void match_nodeset_nodes(RegionVector &part_mesh, double tolerance,
+template void match_nodeset_nodes(const RegionVector &part_mesh, double tolerance,
                                   std::vector<int64_t>  &global_node_map,
                                   std::vector<int64_t>  &local_node_map,
                                   const SystemInterface &interFace);

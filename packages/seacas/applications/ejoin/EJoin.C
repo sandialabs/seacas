@@ -74,10 +74,10 @@ namespace {
                                    const SystemInterface &interFace);
 
   template <typename INT>
-  void output_nodeblock(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_nodeblock(Ioss::Region &output_region, const RegionVector &part_mesh,
                         const std::vector<INT> &local_node_map, std::vector<INT> &global_node_map);
   template <typename INT>
-  void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_elementblock(Ioss::Region &output_region, const RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
                            const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
@@ -86,15 +86,15 @@ namespace {
   template <typename INT>
   void output_sideset(Ioss::Region &output_region, const std::vector<INT> &local_element_map);
   template <typename INT>
-  void output_nodal_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
-                            SystemInterface &interFace, const std::vector<INT> &local_node_map);
+  void output_nodal_nodeset(Ioss::Region &output_region, const RegionVector &part_mesh,
+                            const SystemInterface &interFace, const std::vector<INT> &local_node_map);
   template <typename INT>
-  void output_transient_state(Ioss::Region &output_region, RegionVector &part_mesh, double time,
+  void output_transient_state(Ioss::Region &output_region, const RegionVector &part_mesh, double time,
                               const std::vector<INT> &local_node_map, SystemInterface &interFace,
                               bool merged);
-  void process_nodeset_omissions(RegionVector &part_mesh, const Omissions &omit);
-  void process_sideset_omissions(RegionVector &part_mesh, const Omissions &omit);
-  void process_assembly_omissions(RegionVector &part_mesh, const Omissions &omit);
+  void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit);
+  void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit);
+  void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit);
 
   int count_omissions(Ioss::Region *region)
   {
@@ -174,7 +174,7 @@ namespace {
 } // namespace
 
 template <typename INT>
-double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT dummy);
+double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT dummy);
 
 int main(int argc, char *argv[])
 {
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 
     const Omissions                &omissions  = interFace.block_omissions();
     const Omissions                &inclusions = interFace.block_inclusions();
-    std::vector<Ioss::Region *>     part_mesh(interFace.inputFiles_.size());
+    RegionVector part_mesh(interFace.inputFiles_.size());
     std::vector<Ioss::DatabaseIO *> dbi(interFace.inputFiles_.size());
     for (size_t p = 0; p < interFace.inputFiles_.size(); p++) {
       dbi[p] = Ioss::IOFactory::create("exodusII", interFace.inputFiles_[p], Ioss::READ_RESTART,
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
 }
 
 template <typename INT>
-double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
+double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*dummy*/)
 {
   double begin      = Ioss::Utils::timer();
   size_t part_count = interFace.inputFiles_.size();
@@ -855,8 +855,8 @@ namespace {
   // Output the bulk data for a nodeset on the output region
   // consisting of all the nodes in the input region.
   template <typename INT>
-  void output_nodal_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
-                            SystemInterface &interFace, const std::vector<INT> &local_node_map)
+  void output_nodal_nodeset(Ioss::Region &output_region, const RegionVector &part_mesh,
+                            const SystemInterface &interFace, const std::vector<INT> &local_node_map)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
@@ -992,7 +992,7 @@ namespace {
 
 namespace {
   template <typename INT>
-  void output_nodeblock(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_nodeblock(Ioss::Region &output_region, const RegionVector &part_mesh,
                         const std::vector<INT> &local_node_map, std::vector<INT> &global_node_map)
   {
     Ioss::NodeBlock *onb = output_region.get_node_blocks()[0];
@@ -1022,7 +1022,7 @@ namespace {
   }
 
   template <typename INT>
-  void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_elementblock(Ioss::Region &output_region, const RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
                            const std::vector<INT> &local_element_map, bool ignore_element_ids)
   {
@@ -1211,7 +1211,7 @@ namespace {
     }
   }
 
-  void output_global_fields(Ioss::Region &output_region, RegionVector &part_mesh)
+  void output_global_fields(Ioss::Region &output_region, const RegionVector &part_mesh)
   {
     for (const auto &pm : part_mesh) {
       Ioss::NameList fields = pm->field_describe(Ioss::Field::REDUCTION);
@@ -1224,7 +1224,7 @@ namespace {
   }
 
   template <typename INT>
-  void output_nodal_fields(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_nodal_fields(Ioss::Region &output_region, const RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map, SystemInterface &interFace)
   {
     size_t part_count = part_mesh.size();
@@ -1263,7 +1263,7 @@ namespace {
     }
   }
 
-  void output_nodal_nodeset_fields(Ioss::Region &output_region, RegionVector &part_mesh,
+  void output_nodal_nodeset_fields(Ioss::Region &output_region, const RegionVector &part_mesh,
                                    SystemInterface &interFace)
   {
     size_t part_count = part_mesh.size();
@@ -1415,7 +1415,7 @@ namespace {
   }
 
   template <typename INT>
-  void output_transient_state(Ioss::Region &output_region, RegionVector &part_mesh, double time,
+  void output_transient_state(Ioss::Region &output_region, const RegionVector &part_mesh, double time,
                               const std::vector<INT> &local_node_map, SystemInterface &interFace,
                               bool merged)
   {
@@ -1756,7 +1756,7 @@ namespace {
     return error;
   }
 
-  void process_nodeset_omissions(RegionVector &part_mesh, const Omissions &omit)
+  void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
@@ -1780,7 +1780,7 @@ namespace {
     }
   }
 
-  void process_sideset_omissions(RegionVector &part_mesh, const Omissions &omit)
+  void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
@@ -1804,7 +1804,7 @@ namespace {
     }
   }
 
-  void process_assembly_omissions(RegionVector &part_mesh, const Omissions &omit)
+  void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit)
   {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
