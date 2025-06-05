@@ -35,6 +35,7 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
+#include <tokenize.h>
 
 #include "EJ_CodeTypes.h"
 #include "EJ_SystemInterface.h"
@@ -303,6 +304,30 @@ int main(int argc, char *argv[])
   }
 }
 
+void process_specified_combines(const RegionVector &part_mesh, const std::string &split, Ioss::EntityType type)
+{
+  const auto combines = Ioss::tokenize(split, ";");
+  for (const auto &combine : combines) {
+    size_t end = combine.find(':');
+    auto output_name = combine.substr(0, end);
+    auto inputs = combine.substr(end+1);
+    auto input_names = Ioss::tokenize(inputs, ",");
+ 
+    fmt::print(stderr, "Output {}:\t", output_name);
+    for (const auto *part : part_mesh) {
+      for (const auto &name : input_names) {
+	auto *entity = part->get_entity(name, type);
+	if (entity != nullptr) {
+	  fmt::print(stderr, "{}:{}, ",
+		     part->name(), name);
+	  entity->property_add(Ioss::Property(std::string("ejoin_combine_into"), output_name));
+	}
+      }
+    }
+    fmt::print("\n");
+  }
+}
+
 template <typename INT>
 double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*dummy*/)
 {
@@ -436,6 +461,22 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
 
   output_region.add(block);
 
+  const std::string &eb_combines = interFace.elementblock_combines();
+  if (!eb_combines.empty()) {
+    process_specified_combines(part_mesh, eb_combines, Ioss::ELEMENTBLOCK);
+  }
+
+  const std::string ss_combines = interFace.sideset_combines();
+  if (!ss_combines.empty()) {
+    process_specified_combines(part_mesh, ss_combines, Ioss::SIDESET);
+  }
+
+  const std::string ns_combines = interFace.nodeset_combines();
+  if (!ns_combines.empty()) {
+    process_specified_combines(part_mesh, ns_combines, Ioss::NODESET);
+  }
+
+  
   // Add element blocks, nodesets, sidesets
   for (size_t p = 0; p < part_count; p++) {
     transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(),
@@ -648,7 +689,7 @@ namespace {
 	name = eb->get_optional_property("ejoin_combine_into", name);
         auto       *oeb  = output_region.get_element_block(name);
         if (oeb != nullptr) {
-          if (combine_similar) {
+          if (combine_similar ||eb->property_exists("ejoin_combine_into")) {
 	    if (oeb->topology() != eb->topology()) {
               fmt::print(stderr, "ERROR: The topology ('{}') for element block '{}' does not match\n       the topology ('{}') for element block '{}'.\n       They cannot be combined.\n\n", 
 			 oeb->topology()->name(), oeb->name(), eb->topology()->name(), eb->name());
@@ -808,9 +849,10 @@ namespace {
     for (const auto &ss : sss) {
       if (!entity_is_omitted(ss)) {
         std::string name = ss->name();
+	name = ss->get_optional_property("ejoin_combine_into", name);
         auto       *oss  = output_region.get_sideset(name);
         if (oss != nullptr) {
-          if (combine_similar) {
+          if (combine_similar ||ss->property_exists("ejoin_combine_into")) {
             // Combine sidesets with similar names...
             output_input_map[oss].emplace_back(ss, oss->entity_count());
             size_t count = ss->entity_count();
@@ -938,9 +980,10 @@ namespace {
     for (const auto &ns : nss) {
       if (!entity_is_omitted(ns)) {
         std::string name = ns->name();
+	name = ns->get_optional_property("ejoin_combine_into", name);
         auto       *ons  = output_region.get_nodeset(name);
         if (ons != nullptr) {
-          if (combine_similar) {
+          if (combine_similar ||ns->property_exists("ejoin_combine_into")) {
             // Combine nodesets with similar names...
             output_input_map[ons].emplace_back(ns, ons->entity_count());
             size_t count = ns->entity_count();

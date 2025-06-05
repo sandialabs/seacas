@@ -52,6 +52,10 @@ public:
   bool                    combine_nodesets() const { return combineNodesets_; }
   bool                    combine_sidesets() const { return combineSidesets_; }
   bool                    combine_element_blocks() const { return combineElementBlocks_; }
+  const std::string &elementblock_combines() const {return elementBlockCombines_; }
+  const std::string &nodeset_combines() const {return nodesetCombines_; }
+  const std::string &sideset_combines() const {return sidesetCombines_; }
+
   vector3d                offset() const { return offset_; }
   const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
   const StringIdVector   &global_var_names() const { return globalVarNames_; }
@@ -133,6 +137,10 @@ private:
   Omissions sidesetOmissions_;
 
   Omissions nodesetMatch_;
+
+  std::string elementBlockCombines_{};
+  std::string nodesetCombines_{};
+  std::string sidesetCombines_{};
 
   std::vector<int> nodesetConvertParts_;
   std::vector<int> infoRecordParts_;

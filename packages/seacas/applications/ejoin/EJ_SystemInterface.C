@@ -134,6 +134,22 @@ void SystemInterface::enroll_options()
                   "Element blocks with the same name and topology will be "
                   "combined into a\n"
                   "\t\tsingle element block on output.",
+                  nullptr);
+
+  options_.enroll(
+      "nodeset_combines", GetLongOption::MandatoryValue,
+      "List of names of output nodesets and the input nodesets which will be combined into that output.\n"
+      "\t\tSyntax: out1:in1,in2,..,inX;out2:inA,inB,...,inZ\n"
+      "\t\t        Nodeset 'out1' will contain input nodesets 'in1', 'in2', ..., 'inX'\n"
+      "\t\t       Out name separated by ':' from comma-separated list of input.  Multiple outs separated by ';'",
+      nullptr);
+  options_.enroll("sideset_combines", GetLongOption::MandatoryValue,
+		  "List of names of output sidesets and the input sidesets which will be combined into that output.\n"
+		  "\t\t See `nodeset_combines` for syntax.",
+                  nullptr);
+  options_.enroll("element_block_combines", GetLongOption::MandatoryValue,
+		  "List of names of output element blocks and the input element blocks which will be\n"
+		  "\t\tcombined into that output. See `nodeset_combines` for syntax.",
                   nullptr, nullptr, true);
 
 #if 0
@@ -452,6 +468,28 @@ bool SystemInterface::parse_options(int argc, char **argv)
   combineElementBlocks_    = options_.retrieve("combine_element_blocks") != nullptr;
   ints64bit_               = options_.retrieve("64-bit") != nullptr;
 
+  {
+    const char *temp = options_.retrieve("nodeset_combines");
+    if (temp != nullptr) {
+      nodesetCombines_ = temp;
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("sideset_combines");
+    if (temp != nullptr) {
+      sidesetCombines_ = temp;
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("element_block_combines");
+    if (temp != nullptr) {
+      elementBlockCombines_ = temp;
+    }
+  }
+
+  
   zlib_ = (options_.retrieve("zlib") != nullptr);
   szip_ = (options_.retrieve("szip") != nullptr);
   zstd_ = (options_.retrieve("zstd") != nullptr);
