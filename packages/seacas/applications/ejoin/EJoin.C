@@ -1309,9 +1309,9 @@ namespace {
               out_entity->get_field(field).get_component_count(Ioss::Field::InOut::OUTPUT);
           std::vector<double> field_data(comp_count * count);
           for (const auto &[ieb, offset] : out_entity_inputs) {
-            if (ieb != nullptr) {
-              found_field = true;
-              ieb->get_field_data(field, &field_data[comp_count * offset], -1);
+            if (ieb != nullptr && ieb->field_exists(field)) {
+	      found_field = true;
+	      ieb->get_field_data(field, &field_data[comp_count * offset], -1);
             }
           }
           if (found_field) {
@@ -1372,7 +1372,7 @@ namespace {
             std::vector<double> field_data(count * comp_count);
 
             for (const auto &[ins, offset] : ons_inputs) {
-              if (ins != nullptr) {
+              if (ins != nullptr && ins->field_exists(field_name)) {
                 ins->get_field_data(field_name, &field_data[comp_count * offset], -1);
               }
             }
@@ -1551,23 +1551,24 @@ namespace {
       const auto &[key, oeb_inputs] = *itr;
       if (!oeb_inputs.empty()) {
         int64_t count             = oeb->entity_count();
-        const auto &[ieb, offset] = oeb_inputs[0];
-        if (ieb != nullptr) {
-          // Here we assume that the element block fields are the
-          // same on all parts if combining blocks
-          size_t         id     = ieb->get_property("id").get_int();
-          Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
-          for (const auto &field_name : fields) {
-            if (valid_variable(field_name, id, variable_list)) {
-              Ioss::Field field = ieb->get_field(field_name);
-              field.reset_count(count);
-              oeb->field_add(std::move(field));
-              if (subsetting_fields) {
-                defined_fields.push_back(field_name);
-              }
-            }
-          }
-        }
+        for (const auto &[ieb, offset] : oeb_inputs) {
+          if (ieb != nullptr) {
+	    size_t         id     = ieb->get_property("id").get_int();
+	    Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
+	    for (const auto &field_name : fields) {
+	      if (valid_variable(field_name, id, variable_list)) {
+		Ioss::Field field = ieb->get_field(field_name);
+		field.reset_count(count);
+		if (!oeb->field_exists(field_name)) {
+		  oeb->field_add(std::move(field));
+		  if (subsetting_fields) {
+		    defined_fields.push_back(field_name);
+		  }
+		}
+	      }
+	    }
+	  }
+	}
       }
     }
 
@@ -1604,20 +1605,21 @@ namespace {
       const auto &[key, ons_inputs] = *itr;
       if (!ons_inputs.empty()) {
         int64_t count             = ons->entity_count();
-        const auto &[ins, offset] = ons_inputs[0];
-        if (ins != nullptr) {
-          // Here we assume that the nodeset fields are the same on all parts if combining
-          // nodesets
-          size_t         id     = ins->get_property("id").get_int();
-          Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
-          for (const auto &field_name : fields) {
-            if (valid_variable(field_name, id, variable_list)) {
-              Ioss::Field field = ins->get_field(field_name);
-              field.reset_count(count);
-              ons->field_add(std::move(field));
-              if (subsetting_fields) {
-                defined_fields.push_back(field_name);
-              }
+        for (const auto &[ins, offset] : ons_inputs) {
+          if (ins != nullptr) {
+	    size_t         id     = ins->get_property("id").get_int();
+	    Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
+	    for (const auto &field_name : fields) {
+	      if (valid_variable(field_name, id, variable_list)) {
+		if (!ons->field_exists(field_name)) {
+		  Ioss::Field field = ins->get_field(field_name);
+		  field.reset_count(count);
+		  ons->field_add(std::move(field));
+		  if (subsetting_fields) {
+		    defined_fields.push_back(field_name);
+		  }
+		}
+	      }
             }
           }
         }
@@ -1875,8 +1877,6 @@ namespace {
               ids_pos.emplace_back(id, i);
             }
             std::sort(ids_pos.begin(), ids_pos.end());
-            fmt::print(stderr, "Sorted vector for nodeset {}: {}\n", ons->name(),
-                       fmt::join(ids_pos, ", "));
 
             auto new_size = unique(ids_pos);
             SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
