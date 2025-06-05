@@ -147,9 +147,9 @@ template int get_group_info(Machine_Description *machine, Problem_Description *p
 
 template <typename INT>
 int get_group_info(Machine_Description *machine, Problem_Description *prob,
-                   Mesh_Description<INT> *mesh, Graph_Description<INT> *graph, 
-		   std::vector<int> &elem2grp,
-                   int nprocg[], int nelemg[], size_t *max_vtx, size_t *max_adj)
+                   Mesh_Description<INT> *mesh, Graph_Description<INT> *graph,
+                   std::vector<int> &elem2grp, int nprocg[], int nelemg[], size_t *max_vtx,
+                   size_t *max_adj)
 {
   int              nproc = 0;
   std::vector<int> nadj_per_grp;
