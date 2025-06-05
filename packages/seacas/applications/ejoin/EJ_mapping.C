@@ -279,8 +279,12 @@ std::vector<INT> build_local_element_map(RegionVector &part_mesh, Ioss::Region &
         int64_t ieb_count = ieb->entity_count();
 
         auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+	Ioss::Utils::check_dynamic_cast(input_region);
         size_t ireg_offset  = input_region->get_property("element_offset").get_int();
-        size_t ieb_offset   = dynamic_cast<Ioss::EntityBlock *>(ieb)->get_offset();
+
+	auto *input_eb = dynamic_cast<const Ioss::EntityBlock*>(ieb);
+	Ioss::Utils::check_dynamic_cast(input_eb);
+        size_t ieb_offset   = input_eb->get_offset();
 
         // Element block `ieb` has `ieb_count` elements that run
         // from `ieb_offset` to `ieb_offset + ieb_count` in

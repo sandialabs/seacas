@@ -754,7 +754,7 @@ namespace {
       for (const auto &[gss, offset] : oss_inputs) {
         if (gss != nullptr) {
           auto *iss = dynamic_cast<const Ioss::SideSet *>(gss);
-          SMART_ASSERT(iss != nullptr);
+	  Ioss::Utils::check_dynamic_cast(iss);
           if (*(iss->contained_in()) == region) {
             const Ioss::SideBlockContainer &sbs = iss->get_side_blocks();
 
@@ -1063,6 +1063,7 @@ namespace {
             ieb->get_field_data("connectivity_raw", &connectivity[offset * nnpe], -1);
 
             auto  *input_region = dynamic_cast<const Ioss::Region *>(ieb->contained_in());
+	    Ioss::Utils::check_dynamic_cast(input_region);
             size_t node_offset  = input_region->get_property("node_offset").get_int();
             for (int64_t i = 0; i < ieb->entity_count() * nnpe; i++) {
               // connectivity is in part-local node ids [1..num_node]
@@ -1132,6 +1133,7 @@ namespace {
             ins->get_field_data("ids", &nodelist[offset], -1);
 
             auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
+	    Ioss::Utils::check_dynamic_cast(input_region);
             size_t node_offset  = input_region->get_property("node_offset").get_int();
             for (int64_t i = 0; i < ins->entity_count(); i++) {
               size_t loc_node = input_region->node_global_to_local(nodelist[offset + i], true) - 1;
@@ -1843,6 +1845,7 @@ namespace {
             ins->get_field_data("ids", &nodelist[offset], -1);
 
             auto  *input_region = dynamic_cast<const Ioss::Region *>(ins->contained_in());
+	    Ioss::Utils::check_dynamic_cast(input_region);
             size_t node_offset  = input_region->get_property("node_offset").get_int();
             for (int64_t i = 0; i < ins->entity_count(); i++) {
               size_t loc_node = input_region->node_global_to_local(nodelist[offset + i], true) - 1;
