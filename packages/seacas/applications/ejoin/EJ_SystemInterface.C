@@ -28,7 +28,7 @@ namespace {
   }
 
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
-  void parse_offset(const char *tokens, std::vector<vector3d> &offset);
+  void parse_offset(const char *tokens, std::vector<vector3d> &offset, bool is_offset);
   void parse_integer_list(const char *tokens, std::vector<int> *list);
   void parse_part_list(const char *tokens, std::vector<int> *list);
   void parse_omissions(const char *tokens, Omissions *omissions, const std::string &basename,
@@ -175,7 +175,18 @@ void SystemInterface::enroll_options()
                   "\t\tP1: no offset; P2: 1x, 1y, 1z; P3: 2x, 2y, 2z; P(n+1): nx, ny, nz\n"
                   "\t\tYou can also specify the offset of specific parts using the syntax:\n"
                   "\t\tpn:xn,yn,zn:pm:xm,ym,zm:pk:xk,yk,zk. (note ':', ',')  For example: `-offset "
-                  "p1:1.1,2.2,3.3:p3:2.2,1.0,3.0`",
+                  "p1:1.1,2.2,3.3:p3:2.2,1.0,3.0`\n"
+		  "\t\tThe final coordinates are `scale * orig + offset`",
+                  nullptr, nullptr, true);
+
+  options_.enroll("scale", GetLongOption::MandatoryValue,
+                  "Comma-separated x,y,z scale for coordinates of second and subsequent meshes.\n"
+                  "\t\tIf there are only 3 values specified, then The same scale will be used by "
+                  "all parts (including the first)\n"
+                  "\t\tYou can also specify the scale of specific parts using the syntax:\n"
+                  "\t\tpn:xn,yn,zn:pm:xm,ym,zm:pk:xk,yk,zk. (note ':', ',')  For example: `-scale "
+                  "p1:1.1,2.2,3.3:p3:2.2,1.0,3.0`\n"
+		  "\t\tThe final coordinates are `scale * orig + offset`",
                   nullptr, nullptr, true);
 
   options_.enroll("steps", GetLongOption::MandatoryValue,
@@ -314,6 +325,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   assemblyOmissions_.resize(part_count);
   nodesetMatch_.resize(part_count);
   offset_.resize(part_count);
+  scale_.resize(part_count, {1.0,1.0,1.0});
 
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
@@ -332,7 +344,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("offset");
     if (temp != nullptr) {
-      parse_offset(temp, offset_);
+      parse_offset(temp, offset_, true);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("scale");
+    if (temp != nullptr) {
+      parse_offset(temp, scale_, false);
     }
   }
 
@@ -712,17 +731,18 @@ namespace {
     }
   }
 
-  void parse_offset(const char *tokens, std::vector<vector3d> &offset)
+  void parse_offset(const char *tokens, std::vector<vector3d> &offset, bool is_offset)
   {
+    // Sets the `offset` or `scale`
     // Break into tokens separated by ","
     if (tokens != nullptr) {
       std::string token_string(tokens);
       if (token_string.find(':') == std::string::npos) {
-        // This is specifying just 3 values which are multiplied by part number-1
+        // This is specifying just 3 values which are applied to all parts
         StringVector var_list = SLIB::tokenize(token_string, ",");
 
         // At this point, var_list should contain 3 strings
-        // corresponding to the x, y, and z coordinate offsets.
+        // corresponding to the x, y, and z coordinate offsets/scales.
         if (var_list.size() != 3) {
           fmt::print(stderr,
                      "ERROR: Incorrect number of offset components specified--3 required.\n\n");
@@ -737,19 +757,19 @@ namespace {
         double      z    = std::stod(offz);
 
         for (size_t i = 0; i < offset.size(); i++) {
-          double di = (double)i;
+	  double di = is_offset ? (double)i : 1.0;
           offset[i] = {di * x, di * y, di * z};
         }
       }
       else {
-        // Tokens specify explicit offset(s) for 1 or more parts...
+        // Tokens specify explicit offset/scale(s) for 1 or more parts...
         // Form is:  `p1:x1,y1,z1:p3:x3,y3,z3:pN:xN,yN,zN`
         // colon separates part from comma-separated. x,y,z
         // colon also separates the part groups.
         auto groups = SLIB::tokenize(token_string, ":");
         if (groups.size() % 2 != 0) {
           fmt::print(stderr,
-                     "ERROR: Invalid syntax for offset.  Make sure parts are surrounded by ':'\n");
+                     "ERROR: Invalid syntax for offset/scale.  Make sure parts are surrounded by ':'\n");
           exit(EXIT_FAILURE);
         }
         for (size_t i = 0; i < groups.size(); i += 2) {
@@ -761,7 +781,7 @@ namespace {
             part_num = std::stoi(part_string.substr(1));
             if ((size_t)part_num > offset.size()) {
               fmt::print(stderr,
-                         "ERROR: Part number too large in offset command ({} must be less or equal "
+                         "ERROR: Part number too large in offset/scale command ({} must be less or equal "
                          "to {})\n",
                          part_num, offset.size());
               exit(EXIT_FAILURE);

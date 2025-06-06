@@ -254,14 +254,26 @@ int main(int argc, char *argv[])
       part_mesh[p]->property_add(Ioss::Property("block_omission_count", omission_count));
 
       const vector3d &offset = interFace.offset(p);
-      if (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0) {
+      const vector3d &scale = interFace.scale(p);
+      bool is_offset = offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0;
+      bool is_scale = scale.x != 1.0 || scale.y != 1.0 || scale.z != 1.0;
+      if (is_offset || is_scale) {
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
-        auto            *transform = Ioss::Transform::create("offset3D");
-        SMART_ASSERT(transform != nullptr);
-        std::vector<double> values{offset.x, offset.y, offset.z};
-        transform->set_properties("offset", values);
-        coord.add_transform(transform);
+	if (is_scale) {
+	  auto            *transform = Ioss::Transform::create("scale3D");
+	  SMART_ASSERT(transform != nullptr);
+	  std::vector<double> values{scale.x, scale.y, scale.z};
+	  transform->set_properties("scale", values);
+	  coord.add_transform(transform);
+	}
+	if (is_offset) {
+	  auto            *transform = Ioss::Transform::create("offset3D");
+	  SMART_ASSERT(transform != nullptr);
+	  std::vector<double> values{offset.x, offset.y, offset.z};
+	  transform->set_properties("offset", values);
+	  coord.add_transform(transform);
+	}
         nb->field_erase("mesh_model_coordinates");
         nb->field_add(coord);
       }
