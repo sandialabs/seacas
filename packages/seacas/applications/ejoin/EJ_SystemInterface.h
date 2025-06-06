@@ -56,14 +56,14 @@ public:
   const std::string &nodeset_combines() const { return nodesetCombines_; }
   const std::string &sideset_combines() const { return sidesetCombines_; }
 
-  const std::vector<vector3d>  &offset() const { return offset_; }
-  const vector3d         &offset(size_t part) const { return offset_[part-1]; }
-  const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
-  const StringIdVector   &global_var_names() const { return globalVarNames_; }
-  const StringIdVector   &node_var_names() const { return nodeVarNames_; }
-  const StringIdVector   &elem_var_names() const { return elemVarNames_; }
-  const StringIdVector   &nodeset_var_names() const { return nodesetVarNames_; }
-  const StringIdVector   &sideset_var_names() const { return sidesetVarNames_; }
+  const std::vector<vector3d> &offset() const { return offset_; }
+  const vector3d              &offset(size_t part) const { return offset_[part - 1]; }
+  const std::vector<int>      &information_record_parts() const { return infoRecordParts_; }
+  const StringIdVector        &global_var_names() const { return globalVarNames_; }
+  const StringIdVector        &node_var_names() const { return nodeVarNames_; }
+  const StringIdVector        &elem_var_names() const { return elemVarNames_; }
+  const StringIdVector        &nodeset_var_names() const { return nodesetVarNames_; }
+  const StringIdVector        &sideset_var_names() const { return sidesetVarNames_; }
 
   const Omissions &block_inclusions() const { return blockInclusions_; }
   const Omissions &block_omissions() const { return blockOmissions_; }
@@ -129,7 +129,7 @@ private:
   std::string blockPrefix_{"p"};
 
   std::vector<vector3d> offset_;
-  double   tolerance_{0.0};
+  double                tolerance_{0.0};
 
   Omissions blockInclusions_;
   Omissions blockOmissions_;
