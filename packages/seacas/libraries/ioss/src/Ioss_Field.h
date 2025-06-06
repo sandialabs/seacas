@@ -7,10 +7,13 @@
 #pragma once
 
 #include "Ioss_CodeTypes.h"
-#include <cstddef> // for size_t
+#include "Ioss_Transform.h"
+
+#include <cstddef>
+#include <memory>
 #include <stdint.h>
-#include <string> // for string
-#include <vector> // for vector
+#include <string>
+#include <vector>
 
 #include "ioss_export.h"
 
