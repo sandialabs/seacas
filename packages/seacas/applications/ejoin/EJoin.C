@@ -35,6 +35,7 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
+#include <tokenize.h>
 
 #include "EJ_CodeTypes.h"
 #include "EJ_SystemInterface.h"
@@ -252,16 +253,13 @@ int main(int argc, char *argv[])
       int omission_count = count_omissions(part_mesh[p]);
       part_mesh[p]->property_add(Ioss::Property("block_omission_count", omission_count));
 
-      vector3d offset = interFace.offset();
-      if (p > 0 && (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0)) {
+      const vector3d &offset = interFace.offset(p);
+      if (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0) {
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
         auto            *transform = Ioss::Transform::create("offset3D");
         SMART_ASSERT(transform != nullptr);
-        std::vector<double> values(3);
-        values[0] = offset.x * p;
-        values[1] = offset.y * p;
-        values[2] = offset.z * p;
+        std::vector<double> values{offset.x, offset.y, offset.z};
         transform->set_properties("offset", values);
         coord.add_transform(transform);
         nb->field_erase("mesh_model_coordinates");
@@ -301,6 +299,30 @@ int main(int argc, char *argv[])
   }
   catch (std::exception &e) {
     fmt::print(stderr, "ERROR: Standard exception: {}\n", e.what());
+  }
+}
+
+void process_specified_combines(const RegionVector &part_mesh, const std::string &split,
+                                Ioss::EntityType type)
+{
+  const auto combines = Ioss::tokenize(split, ";");
+  for (const auto &combine : combines) {
+    size_t end         = combine.find(':');
+    auto   output_name = combine.substr(0, end);
+    auto   inputs      = combine.substr(end + 1);
+    auto   input_names = Ioss::tokenize(inputs, ",");
+
+    fmt::print(stderr, "Output {}:\t", output_name);
+    for (const auto *part : part_mesh) {
+      for (const auto &name : input_names) {
+        auto *entity = part->get_entity(name, type);
+        if (entity != nullptr) {
+          fmt::print(stderr, "{}:{}, ", part->name(), name);
+          entity->property_add(Ioss::Property(std::string("ejoin_combine_into"), output_name));
+        }
+      }
+    }
+    fmt::print("\n");
   }
 }
 
@@ -437,6 +459,21 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
 
   output_region.add(block);
 
+  const std::string &eb_combines = interFace.elementblock_combines();
+  if (!eb_combines.empty()) {
+    process_specified_combines(part_mesh, eb_combines, Ioss::ELEMENTBLOCK);
+  }
+
+  const std::string ss_combines = interFace.sideset_combines();
+  if (!ss_combines.empty()) {
+    process_specified_combines(part_mesh, ss_combines, Ioss::SIDESET);
+  }
+
+  const std::string ns_combines = interFace.nodeset_combines();
+  if (!ns_combines.empty()) {
+    process_specified_combines(part_mesh, ns_combines, Ioss::NODESET);
+  }
+
   // Add element blocks, nodesets, sidesets
   for (size_t p = 0; p < part_count; p++) {
     transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(),
@@ -446,12 +483,6 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
     }
     if (!interFace.omit_nodesets()) {
       transfer_nodesets(*part_mesh[p], output_region, interFace.combine_nodesets(), false);
-      if (merged > 0 && interFace.combine_nodesets() &&
-          (interFace.match_node_xyz() || interFace.match_nodeset_nodes() ||
-           interFace.match_node_ids())) {
-        // Get the nodelist for each combined nodeset and see if contains duplicate nodes...
-        check_for_duplicate_nodeset_nodes(output_region, local_node_map);
-      }
     }
     if (!interFace.omit_sidesets()) {
       transfer_sidesets(*part_mesh[p], output_region, interFace.combine_sidesets(), false);
@@ -459,6 +490,13 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
     if (!interFace.omit_assemblies()) {
       transfer_assembly(*part_mesh[p], output_region, false);
     }
+  }
+
+  if (merged > 0 && interFace.combine_nodesets() &&
+      (interFace.match_node_xyz() || interFace.match_nodeset_nodes() ||
+       interFace.match_node_ids())) {
+    // Get the nodelist for each combined nodeset and see if contains duplicate nodes...
+    check_for_duplicate_nodeset_nodes(output_region, local_node_map);
   }
 
   // This is the map from local element position to global element
@@ -646,9 +684,18 @@ namespace {
     for (const auto &eb : ebs) {
       if (!entity_is_omitted(eb)) {
         std::string name = eb->name();
-        auto       *oeb  = output_region.get_element_block(name);
+        name             = eb->get_optional_property("ejoin_combine_into", name);
+        auto *oeb        = output_region.get_element_block(name);
         if (oeb != nullptr) {
-          if (combine_similar) {
+          if (combine_similar || eb->property_exists("ejoin_combine_into")) {
+            if (oeb->topology() != eb->topology()) {
+              fmt::print(
+                  stderr,
+                  "ERROR: The topology ('{}') for element block '{}' does not match\n       the "
+                  "topology ('{}') for element block '{}'.\n       They cannot be combined.\n\n",
+                  oeb->topology()->name(), oeb->name(), eb->topology()->name(), eb->name());
+              exit(EXIT_FAILURE);
+            }
             // Combine element blocks with similar names...
             output_input_map[oeb].emplace_back(eb, oeb->entity_count());
             size_t count = eb->entity_count();
@@ -803,9 +850,10 @@ namespace {
     for (const auto &ss : sss) {
       if (!entity_is_omitted(ss)) {
         std::string name = ss->name();
-        auto       *oss  = output_region.get_sideset(name);
+        name             = ss->get_optional_property("ejoin_combine_into", name);
+        auto *oss        = output_region.get_sideset(name);
         if (oss != nullptr) {
-          if (combine_similar) {
+          if (combine_similar || ss->property_exists("ejoin_combine_into")) {
             // Combine sidesets with similar names...
             output_input_map[oss].emplace_back(ss, oss->entity_count());
             size_t count = ss->entity_count();
@@ -934,9 +982,10 @@ namespace {
     for (const auto &ns : nss) {
       if (!entity_is_omitted(ns)) {
         std::string name = ns->name();
-        auto       *ons  = output_region.get_nodeset(name);
+        name             = ns->get_optional_property("ejoin_combine_into", name);
+        auto *ons        = output_region.get_nodeset(name);
         if (ons != nullptr) {
-          if (combine_similar) {
+          if (combine_similar || ns->property_exists("ejoin_combine_into")) {
             // Combine nodesets with similar names...
             output_input_map[ons].emplace_back(ns, ons->entity_count());
             size_t count = ns->entity_count();
@@ -1153,7 +1202,8 @@ namespace {
             SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
             const auto &[ns_key, map] = *ns_itr;
             SMART_ASSERT(ns_key == ons);
-            for (size_t i = 0; i < map.size(); i++) {
+            SMART_ASSERT(map.size() == (size_t)ons->entity_count());
+            for (int64_t i = 0; i < ons->entity_count(); i++) {
               nodelist[i] = nodelist[map[i]];
               df[i]       = df[map[i]];
             }
@@ -1367,6 +1417,7 @@ namespace {
           SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
           const auto &[ns_key, map] = *ns_itr;
           SMART_ASSERT(ns_key == ons);
+          SMART_ASSERT(map.size() == (size_t)ons->entity_count());
 
           // Now get each field, map to correct output position and output...
           for (const auto &field_name : fields) {
@@ -1840,7 +1891,13 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (ons_inputs.size() >= 2) {
-        int64_t          count = ons->entity_count();
+        int64_t count = 0;
+        for (const auto &[ins, offset] : ons_inputs) {
+          if (ins != nullptr) {
+            count += ins->entity_count();
+          }
+        }
+
         std::vector<INT> nodelist(count);
         int              found = 0;
         for (const auto &[ins, offset] : ons_inputs) {
@@ -1882,13 +1939,16 @@ namespace {
 
             auto new_size = unique(ids_pos);
             SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
-            SMART_ASSERT(new_size == size_post);
+            SMART_ASSERT(new_size == size_post)(new_size)(size_post);
 
             auto &map_vector = nodeset_in_out_map[ons];
+            SMART_ASSERT(map_vector.empty())(map_vector.size());
             map_vector.reserve(new_size);
             for (const auto &[id, pos] : ids_pos) {
               map_vector.push_back(pos);
             }
+            SMART_ASSERT(map_vector.size() == (size_t)ons->entity_count())
+            (map_vector.size())(ons->entity_count());
           }
         }
       }
