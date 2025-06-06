@@ -235,8 +235,8 @@ namespace Ioss {
     const VariableType *transStorage_{nullptr}; // Storage type after transformation
 
     std::vector<std::shared_ptr<Transform>> transforms_{};
-    char                     suffixSeparator1_{1}; // Value = 1 means unset; use database default.
-    char                     suffixSeparator2_{1}; // Value = 1 means unset; use database default.
+    char         suffixSeparator1_{1};      // Value = 1 means unset; use database default.
+    char         suffixSeparator2_{1};      // Value = 1 means unset; use database default.
     bool         sufficesUppercase_{false}; // True if the suffices are uppercase on database...
     mutable bool zeroCopyable_{false};      // True if the field is zero-copyable.
 

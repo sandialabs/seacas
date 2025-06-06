@@ -325,10 +325,10 @@ namespace {
       fmt::print("Number of comparisons                     = {}\n", compare);
       fmt::print("Tolerance used for matching               = {}\n", epsilon);
       if (dismax > double(-FLT_MAX)) {
-	fmt::print("Maximum distance between matched nodes    = {}\n", dismax);
+        fmt::print("Maximum distance between matched nodes    = {}\n", dismax);
       }
       if (g_dismin < double(FLT_MAX)) {
-	fmt::print("Minimum distance between nonmatched nodes = {}\n", g_dismin);
+        fmt::print("Minimum distance between nonmatched nodes = {}\n", g_dismin);
       }
       fmt::print("\n");
     }
