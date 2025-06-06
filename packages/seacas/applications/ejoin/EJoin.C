@@ -253,16 +253,13 @@ int main(int argc, char *argv[])
       int omission_count = count_omissions(part_mesh[p]);
       part_mesh[p]->property_add(Ioss::Property("block_omission_count", omission_count));
 
-      vector3d offset = interFace.offset();
-      if (p > 0 && (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0)) {
+      const vector3d &offset = interFace.offset(p);
+      if (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0) {
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
         auto            *transform = Ioss::Transform::create("offset3D");
         SMART_ASSERT(transform != nullptr);
-        std::vector<double> values(3);
-        values[0] = offset.x * p;
-        values[1] = offset.y * p;
-        values[2] = offset.z * p;
+        std::vector<double> values{offset.x, offset.y, offset.z};
         transform->set_properties("offset", values);
         coord.add_transform(transform);
         nb->field_erase("mesh_model_coordinates");

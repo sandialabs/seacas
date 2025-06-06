@@ -28,7 +28,7 @@ namespace {
   }
 
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
-  void parse_offset(const char *tokens, vector3d *offset);
+  void parse_offset(const char *tokens, std::vector<vector3d> &offset);
   void parse_integer_list(const char *tokens, std::vector<int> *list);
   void parse_part_list(const char *tokens, std::vector<int> *list);
   void parse_omissions(const char *tokens, Omissions *omissions, const std::string &basename,
@@ -37,9 +37,6 @@ namespace {
 
 SystemInterface::SystemInterface()
 {
-  offset_.x = 0.0;
-  offset_.y = 0.0;
-  offset_.z = 0.0;
   enroll_options();
 }
 
@@ -176,8 +173,10 @@ void SystemInterface::enroll_options()
 
   options_.enroll("offset", GetLongOption::MandatoryValue,
                   "Comma-separated x,y,z offset for coordinates of second and subsequent meshes.\n"
-                  "\t\tThe offset will be multiplied by the part number-1 so:\n"
-                  "\t\tP1: no offset; P2: 1x, 1y, 1z; P3: 2x, 2y, 2z; P(n+1): nx, ny, nz",
+		  "\t\tIf there are only 3 values specified, then The offset will be multiplied by the part number-1 so:\n"
+                  "\t\tP1: no offset; P2: 1x, 1y, 1z; P3: 2x, 2y, 2z; P(n+1): nx, ny, nz\n"
+		  "\t\tYou can also specify the offset of specific parts using the syntax:\n"
+		  "\t\tpn:xn,yn,zn:pm:xm,ym,zm:pk:xk,yk,zk. (note ':', ',')  For example: `-offset p1:1.1,2.2,3.3:p3:2.2,1.0,3.0`",
                   nullptr, nullptr, true);
 
   options_.enroll("steps", GetLongOption::MandatoryValue,
@@ -315,6 +314,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   sidesetOmissions_.resize(part_count);
   assemblyOmissions_.resize(part_count);
   nodesetMatch_.resize(part_count);
+  offset_.resize(part_count);
 
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
@@ -333,7 +333,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("offset");
     if (temp != nullptr) {
-      parse_offset(temp, &offset_);
+      parse_offset(temp, offset_);
     }
   }
 
@@ -713,32 +713,78 @@ namespace {
     }
   }
 
-  void parse_offset(const char *tokens, vector3d *offset)
+  void parse_offset(const char *tokens, std::vector<vector3d> &offset)
   {
     // Break into tokens separated by ","
     if (tokens != nullptr) {
       std::string  token_string(tokens);
-      StringVector var_list = SLIB::tokenize(token_string, ",");
-
-      // At this point, var_list should contain 1,2,or 3 strings
-      // corresponding to the x, y, and z coordinate offsets.
-      if (var_list.size() != 3) {
-        fmt::print(stderr,
-                   "ERROR: Incorrect number of offset components specified--3 required.\n\n");
-        offset->x = offset->y = offset->z = 0.0;
-        return;
+      if (token_string.find(':') == std::string::npos) {
+	// This is specifying just 3 values which are multiplied by part number-1
+	StringVector var_list = SLIB::tokenize(token_string, ",");
+	
+	// At this point, var_list should contain 3 strings
+	// corresponding to the x, y, and z coordinate offsets.
+	if (var_list.size() != 3) {
+	  fmt::print(stderr,
+		     "ERROR: Incorrect number of offset components specified--3 required.\n\n");
+	  return;
+	}
+	
+	std::string offx = var_list[0];
+	std::string offy = var_list[1];
+	std::string offz = var_list[2];
+	double      x    = std::stod(offx);
+	double      y    = std::stod(offy);
+	double      z    = std::stod(offz);
+	
+	for (size_t i = 0; i < offset.size(); i++) {
+	  double di = (double)i;
+	  offset[i] = {di * x, di * y, di * z};
+	}
       }
+      else {
+	// Tokens specify explicit offset(s) for 1 or more parts...
+	// Form is:  `p1:x1,y1,z1:p3:x3,y3,z3:pN:xN,yN,zN`
+	// colon separates part from comma-separated. x,y,z
+	// colon also separates the part groups.
+	auto groups = SLIB::tokenize(token_string, ":");
+	if (groups.size() % 2 != 0) {
+	  fmt::print(stderr,
+		     "ERROR: Invalid syntax for offset.  Make sure parts are surrounded by ':'\n");
+	  exit(EXIT_FAILURE);
+	}
+	for (size_t i = 0; i < groups.size(); i+=2) {
+	  auto &part_string = groups[i];
+	  auto &off_string = groups[i+1];
 
-      std::string offx = var_list[0];
-      std::string offy = var_list[1];
-      std::string offz = var_list[2];
-      double      x    = std::stod(offx);
-      double      y    = std::stod(offy);
-      double      z    = std::stod(offz);
+	  int part_num = -1;
+	  if (part_string[0] == 'p' || part_string[0] == 'P') {
+	    part_num = std::stoi(part_string.substr(1));
+	    if ((size_t)part_num > offset.size()) {
+	      fmt::print(stderr,
+			 "ERROR: Part number too large in offset command ({} must be less or equal to {})\n",
+			 part_num, offset.size());
+	    exit(EXIT_FAILURE);
+	    }
+	  }
+	  else {
+	    fmt::print(stderr,
+		       "ERROR: Bad syntax ({}) specifying part number. Use 'p'+ part_number\n"
+		       "       For example -offset p1:0,1,2\n",
+		       part_string);
+	    exit(EXIT_FAILURE);
+	  }
 
-      offset->x = x;
-      offset->y = y;
-      offset->z = z;
+	  auto   soff = SLIB::tokenize(off_string, ",");
+	  std::string offx = soff[0];
+	  std::string offy = soff[1];
+	  std::string offz = soff[2];
+	  double      x    = std::stod(offx);
+	  double      y    = std::stod(offy);
+	  double      z    = std::stod(offz);
+	  offset[part_num - 1] = {x, y, z};
+	}
+      }
     }
   }
 

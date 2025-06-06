@@ -56,7 +56,8 @@ public:
   const std::string &nodeset_combines() const { return nodesetCombines_; }
   const std::string &sideset_combines() const { return sidesetCombines_; }
 
-  vector3d                offset() const { return offset_; }
+  const std::vector<vector3d>  &offset() const { return offset_; }
+  const vector3d         &offset(size_t part) const { return offset_[part-1]; }
   const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
   const StringIdVector   &global_var_names() const { return globalVarNames_; }
   const StringIdVector   &node_var_names() const { return nodeVarNames_; }
@@ -127,7 +128,7 @@ private:
 
   std::string blockPrefix_{"p"};
 
-  vector3d offset_;
+  std::vector<vector3d> offset_;
   double   tolerance_{0.0};
 
   Omissions blockInclusions_;
