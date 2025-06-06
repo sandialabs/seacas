@@ -176,7 +176,7 @@ void SystemInterface::enroll_options()
                   "\t\tYou can also specify the offset of specific parts using the syntax:\n"
                   "\t\tpn:xn,yn,zn:pm:xm,ym,zm:pk:xk,yk,zk. (note ':', ',')  For example: `-offset "
                   "p1:1.1,2.2,3.3:p3:2.2,1.0,3.0`\n"
-		  "\t\tThe final coordinates are `scale * orig + offset`",
+                  "\t\tThe final coordinates are `scale * orig + offset`",
                   nullptr, nullptr, true);
 
   options_.enroll("scale", GetLongOption::MandatoryValue,
@@ -186,7 +186,7 @@ void SystemInterface::enroll_options()
                   "\t\tYou can also specify the scale of specific parts using the syntax:\n"
                   "\t\tpn:xn,yn,zn:pm:xm,ym,zm:pk:xk,yk,zk. (note ':', ',')  For example: `-scale "
                   "p1:1.1,2.2,3.3:p3:2.2,1.0,3.0`\n"
-		  "\t\tThe final coordinates are `scale * orig + offset`",
+                  "\t\tThe final coordinates are `scale * orig + offset`",
                   nullptr, nullptr, true);
 
   options_.enroll("steps", GetLongOption::MandatoryValue,
@@ -325,7 +325,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   assemblyOmissions_.resize(part_count);
   nodesetMatch_.resize(part_count);
   offset_.resize(part_count);
-  scale_.resize(part_count, {1.0,1.0,1.0});
+  scale_.resize(part_count, {1.0, 1.0, 1.0});
 
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
@@ -757,7 +757,7 @@ namespace {
         double      z    = std::stod(offz);
 
         for (size_t i = 0; i < offset.size(); i++) {
-	  double di = is_offset ? (double)i : 1.0;
+          double di = is_offset ? (double)i : 1.0;
           offset[i] = {di * x, di * y, di * z};
         }
       }
@@ -768,8 +768,9 @@ namespace {
         // colon also separates the part groups.
         auto groups = SLIB::tokenize(token_string, ":");
         if (groups.size() % 2 != 0) {
-          fmt::print(stderr,
-                     "ERROR: Invalid syntax for offset/scale.  Make sure parts are surrounded by ':'\n");
+          fmt::print(
+              stderr,
+              "ERROR: Invalid syntax for offset/scale.  Make sure parts are surrounded by ':'\n");
           exit(EXIT_FAILURE);
         }
         for (size_t i = 0; i < groups.size(); i += 2) {
@@ -780,10 +781,11 @@ namespace {
           if (part_string[0] == 'p' || part_string[0] == 'P') {
             part_num = std::stoi(part_string.substr(1));
             if ((size_t)part_num > offset.size()) {
-              fmt::print(stderr,
-                         "ERROR: Part number too large in offset/scale command ({} must be less or equal "
-                         "to {})\n",
-                         part_num, offset.size());
+              fmt::print(
+                  stderr,
+                  "ERROR: Part number too large in offset/scale command ({} must be less or equal "
+                  "to {})\n",
+                  part_num, offset.size());
               exit(EXIT_FAILURE);
             }
           }
