@@ -486,12 +486,6 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
     }
     if (!interFace.omit_nodesets()) {
       transfer_nodesets(*part_mesh[p], output_region, interFace.combine_nodesets(), false);
-      if (merged > 0 && interFace.combine_nodesets() &&
-          (interFace.match_node_xyz() || interFace.match_nodeset_nodes() ||
-           interFace.match_node_ids())) {
-        // Get the nodelist for each combined nodeset and see if contains duplicate nodes...
-        check_for_duplicate_nodeset_nodes(output_region, local_node_map);
-      }
     }
     if (!interFace.omit_sidesets()) {
       transfer_sidesets(*part_mesh[p], output_region, interFace.combine_sidesets(), false);
@@ -499,6 +493,13 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
     if (!interFace.omit_assemblies()) {
       transfer_assembly(*part_mesh[p], output_region, false);
     }
+  }
+
+  if (merged > 0 && interFace.combine_nodesets() &&
+      (interFace.match_node_xyz() || interFace.match_nodeset_nodes() ||
+       interFace.match_node_ids())) {
+    // Get the nodelist for each combined nodeset and see if contains duplicate nodes...
+    check_for_duplicate_nodeset_nodes(output_region, local_node_map);
   }
 
   // This is the map from local element position to global element
@@ -1204,7 +1205,8 @@ namespace {
             SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
             const auto &[ns_key, map] = *ns_itr;
             SMART_ASSERT(ns_key == ons);
-            for (size_t i = 0; i < map.size(); i++) {
+	    SMART_ASSERT(map.size() == (size_t)ons->entity_count());
+            for (int64_t i = 0; i < ons->entity_count(); i++) {
               nodelist[i] = nodelist[map[i]];
               df[i]       = df[map[i]];
             }
@@ -1418,6 +1420,7 @@ namespace {
           SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
           const auto &[ns_key, map] = *ns_itr;
           SMART_ASSERT(ns_key == ons);
+	  SMART_ASSERT(map.size() == (size_t)ons->entity_count());
 
           // Now get each field, map to correct output position and output...
           for (const auto &field_name : fields) {
@@ -1891,7 +1894,13 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (ons_inputs.size() >= 2) {
-        int64_t          count = ons->entity_count();
+        int64_t          count = 0;
+        for (const auto &[ins, offset] : ons_inputs) {
+          if (ins != nullptr) {
+	    count += ins->entity_count();
+	  }
+	}
+
         std::vector<INT> nodelist(count);
         int              found = 0;
         for (const auto &[ins, offset] : ons_inputs) {
@@ -1933,13 +1942,15 @@ namespace {
 
             auto new_size = unique(ids_pos);
             SMART_ASSERT(new_size == (size_t)ons->entity_count())(new_size)(ons->entity_count());
-            SMART_ASSERT(new_size == size_post);
+            SMART_ASSERT(new_size == size_post)(new_size)(size_post);
 
             auto &map_vector = nodeset_in_out_map[ons];
+	    SMART_ASSERT(map_vector.empty())(map_vector.size());
             map_vector.reserve(new_size);
             for (const auto &[id, pos] : ids_pos) {
               map_vector.push_back(pos);
             }
+	    SMART_ASSERT(map_vector.size() == (size_t)ons->entity_count())(map_vector.size())(ons->entity_count());
           }
         }
       }
