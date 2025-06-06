@@ -1205,7 +1205,7 @@ namespace {
             SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
             const auto &[ns_key, map] = *ns_itr;
             SMART_ASSERT(ns_key == ons);
-	    SMART_ASSERT(map.size() == (size_t)ons->entity_count());
+            SMART_ASSERT(map.size() == (size_t)ons->entity_count());
             for (int64_t i = 0; i < ons->entity_count(); i++) {
               nodelist[i] = nodelist[map[i]];
               df[i]       = df[map[i]];
@@ -1420,7 +1420,7 @@ namespace {
           SMART_ASSERT(ns_itr != nodeset_in_out_map.end());
           const auto &[ns_key, map] = *ns_itr;
           SMART_ASSERT(ns_key == ons);
-	  SMART_ASSERT(map.size() == (size_t)ons->entity_count());
+          SMART_ASSERT(map.size() == (size_t)ons->entity_count());
 
           // Now get each field, map to correct output position and output...
           for (const auto &field_name : fields) {
@@ -1894,12 +1894,12 @@ namespace {
       SMART_ASSERT(itr != output_input_map.end());
       const auto &[key, ons_inputs] = *itr;
       if (ons_inputs.size() >= 2) {
-        int64_t          count = 0;
+        int64_t count = 0;
         for (const auto &[ins, offset] : ons_inputs) {
           if (ins != nullptr) {
-	    count += ins->entity_count();
-	  }
-	}
+            count += ins->entity_count();
+          }
+        }
 
         std::vector<INT> nodelist(count);
         int              found = 0;
@@ -1945,12 +1945,13 @@ namespace {
             SMART_ASSERT(new_size == size_post)(new_size)(size_post);
 
             auto &map_vector = nodeset_in_out_map[ons];
-	    SMART_ASSERT(map_vector.empty())(map_vector.size());
+            SMART_ASSERT(map_vector.empty())(map_vector.size());
             map_vector.reserve(new_size);
             for (const auto &[id, pos] : ids_pos) {
               map_vector.push_back(pos);
             }
-	    SMART_ASSERT(map_vector.size() == (size_t)ons->entity_count())(map_vector.size())(ons->entity_count());
+            SMART_ASSERT(map_vector.size() == (size_t)ons->entity_count())
+            (map_vector.size())(ons->entity_count());
           }
         }
       }
