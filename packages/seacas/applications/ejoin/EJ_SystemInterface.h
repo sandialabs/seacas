@@ -57,7 +57,7 @@ public:
   const std::string &sideset_combines() const { return sidesetCombines_; }
 
   const std::vector<vector3d> &offset() const { return offset_; }
-  const vector3d              &offset(size_t part) const { return offset_[part - 1]; }
+  const vector3d              &offset(size_t part) const { return offset_[part]; }
   const std::vector<int>      &information_record_parts() const { return infoRecordParts_; }
   const StringIdVector        &global_var_names() const { return globalVarNames_; }
   const StringIdVector        &node_var_names() const { return nodeVarNames_; }
