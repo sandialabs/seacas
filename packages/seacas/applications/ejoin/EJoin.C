@@ -324,17 +324,14 @@ void process_specified_combines(const RegionVector &part_mesh, const std::string
     auto   inputs      = combine.substr(end + 1);
     auto   input_names = Ioss::tokenize(inputs, ",");
 
-    fmt::print(stderr, "Output {}:\t", output_name);
     for (const auto *part : part_mesh) {
       for (const auto &name : input_names) {
         auto *entity = part->get_entity(name, type);
         if (entity != nullptr) {
-          fmt::print(stderr, "{}:{}, ", part->name(), name);
           entity->property_add(Ioss::Property(std::string("ejoin_combine_into"), output_name));
         }
       }
     }
-    fmt::print("\n");
   }
 }
 
@@ -1594,38 +1591,28 @@ namespace {
     return error;
   }
 
-  bool define_element_fields(const Ioss::Region &output_region, const StringIdVector &variable_list)
+  template <typename ENTITY>
+  bool define_entity_fields(const StringIdVector &variable_list, const std::vector<ENTITY*>&entities, Ioss::NameList &defined_fields, const std::string &type, bool check_list)
   {
     bool error = false;
-    // Element Block Fields...
-    if (!variable_list.empty() && variable_list[0].first == "none") {
-      return error;
-    }
-
     bool           subsetting_fields = !variable_list.empty() && variable_list[0].first != "all";
-    Ioss::NameList defined_fields;
 
-    const auto &output_blocks = output_region.get_element_blocks();
-    if (output_blocks.empty()) {
-      return error;
-    }
-
-    for (const auto &oeb : output_blocks) {
-      const auto &itr = output_input_map.find(oeb);
+    for (const auto &entity : entities) {
+      const auto &itr = output_input_map.find(entity);
       SMART_ASSERT(itr != output_input_map.end());
-      const auto &[key, oeb_inputs] = *itr;
-      if (!oeb_inputs.empty()) {
-        int64_t count = oeb->entity_count();
-        for (const auto &[ieb, offset] : oeb_inputs) {
-          if (ieb != nullptr) {
-            size_t         id     = ieb->get_property("id").get_int();
-            Ioss::NameList fields = ieb->field_describe(Ioss::Field::TRANSIENT);
+      const auto &[key, entity_inputs] = *itr;
+      if (!entity_inputs.empty()) {
+        int64_t count = entity->entity_count();
+        for (const auto &[in_entity, offset] : entity_inputs) {
+          if (in_entity != nullptr) {
+            size_t         id     = in_entity->get_property("id").get_int();
+            Ioss::NameList fields = in_entity->field_describe(Ioss::Field::TRANSIENT);
             for (const auto &field_name : fields) {
               if (valid_variable(field_name, id, variable_list)) {
-                Ioss::Field field = ieb->get_field(field_name);
+                Ioss::Field field = in_entity->get_field(field_name);
                 field.reset_count(count);
-                if (!oeb->field_exists(field_name)) {
-                  oeb->field_add(std::move(field));
+                if (!entity->field_exists(field_name)) {
+                  entity->field_add(std::move(field));
                   if (subsetting_fields) {
                     defined_fields.push_back(field_name);
                   }
@@ -1640,12 +1627,27 @@ namespace {
     // Now that we have defined all fields, check `variable_list` and make
     // sure that all fields that have been explicitly specified now exist
     // on `output_region`...
-    if (subsetting_fields) {
+    if (subsetting_fields && check_list) {
       // The user has specified at least one variable...
       Ioss::Utils::uniquify(defined_fields);
-      error = check_variable_mismatch("Element", variable_list, defined_fields);
+      error = check_variable_mismatch(type, variable_list, defined_fields);
     }
     return error;
+  }
+
+  bool define_element_fields(const Ioss::Region &output_region, const StringIdVector &variable_list)
+  {
+    bool error = false;
+    // Element Block Fields...
+    if (!variable_list.empty() && variable_list[0].first == "none") {
+      return error;
+    }
+    const auto &output_blocks = output_region.get_element_blocks();
+    if (output_blocks.empty()) {
+      return error;
+    }
+    Ioss::NameList defined_fields;
+    return define_entity_fields(variable_list, output_blocks, defined_fields, "Element", true);
   }
 
   bool define_nodeset_fields(const Ioss::Region &output_region, const StringIdVector &variable_list)
@@ -1656,84 +1658,22 @@ namespace {
       return error;
     }
 
-    bool           subsetting_fields = !variable_list.empty() && variable_list[0].first != "all";
-    Ioss::NameList defined_fields;
-
     const auto &output_nodesets = output_region.get_nodesets();
     if (output_nodesets.empty()) {
       return error;
     }
 
-    for (const auto &ons : output_nodesets) {
-      const auto &itr = output_input_map.find(ons);
-      SMART_ASSERT(itr != output_input_map.end());
-      const auto &[key, ons_inputs] = *itr;
-      if (!ons_inputs.empty()) {
-        int64_t count = ons->entity_count();
-        for (const auto &[ins, offset] : ons_inputs) {
-          if (ins != nullptr) {
-            size_t         id     = ins->get_property("id").get_int();
-            Ioss::NameList fields = ins->field_describe(Ioss::Field::TRANSIENT);
-            for (const auto &field_name : fields) {
-              if (valid_variable(field_name, id, variable_list)) {
-                if (!ons->field_exists(field_name)) {
-                  Ioss::Field field = ins->get_field(field_name);
-                  field.reset_count(count);
-                  ons->field_add(std::move(field));
-                  if (subsetting_fields) {
-                    defined_fields.push_back(field_name);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    // Now that we have defined all fields, check `variable_list` and make
-    // sure that all fields that have been explicitly specified now exist
-    // on `output_region`...
-    if (subsetting_fields) {
-      // The user has specified at least one variable...
-      Ioss::Utils::uniquify(defined_fields);
-      error = check_variable_mismatch("Nodeset", variable_list, defined_fields);
-    }
-    return error;
+    Ioss::NameList defined_fields;
+    return define_entity_fields(variable_list, output_nodesets, defined_fields, "Nodeset", true);
   }
 
   void define_sideblock_fields(Ioss::SideSet *oss, const StringIdVector &variable_list,
                                Ioss::NameList &defined_fields)
   {
-    size_t id                = oss->get_property("id").get_int();
-    bool   subsetting_fields = !variable_list.empty() && variable_list[0].first != "all";
-
     // Get output sideblocks in the output sideset `oss`
     const Ioss::SideBlockContainer &osbs = oss->get_side_blocks();
 
-    for (const auto &osb : osbs) {
-      const auto &itr = output_input_map.find(osb);
-      SMART_ASSERT(itr != output_input_map.end());
-      const auto &[key, osb_inputs] = *itr;
-
-      int64_t count = osb->entity_count();
-      for (const auto &[isb, offset] : osb_inputs) {
-        if (isb != nullptr) {
-          auto fields = isb->field_describe(Ioss::Field::TRANSIENT);
-          for (const auto &field_name : fields) {
-            if (valid_variable(field_name, id, variable_list)) {
-              Ioss::Field field = isb->get_field(field_name);
-              if (!osb->field_exists(field_name)) {
-                field.reset_count(count);
-                osb->field_add(std::move(field));
-                if (subsetting_fields) {
-                  defined_fields.push_back(field_name);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    define_entity_fields(variable_list, osbs, defined_fields, "Sideblock", false);
   }
 
   bool define_sideset_fields(const Ioss::Region &output_region, const StringIdVector &variable_list)
