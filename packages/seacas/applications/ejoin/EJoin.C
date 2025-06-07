@@ -1592,10 +1592,12 @@ namespace {
   }
 
   template <typename ENTITY>
-  bool define_entity_fields(const StringIdVector &variable_list, const std::vector<ENTITY*>&entities, Ioss::NameList &defined_fields, const std::string &type, bool check_list)
+  bool define_entity_fields(const StringIdVector        &variable_list,
+                            const std::vector<ENTITY *> &entities, Ioss::NameList &defined_fields,
+                            const std::string &type, bool check_list)
   {
-    bool error = false;
-    bool           subsetting_fields = !variable_list.empty() && variable_list[0].first != "all";
+    bool error             = false;
+    bool subsetting_fields = !variable_list.empty() && variable_list[0].first != "all";
 
     for (const auto &entity : entities) {
       const auto &itr = output_input_map.find(entity);
