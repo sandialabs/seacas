@@ -1395,10 +1395,6 @@ namespace {
 
   void output_nodeset_fields(Ioss::Region &output_region, bool nodes_consolidated)
   {
-    // NOTE: The handling of merged nodes is very inefficient currently since it is done once per
-    // timestep...
-    //       See if can store the map somewhere and use it.  It is initially built in
-    //       output_nodeset...
     const auto &output_nodesets = output_region.get_nodesets();
     if (nodes_consolidated) {
       // The size of the input nodeset nodelists may be more than the size of the output nodeset
