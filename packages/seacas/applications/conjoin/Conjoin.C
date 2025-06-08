@@ -509,17 +509,26 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
       // on one database and the first on the next database.
 
       int i = 0;
-      for (i = nts; i > 0; i--) {
-        if (times[i - 1] < t_min) {
-          if (used || t_min - times[i - 1] >= interFace.interpart_minimum_time_delta()) {
-            used = true;
-            global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
-          }
-        }
+      if (interFace.use_all_times()) {
+	for (i = nts; i > 0; i--) {
+	  used = true;
+	  global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
+	}
+	local_mesh[p - 1].timestepCount = i;
+	t_min                           = t_min < times[0] ? t_min : times[0];
       }
-      local_mesh[p - 1].timestepCount = i;
-      t_min                           = t_min < times[0] ? t_min : times[0];
-
+      else {
+	for (i = nts; i > 0; i--) {
+	  if (times[i - 1] < t_min) {
+	    if (used || t_min - times[i - 1] >= interFace.interpart_minimum_time_delta()) {
+	      used = true;
+	      global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
+	    }
+	  }
+	}
+	local_mesh[p - 1].timestepCount = i;
+	t_min                           = t_min < times[0] ? t_min : times[0];
+      }
       if (!used) {
         std::string part = "Part " + std::to_string(p) + ": ";
         part += interFace.inputFiles_[p - 1];
@@ -1978,7 +1987,7 @@ namespace {
 
     // At this point, the variable_list specifies at least one
     // variable to be output to the database.
-    // Get the list that the user entered and the list of files
+    // Get the list that the user entered and the list of names
     // from the input database...
     {
       StringVector exo_names = get_exodus_variable_names(id, vars.type(), num_vars);
@@ -1991,9 +2000,16 @@ namespace {
       // The variable_list may contain multiple entries for each
       // variable if the user is specifying output only on certain
       // element blocks...
+      bool omit = false;
+      if (variable_list.size() >= 2 && case_compare(variable_list[0].first, "omit")) {
+	std::iota(vars.index_.begin(), vars.index_.end(), 1);
+	omit = true;
+      }
       std::string var_name;
-      int         var_count = 0;
       for (const auto &elem : variable_list) {
+	if (case_compare(variable_list[0].first, "omit")) {
+	  continue;
+	}	  
         if (var_name == elem.first) {
           continue;
         }
@@ -2002,7 +2018,7 @@ namespace {
         for (size_t j = 0; j < exo_names.size() && !found; j++) {
           if (case_compare(exo_names[j], var_name)) {
             found          = true;
-            vars.index_[j] = ++var_count;
+            vars.index_[j] = omit ? 0 : 1;
           }
         }
         if (!found) {
@@ -2015,10 +2031,11 @@ namespace {
       for (auto &elem : vars.index_) {
         if (elem > 0) {
           nz_count++;
+	  if (omit) {
+	    elem = nz_count;
+	  }
         }
       }
-      SMART_ASSERT(nz_count == var_count + extra)(nz_count)(var_count);
-
       if (vars.addStatus) {
         vars.index_[num_vars] = nz_count; // Already counted above...
       }
