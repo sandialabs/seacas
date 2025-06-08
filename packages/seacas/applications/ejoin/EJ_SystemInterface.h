@@ -6,11 +6,11 @@
 #pragma once
 
 #include "EJ_CodeTypes.h"
-#include "EJ_vector3d.h" 
-#include "GetLongOpt.h"  
-#include <climits>       
-#include <string>        
-#include <vector>        
+#include "EJ_vector3d.h"
+#include "GetLongOpt.h"
+#include <climits>
+#include <string>
+#include <vector>
 
 class SystemInterface
 {

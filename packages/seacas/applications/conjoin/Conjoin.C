@@ -510,24 +510,24 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
 
       int i = 0;
       if (interFace.use_all_times()) {
-	for (i = nts; i > 0; i--) {
-	  used = true;
-	  global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
-	}
-	local_mesh[p - 1].timestepCount = i;
-	t_min                           = t_min < times[0] ? t_min : times[0];
+        for (i = nts; i > 0; i--) {
+          used = true;
+          global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
+        }
+        local_mesh[p - 1].timestepCount = i;
+        t_min                           = t_min < times[0] ? t_min : times[0];
       }
       else {
-	for (i = nts; i > 0; i--) {
-	  if (times[i - 1] < t_min) {
-	    if (used || t_min - times[i - 1] >= interFace.interpart_minimum_time_delta()) {
-	      used = true;
-	      global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
-	    }
-	  }
-	}
-	local_mesh[p - 1].timestepCount = i;
-	t_min                           = t_min < times[0] ? t_min : times[0];
+        for (i = nts; i > 0; i--) {
+          if (times[i - 1] < t_min) {
+            if (used || t_min - times[i - 1] >= interFace.interpart_minimum_time_delta()) {
+              used = true;
+              global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
+            }
+          }
+        }
+        local_mesh[p - 1].timestepCount = i;
+        t_min                           = t_min < times[0] ? t_min : times[0];
       }
       if (!used) {
         std::string part = "Part " + std::to_string(p) + ": ";
@@ -2002,14 +2002,14 @@ namespace {
       // element blocks...
       bool omit = false;
       if (variable_list.size() >= 2 && case_compare(variable_list[0].first, "omit")) {
-	std::iota(vars.index_.begin(), vars.index_.end(), 1);
-	omit = true;
+        std::iota(vars.index_.begin(), vars.index_.end(), 1);
+        omit = true;
       }
       std::string var_name;
       for (const auto &elem : variable_list) {
-	if (case_compare(variable_list[0].first, "omit")) {
-	  continue;
-	}	  
+        if (case_compare(variable_list[0].first, "omit")) {
+          continue;
+        }
         if (var_name == elem.first) {
           continue;
         }
@@ -2031,9 +2031,9 @@ namespace {
       for (auto &elem : vars.index_) {
         if (elem > 0) {
           nz_count++;
-	  if (omit) {
-	    elem = nz_count;
-	  }
+          if (omit) {
+            elem = nz_count;
+          }
         }
       }
       if (vars.addStatus) {

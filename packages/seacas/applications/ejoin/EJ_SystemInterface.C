@@ -8,7 +8,7 @@
 #include "EJ_Version.h"
 #include "EJ_vector3d.h"
 #include <SL_tokenize.h>
-#include <algorithm> 
+#include <algorithm>
 #include <cctype>
 #include <copyright.h>
 #include <cstddef>
