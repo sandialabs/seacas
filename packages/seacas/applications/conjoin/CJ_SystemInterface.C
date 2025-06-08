@@ -84,7 +84,7 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("quantize_nsd", GetLongOption::MandatoryValue,
                   "Use the lossy quantize compression method.\n"
-		  "\t\tValue specifies number of digits to retain (1..15) [exodus only]",
+                  "\t\tValue specifies number of digits to retain (1..15) [exodus only]",
                   nullptr, nullptr, true);
 
   options_.enroll("sort_times", GetLongOption::NoValue,
@@ -107,29 +107,35 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("gvar", GetLongOption::MandatoryValue,
                   "Comma-separated list of global variables to be joined or ALL or NONE.", nullptr);
 
-  options_.enroll("evar", GetLongOption::MandatoryValue,
-                  "Comma-separated list of element variables to be joined or ALL or NONE.\n"
-                  "\t\tVariables can be limited to certain blocks by appending a\n"
-                  "\t\tcolon followed by the block id.  E.g. -evar sigxx:10:20\n"
-		  "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.",
-                  nullptr);
+  options_.enroll(
+      "evar", GetLongOption::MandatoryValue,
+      "Comma-separated list of element variables to be joined or ALL or NONE.\n"
+      "\t\tVariables can be limited to certain blocks by appending a\n"
+      "\t\tcolon followed by the block id.  E.g. -evar sigxx:10:20\n"
+      "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.",
+      nullptr);
 
-  options_.enroll("nvar", GetLongOption::MandatoryValue,
-                  "Comma-separated list of nodal variables to be joined or ALL, NONE, OMIT.\n"
-		  "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.", nullptr);
+  options_.enroll(
+      "nvar", GetLongOption::MandatoryValue,
+      "Comma-separated list of nodal variables to be joined or ALL, NONE, OMIT.\n"
+      "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.",
+      nullptr);
 
-  options_.enroll("nsetvar", GetLongOption::MandatoryValue,
-                  "Comma-separated list of nodeset variables to be joined or ALL, NONE, OMIT.\n"
-		  "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.", nullptr);
+  options_.enroll(
+      "nsetvar", GetLongOption::MandatoryValue,
+      "Comma-separated list of nodeset variables to be joined or ALL, NONE, OMIT.\n"
+      "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.",
+      nullptr);
 
-  options_.enroll("ssetvar", GetLongOption::MandatoryValue,
-                  "Comma-separated list of sideset variables to be joined or ALL, NONE, OMIT.\n"
-		  "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.",
-                  nullptr);
+  options_.enroll(
+      "ssetvar", GetLongOption::MandatoryValue,
+      "Comma-separated list of sideset variables to be joined or ALL, NONE, OMIT.\n"
+      "\t\tIf the first word is `OMIT`, then the list specifies variables to omit, not include.",
+      nullptr);
 
   options_.enroll("use_all_times", GetLongOption::NoValue,
                   "All times on all databases will be used.\n"
-		  "\t\tThe output database may have non-monotonically increasing times.",
+                  "\t\tThe output database may have non-monotonically increasing times.",
                   nullptr, nullptr, true);
   options_.enroll(
       "interpart_minimum_time_delta", GetLongOption::MandatoryValue,
