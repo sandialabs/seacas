@@ -382,9 +382,9 @@ namespace {
       for (const auto &var : var_list) {
         StringVector name_id  = SLIB::tokenize(var, ":");
         std::string  var_name = LowerCase(name_id[0]);
-	if (var_name == "omit") {
-	  var_name = "!omit";  // So sorts at front of list...
-	}
+        if (var_name == "omit") {
+          var_name = "!omit"; // So sorts at front of list...
+        }
         if (name_id.size() == 1) {
           (*variable_list).emplace_back(var_name, 0);
         }

@@ -2031,7 +2031,7 @@ namespace {
       for (auto &elem : vars.index_) {
         if (elem > 0) {
           nz_count++;
-	  elem = nz_count;
+          elem = nz_count;
         }
       }
       if (vars.addStatus) {
