@@ -2001,19 +2001,19 @@ namespace {
       // variable if the user is specifying output only on certain
       // element blocks...
       bool omit = false;
-      if (variable_list.size() >= 2 && case_compare(variable_list[0].first, "omit")) {
+      if (variable_list.size() >= 2 && case_compare(variable_list[0].first, "!omit")) {
         std::iota(vars.index_.begin(), vars.index_.end(), 1);
         omit = true;
       }
       std::string var_name;
-      for (const auto &elem : variable_list) {
-        if (case_compare(variable_list[0].first, "omit")) {
+      for (const auto &[elem, id] : variable_list) {
+        if (case_compare(elem, "!omit")) {
           continue;
         }
-        if (var_name == elem.first) {
+        if (var_name == elem) {
           continue;
         }
-        var_name   = elem.first;
+        var_name   = elem;
         bool found = false;
         for (size_t j = 0; j < exo_names.size() && !found; j++) {
           if (case_compare(exo_names[j], var_name)) {
@@ -2022,7 +2022,7 @@ namespace {
           }
         }
         if (!found) {
-          fmt::print(stderr, "ERROR: Variable '{}' is not valid.\n", elem.first);
+          fmt::print(stderr, "ERROR: Variable '{}' is not valid.\n", elem);
           exit(EXIT_FAILURE);
         }
       }
@@ -2031,9 +2031,7 @@ namespace {
       for (auto &elem : vars.index_) {
         if (elem > 0) {
           nz_count++;
-          if (omit) {
-            elem = nz_count;
-          }
+	  elem = nz_count;
         }
       }
       if (vars.addStatus) {
