@@ -27,15 +27,9 @@ namespace Excn {
                    otype == ObjectType::GLOBAL);
     }
 
-    int count() const
-    {
-      return names_.size() + (addStatus ? 1 : 0);
-    }
+    int count() const { return names_.size() + (addStatus ? 1 : 0); }
 
-    size_t in_count(int part) const
-    {
-      return inputIndex_[part].size();
-    }
+    size_t in_count(int part) const { return inputIndex_[part].size(); }
 
     const char *label() const
     {
@@ -61,15 +55,13 @@ namespace Excn {
       }
     }
 
-    IntVector &input_index(int part) {
-      return inputIndex_[part];
-    }
+    IntVector &input_index(int part) { return inputIndex_[part]; }
 
     bool add_status() const { return addStatus; }
 
-    ObjectType  objectType;
-    bool        addStatus;
+    ObjectType             objectType;
+    bool                   addStatus;
     std::vector<IntVector> inputIndex_{};
-    StringVector names_{};
+    StringVector           names_{};
   };
 } // namespace Excn

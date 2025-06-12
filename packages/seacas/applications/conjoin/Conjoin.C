@@ -217,7 +217,7 @@ namespace {
   void get_variable_params(int part, Excn::Variables &vars, const StringIdVector &variable_list);
 
   void put_variable_names(int out, Excn::Variables &vars, Excn::SystemInterface &si,
-			  int *combined_status_variable_index = nullptr);
+                          int *combined_status_variable_index = nullptr);
 
   template <typename INT>
   void build_reverse_node_map(std::vector<Excn::Mesh<INT>> &local_mesh, Excn::Mesh<INT> *global,
@@ -679,25 +679,23 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   Excn::Variables sideset_vars(Excn::ObjectType::SSET, part_count);
 
   for (size_t part = 0; part < part_count; part++) {
-    get_variable_params(part, global_vars,  interFace.global_var_names());
-    get_variable_params(part, nodal_vars,   interFace.node_var_names());
+    get_variable_params(part, global_vars, interFace.global_var_names());
+    get_variable_params(part, nodal_vars, interFace.node_var_names());
     get_variable_params(part, element_vars, interFace.elem_var_names());
     get_variable_params(part, nodeset_vars, interFace.nset_var_names());
     get_variable_params(part, sideset_vars, interFace.sset_var_names());
   }
 
-  ex_put_all_var_param(Excn::ExodusFile::output(), global_vars.count(),
-		       nodal_vars.count(), element_vars.count(),
-		       nullptr, nodeset_vars.count(),
-		       nullptr, sideset_vars.count(),
-		       nullptr);
+  ex_put_all_var_param(Excn::ExodusFile::output(), global_vars.count(), nodal_vars.count(),
+                       element_vars.count(), nullptr, nodeset_vars.count(), nullptr,
+                       sideset_vars.count(), nullptr);
 
   // II. read/write the variable names
   int combined_status_variable_index = 0;
   put_variable_names(Excn::ExodusFile::output(), global_vars, interFace);
   put_variable_names(Excn::ExodusFile::output(), nodal_vars, interFace);
   put_variable_names(Excn::ExodusFile::output(), element_vars, interFace,
-		     &combined_status_variable_index);
+                     &combined_status_variable_index);
   put_variable_names(Excn::ExodusFile::output(), nodeset_vars, interFace);
   put_variable_names(Excn::ExodusFile::output(), sideset_vars, interFace);
   ex_update(Excn::ExodusFile::output());
@@ -790,37 +788,36 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
       std::vector<T> master_nodal_values(global.count(Excn::ObjectType::NODE));
 
       for (size_t i = 0; i < nodal_vars.in_count(p); i++) {
-	int out_index = nodal_vars.inputIndex_[p][i];
-	if (out_index > 0) {
-	  std::fill(master_nodal_values.begin(), master_nodal_values.end(), T(0.0));
-	  error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_NODAL, i + 1, 0,
-			      node_count, Data(values));
+        int out_index = nodal_vars.inputIndex_[p][i];
+        if (out_index > 0) {
+          std::fill(master_nodal_values.begin(), master_nodal_values.end(), T(0.0));
+          error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_NODAL, i + 1, 0,
+                              node_count, Data(values));
 
-	  // copy values to master nodal value information
-	  for (size_t jj = 0; jj < node_count; jj++) {
-	    // Map local nodal value to global location...
-	    size_t nodal_value               = local_mesh[p].localNodeToGlobal[jj];
-	    master_nodal_values[nodal_value] = values[jj];
-	  }
-	  error += ex_put_var(Excn::ExodusFile::output(), time_step_out, EX_NODAL, out_index, 0,
-			      global.count(Excn::ObjectType::NODE), Data(master_nodal_values));
+          // copy values to master nodal value information
+          for (size_t jj = 0; jj < node_count; jj++) {
+            // Map local nodal value to global location...
+            size_t nodal_value               = local_mesh[p].localNodeToGlobal[jj];
+            master_nodal_values[nodal_value] = values[jj];
+          }
+          error += ex_put_var(Excn::ExodusFile::output(), time_step_out, EX_NODAL, out_index, 0,
+                              global.count(Excn::ObjectType::NODE), Data(master_nodal_values));
         }
       }
 
       // Fill "node_status" variable -- 'alive' for alive; 1-alive for dead.
       // It is the last output variable...
       if (nodal_vars.addStatus) {
-	SMART_ASSERT(alive == 0.0 || alive == 1.0)(alive);
-	std::fill(master_nodal_values.begin(), master_nodal_values.end(), T((1.0 - alive)));
-	for (size_t j = 0; j < node_count; j++) {
-	  // Map local nodal value to global location...
-	  size_t nodal_value               = local_mesh[p].localNodeToGlobal[j];
-	  master_nodal_values[nodal_value] = alive;
-	}
-	
-	error += ex_put_var(Excn::ExodusFile::output(), time_step_out, EX_NODAL,
-			    nodal_vars.count(), 0,
-			    global.count(Excn::ObjectType::NODE), Data(master_nodal_values));
+        SMART_ASSERT(alive == 0.0 || alive == 1.0)(alive);
+        std::fill(master_nodal_values.begin(), master_nodal_values.end(), T((1.0 - alive)));
+        for (size_t j = 0; j < node_count; j++) {
+          // Map local nodal value to global location...
+          size_t nodal_value               = local_mesh[p].localNodeToGlobal[j];
+          master_nodal_values[nodal_value] = alive;
+        }
+
+        error += ex_put_var(Excn::ExodusFile::output(), time_step_out, EX_NODAL, nodal_vars.count(),
+                            0, global.count(Excn::ObjectType::NODE), Data(master_nodal_values));
       }
     }
 
@@ -838,9 +835,8 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     // Use the output time step for writing data
     if (interFace.element_status_variable() != "NONE") {
       add_status_variable(Excn::ExodusFile::output(), global, blocks[p], glob_blocks,
-                          local_mesh[p].localElementToGlobal, time_step_out,
-                          element_vars.count(), alive,
-                          combined_status_variable_index);
+                          local_mesh[p].localElementToGlobal, time_step_out, element_vars.count(),
+                          alive, combined_status_variable_index);
     }
 
     // ========================================================================
@@ -1762,44 +1758,45 @@ namespace {
   }
 
   void put_variable_names(int out, Excn::Variables &vars, Excn::SystemInterface &si,
-			  int *combined_status_variable_index)
+                          int *combined_status_variable_index)
   {
     if (vars.count() > 0) {
 
-      int extra          = vars.addStatus ? 1 : 0;
+      int    extra = vars.addStatus ? 1 : 0;
       char **output_name_list =
           get_name_array(vars.count() + extra, Excn::ExodusFile::max_name_length());
 
-
       std::string status = "NONE";
       if (vars.type() == EX_ELEM_BLOCK || vars.type() == EX_NODAL) {
-	status = (vars.type() == EX_ELEM_BLOCK) ? si.element_status_variable() : si.nodal_status_variable();
+        status = (vars.type() == EX_ELEM_BLOCK) ? si.element_status_variable()
+                                                : si.nodal_status_variable();
 
-	if (status != "NONE") {
-	  // See if any of the variable names conflict with the status variable name...
-	  for (const auto &name : vars.names_) {
-	    if (case_compare(name, status)) {
-	      // Error -- duplicate element variable names on output database.
-	      fmt::print(stderr,
-			 "\nERROR: A {} variable already exists on one of the input  databases with the "
-			 "same name as the status variable '{}'. This is not allowed.\n\n",
-			 vars.label(), status);
-	      exit(EXIT_FAILURE);
-	    }
-	  }
-	}
+        if (status != "NONE") {
+          // See if any of the variable names conflict with the status variable name...
+          for (const auto &name : vars.names_) {
+            if (case_compare(name, status)) {
+              // Error -- duplicate element variable names on output database.
+              fmt::print(
+                  stderr,
+                  "\nERROR: A {} variable already exists on one of the input  databases with the "
+                  "same name as the status variable '{}'. This is not allowed.\n\n",
+                  vars.label(), status);
+              exit(EXIT_FAILURE);
+            }
+          }
+        }
       }
 
       size_t maxlen = 0;
       {
-	int i = 0;
-	for (const auto &name : vars.names_) {
-	  copy_string(output_name_list[i++], name, Excn::ExodusFile::max_name_length() + 1);
-	  maxlen = std::max(maxlen, name.length());
-	}
-	if (vars.addStatus) {
-	  copy_string(output_name_list[i++], status, Excn::ExodusFile::max_name_length() + 1);
-	}
+        int i = 0;
+        for (const auto &name : vars.names_) {
+          copy_string(output_name_list[i++], name, Excn::ExodusFile::max_name_length() + 1);
+          maxlen = std::max(maxlen, name.length());
+        }
+        if (vars.addStatus) {
+          copy_string(output_name_list[i++], status, Excn::ExodusFile::max_name_length() + 1);
+        }
       }
 
       maxlen += 2;
@@ -1814,7 +1811,7 @@ namespace {
       {
         int i    = 0;
         int ifld = 1;
-	for (const auto &name : vars.names_) {
+        for (const auto &name : vars.names_) {
           fmt::print("{:<{}}", name, maxlen);
           if (++ifld > nfield && ++i < vars.count()) {
             fmt::print("\n\t");
@@ -1863,7 +1860,7 @@ namespace {
     // var_index[i] > 0, variable written; is variable 'var_index[i]'
 
     // If 'type' is ELEMENT or NODE, then reserve space for the 'status' variable.
-    int num_vars;
+    int              num_vars;
     Excn::ExodusFile id(part);
     ex_get_variable_param(id, vars.type(), &num_vars);
 
@@ -1871,7 +1868,7 @@ namespace {
     // will be written.  Just return 0.
     if (variable_list.size() == 1 && case_compare(variable_list[0].first, "none")) {
       vars.inputIndex_[part].resize(num_vars, 0);
-       return;
+      return;
     }
 
     // If 'variable_list' is empty or specified 'ALL', then all
@@ -1900,15 +1897,15 @@ namespace {
         omit = true;
       }
       vars.inputIndex_[part].resize(num_vars, omit ? 1 : 0);
-      
+
       for (const auto &[elem, eb_id] : variable_list) {
-	if (case_compare(elem, "!omit")) {
+        if (case_compare(elem, "!omit")) {
           continue;
         }
         bool found = false;
         for (size_t j = 0; j < exo_names.size() && !found; j++) {
           if (case_compare(exo_names[j], elem)) {
-            found          = true;
+            found                     = true;
             vars.inputIndex_[part][j] = omit ? 0 : 1;
           }
         }
@@ -1920,19 +1917,19 @@ namespace {
 
     for (size_t i = 0; i < vars.inputIndex_[part].size(); i++) {
       if (vars.inputIndex_[part][i] != 0) {
-	auto name = exo_names[i];
-	bool found = false;
-	for (size_t j = 0; j < vars.names_.size(); j++) {
-	  if (case_compare(vars.names_[j], name)) {
-	    found = true;
-	    vars.inputIndex_[part][i] = j + 1;
-	    break;
-	  }
-	}
-	if (!found) {
-	  vars.names_.push_back(name);
-	  vars.inputIndex_[part][i] = vars.names_.size();
-	}
+        auto name  = exo_names[i];
+        bool found = false;
+        for (size_t j = 0; j < vars.names_.size(); j++) {
+          if (case_compare(vars.names_[j], name)) {
+            found                     = true;
+            vars.inputIndex_[part][i] = j + 1;
+            break;
+          }
+        }
+        if (!found) {
+          vars.names_.push_back(name);
+          vars.inputIndex_[part][i] = vars.names_.size();
+        }
       }
     }
     return;
@@ -2665,21 +2662,21 @@ namespace {
 
     for (size_t i = 0; i < vars.in_count(p); i++) {
       if (vars.inputIndex_[p][i] > 0) {
-	int out_index = vars.inputIndex_[p][i];
-	if (out_index > 0) {
+        int out_index = vars.inputIndex_[p][i];
+        if (out_index > 0) {
 
-        for (size_t b = 0; b < global.count(vars.objectType); b++) {
-          size_t lb = 0;
-          for (; lb < global.count(vars.objectType); lb++) {
-            if (global_sets[b].id == local_sets[p][lb].id) {
-              break;
+          for (size_t b = 0; b < global.count(vars.objectType); b++) {
+            size_t lb = 0;
+            for (; lb < global.count(vars.objectType); lb++) {
+              if (global_sets[b].id == local_sets[p][lb].id) {
+                break;
+              }
             }
-          }
-          SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
+            SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
-          if (local_sets[p][lb].entity_count() > 0) {
+            if (local_sets[p][lb].entity_count() > 0) {
 
-            int entity_count = local_sets[p][lb].entity_count();
+              int entity_count = local_sets[p][lb].entity_count();
 
               error += ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
                                   local_sets[p][lb].id, entity_count, Data(values));
@@ -2699,12 +2696,12 @@ namespace {
                 break;
               default: break;
               }
-	      ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
-                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+              ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
+                         global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+            }
           }
         }
       }
-    }
     }
     return error;
   }
