@@ -64,7 +64,7 @@ namespace Excn {
     GetLongOption options_{}; //!< Options parsing
 
     int  debugLevel_{0};
-    int  screenWidth_{0};
+    int  screenWidth_{80};
     int  compressionLevel_{0};
     int  quantizeNSD_{0};
     bool zlib_{false};
