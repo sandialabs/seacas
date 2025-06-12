@@ -710,10 +710,6 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     fmt::print("{}", time_stamp(tsFormat));
   }
 
-  // FIXME
-  std::vector<T> global_values(global_vars.count());
-  std::vector<T> output_global_values(global_vars.count());
-
   // Determine maximum number of entities on any part
   auto max_ent = find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
   std::vector<T> values(max_ent);
@@ -765,8 +761,10 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
       if (debug_level & 1) {
         fmt::print("{}Global Variables...\n", time_stamp(tsFormat));
       }
+      std::vector<T> global_values(global_vars.in_count(p));
+      std::vector<T> output_global_values(global_vars.count());
       error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_GLOBAL, 0, 0,
-                          global_vars.count(), static_cast<void *>(Data(global_values)));
+                          global_vars.in_count(p), static_cast<void *>(Data(global_values)));
       // Map ...
       for (size_t ig = 0; ig < global_vars.in_count(p); ig++) {
         if (global_vars.inputIndex_[p][ig] > 0) {
