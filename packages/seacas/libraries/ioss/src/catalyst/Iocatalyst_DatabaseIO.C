@@ -372,7 +372,7 @@ namespace Iocatalyst {
       const auto groupName      = getName(entityGroup);
       const auto num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
-      if (num_to_get > 0) {
+      if (num_to_get >= 0) {
         auto &&node = this->DBNode[getFieldPath(containerName, groupName, field.get_name())];
         node[detail::ROLE].set(static_cast<std::int8_t>(field.get_role()));
         node[detail::TYPE].set(static_cast<std::int8_t>(field.get_type()));
