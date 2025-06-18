@@ -1807,7 +1807,7 @@ namespace {
 
       fmt::print("Found {} {} variables.\n\t", vars.count(), vars.label());
       {
-        int i    = 0;
+        size_t i    = 0;
         int ifld = 1;
         for (const auto &name : vars.names_) {
           fmt::print("{:<{}}", name, maxlen);
@@ -1827,7 +1827,7 @@ namespace {
         *combined_status_variable_index = 0;
         const std::string &comb_stat    = si.combined_mesh_status_variable();
         if (!comb_stat.empty()) {
-          for (int i = 0; i < vars.count(); i++) {
+          for (size_t i = 0; i < vars.count(); i++) {
             if (case_compare(comb_stat, vars.names_[i])) {
               *combined_status_variable_index = i + 1;
               break;
@@ -2647,6 +2647,8 @@ namespace {
     int error  = 0;
     int id_out = Excn::ExodusFile::output(); // output file identifier
 
+    std::vector<int> vars_output(vars.count()+1); // Keep track of which variables were written for this part.
+
     size_t max_size = 0;
     for (size_t b = 0; b < global.count(vars.objectType); b++) {
       if (max_size < global_sets[b].entity_count()) {
@@ -2659,9 +2661,8 @@ namespace {
     INT *part_loc_elem_to_global = Data(local_mesh[p].localElementToGlobal);
 
     for (size_t i = 0; i < vars.in_count(p); i++) {
-      if (vars.inputIndex_[p][i] > 0) {
-        int out_index = vars.inputIndex_[p][i];
-        if (out_index > 0) {
+      int out_index = vars.inputIndex_[p][i];
+      if (out_index > 0) {
 
           for (size_t b = 0; b < global.count(vars.objectType); b++) {
             size_t lb = 0;
@@ -2672,9 +2673,8 @@ namespace {
             }
             SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
-            if (local_sets[p][lb].entity_count() > 0) {
-
-              int entity_count = local_sets[p][lb].entity_count();
+	    int entity_count = local_sets[p][lb].entity_count();
+	    if (entity_count > 0) {
 
               error += ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
                                   local_sets[p][lb].id, entity_count, Data(values));
@@ -2694,11 +2694,35 @@ namespace {
                 break;
               default: break;
               }
+	      vars_output[out_index] = 1;
               ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
                          global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
             }
           }
-        }
+      }
+    }
+    if (vars.count() > vars.in_count(p)) {
+      std::fill(master_values.begin(), master_values.end(), 0.0);
+
+      for (size_t i = 1; i <= vars.count(); i++) {
+	if (vars_output[i] == 1) {
+	  continue;
+	}
+	for (size_t b = 0; b < global.count(vars.objectType); b++) {
+	  size_t lb = 0;
+	  for (; lb < global.count(vars.objectType); lb++) {
+	    if (global_sets[b].id == local_sets[p][lb].id) {
+	      break;
+	    }
+	  }
+	  SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
+
+	  int entity_count = local_sets[p][lb].entity_count();
+	  if (entity_count > 0) {
+	    ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), i,
+		       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+	  }
+	}
       }
     }
     return error;
