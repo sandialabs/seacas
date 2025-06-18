@@ -1808,7 +1808,7 @@ namespace {
       fmt::print("Found {} {} variables.\n\t", vars.count(), vars.label());
       {
         size_t i    = 0;
-        int ifld = 1;
+        int    ifld = 1;
         for (const auto &name : vars.names_) {
           fmt::print("{:<{}}", name, maxlen);
           if (++ifld > nfield && ++i < vars.count()) {
@@ -2647,7 +2647,8 @@ namespace {
     int error  = 0;
     int id_out = Excn::ExodusFile::output(); // output file identifier
 
-    std::vector<int> vars_output(vars.count()+1); // Keep track of which variables were written for this part.
+    std::vector<int> vars_output(vars.count() +
+                                 1); // Keep track of which variables were written for this part.
 
     size_t max_size = 0;
     for (size_t b = 0; b < global.count(vars.objectType); b++) {
@@ -2664,65 +2665,65 @@ namespace {
       int out_index = vars.inputIndex_[p][i];
       if (out_index > 0) {
 
-          for (size_t b = 0; b < global.count(vars.objectType); b++) {
-            size_t lb = 0;
-            for (; lb < global.count(vars.objectType); lb++) {
-              if (global_sets[b].id == local_sets[p][lb].id) {
-                break;
-              }
-            }
-            SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
-
-	    int entity_count = local_sets[p][lb].entity_count();
-	    if (entity_count > 0) {
-
-              error += ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
-                                  local_sets[p][lb].id, entity_count, Data(values));
-
-              switch (vars.objectType) {
-              case Excn::ObjectType::EBLK:
-                map_element_vars(local_sets[p][lb].offset_, global_sets[b].offset_, entity_count,
-                                 values, master_values, part_loc_elem_to_global);
-                break;
-
-              case Excn::ObjectType::SSET:
-                map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
-                break;
-
-              case Excn::ObjectType::NSET:
-                map_nodeset_vars(local_sets[p][lb], entity_count, values, master_values);
-                break;
-              default: break;
-              }
-	      vars_output[out_index] = 1;
-              ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
-                         global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+        for (size_t b = 0; b < global.count(vars.objectType); b++) {
+          size_t lb = 0;
+          for (; lb < global.count(vars.objectType); lb++) {
+            if (global_sets[b].id == local_sets[p][lb].id) {
+              break;
             }
           }
+          SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
+
+          int entity_count = local_sets[p][lb].entity_count();
+          if (entity_count > 0) {
+
+            error += ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
+                                local_sets[p][lb].id, entity_count, Data(values));
+
+            switch (vars.objectType) {
+            case Excn::ObjectType::EBLK:
+              map_element_vars(local_sets[p][lb].offset_, global_sets[b].offset_, entity_count,
+                               values, master_values, part_loc_elem_to_global);
+              break;
+
+            case Excn::ObjectType::SSET:
+              map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
+              break;
+
+            case Excn::ObjectType::NSET:
+              map_nodeset_vars(local_sets[p][lb], entity_count, values, master_values);
+              break;
+            default: break;
+            }
+            vars_output[out_index] = 1;
+            ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
+                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+          }
+        }
       }
     }
     if (vars.count() > vars.in_count(p)) {
       std::fill(master_values.begin(), master_values.end(), 0.0);
 
       for (size_t i = 1; i <= vars.count(); i++) {
-	if (vars_output[i] == 1) {
-	  continue;
-	}
-	for (size_t b = 0; b < global.count(vars.objectType); b++) {
-	  size_t lb = 0;
-	  for (; lb < global.count(vars.objectType); lb++) {
-	    if (global_sets[b].id == local_sets[p][lb].id) {
-	      break;
-	    }
-	  }
-	  SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
+        if (vars_output[i] == 1) {
+          continue;
+        }
+        for (size_t b = 0; b < global.count(vars.objectType); b++) {
+          size_t lb = 0;
+          for (; lb < global.count(vars.objectType); lb++) {
+            if (global_sets[b].id == local_sets[p][lb].id) {
+              break;
+            }
+          }
+          SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
-	  int entity_count = local_sets[p][lb].entity_count();
-	  if (entity_count > 0) {
-	    ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), i,
-		       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
-	  }
-	}
+          int entity_count = local_sets[p][lb].entity_count();
+          if (entity_count > 0) {
+            ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), i,
+                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+          }
+        }
       }
     }
     return error;
