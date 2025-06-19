@@ -648,20 +648,20 @@ int64_t Ioss::Map::global_to_local_nl(int64_t global, bool must_exist, bool outp
   else if (local <= 0 && must_exist) {
     std::ostringstream errmsg;
     fmt::print(errmsg,
-	       "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
-	       "the {0} map\n"
-	       "on processor {2}, filename '{3}'.\n"
-	       "This should not happen, please report.\n",
-	       m_entityType, global, m_myProcessor, m_filename);
+               "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
+               "the {0} map\n"
+               "on processor {2}, filename '{3}'.\n"
+               "This should not happen, please report.\n",
+               m_entityType, global, m_myProcessor, m_filename);
     IOSS_ERROR(errmsg);
   }
   else if (local <= 0 && !must_exist && output_error) {
     fmt::print(stderr,
-	       "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
-	       "the {0} map\n"
-	       "on processor {2}, filename '{3}'.\n"
-	       "This should not happen, please report.\n",
-	       m_entityType, global, m_myProcessor, m_filename);
+               "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
+               "the {0} map\n"
+               "on processor {2}, filename '{3}'.\n"
+               "This should not happen, please report.\n",
+               m_entityType, global, m_myProcessor, m_filename);
   }
   return local;
 }

@@ -2101,27 +2101,27 @@ namespace Ioex {
     // Iterate rcv_list and convert global ids to the global-implicit position...
     int error_count = 0;
     for (auto &i : rcv_list) {
-      int64_t local_id = node_map.global_to_local(i,false,true) - 1;
+      int64_t local_id = node_map.global_to_local(i, false, true) - 1;
       if (local_id < 0) {
-	error_count++;
+        error_count++;
       }
       else {
-	SMART_ASSERT(local_id >= 0)(local_id)(i);
-	int64_t rcv_position = global_implicit_map[local_id];
-	SMART_ASSERT(rcv_position >= 0)(rcv_position)(local_id)(i);
-	i = rcv_position;
+        SMART_ASSERT(local_id >= 0)(local_id)(i);
+        int64_t rcv_position = global_implicit_map[local_id];
+        SMART_ASSERT(rcv_position >= 0)(rcv_position)(local_id)(i);
+        i = rcv_position;
       }
     }
     {
       Ioss::ParallelUtils pu(comm_);
-      int total_errors = pu.global_minmax(error_count, Ioss::ParallelUtils::DO_MAX);
+      int                 total_errors = pu.global_minmax(error_count, Ioss::ParallelUtils::DO_MAX);
       if (total_errors > 0) {
-	std::ostringstream errmsg;
-	fmt::print(errmsg,
-		   "ERROR: Ioss Mapping routines detected at least one error mapping global ids.\n"
-		   "       This usually means the node ownership is incorrect for some reason. "
-		   "This should not happen, please report.\n");
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
+                   "ERROR: Ioss Mapping routines detected at least one error mapping global ids.\n"
+                   "       This usually means the node ownership is incorrect for some reason. "
+                   "This should not happen, please report.\n");
+        IOSS_ERROR(errmsg);
       }
     }
     // Send the data back now...
