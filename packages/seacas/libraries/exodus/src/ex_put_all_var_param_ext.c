@@ -537,8 +537,8 @@ static int exi_define_vars(int exoid, ex_entity_type obj_type, const char *entit
 
     if (truth_table != NULL) {
       if ((status = define_truth_table(obj_type, exoid, DVAL, numvar, truth_table, *status_var,
-				       *entity_ids, entity_blk_name)) != NC_NOERR) {
-	return status;
+                                       *entity_ids, entity_blk_name)) != NC_NOERR) {
+        return status;
       }
     }
 
@@ -554,11 +554,12 @@ static int exi_define_vars(int exoid, ex_entity_type obj_type, const char *entit
     if (truth_table != NULL) {
       int dims[] = {dimid1, dimid2};
       if ((status = nc_def_var(exoid, VTV, NC_INT, 2, dims, truth_table_var)) != NC_NOERR) {
-	char errmsg[MAX_ERR_LENGTH];
-	snprintf(errmsg, MAX_ERR_LENGTH,
-		 "ERROR: failed to define %s variable truth table in file id %d", entity_name, exoid);
-	ex_err_fn(exoid, __func__, errmsg, status);
-	return status;
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define %s variable truth table in file id %d", entity_name,
+                 exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        return status;
       }
       exi_set_compact_storage(exoid, *truth_table_var);
     }
