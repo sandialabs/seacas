@@ -2683,125 +2683,125 @@ namespace {
               map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
               break;
 
-              case Excn::ObjectType::SSET:
-                map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
-                break;
+            case Excn::ObjectType::SSET:
+              map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
+              break;
 
-              case Excn::ObjectType::NSET:
-                map_nodeset_vars(local_sets[p][lb], entity_count, values, master_values);
-                break;
-              default: break;
-              }
-              ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
-                         global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+            case Excn::ObjectType::NSET:
+              map_nodeset_vars(local_sets[p][lb], entity_count, values, master_values);
+              break;
+            default: break;
             }
-            vars_output[out_index] = 1;
             ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
                        global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
           }
+          vars_output[out_index] = 1;
+          ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
+                     global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
         }
       }
     }
-    if (vars.count() > vars.in_count(p)) {
-      std::fill(master_values.begin(), master_values.end(), 0.0);
+  }
+  if (vars.count() > vars.in_count(p)) {
+    std::fill(master_values.begin(), master_values.end(), 0.0);
 
-      for (size_t i = 1; i <= vars.count(); i++) {
-        if (vars_output[i] == 1) {
-          continue;
-        }
-        for (size_t b = 0; b < global.count(vars.objectType); b++) {
-          size_t lb = 0;
-          for (; lb < global.count(vars.objectType); lb++) {
-            if (global_sets[b].id == local_sets[p][lb].id) {
-              break;
-            }
-          }
-          SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
-
-          int entity_count = local_sets[p][lb].entity_count();
-          if (entity_count > 0) {
-            ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), i,
-                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+    for (size_t i = 1; i <= vars.count(); i++) {
+      if (vars_output[i] == 1) {
+        continue;
+      }
+      for (size_t b = 0; b < global.count(vars.objectType); b++) {
+        size_t lb = 0;
+        for (; lb < global.count(vars.objectType); lb++) {
+          if (global_sets[b].id == local_sets[p][lb].id) {
+            break;
           }
         }
-      }
-    }
-    return error;
-  }
+        SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
-  template <typename INT>
-  size_t find_max_entity_count(size_t part_count, std::vector<Excn::Mesh<INT>> &local_mesh,
-                               const Excn::Mesh<INT>                        &global,
-                               std::vector<std::vector<Excn::Block>>        &blocks,
-                               std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
-                               std::vector<std::vector<Excn::SideSet<INT>>> &sidesets)
-  {
-    size_t max_ent = local_mesh[0].count(Excn::ObjectType::NODE);
-    for (size_t p = 1; p < part_count; p++) {
-      if (static_cast<size_t>(local_mesh[p].count(Excn::ObjectType::NODE)) > max_ent) {
-        max_ent = local_mesh[p].count(Excn::ObjectType::NODE);
-      }
-    }
-
-    for (size_t p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
-        if (blocks[p][b].entity_count() > max_ent) {
-          max_ent = blocks[p][b].entity_count();
+        int entity_count = local_sets[p][lb].entity_count();
+        if (entity_count > 0) {
+          ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), i,
+                     global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
         }
       }
     }
+  }
+  return error;
+}
 
-    // Nodesets...
-    for (size_t p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(Excn::ObjectType::NSET); b++) {
-        if (nodesets[p][b].entity_count() > max_ent) {
-          max_ent = nodesets[p][b].entity_count();
-        }
-      }
+template <typename INT>
+size_t find_max_entity_count(size_t part_count, std::vector<Excn::Mesh<INT>> &local_mesh,
+                             const Excn::Mesh<INT>                        &global,
+                             std::vector<std::vector<Excn::Block>>        &blocks,
+                             std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
+                             std::vector<std::vector<Excn::SideSet<INT>>> &sidesets)
+{
+  size_t max_ent = local_mesh[0].count(Excn::ObjectType::NODE);
+  for (size_t p = 1; p < part_count; p++) {
+    if (static_cast<size_t>(local_mesh[p].count(Excn::ObjectType::NODE)) > max_ent) {
+      max_ent = local_mesh[p].count(Excn::ObjectType::NODE);
     }
-
-    // Sidesets...
-    for (size_t p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(Excn::ObjectType::SSET); b++) {
-        if (sidesets[p][b].entity_count() > max_ent) {
-          max_ent = sidesets[p][b].entity_count();
-        }
-      }
-    }
-    return max_ent;
   }
 
-  void sort_file_times(StringVector &input_files)
-  {
-    // Sort files based on minimum timestep time
-    std::vector<std::pair<double, std::string>> file_time_name;
-    file_time_name.reserve(input_files.size());
-    for (auto &filename : input_files) {
-      float version       = 0.0;
-      int   cpu_word_size = sizeof(float);
-      int   io_wrd_size   = 0;
-      int   exoid = ex_open(filename.c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
-      if (exoid < 0) {
-        fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filename);
-        exit(EXIT_FAILURE);
+  for (size_t p = 0; p < part_count; p++) {
+    for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
+      if (blocks[p][b].entity_count() > max_ent) {
+        max_ent = blocks[p][b].entity_count();
       }
-
-      int    nts  = ex_inquire_int(exoid, EX_INQ_TIME);
-      double time = 0.0;
-      if (nts > 0) {
-        ex_get_time(exoid, 1, &time);
-      }
-      file_time_name.emplace_back(time, filename);
-      ex_close(exoid);
-    }
-
-    std::sort(file_time_name.begin(), file_time_name.end());
-    input_files.clear();
-    input_files.reserve(file_time_name.size());
-
-    for (const auto &entry : file_time_name) {
-      input_files.push_back(entry.second);
     }
   }
+
+  // Nodesets...
+  for (size_t p = 0; p < part_count; p++) {
+    for (size_t b = 0; b < global.count(Excn::ObjectType::NSET); b++) {
+      if (nodesets[p][b].entity_count() > max_ent) {
+        max_ent = nodesets[p][b].entity_count();
+      }
+    }
+  }
+
+  // Sidesets...
+  for (size_t p = 0; p < part_count; p++) {
+    for (size_t b = 0; b < global.count(Excn::ObjectType::SSET); b++) {
+      if (sidesets[p][b].entity_count() > max_ent) {
+        max_ent = sidesets[p][b].entity_count();
+      }
+    }
+  }
+  return max_ent;
+}
+
+void sort_file_times(StringVector &input_files)
+{
+  // Sort files based on minimum timestep time
+  std::vector<std::pair<double, std::string>> file_time_name;
+  file_time_name.reserve(input_files.size());
+  for (auto &filename : input_files) {
+    float version       = 0.0;
+    int   cpu_word_size = sizeof(float);
+    int   io_wrd_size   = 0;
+    int   exoid = ex_open(filename.c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
+    if (exoid < 0) {
+      fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filename);
+      exit(EXIT_FAILURE);
+    }
+
+    int    nts  = ex_inquire_int(exoid, EX_INQ_TIME);
+    double time = 0.0;
+    if (nts > 0) {
+      ex_get_time(exoid, 1, &time);
+    }
+    file_time_name.emplace_back(time, filename);
+    ex_close(exoid);
+  }
+
+  std::sort(file_time_name.begin(), file_time_name.end());
+  input_files.clear();
+  input_files.reserve(file_time_name.size());
+
+  for (const auto &entry : file_time_name) {
+    input_files.push_back(entry.second);
+  }
+}
 
 } // namespace
