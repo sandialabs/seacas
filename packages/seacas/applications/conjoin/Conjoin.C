@@ -1804,7 +1804,7 @@ namespace {
 
       fmt::print("Found {} {} variables.\n\t", vars.count(), vars.label());
       {
-        int i    = 0;
+        size_t i    = 0;
         int ifld = 1;
         for (const auto &name : vars.names_) {
           fmt::print("{:<{}}", name, maxlen);
@@ -1824,7 +1824,7 @@ namespace {
         *combined_status_variable_index = 0;
         const std::string &comb_stat    = si.combined_mesh_status_variable();
         if (!comb_stat.empty()) {
-          for (int i = 0; i < vars.count(); i++) {
+          for (size_t i = 0; i < vars.count(); i++) {
             if (case_compare(comb_stat, vars.names_[i])) {
               *combined_status_variable_index = i + 1;
               break;
@@ -2672,28 +2672,26 @@ namespace {
             }
             SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
-            if (local_sets[p][lb].entity_count() > 0) {
-
-              int entity_count = local_sets[p][lb].entity_count();
+	    int entity_count = local_sets[p][lb].entity_count();
+            if (entity_count > 0) {
 
               error += ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
                                   local_sets[p][lb].id, entity_count, Data(values));
 
-            case Excn::ObjectType::SSET:
-              map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
-              break;
-
-            case Excn::ObjectType::SSET:
-              map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
-              break;
-
-            case Excn::ObjectType::NSET:
-              map_nodeset_vars(local_sets[p][lb], entity_count, values, master_values);
-              break;
-            default: break;
-            }
-            ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
-                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+	      switch (vars.objectType) {
+	      case Excn::ObjectType::EBLK:
+		map_element_vars(local_sets[p][lb].offset_, global_sets[b].offset_, entity_count,
+				 values, master_values, part_loc_elem_to_global);
+		break;
+	      case Excn::ObjectType::SSET:
+		map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
+		break;
+		
+              case Excn::ObjectType::NSET:
+                map_nodeset_vars(local_sets[p][lb], entity_count, values, master_values);
+                break;
+              default: break;
+	      }
           }
           vars_output[out_index] = 1;
           ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
