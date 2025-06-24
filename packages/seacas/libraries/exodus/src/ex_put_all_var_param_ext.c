@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -540,18 +540,16 @@ static int exi_define_vars(int exoid, ex_entity_type obj_type, const char *entit
                                        *entity_ids, entity_blk_name)) != NC_NOERR) {
         return status;
       }
-    }
 
-    free(*status_var);
-    *status_var = NULL;
-    free(*entity_ids);
-    *entity_ids = NULL;
+      free(*status_var);
+      *status_var = NULL;
+      free(*entity_ids);
+      *entity_ids = NULL;
 
-    /* create a variable array in which to store the entity_name variable truth
-     * table
-     */
+      /* create a variable array in which to store the entity_name variable truth
+       * table
+       */
 
-    if (truth_table != NULL) {
       int dims[] = {dimid1, dimid2};
       if ((status = nc_def_var(exoid, VTV, NC_INT, 2, dims, truth_table_var)) != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];

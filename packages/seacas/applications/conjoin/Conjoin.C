@@ -54,9 +54,6 @@
 #include "CJ_Version.h"
 
 namespace {
-#if 0
-  bool                       check_variable_params(size_t p, const Excn::Variables &vars);
-#endif
   template <typename T> void clear(std::vector<T> &vec)
   {
     vec.clear();
