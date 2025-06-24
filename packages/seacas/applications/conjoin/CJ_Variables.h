@@ -27,7 +27,7 @@ namespace Excn {
                    otype == ObjectType::GLOBAL);
     }
 
-    size_t count() const { return names_.size() + (addStatus ? 1 : 0); }
+    int count() const { return names_.size() + (addStatus ? 1 : 0); }
 
     size_t in_count(int part) const { return inputIndex_[part].size(); }
 
