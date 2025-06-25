@@ -541,11 +541,6 @@ static int exi_define_vars(int exoid, ex_entity_type obj_type, const char *entit
         return status;
       }
 
-      free(*status_var);
-      *status_var = NULL;
-      free(*entity_ids);
-      *entity_ids = NULL;
-
       /* create a variable array in which to store the entity_name variable truth
        * table
        */
@@ -561,6 +556,10 @@ static int exi_define_vars(int exoid, ex_entity_type obj_type, const char *entit
       }
       exi_set_compact_storage(exoid, *truth_table_var);
     }
+    free(*status_var);
+    *status_var = NULL;
+    free(*entity_ids);
+    *entity_ids = NULL;
   }
   return NC_NOERR;
 }
