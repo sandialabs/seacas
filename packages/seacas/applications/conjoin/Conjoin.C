@@ -1777,7 +1777,6 @@ namespace {
         }
       }
 
-
       int    extra = vars.addStatus ? 1 : 0;
       char **output_name_list =
           get_name_array(vars.count() + extra, Excn::ExodusFile::max_name_length());
