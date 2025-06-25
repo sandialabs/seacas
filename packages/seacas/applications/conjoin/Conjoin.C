@@ -1831,7 +1831,7 @@ namespace {
           }
         }
       }
-      free_name_array(output_name_list, vars.count());
+      free_name_array(output_name_list, vars.count() + extra);
     }
   }
 
