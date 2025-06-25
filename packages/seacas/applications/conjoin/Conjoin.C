@@ -1756,11 +1756,6 @@ namespace {
                           int *combined_status_variable_index)
   {
     if (vars.count() > 0) {
-
-      int    extra = vars.addStatus ? 1 : 0;
-      char **output_name_list =
-          get_name_array(vars.count() + extra, Excn::ExodusFile::max_name_length());
-
       std::string status = "NONE";
       if (vars.type() == EX_ELEM_BLOCK || vars.type() == EX_NODAL) {
         status = (vars.type() == EX_ELEM_BLOCK) ? si.element_status_variable()
@@ -1781,6 +1776,11 @@ namespace {
           }
         }
       }
+
+
+      int    extra = vars.addStatus ? 1 : 0;
+      char **output_name_list =
+          get_name_array(vars.count() + extra, Excn::ExodusFile::max_name_length());
 
       size_t maxlen = 0;
       {
