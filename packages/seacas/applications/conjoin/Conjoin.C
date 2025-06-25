@@ -54,9 +54,6 @@
 #include "CJ_Version.h"
 
 namespace {
-#if 0
-  bool                       check_variable_params(size_t p, const Excn::Variables &vars);
-#endif
   template <typename T> void clear(std::vector<T> &vec)
   {
     vec.clear();
@@ -1759,11 +1756,6 @@ namespace {
                           int *combined_status_variable_index)
   {
     if (vars.count() > 0) {
-
-      int    extra = vars.addStatus ? 1 : 0;
-      char **output_name_list =
-          get_name_array(vars.count() + extra, Excn::ExodusFile::max_name_length());
-
       std::string status = "NONE";
       if (vars.type() == EX_ELEM_BLOCK || vars.type() == EX_NODAL) {
         status = (vars.type() == EX_ELEM_BLOCK) ? si.element_status_variable()
@@ -1784,6 +1776,10 @@ namespace {
           }
         }
       }
+
+      int    extra = vars.addStatus ? 1 : 0;
+      char **output_name_list =
+          get_name_array(vars.count() + extra, Excn::ExodusFile::max_name_length());
 
       size_t maxlen = 0;
       {
@@ -1807,8 +1803,8 @@ namespace {
 
       fmt::print("Found {} {} variables.\n\t", vars.count(), vars.label());
       {
-        int i    = 0;
-        int ifld = 1;
+        size_t i    = 0;
+        int    ifld = 1;
         for (const auto &name : vars.names_) {
           fmt::print("{:<{}}", name, maxlen);
           if (++ifld > nfield && ++i < vars.count()) {
@@ -1827,7 +1823,7 @@ namespace {
         *combined_status_variable_index = 0;
         const std::string &comb_stat    = si.combined_mesh_status_variable();
         if (!comb_stat.empty()) {
-          for (int i = 0; i < vars.count(); i++) {
+          for (size_t i = 0; i < vars.count(); i++) {
             if (case_compare(comb_stat, vars.names_[i])) {
               *combined_status_variable_index = i + 1;
               break;
@@ -1835,7 +1831,7 @@ namespace {
           }
         }
       }
-      free_name_array(output_name_list, vars.count());
+      free_name_array(output_name_list, vars.count() + extra);
     }
   }
 
@@ -2647,6 +2643,9 @@ namespace {
     int error  = 0;
     int id_out = Excn::ExodusFile::output(); // output file identifier
 
+    std::vector<int> vars_output(vars.count() +
+                                 1); // Keep track of which variables were written for this part.
+
     size_t max_size = 0;
     for (size_t b = 0; b < global.count(vars.objectType); b++) {
       if (max_size < global_sets[b].entity_count()) {
@@ -2672,9 +2671,8 @@ namespace {
             }
             SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
-            if (local_sets[p][lb].entity_count() > 0) {
-
-              int entity_count = local_sets[p][lb].entity_count();
+            int entity_count = local_sets[p][lb].entity_count();
+            if (entity_count > 0) {
 
               error += ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
                                   local_sets[p][lb].id, entity_count, Data(values));
@@ -2684,7 +2682,6 @@ namespace {
                 map_element_vars(local_sets[p][lb].offset_, global_sets[b].offset_, entity_count,
                                  values, master_values, part_loc_elem_to_global);
                 break;
-
               case Excn::ObjectType::SSET:
                 map_sideset_vars(local_sets[p][lb], entity_count, values, master_values);
                 break;
@@ -2694,9 +2691,34 @@ namespace {
                 break;
               default: break;
               }
-              ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
-                         global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
             }
+            vars_output[out_index] = 1;
+            ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), out_index,
+                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
+          }
+        }
+      }
+    }
+    if (vars.count() > vars.in_count(p)) {
+      std::fill(master_values.begin(), master_values.end(), 0.0);
+
+      for (size_t i = 1; i <= vars.count(); i++) {
+        if (vars_output[i] == 1) {
+          continue;
+        }
+        for (size_t b = 0; b < global.count(vars.objectType); b++) {
+          size_t lb = 0;
+          for (; lb < global.count(vars.objectType); lb++) {
+            if (global_sets[b].id == local_sets[p][lb].id) {
+              break;
+            }
+          }
+          SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
+
+          int entity_count = local_sets[p][lb].entity_count();
+          if (entity_count > 0) {
+            ex_put_var(id_out, time_step_out, exodus_object_type(vars.objectType), i,
+                       global_sets[b].id, global_sets[b].entity_count(), Data(master_values));
           }
         }
       }
