@@ -108,9 +108,9 @@ TRIBITS_PACKAGE_DEF()
 
 ADD_SUBDIRECTORY(scripts)
 
-#TRIBITS_EXCLUDE_FILES(
-#  doc
-#  )
+TRIBITS_EXCLUDE_FILES(
+  doc
+  )
 
 #
 # D) Do standard postprocessing
