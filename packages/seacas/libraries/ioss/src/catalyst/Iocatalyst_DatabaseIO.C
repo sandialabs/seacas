@@ -798,14 +798,11 @@ namespace Iocatalyst {
           node[detail::VALUE].set(property.get_vec_double());
           break;
 
-        case Ioss::Property::BasicType::POINTER:
-	  break;
+        case Ioss::Property::BasicType::POINTER: break;
 
-        case Ioss::Property::BasicType::INVALID:
-	  break;
+        case Ioss::Property::BasicType::INVALID: break;
 
-        default:
-	  break;
+        default: break;
         }
       }
       return true;
