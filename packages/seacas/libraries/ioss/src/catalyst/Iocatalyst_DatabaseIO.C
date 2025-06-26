@@ -772,11 +772,7 @@ namespace Iocatalyst {
     bool addProperties(conduit_cpp::Node parent, GroupingEntityT *entityGroup)
     {
       Ioss::NameList names;
-      // skip implicit properties.
-      entityGroup->property_describe(Ioss::Property::INTERNAL, &names);
-      entityGroup->property_describe(Ioss::Property::EXTERNAL, &names);
-      entityGroup->property_describe(Ioss::Property::ATTRIBUTE, &names);
-      entityGroup->property_describe(Ioss::Property::IMPLICIT, &names);
+      entityGroup->property_describe(&names);
 
       auto &&propertiesNode = parent[detail::PROPERTIES];
       for (const auto &name : names) {
@@ -803,8 +799,13 @@ namespace Iocatalyst {
           break;
 
         case Ioss::Property::BasicType::POINTER:
+	  break;
+
         case Ioss::Property::BasicType::INVALID:
-        default: return false;
+	  break;
+
+        default:
+	  break;
         }
       }
       return true;
@@ -1162,12 +1163,7 @@ namespace Iocatalyst {
       auto &&child = parent[idx];
       auto block = detail::createEntityGroup<Ioss::StructuredBlock>(child, region->get_database());
       region->add(block);
-      auto parent = block->get_node_block().get_property(detail::IOSSCONTAINEDIN);
       this->readProperties(child[detail::PROPERTIES], block);
-      this->readProperties(
-          child[getName(&block->get_node_block()) + detail::FS + detail::PROPERTIES],
-          &block->get_node_block());
-      block->get_node_block().property_add(parent);
 
       // read fields (meta-data only)
       this->readFields(child[detail::FIELDS], block);
