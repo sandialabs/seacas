@@ -10,10 +10,10 @@
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Utils.h"
-#include <exodusII.h>
 #include "exodus/Ioex_SuperElement.h" // for SuperElement
 #include <cassert>
 #include <cstddef>
+#include <exodusII.h>
 #include <fmt/ostream.h>
 #include <iosfwd>
 #include <netcdf.h>
