@@ -31,7 +31,7 @@ jobs:
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+      uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
       with:
         egress-policy: audit
 
@@ -98,7 +98,7 @@ jobs:
     steps:
 
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
         with:
           egress-policy: audit
 
@@ -162,12 +162,12 @@ jobs:
           echo "------------"
           ls /opt/intel/oneapi/
           echo "------------"
-          ls /opt/intel/oneapi/2025.1/
+          ls /opt/intel/oneapi/2025.2/
           echo "------------"
-          ls /opt/intel/oneapi/2025.1/bin/
+          ls /opt/intel/oneapi/2025.2/bin/
           echo "------------"
-          export PATH=/opt/intel/oneapi/2025.1/bin/:$PATH
-          export LD_LIBRARY_PATH=/opt/intel/oneapi/2025.1/lib/:$LD_LIBRARY_PATH
+          export PATH=/opt/intel/oneapi/2025.2/bin/:$PATH
+          export LD_LIBRARY_PATH=/opt/intel/oneapi/2025.2/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 

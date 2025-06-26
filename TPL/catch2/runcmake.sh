@@ -19,6 +19,8 @@ rm -f CMakeCache.txt
 
 cmake \
 ${RPATH} \
+-D CMAKE_CXX_COMPILER=${CXX} \
+-D CMAKE_CXX_STANDARD=17 \
 -D CMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
 -D CMAKE_PREFIX_PATH:PATH=${INSTALL_PATH}/lib \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
@@ -27,7 +29,7 @@ $EXTRA_ARGS \
 ..
 
 echo ""
-echo "    COMPILER: ${CC}"
+echo "    COMPILER: ${CXX}"
 echo "      ACCESS: ${ACCESS}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""

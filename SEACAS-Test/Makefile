@@ -9,6 +9,7 @@ BIN = $(BASE)/bin
 PYTHON  =       python
 APREPRO	=	$(PREFIX) $(BIN)/aprepro
 FASTQ	=	$(PREFIX) $(BIN)/fastq
+EJOIN	=	$(PREFIX) $(BIN)/ejoin
 GJOIN	=	$(PREFIX) $(BIN)/gjoin
 GEN3D	=	$(PREFIX) $(BIN)/gen3d
 GENSHELL=	$(PREFIX) $(BIN)/genshell
@@ -44,11 +45,21 @@ base_sh.g3: base_sh.g base_sh.g3i
 cap.g3: cap.g cap.g3i
 	$(APREPRO) cap.g3i | $(GEN3D)  cap.g cap.g3
 
-new_tape.g3: base.g3 base_o.g3 rigid.g3 cap.g3 new_tape.gj
-	$(GJOIN) <new_tape.gj
+#new_tape.g3: base.g3 base_o.g3 rigid.g3 cap.g3 new_tape.gj
+#	$(GJOIN) <new_tape.gj
+
+new_tape.g3: base.g3 base_o.g3 rigid.g3 cap.g3
+	$(EJOIN) --output $@ --match_nodeset_nodes p1:11,p2:11 --toler 1.0e-4 \
+	-omit_nodeset p1:11,p2:11 --nodeset_combine nodelist_1111:nodelist_1111,nodelist_1112 \
+	--combine_element --combine_nodeset --combine_sideset base.g3 base_o.g3 rigid.g3 cap.g3
+
+#new_shell.g3: base_sh.g3 base_o.g3 rigid.g3 cap.g3 new_shell.gj
+#	$(GJOIN) <new_shell.gj
 
 new_shell.g3: base_sh.g3 base_o.g3 rigid.g3 cap.g3 new_shell.gj
-	$(GJOIN) <new_shell.gj
+	$(EJOIN) --output $@ --match_nodeset_nodes p1:11,p2:11 --toler 1.0e-4 \
+	-omit_nodeset p1:11,p2:11 --nodeset_combine nodelist_1111:nodelist_1111,nodelist_1112 \
+	--combine_element --combine_nodeset --combine_sideset base_sh.g3 base_o.g3 rigid.g3 cap.g3
 
 rigid.g3: rigid.g rigid.g3i
 	$(GEN3D) rigid.g rigid.g3 <rigid.g3i
@@ -58,8 +69,14 @@ rigid.g3: rigid.g rigid.g3i
 baseline.g: baseline.g3 names.grp
 	$(GREPOS) baseline.g3 baseline.g < names.grp
 
+#baseline.g3: baseline_o.g3  rigid_0.g3 base.g3 baseline.gj cap.g3
+#	$(GJOIN) <baseline.gj
+
 baseline.g3: baseline_o.g3  rigid_0.g3 base.g3 baseline.gj cap.g3
-	$(GJOIN) <baseline.gj
+	$(EJOIN) --output $@ --match_nodeset_nodes p1:11,p2:11 --toler 1.0e-4 \
+	--offset p2:0,-0.090,0:p4:0,-0.090,0.0 -omit_nodeset p1:11,p2:11 \
+	--nodeset_combine nodelist_1111:nodelist_1111,nodelist_1112 \
+	--combine_element --combine_nodeset --combine_sideset baseline_o.g3 base.g3 rigid_0.g3 cap.g3
 
 baseline_o.g3: baseline_o.g base.g3i
 	$(APREPRO) base_o.g3i |	$(GEN3D) baseline_o.g baseline_o.g3
