@@ -109,27 +109,36 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
 
       IF (BUILD_SHARED_LIBS OR SEACASExodus_ENABLE_SHARED)
          IF (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "")
-            IF( ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} MATCHES "^${CMAKE_INSTALL_PREFIX}.*" )
-               STRING( REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}" ""
-                   SEACAS_INCLUDEDIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}" )
-               STRING( REGEX REPLACE "^/" "" SEACAS_INCLUDEDIR "${SEACAS_INCLUDEDIR}" )
-            ELSEIF( NOT ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} MATCHES "^/" )
+            string(FIND ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} ${CMAKE_INSTALL_PREFIX} POSITION)
+            cmake_path(IS_ABSOLUTE ${PROJECT_NAME}_INSTALL_INCLUDE_DIR IS_PATH_ABSOLUTE)
+
+            IF (${POSITION} EQUAL 0)
+	       # The include install path is a under the install path.  
+               file(RELATIVE_PATH SEACAS_INCLUDEDIR ${CMAKE_INSTALL_PREFIX} ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} )
+            ELSEIF(IS_PATH_ABSOLUTE)
+	       # The include install path is different than the install path
                SET( SEACAS_INCLUDEDIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}" )
             ELSE()
+	       # If neither, just set to include.
                SET( SEACAS_INCLUDEDIR "include" )
             ENDIF()
-            IF( ${${PROJECT_NAME}_INSTALL_LIB_DIR} MATCHES "^${CMAKE_INSTALL_PREFIX}.*" )
-               STRING( REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}" ""
-                   SEACAS_LIBDIR "${${PROJECT_NAME}_INSTALL_LIB_DIR}" )
-               STRING( REGEX REPLACE "^/" "" SEACAS_LIBDIR "${SEACAS_LIBDIR}")
-            ELSEIF( NOT ${CMAKE_INSTALL_LIBDIR} MATCHES "^/" )
+
+            string(FIND ${${PROJECT_NAME}_INSTALL_LIB_DIR} ${CMAKE_INSTALL_PREFIX} POSITION)
+            cmake_path(IS_ABSOLUTE ${PROJECT_NAME}_INSTALL_LIB_DIR IS_PATH_ABSOLUTE)
+            IF (${POSITION} EQUAL 0)
+	       # The libary path is a under the install path.  
+               file(RELATIVE_PATH SEACAS_LIBDIR ${CMAKE_INSTALL_PREFIX} ${${PROJECT_NAME}_INSTALL_LIB_DIR} )
+            ELSEIF(IS_PATH_ABSOLUTE)
+	       # The libarary install path is different than the install path
                SET( SEACAS_LIBDIR "${${PROJECT_NAME}_INSTALL_LIB_DIR}" )
             ELSE()
                SET( SEACAS_LIBDIR "lib" )
             ENDIF()
          ENDIF()
-                 FILE(GLOB_RECURSE EXODUSIIH "${CMAKE_SOURCE_DIR}/packages/seacas/*exodusII.h")
-                 FILE(STRINGS "${EXODUSIIH}" EXODUS_VERSION REGEX "#define EXODUS_VERSION .*")
+
+         FILE(GLOB_RECURSE EXODUSIIH "${CMAKE_SOURCE_DIR}/packages/seacas/*exodusII.h")
+         FILE(STRINGS "${EXODUSIIH}" EXODUS_VERSION REGEX "#define EXODUS_VERSION .*")
+
          CONFIGURE_FILE(
                    ${CMAKE_CURRENT_SOURCE_DIR}/exodus2.in.py
                    ${CMAKE_CURRENT_BINARY_DIR}/exodus2.py

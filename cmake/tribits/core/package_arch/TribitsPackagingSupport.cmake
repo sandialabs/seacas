@@ -68,8 +68,9 @@ macro(tribits_exclude_files)
     #Ensure that if the full path was specified for the file that we don't add
     #"/<project source dir>/<package dir>/" again.
     set(MATCH_STRING "${${PACKAGE_NAME}_SOURCE_DIR}")
-    string(REGEX MATCH ${MATCH_STRING} MATCHED ${FILE} )
-    if(NOT MATCHED)
+    string(FIND ${FILE} ${MATCH_STRING} POSITION)
+#    string(REGEX MATCH ${MATCH_STRING} MATCHED ${FILE} )
+    if(NOT POSITION EQUAL 0)
       list(APPEND MODIFIED_FILES_TO_EXCLUDE
         "${${PACKAGE_NAME}_SOURCE_DIR}/${FILE}")
     else()
