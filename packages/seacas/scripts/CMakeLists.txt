@@ -111,19 +111,25 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
          IF (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "")
             string(FIND ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} ${CMAKE_INSTALL_PREFIX} POSITION)
             cmake_path(IS_ABSOLUTE ${PROJECT_NAME}_INSTALL_INCLUDE_DIR IS_PATH_ABSOLUTE)
+
             IF (${POSITION} EQUAL 0)
+	       # The include install path is a under the install path.  
                file(RELATIVE_PATH SEACAS_INCLUDEDIR ${CMAKE_INSTALL_PREFIX} ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} )
             ELSEIF(IS_PATH_ABSOLUTE)
+	       # The include install path is different than the install path
                SET( SEACAS_INCLUDEDIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}" )
             ELSE()
+	       # If neither, just set to include.
                SET( SEACAS_INCLUDEDIR "include" )
             ENDIF()
 
             string(FIND ${${PROJECT_NAME}_INSTALL_LIB_DIR} ${CMAKE_INSTALL_PREFIX} POSITION)
             cmake_path(IS_ABSOLUTE ${PROJECT_NAME}_INSTALL_LIB_DIR IS_PATH_ABSOLUTE)
             IF (${POSITION} EQUAL 0)
+	       # The libary path is a under the install path.  
                file(RELATIVE_PATH SEACAS_LIBDIR ${CMAKE_INSTALL_PREFIX} ${${PROJECT_NAME}_INSTALL_LIB_DIR} )
             ELSEIF(IS_PATH_ABSOLUTE)
+	       # The libarary install path is different than the install path
                SET( SEACAS_LIBDIR "${${PROJECT_NAME}_INSTALL_LIB_DIR}" )
             ELSE()
                SET( SEACAS_LIBDIR "lib" )
