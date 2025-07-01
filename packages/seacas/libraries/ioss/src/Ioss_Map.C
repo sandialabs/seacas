@@ -597,7 +597,7 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist, bool output_
 int64_t Ioss::Map::global_to_local_nl(int64_t global, bool must_exist, bool output_error) const
 {
   int64_t local = global;
-  
+
   // The case where `must_exist==false && output_error == true` is for improving parallel error
   // reporting, so for all intents, it is `must_exist == true` in the logic below...
   bool should_exist = must_exist || output_error;
