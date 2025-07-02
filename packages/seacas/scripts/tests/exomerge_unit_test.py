@@ -2,7 +2,7 @@
 """
 This file performs unit tests of functions within Exomerge.
 
-Copyright 2018, 2021, 2022 National Technology and Engineering
+Copyright 2018, 2021, 2022, 2025 National Technology and Engineering
 Solutions of Sandia.  Under the terms of Contract DE-NA-0003525, there
 is a non-exclusive license for use of this work by or on behalf of the
 U.S. Government.  Export of this program may require a license from
@@ -1909,6 +1909,22 @@ class ExomergeUnitTester:
         random.shuffle(unsorted_names_no_underscores)
         assert sorted_names_no_underscores == self.model._sort_field_names(unsorted_names_no_underscores), "Failed to sort names without underscores. \nExpected: {}\nGot: {}".format(
             sorted_names_no_underscores, self.model._sort_field_names(unsorted_names_no_underscores)
+        )
+
+        sorted_ip_ip_names = [
+            "state_dsa_01_1", "state_dsa_02_1", "state_dsa_03_1", "state_dsa_04_1", "state_dsa_05_1",
+            "state_dsa_06_1", "state_dsa_07_1", "state_dsa_08_1", "state_dsa_09_1", "state_dsa_10_1",
+            "state_dsa_01_2", "state_dsa_02_2", "state_dsa_03_2", "state_dsa_04_2", "state_dsa_05_2",
+            "state_dsa_06_2", "state_dsa_07_2", "state_dsa_08_2", "state_dsa_09_2", "state_dsa_10_2",
+            "state_dsa_01_3", "state_dsa_02_3", "state_dsa_03_3", "state_dsa_04_3", "state_dsa_05_3",
+            "state_dsa_06_3", "state_dsa_07_3", "state_dsa_08_3", "state_dsa_09_3", "state_dsa_10_3"  # Two sets of integration points...
+        ]
+
+        # Randomly shuffle the names to simulate unsorted input
+        unsorted_names = sorted_ip_ip_names.copy()
+        random.shuffle(unsorted_names)
+        assert sorted_ip_ip_names == self.model._sort_field_names(unsorted_names), "Failed to sort names with underscores.\nExpected: {}\nGot: {}".format(
+            sorted_names, self.model._sort_field_names(unsorted_names)
         )
 
 

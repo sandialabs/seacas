@@ -1,7 +1,7 @@
 """
 Exomerge is a lightweight Python interface for manipulating ExodusII files.
 
-Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
+Copyright(C) 1999-2025 National Technology & Engineering Solutions
 of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 NTESS, the U.S. Government retains certain rights in this software.
 
@@ -494,6 +494,11 @@ class ExodusModel(object):
     # See "_sort_field_names" method for details.
     _FIELD_NAME_REGEX = re.compile(fr"^(?P<base_name>.*?)(?:[_]?)(?P<component>{'|'.join(_FIELD_NAME_SUBSCRIPT_ORDER.keys())})?(?:[_]?(?P<integration_point>\d+))?$")
 
+    # Regular expression used to parse field names. It tries to split the name into three named groups: base_name, ip1, ip2.
+    # `ip1` and `ip2` are "integration_point which is a number from 1 or 01 or 001 to number of integration points.
+    # For example `state_dsa_29_8`
+    # See "_sort_field_names" method for details.
+    _FIELD_NAME_IP_IP_REGEX = re.compile(r"^(?P<base_name>.*?)_(?P<ip1>\d+)_(?P<ip2>\d+)$")
 
     def __init__(self):
         """Initialize the model."""
@@ -6946,6 +6951,17 @@ class ExodusModel(object):
             """This inner function transforms each element of the list "original_field_names"
             into another element that will be used for sorting purposes
             """
+
+            # See if matches "name_ip1_ip2" first.  If so, reverse
+            # order of ip1 and ip2 in the field name so it is sorted
+            # correctly.
+            match1 = self._FIELD_NAME_IP_IP_REGEX.match(elem.lower())  # type: ignore
+            if match1 is not None and match1["ip1"] is not None and match1["ip2"] is not None:
+                print(elem, match1)
+                base_name = str(match1["base_name"])
+                ip1 = int(match1["ip1"])
+                ip2 = int(match1["ip2"])
+                return (base_name, ip2, ip1)
 
             match = self._FIELD_NAME_REGEX.match(elem.lower()).groupdict()  # type: ignore
 
