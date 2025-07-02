@@ -603,7 +603,7 @@ class ExomergeUnitTester:
     # Tests should return None if successful (no return statement needed)
     # Tests should return False if the test was unable to be run.
     # Tests should raise an exception or exit(1) if unsuccessful.
-    
+
     def _test_calculate_element_volumes(self):
         ids = self.model._get_standard_element_block_ids()
         if not ids:
@@ -1749,7 +1749,7 @@ class ExomergeUnitTester:
         """
         source_code = inspect.getsource(source)
         return bool(
-            re.search("[^A-Za-z0-9_]" + target.__name__ + "[ \t\n\r]*\(", source_code)
+            re.search(r"[^A-Za-z0-9_]" + target.__name__ + r"[ \t\n\r]*\(", source_code)
         )
 
     def test(self):
@@ -1873,7 +1873,6 @@ class ExomergeUnitTester:
         print(("\nRan %d tests in %g seconds." % (tests, time.time() - start_time)))
         print("\nSuccess")
 
-
     # The following functions are unit tests for private functions of exomerge.
     def _test_sort_field_names(self):
         """Unittest for _sort_field_names method.
@@ -1888,7 +1887,7 @@ class ExomergeUnitTester:
         sorted_names = [
             "Displacement_X", "Displacement_Y", "Displacement_Z",
             "ln_strain_1", "ln_strain_2", "ln_strain_3", "ln_strain_4",  # scalar field defined in integration points
-            "SIGMA_XX", "SIGMA_YY", "SIGMA_ZZ", "SIGMA_XY", "SIGMA_YZ", "SIGMA_ZX", "SIGMA_YX", "SIGMA_ZY", "SIGMA_XZ", # asymmetric tensor
+            "SIGMA_XX", "SIGMA_YY", "SIGMA_ZZ", "SIGMA_XY", "SIGMA_YZ", "SIGMA_ZX", "SIGMA_YX", "SIGMA_ZY", "SIGMA_XZ",  # asymmetric tensor
             "unrotated_stress_xx_1", "unrotated_stress_yy_1", "unrotated_stress_zz_1", "unrotated_stress_xy_1", "unrotated_stress_yz_1", "unrotated_stress_zx_1",  # Symmetric tensor with integration points
             "unrotated_stress_xx_2", "unrotated_stress_yy_2", "unrotated_stress_zz_2", "unrotated_stress_xy_2", "unrotated_stress_yz_2", "unrotated_stress_zx_2",
             "unrotated_stress_xx_3", "unrotated_stress_yy_3", "unrotated_stress_zz_3", "unrotated_stress_xy_3", "unrotated_stress_yz_3", "unrotated_stress_zx_3",
@@ -1929,7 +1928,7 @@ class ExomergeUnitTester:
 
 
 # if this module is executed (as opposed to imported), run the tests
-if __name__ == "__main__": 
+if __name__ == "__main__":
 
     if len(sys.argv) > 2:
         sys.stderr.write("Invalid syntax.\n")

@@ -42,7 +42,6 @@ import datetime
 import itertools
 import math
 import struct
-import bisect
 import colorsys
 import difflib
 import operator
@@ -476,19 +475,19 @@ class ExodusModel(object):
     # A dictionary defining the order of components in multi-component fields.
     # See "_sort_field_names" method for details.
     _FIELD_NAME_SUBSCRIPT_ORDER = {
-                    "xx": 1,
-                    "yy": 2,
-                    "zz": 3,
-                    "xy": 4,
-                    "yz": 5,
-                    "zx": 6,
-                    "yx": 7,
-                    "zy": 8,
-                    "xz": 9,
-                    "x": 10,
-                    "y": 11,
-                    "z": 12,
-                }
+        "xx": 1,
+        "yy": 2,
+        "zz": 3,
+        "xy": 4,
+        "yz": 5,
+        "zx": 6,
+        "yx": 7,
+        "zy": 8,
+        "xz": 9,
+        "x": 10,
+        "y": 11,
+        "z": 12,
+    }
 
     # Regular expression used to parse field names. It splits the name into three named groups: base_name, component, and integration_point.
     # See "_sort_field_names" method for details.
