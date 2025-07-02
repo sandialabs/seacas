@@ -1887,6 +1887,8 @@ class ExomergeUnitTester:
         sorted_names = [
             "Displacement_X", "Displacement_Y", "Displacement_Z",
             "ln_strain_1", "ln_strain_2", "ln_strain_3", "ln_strain_4",  # scalar field defined in integration points
+            "quat_x", "quat_y", "quat_z", "quat_q",  # 3D Quaternion (using IOSS convention.  Not sure why `q` and not `w`
+            "quat_2d_s", "quat_2d_q",  # 2D Quaternion (using IOSS convention)
             "SIGMA_XX", "SIGMA_YY", "SIGMA_ZZ", "SIGMA_XY", "SIGMA_YZ", "SIGMA_ZX", "SIGMA_YX", "SIGMA_ZY", "SIGMA_XZ",  # asymmetric tensor
             "unrotated_stress_xx_1", "unrotated_stress_yy_1", "unrotated_stress_zz_1", "unrotated_stress_xy_1", "unrotated_stress_yz_1", "unrotated_stress_zx_1",  # Symmetric tensor with integration points
             "unrotated_stress_xx_2", "unrotated_stress_yy_2", "unrotated_stress_zz_2", "unrotated_stress_xy_2", "unrotated_stress_yz_2", "unrotated_stress_zx_2",

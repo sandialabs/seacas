@@ -56,7 +56,7 @@ if sys.version_info[0] < 3:
 import exodus3 as exodus
 
 # informal version number of this module
-__version__ = "8.6.2"
+__version__ = "8.7.0"
 VERSION = __version__
 
 # contact person for issues
@@ -487,6 +487,8 @@ class ExodusModel(object):
         "x": 10,
         "y": 11,
         "z": 12,
+        "s": 13,
+        "q": 14
     }
 
     # Regular expression used to parse field names. It splits the name into three named groups: base_name, component, and integration_point.
