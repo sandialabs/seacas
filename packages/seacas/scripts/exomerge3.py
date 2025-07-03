@@ -6948,8 +6948,9 @@ class ExodusModel(object):
             """
 
             match = self._FIELD_NAME_REGEX.match(elem.lower()).groupdict()  # type: ignore
-
             base_name = str(match["base_name"])
+            if base_name == '':
+                return (elem.lower(), 0, 0, 0)
             integration_point_1 = int(match["integration_point_1"]) if match["integration_point_1"] is not None else 0
             integration_point_2 = int(match["integration_point_2"]) if match["integration_point_2"] is not None else 0
 
