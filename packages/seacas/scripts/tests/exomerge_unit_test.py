@@ -1922,10 +1922,10 @@ class ExomergeUnitTester:
         ]
 
         # Randomly shuffle the names to simulate unsorted input
-        unsorted_names = sorted_ip_ip_names.copy()
-        random.shuffle(unsorted_names)
-        assert sorted_ip_ip_names == self.model._sort_field_names(unsorted_names), "Failed to sort names with underscores.\nExpected: {}\nGot: {}".format(
-            sorted_names, self.model._sort_field_names(unsorted_names)
+        unsorted_ip_names = sorted_ip_ip_names.copy()
+        random.shuffle(unsorted_ip_names)
+        assert sorted_ip_ip_names == self.model._sort_field_names(unsorted_ip_names), "Failed to sort names with underscores.\nExpected: {}\nGot: {}".format(
+            sorted_ip_ip_names, self.model._sort_field_names(unsorted_ip_names)
         )
 
 
