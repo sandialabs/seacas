@@ -1894,7 +1894,8 @@ class ExomergeUnitTester:
             "unrotated_stress_xx_2", "unrotated_stress_yy_2", "unrotated_stress_zz_2", "unrotated_stress_xy_2", "unrotated_stress_yz_2", "unrotated_stress_zx_2",
             "unrotated_stress_xx_3", "unrotated_stress_yy_3", "unrotated_stress_zz_3", "unrotated_stress_xy_3", "unrotated_stress_yz_3", "unrotated_stress_zx_3",
             "unrotated_stress_xx_12", "unrotated_stress_yy_12", "unrotated_stress_zz_12", "unrotated_stress_xy_12", "unrotated_stress_yz_12", "unrotated_stress_zx_12",  # Try with a number bigger than 9
-            "velocity"  # scalar field
+            "velocity", # scalar field
+            "x", "x_1_1", "y", "y_1_1", "z", "z_1_1"  # make sure regex not too greedy (no basename)
         ]
 
         # Randomly shuffle the names to simulate unsorted input
@@ -1913,6 +1914,7 @@ class ExomergeUnitTester:
         )
 
         sorted_ip_ip_names = [
+            "_x", "_y", "_z",  # Make sure this isn't a 3D vector with no base name...
             "state_dsa_01_1", "state_dsa_02_1", "state_dsa_03_1", "state_dsa_04_1", "state_dsa_05_1",
             "state_dsa_06_1", "state_dsa_07_1", "state_dsa_08_1", "state_dsa_09_1", "state_dsa_10_1",
             "state_dsa_01_2", "state_dsa_02_2", "state_dsa_03_2", "state_dsa_04_2", "state_dsa_05_2",
