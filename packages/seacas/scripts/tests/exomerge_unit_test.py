@@ -1894,7 +1894,7 @@ class ExomergeUnitTester:
             "unrotated_stress_xx_2", "unrotated_stress_yy_2", "unrotated_stress_zz_2", "unrotated_stress_xy_2", "unrotated_stress_yz_2", "unrotated_stress_zx_2",
             "unrotated_stress_xx_3", "unrotated_stress_yy_3", "unrotated_stress_zz_3", "unrotated_stress_xy_3", "unrotated_stress_yz_3", "unrotated_stress_zx_3",
             "unrotated_stress_xx_12", "unrotated_stress_yy_12", "unrotated_stress_zz_12", "unrotated_stress_xy_12", "unrotated_stress_yz_12", "unrotated_stress_zx_12",  # Try with a number bigger than 9
-            "velocity", # scalar field
+            "velocity",  # scalar field
             "x", "x_1_1", "y", "y_1_1", "z", "z_1_1"  # make sure regex not too greedy (no basename)
         ]
 
