@@ -1913,6 +1913,7 @@ class ExomergeUnitTester:
             sorted_names_no_underscores, self.model._sort_field_names(unsorted_names_no_underscores)
         )
 
+        # Cannot sort the field names with two numeric suffices without underscores...
         sorted_ip_ip_names = [
             "_x", "_y", "_z",  # Make sure this isn't a 3D vector with no base name...
             "state_dsa_01_1", "state_dsa_02_1", "state_dsa_03_1", "state_dsa_04_1", "state_dsa_05_1",
@@ -1920,7 +1921,7 @@ class ExomergeUnitTester:
             "state_dsa_01_2", "state_dsa_02_2", "state_dsa_03_2", "state_dsa_04_2", "state_dsa_05_2",
             "state_dsa_06_2", "state_dsa_07_2", "state_dsa_08_2", "state_dsa_09_2", "state_dsa_10_2",
             "state_dsa_01_3", "state_dsa_02_3", "state_dsa_03_3", "state_dsa_04_3", "state_dsa_05_3",
-            "state_dsa_06_3", "state_dsa_07_3", "state_dsa_08_3", "state_dsa_09_3", "state_dsa_10_3"  # Two sets of integration points...
+            "state_dsa_06_3", "state_dsa_07_3", "state_dsa_08_3", "state_dsa_09_3", "state_dsa_10_3"  # Two sets of numeric suffices...
         ]
 
         # Randomly shuffle the names to simulate unsorted input
