@@ -493,13 +493,7 @@ class ExodusModel(object):
 
     # Regular expression used to parse field names. It splits the name into three named groups: base_name, component, and integration_point.
     # See "_sort_field_names" method for details.
-    _FIELD_NAME_REGEX = re.compile(fr"^(?P<base_name>.*?)(?:[_]?)(?P<component>{'|'.join(_FIELD_NAME_SUBSCRIPT_ORDER.keys())})?(?:[_]?(?P<integration_point>\d+))?$")
-
-    # Regular expression used to parse field names. It tries to split the name into three named groups: base_name, ip1, ip2.
-    # `ip1` and `ip2` are "integration_point which is a number from 1 or 01 or 001 to number of integration points.
-    # For example `state_dsa_29_8`
-    # See "_sort_field_names" method for details.
-    _FIELD_NAME_IP_IP_REGEX = re.compile(r"^(?P<base_name>.*?)_(?P<ip1>\d+)_(?P<ip2>\d+)$")
+    _FIELD_NAME_REGEX = re.compile(fr"^(?P<base_name>.*?)(?:[_]?)(?P<component>{'|'.join(_FIELD_NAME_SUBSCRIPT_ORDER.keys())})?(?:[_]?(?P<integration_point_1>\d+))?(?:[_]?(?P<integration_point_2>\d+))?$")
 
     def __init__(self):
         """Initialize the model."""
@@ -6953,26 +6947,16 @@ class ExodusModel(object):
             into another element that will be used for sorting purposes
             """
 
-            # See if matches "name_ip1_ip2" first.  If so, reverse
-            # order of ip1 and ip2 in the field name so it is sorted
-            # correctly.
-            match1 = self._FIELD_NAME_IP_IP_REGEX.match(elem.lower())  # type: ignore
-            if match1 is not None and match1["ip1"] is not None and match1["ip2"] is not None:
-                print(elem, match1)
-                base_name = str(match1["base_name"])
-                ip1 = int(match1["ip1"])
-                ip2 = int(match1["ip2"])
-                return (base_name, ip2, ip1)
-
             match = self._FIELD_NAME_REGEX.match(elem.lower()).groupdict()  # type: ignore
 
             base_name = str(match["base_name"])
-            integration_point = int(match["integration_point"]) if match["integration_point"] is not None else 0
+            integration_point_1 = int(match["integration_point_1"]) if match["integration_point_1"] is not None else 0
+            integration_point_2 = int(match["integration_point_2"]) if match["integration_point_2"] is not None else 0
 
             # Transform the component to a letter according to the _FIELD_NAME_SUBSCRIPT_ORDER
             component = self._FIELD_NAME_SUBSCRIPT_ORDER[match["component"]] if match["component"] is not None else 0
 
-            return (base_name, integration_point, component)
+            return (base_name, integration_point_2, integration_point_1, component)
 
         original_field_names.sort(key=_sorting_key)
         return original_field_names
