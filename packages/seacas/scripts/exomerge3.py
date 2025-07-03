@@ -1,7 +1,7 @@
 """
 Exomerge is a lightweight Python interface for manipulating ExodusII files.
 
-Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
+Copyright(C) 1999-2025 National Technology & Engineering Solutions
 of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 NTESS, the U.S. Government retains certain rights in this software.
 
@@ -42,7 +42,6 @@ import datetime
 import itertools
 import math
 import struct
-import bisect
 import colorsys
 import difflib
 import operator
@@ -57,7 +56,7 @@ if sys.version_info[0] < 3:
 import exodus3 as exodus
 
 # informal version number of this module
-__version__ = "8.6.2"
+__version__ = "8.7.0"
 VERSION = __version__
 
 # contact person for issues
@@ -476,24 +475,25 @@ class ExodusModel(object):
     # A dictionary defining the order of components in multi-component fields.
     # See "_sort_field_names" method for details.
     _FIELD_NAME_SUBSCRIPT_ORDER = {
-                    "xx": 1,
-                    "yy": 2,
-                    "zz": 3,
-                    "xy": 4,
-                    "yz": 5,
-                    "zx": 6,
-                    "yx": 7,
-                    "zy": 8,
-                    "xz": 9,
-                    "x": 10,
-                    "y": 11,
-                    "z": 12,
-                }
+        "xx": 1,
+        "yy": 2,
+        "zz": 3,
+        "xy": 4,
+        "yz": 5,
+        "zx": 6,
+        "yx": 7,
+        "zy": 8,
+        "xz": 9,
+        "x": 10,
+        "y": 11,
+        "z": 12,
+        "s": 13,
+        "q": 14
+    }
 
     # Regular expression used to parse field names. It splits the name into three named groups: base_name, component, and integration_point.
     # See "_sort_field_names" method for details.
-    _FIELD_NAME_REGEX = re.compile(fr"^(?P<base_name>.*?)(?:[_]?)(?P<component>{'|'.join(_FIELD_NAME_SUBSCRIPT_ORDER.keys())})?(?:[_]?(?P<integration_point>\d+))?$")
-
+    _FIELD_NAME_REGEX = re.compile(fr"^(?P<base_name>.*?)(?:[_]?)(?P<component>{'|'.join(_FIELD_NAME_SUBSCRIPT_ORDER.keys())})?(?:[_]?(?P<integration_point_1>\d+))?(?:[_]?(?P<integration_point_2>\d+))?$")
 
     def __init__(self):
         """Initialize the model."""
@@ -6948,14 +6948,16 @@ class ExodusModel(object):
             """
 
             match = self._FIELD_NAME_REGEX.match(elem.lower()).groupdict()  # type: ignore
-
             base_name = str(match["base_name"])
-            integration_point = int(match["integration_point"]) if match["integration_point"] is not None else 0
+            if base_name == '':
+                return (elem.lower(), 0, 0, 0)
+            integration_point_1 = int(match["integration_point_1"]) if match["integration_point_1"] is not None else 0
+            integration_point_2 = int(match["integration_point_2"]) if match["integration_point_2"] is not None else 0
 
             # Transform the component to a letter according to the _FIELD_NAME_SUBSCRIPT_ORDER
             component = self._FIELD_NAME_SUBSCRIPT_ORDER[match["component"]] if match["component"] is not None else 0
 
-            return (base_name, integration_point, component)
+            return (base_name, integration_point_2, integration_point_1, component)
 
         original_field_names.sort(key=_sorting_key)
         return original_field_names
