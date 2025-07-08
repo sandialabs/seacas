@@ -1919,7 +1919,7 @@ void F2C(EXINQ)(int *idexo, int *req_info, void_int *ret_int, float *ret_float, 
                 int *ierr, int ret_charlen)
 {
   *ret_float = 0.0f;
-  *ierr = ex_inquire(*idexo, (ex_inquiry)*req_info, ret_int, ret_float, ret_char);
+  *ierr      = ex_inquire(*idexo, (ex_inquiry)*req_info, ret_int, ret_float, ret_char);
 }
 
 /*
