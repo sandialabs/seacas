@@ -23,7 +23,6 @@
 #include "exodusII.h"
 #include "exodusII_int.h"
 #include "netcdf.h"
-#include <cstdint>
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
