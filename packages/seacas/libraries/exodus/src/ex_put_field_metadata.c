@@ -33,14 +33,14 @@ static int exi_print_attribute_error(int status, const char *name, const char *a
 }
 
 static int exi_print_attribute_overflow_error(const char *name, const char *attribute,
-					      ex_entity_type entity_type, ex_entity_id entity_id, int exoid,
-					      const char *func)
+                                              ex_entity_type entity_type, ex_entity_id entity_id,
+                                              int exoid, const char *func)
 {
   char errmsg[MAX_ERR_LENGTH];
   snprintf(errmsg, MAX_ERR_LENGTH,
-	   "ERROR: field name '%s' is too long to generate a valid attribute name for the field '%s' attribute on %s with id %" PRId64
-	   " in file id %d",
-	   name, attribute, ex_name_of_object(entity_type), entity_id, exoid);
+           "ERROR: field name '%s' is too long to generate a valid attribute name for the field "
+           "'%s' attribute on %s with id %" PRId64 " in file id %d",
+           name, attribute, ex_name_of_object(entity_type), entity_id, exoid);
   ex_err_fn(exoid, func, errmsg, EX_LONGFIELDNAME);
   return EX_FATAL;
 }
@@ -90,13 +90,14 @@ int ex_put_field_metadata(int exoid, const ex_field field)
 
   exi_persist_redef(exoid, __func__);
   int                status         = 0;
-  int ret = 0;
+  int                ret            = 0;
   static const char *field_template = "Field@%s@%s";
   char               attribute_name[EX_MAX_NAME + 1];
 
   ret = snprintf(attribute_name, EX_MAX_NAME + 1, field_template, field.name, "type");
   if (ret < 0 || ret > EX_MAX_NAME + 1) {
-    return exi_print_attribute_overflow_error(field.name, "type", field.entity_type, field.entity_id, exoid, __func__);
+    return exi_print_attribute_overflow_error(field.name, "type", field.entity_type,
+                                              field.entity_id, exoid, __func__);
   }
   if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                          field.nesting, field.type)) != EX_NOERR) {
@@ -109,7 +110,8 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   if (field.type_name[0] != '\0') {
     ret = snprintf(attribute_name, EX_MAX_NAME + 1, field_template, field.name, "type_name");
     if (ret < 0 || ret > EX_MAX_NAME + 1) {
-      return exi_print_attribute_overflow_error(field.name, "type_name", field.entity_type, field.entity_id, exoid, __func__);
+      return exi_print_attribute_overflow_error(field.name, "type_name", field.entity_type,
+                                                field.entity_id, exoid, __func__);
     }
     if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                         field.type_name)) != EX_NOERR) {
@@ -123,7 +125,8 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   if (field.component_separator[0] != '_' || field.nesting > 1) {
     ret = snprintf(attribute_name, EX_MAX_NAME + 1, field_template, field.name, "separator");
     if (ret < 0 || ret > EX_MAX_NAME + 1) {
-      return exi_print_attribute_overflow_error(field.name, "separator", field.entity_type, field.entity_id, exoid, __func__);
+      return exi_print_attribute_overflow_error(field.name, "separator", field.entity_type,
+                                                field.entity_id, exoid, __func__);
     }
     if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                         field.component_separator)) != EX_NOERR) {
@@ -143,7 +146,8 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   if (needs_cardinality) {
     ret = snprintf(attribute_name, EX_MAX_NAME + 1, field_template, field.name, "cardinality");
     if (ret < 0 || ret > EX_MAX_NAME + 1) {
-      return exi_print_attribute_overflow_error(field.name, "cardinality", field.entity_type, field.entity_id, exoid, __func__);
+      return exi_print_attribute_overflow_error(field.name, "cardinality", field.entity_type,
+                                                field.entity_id, exoid, __func__);
     }
     if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id,
                                            attribute_name, field.nesting, field.cardinality)) !=
@@ -359,7 +363,8 @@ int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices)
 
   ret = snprintf(attribute_name, EX_MAX_NAME + 1, field_template, field.name, "suffices");
   if (ret < 0 || ret > EX_MAX_NAME + 1) {
-    return exi_print_attribute_overflow_error(field.name, "suffices", field.entity_type, field.entity_id, exoid, __func__);
+    return exi_print_attribute_overflow_error(field.name, "suffices", field.entity_type,
+                                              field.entity_id, exoid, __func__);
   }
   if ((status = ex_put_text_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                       suffices)) != EX_NOERR) {
