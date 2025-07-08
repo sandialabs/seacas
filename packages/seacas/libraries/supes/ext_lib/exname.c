@@ -37,10 +37,10 @@
  *
  */
 #include "fortranc.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h> /* getenv */
 #include <string.h> /* strlen */
-#include <stdbool.h>
 
 static char *copy_string(char *dest, char const *source, long int elements)
 {
@@ -58,13 +58,13 @@ void exname_(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
 void exname(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
 #endif
 {
-  char symbol[32];
+  char  symbol[32];
   char *darg;
 
   *name = '\0';
   *ln   = 0;
 
-  bool ExtSymbol = (*iunit <= 0) ;
+  bool ExtSymbol = (*iunit <= 0);
 
   int unit = abs((int)*iunit);
   if (unit < 100) {
@@ -90,8 +90,7 @@ void exname(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
   }
   else {
     fprintf(stderr,
-            "ERROR: SUPES exname - invalid unit number %d.  Must be between -100 and 100.\n",
-            unit);
+            "ERROR: SUPES exname - invalid unit number %d.  Must be between -100 and 100.\n", unit);
   }
 }
 /*
