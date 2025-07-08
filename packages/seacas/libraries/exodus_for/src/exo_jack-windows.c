@@ -1921,7 +1921,6 @@ void F2C(EXINQ)(int *idexo, int *req_info, void_int *ret_int, float *ret_float, 
 {
   if (ex_int64_status(*idexo) & EX_INQ_INT64_API) {
     *((int64_t *)ret_int) = 0;
-    ;
   }
   else {
     *((int *)ret_int) = 0;
