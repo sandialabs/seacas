@@ -211,7 +211,8 @@ void *srealloc_ret(void *ptr, size_t n)
         ;
       }
       if (dbptr == NULL) {
-        fprintf(stderr, "Memory error: In srealloc_ret, pointer address not found in debug list.\n");
+        fprintf(stderr,
+                "Memory error: In srealloc_ret, pointer address not found in debug list.\n");
       }
       else {
         dbptr->size = n;
