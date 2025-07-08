@@ -1918,6 +1918,7 @@ void F2C(EXGATM)(int *idexo, real *time_values, int *ierr)
 void F2C(EXINQ)(int *idexo, int *req_info, void_int *ret_int, float *ret_float, char *ret_char,
                 int *ierr, int ret_charlen)
 {
+  *ret_float = 0.0f;
   *ierr = ex_inquire(*idexo, (ex_inquiry)*req_info, ret_int, ret_float, ret_char);
 }
 
