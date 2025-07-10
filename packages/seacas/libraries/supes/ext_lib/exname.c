@@ -71,14 +71,15 @@ void exname(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
 
   if (*iunit > -100 && *iunit < 100) {
 #if Build64
-    //To remove the warning for "snprintf(string, 3, "%02ld", labs(*iunit));" with minimal performance changes
+    // To remove the warning for "snprintf(string, 3, "%02ld", labs(*iunit));" with minimal
+    // performance changes
     int ret = snprintf(string, 3, "%02ld", labs(*iunit));
 #else
     int ret = snprintf(string, 3, "%02d", abs(*iunit));
 #endif
     if (ret < 0 || ret > 3) {
-     fprintf(stderr, "SUPES: exname error.");
-     exit(EXIT_FAILURE);
+      fprintf(stderr, "SUPES: exname error.");
+      exit(EXIT_FAILURE);
     }
 
     if (*iunit > 0) {
