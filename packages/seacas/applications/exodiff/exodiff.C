@@ -60,7 +60,7 @@ struct TimeInterp
 std::string Date()
 {
   time_t calendar_time = time(nullptr);
-  auto       time_string = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", *std::localtime(&calendar_time));
+  auto   time_string   = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", *std::localtime(&calendar_time));
   return time_string;
 }
 
