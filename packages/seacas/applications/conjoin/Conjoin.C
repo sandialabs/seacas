@@ -954,10 +954,10 @@ namespace {
 
     std::time_t date_time = std::time(nullptr);
 
-    auto date = fmt::format("{:%Y/%m/%d}", fmt::localtime(date_time));
+    auto date = fmt::format("{:%Y/%m/%d}", *std::localtime(&date_time));
     copy_string(qaRecord[num_qa_records].qa_record[0][2], date.c_str(), MAX_STR_LENGTH + 1);
 
-    auto time = fmt::format("{:%T}", fmt::localtime(date_time));
+    auto time = fmt::format("{:%T}", *std::localtime(&date_time));
     copy_string(qaRecord[num_qa_records].qa_record[0][3], time.c_str(), MAX_STR_LENGTH + 1);
 
     error += ex_put_qa(id_out, num_qa_records + 1, qaRecord[0].qa_record);
