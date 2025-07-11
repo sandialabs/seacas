@@ -2,7 +2,7 @@
 // *****************************************************************************
 //  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
 //
-// Copyright 2012 NTESS and the Zoltan contributors.
+// Copyright 2012, 2025 NTESS and the Zoltan contributors.
 // SPDX-License-Identifier: BSD-3-Clause
 // *****************************************************************************
 // @HEADER
@@ -1650,7 +1650,7 @@ static int pmatching_agg_ipm (ZZ *zz,
 
   vindex = 0;                        /* marks current position in visit array */
   nRounds = 1;
-  for (round = 0; nRounds; ) {
+  for ( ; nRounds; ) {
     MACRO_TIMER_START (1, "matching phase 1", 0);
     
     /************************ PHASE 1: ****************************************/
