@@ -125,7 +125,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
       return false;
     }
 
-    if (auto num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS); num_change_sets > 1) {
+    if (auto num_change_sets = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+        num_change_sets > 1) {
       usingChangeSets_ = true;
 
       if (io_wrd_size < static_cast<int>(sizeof(float))) {
@@ -212,7 +213,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
           fmt::print(stderr, "ERROR: Cannot open file '{}'\n", filenames_[p]);
           return false;
         }
-        if (auto num_change_sets = ex_inquire_int(fileids_[p], EX_INQ_NUM_CHILD_GROUPS); num_change_sets > 1) {
+        if (auto num_change_sets = ex_inquire_int(fileids_[p], EX_INQ_NUM_CHILD_GROUPS);
+            num_change_sets > 1) {
           fmt::print(stderr,
                      "ERROR: Cannot (yet) handle multiple input files containing change "
                      "sets.\n\tFile '{}' contains {} change sets.\n",
