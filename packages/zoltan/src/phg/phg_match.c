@@ -2,7 +2,7 @@
 // *****************************************************************************
 //  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
 //
-// Copyright 2012 NTESS and the Zoltan contributors.
+// Copyright 2012, 2025 NTESS and the Zoltan contributors.
 // SPDX-License-Identifier: BSD-3-Clause
 // *****************************************************************************
 // @HEADER
@@ -1461,7 +1461,7 @@ static int pmatching_agg_ipm (ZZ *zz,
                               PHGPartParams *hgp)
 {
   int ierr = ZOLTAN_OK;    
-  int i, j, n, m, round, vindex;                        /* loop counters  */
+  int i, j, n, m, vindex;                        /* loop counters  */
   int sendcnt, sendsize, reccnt=0, recsize, msgsize;       /* temp variables */
   int nRounds;                /* # of matching rounds to be performed;       */
   int nSend,             /* working buffers and their sizes */
@@ -1650,7 +1650,7 @@ static int pmatching_agg_ipm (ZZ *zz,
 
   vindex = 0;                        /* marks current position in visit array */
   nRounds = 1;
-  for (round = 0; nRounds; ++round) {
+  for ( ; nRounds; ) {
     MACRO_TIMER_START (1, "matching phase 1", 0);
     
     /************************ PHASE 1: ****************************************/
@@ -1665,10 +1665,8 @@ static int pmatching_agg_ipm (ZZ *zz,
         match[v] = -match[v] - 1;
       }
     }
-/*    uprintf(hgc, "Round %d:   locCandCnt=%zd\n", round, locCandCnt); */
 
    /* Send buffer: offset-to-ints, offset-to-floats, all gnos, all ints, all floats */
-
     int_size = float_size = gno_size = 0;
 
     for (i = 0; i < locCandCnt; i++)  {

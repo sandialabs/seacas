@@ -118,7 +118,7 @@ namespace {
   // options.  See https://github.com/CGNS/CGNS/issues/835
   struct ParallelGuard
   {
-    ParallelGuard(bool yes_no)
+    ParallelGuard(IOSS_MAYBE_UNUSED bool yes_no)
     {
 #if CG_BUILD_PARALLEL
       m_wasSet = strcmp(ctx_cgio.hdf5_access, "PARALLEL") == 0;
@@ -865,8 +865,6 @@ namespace Iocgns {
                                                size_t & /* num_node */)
   {
     SMART_ASSERT(isParallel);
-    IOSS_PAR_UNUSED(base);
-    IOSS_PAR_UNUSED(num_zones);
 #if CG_BUILD_PARALLEL
     // Each processor may have a different set of zones.  This routine
     // will sync the information such that at return, each procesosr
