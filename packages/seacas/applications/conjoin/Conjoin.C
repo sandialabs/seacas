@@ -2738,21 +2738,21 @@ namespace {
 
     for (size_t p = 0; p < part_count; p++) {
       for (const auto &blk : blocks[p]) {
-	max_ent = std::max(max_ent, blk.entity_count());
+        max_ent = std::max(max_ent, blk.entity_count());
       }
     }
 
     // Nodesets...
     for (size_t p = 0; p < part_count; p++) {
       for (const auto &nset : nodesets[p]) {
-	max_ent = std::max(max_ent, nset.entity_count());
+        max_ent = std::max(max_ent, nset.entity_count());
       }
     }
 
     // Sidesets...
     for (size_t p = 0; p < part_count; p++) {
       for (const auto &sset : sidesets[p]) {
-	max_ent = std::max(max_ent, sset.entity_count());
+        max_ent = std::max(max_ent, sset.entity_count());
       }
     }
     return max_ent;
