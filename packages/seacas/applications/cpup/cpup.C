@@ -746,7 +746,7 @@ namespace {
       const auto &blocks = part->get_structured_blocks();
       for (const auto &block : blocks) {
         const auto [part_name, proc] = Iocgns::Utils::decompose_name(block->name(), true);
-        const auto &cur_global             = global_block[part_name];
+        const auto &cur_global       = global_block[part_name];
         block->set_ijk_global(cur_global);
       }
       if (debug_level & 4) {

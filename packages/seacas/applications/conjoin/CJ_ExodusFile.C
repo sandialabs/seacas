@@ -139,7 +139,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
         exodusMode_ = EX_ALL_INT64_API;
       }
 
-      overall_max_name_length = std::max(overall_max_name_length, ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH));
+      overall_max_name_length =
+          std::max(overall_max_name_length, ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH));
 
       // create exo names
       filenames_.resize(num_change_sets);
@@ -185,7 +186,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
           return false;
         }
 
-        overall_max_name_length = std::max(overall_max_name_length, ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH));
+        overall_max_name_length = std::max(overall_max_name_length,
+                                           ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH));
 
         if (((ex_int64_status(exoid) & EX_ALL_INT64_DB) != 0) || si.ints_64_bit()) {
           exodusMode_ = EX_ALL_INT64_API;
