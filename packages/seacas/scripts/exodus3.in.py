@@ -78,10 +78,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.21.5 (seacas-py3)"
+EXODUS_PY_VERSION = "1.21.6 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.21.5 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.21.6 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2023 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -2450,7 +2450,7 @@ class exodus:
         var_id = names.index(name) + 1
         numVals = self.get_entity_count(objType, entityId)
 
-        values = self.__ex_get_var(begin_step, end_step, objType, var_id, entityId, numVals)
+        values = self.__ex_get_var_multi_time(begin_step, end_step, objType, var_id, entityId, numVals)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
