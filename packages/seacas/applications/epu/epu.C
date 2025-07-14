@@ -146,12 +146,12 @@ namespace {
     }
   }
 
-  char **get_name_array(int size, int length)
+  char **get_name_array(size_t size, int length)
   {
     char **names = nullptr;
     if (size > 0) {
       names = new char *[size];
-      for (int i = 0; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         names[i] = new char[length + 1];
         std::memset(names[i], '\0', length + 1);
       }
@@ -159,9 +159,9 @@ namespace {
     return names;
   }
 
-  void free_name_array(char **names, int size)
+  void free_name_array(char **names, size_t size)
   {
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
       delete[] names[i];
     }
     delete[] names;
