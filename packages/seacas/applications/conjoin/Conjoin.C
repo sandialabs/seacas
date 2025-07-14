@@ -1912,7 +1912,7 @@ namespace {
     for (size_t i = 0; i < vars.inputIndex_[part].size(); i++) {
       if (vars.inputIndex_[part][i] != 0) {
         const auto &name  = exo_names[i];
-        bool found = false;
+        bool        found = false;
         for (size_t j = 0; j < vars.names_.size(); j++) {
           if (case_compare(vars.names_[j], name)) {
             found                     = true;
