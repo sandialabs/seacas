@@ -263,7 +263,6 @@ namespace {
 
   template <typename INT>
   size_t find_max_entity_count(size_t part_count, std::vector<Excn::Mesh<INT>> &local_mesh,
-                               const Excn::Mesh<INT>                        &global,
                                std::vector<std::vector<Excn::Block>>        &blocks,
                                std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                                std::vector<std::vector<Excn::SideSet<INT>>> &sidesets);
@@ -708,7 +707,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   }
 
   // Determine maximum number of entities on any part
-  auto max_ent = find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
+  auto max_ent = find_max_entity_count(part_count, local_mesh, blocks, nodesets, sidesets);
   std::vector<T> values(max_ent);
 
   // Stage II.  Extracting transient variable data.
@@ -2728,41 +2727,32 @@ namespace {
 
   template <typename INT>
   size_t find_max_entity_count(size_t part_count, std::vector<Excn::Mesh<INT>> &local_mesh,
-                               const Excn::Mesh<INT>                        &global,
                                std::vector<std::vector<Excn::Block>>        &blocks,
                                std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                                std::vector<std::vector<Excn::SideSet<INT>>> &sidesets)
   {
-    size_t max_ent = local_mesh[0].count(Excn::ObjectType::NODE);
-    for (size_t p = 1; p < part_count; p++) {
-      if (static_cast<size_t>(local_mesh[p].count(Excn::ObjectType::NODE)) > max_ent) {
-        max_ent = local_mesh[p].count(Excn::ObjectType::NODE);
-      }
+    size_t max_ent = 0;
+    for (const auto &mesh : local_mesh) {
+      max_ent = std::max(max_ent, mesh.count(Excn::ObjectType::NODE));
     }
 
     for (size_t p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
-        if (blocks[p][b].entity_count() > max_ent) {
-          max_ent = blocks[p][b].entity_count();
-        }
+      for (const auto &blk : blocks[p]) {
+	max_ent = std::max(max_ent, blk.entity_count());
       }
     }
 
     // Nodesets...
     for (size_t p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(Excn::ObjectType::NSET); b++) {
-        if (nodesets[p][b].entity_count() > max_ent) {
-          max_ent = nodesets[p][b].entity_count();
-        }
+      for (const auto &nset : nodesets[p]) {
+	max_ent = std::max(max_ent, nset.entity_count());
       }
     }
 
     // Sidesets...
     for (size_t p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(Excn::ObjectType::SSET); b++) {
-        if (sidesets[p][b].entity_count() > max_ent) {
-          max_ent = sidesets[p][b].entity_count();
-        }
+      for (const auto &sset : sidesets[p]) {
+	max_ent = std::max(max_ent, sset.entity_count());
       }
     }
     return max_ent;
