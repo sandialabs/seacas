@@ -1,7 +1,6 @@
 # SEACAS  [[Documentation](http://sandialabs.github.io/seacas-docs/)] [[Wiki](https://github.com/sandialabs/seacas/wiki)]
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/838c6d845e9e4ce4a7cd02bd06b4d2ad)](https://www.codacy.com/gh/gsjaardema/seacas/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gsjaardema/seacas&amp;utm_campaign=Badge_Grade)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
-[![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
 [![SEACAS Docker](https://img.shields.io/github/actions/workflow/status/sandialabs/seacas/docker-seacas.yml?branch=master&label=SEACAS&logo=docker&logoColor=0db7ed)](https://hub.docker.com/r/mrbuche/seacas)
 [![Exodus Docker](https://img.shields.io/github/actions/workflow/status/sandialabs/seacas/docker-exodus.yml?branch=master&label=Exodus&logo=docker&logoColor=0db7ed)](https://hub.docker.com/r/mrbuche/exodus)
@@ -9,6 +8,8 @@
 [![Github Actions -- CI Variants](https://github.com/sandialabs/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/sandialabs/seacas)
 [![Github Actions -- CI Intel](https://github.com/sandialabs/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/sandialabs/seacas)
 [![Github Actions -- CI MSYS2](https://github.com/sandialabs/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI Static](https://github.com/sandialabs/seacas/actions/workflows/build_static.yml/badge.svg)](https://github.com/sandialabs/seacas[![Github Actions -- CI External Lib](https://github.com/sandialabs/seacas/actions/workflows/build_external_lib.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI Spack](https://github.com/sandialabs/seacas/actions/workflows/spack.yml/badge.svg)](https://github.com/sandialabs/seacas)
 
 *  [Get the sources](#get-the-sources)
 *  [Build instructions](#build-instructions)
