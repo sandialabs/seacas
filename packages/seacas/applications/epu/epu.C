@@ -3850,7 +3850,7 @@ namespace {
     auto linkage    = new INT *[global_num_edgeblocks];
     auto attributes = new T *[global_num_edgeblocks];
     for (int i = 0; i < global_num_edgeblocks; i++) {
-      linkage[i] = nullptr;
+      linkage[i]    = nullptr;
       attributes[i] = nullptr;
     }
 
