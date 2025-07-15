@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2025 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -442,7 +442,7 @@ int ex_get_quadrature(int exoid, ex_quadrature **pquad, int *num_quad)
   EX_FUNC_ENTER();
 
   *num_quad = ex_get_quadrature_count(exoid);
-  if (*num_quad == 0) {
+  if (*num_quad <= 0) {
     EX_FUNC_LEAVE(EX_NOTFOUND);
   }
 
