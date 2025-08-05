@@ -598,7 +598,7 @@ integer {D}+({E})?
                              file_must_exist = true; }
 <INITIAL>(?i:{WS}"{cinclude"){WS}"("          { BEGIN(GET_FILENAME);
                              file_must_exist = false; }
-<GET_FILENAME>.+")"{WS}"}"[^\n]*{NL}  {
+<GET_FILENAME>.+")"{WS}"}"  {
   aprepro.ap_file_list.top().lineno++;
   BEGIN(INITIAL);
   {
