@@ -35,18 +35,20 @@ namespace Ioss {
   enum class ElementShape : unsigned int;
 } // namespace Ioss
 
-[[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg)
+[[noreturn]] inline void IOSS_ERROR(const std::string &errmsg) 
 {
-  throw std::runtime_error((errmsg).str());
+#if defined(SEACAS_HAVE_MPI)
+  std::cerr "ERROR: " << errmsg << "\n";
+  MPI_Abort(MPI_COMM_WORLD);
+#else
+ throw std::runtime_error(errmsg); 
+#endif
 }
 
-[[noreturn]] inline void IOSS_ERROR(const std::string &errmsg) { throw std::runtime_error(errmsg); }
-
-#ifdef NDEBUG
-#define IOSS_ASSERT_USED(x) (void)x
-#else
-#define IOSS_ASSERT_USED(x)
-#endif
+[[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg)
+{
+  IOSS_ERROR(errmsg.str());
+}
 
 // We have been relying on the assumption that calling `.data()` on an empty vector
 // will return `nullptr`.  However, according to cppreference (based on the standard):
