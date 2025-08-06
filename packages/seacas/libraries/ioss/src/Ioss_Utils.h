@@ -38,11 +38,12 @@ namespace Ioss {
 [[noreturn]] inline void IOSS_ERROR(const std::string &errmsg)
 {
 #if defined(SEACAS_HAVE_MPI)
-  std::cerr "ERROR: " << errmsg << "\n";
-  MPI_Abort(MPI_COMM_WORLD);
-#else
-  throw std::runtime_error(errmsg);
+  std::cerr << "ERROR: " << errmsg << "\n";
+  MPI_Abort(MPI_COMM_WORLD, 1);
+  // MPI_Abort should not return, but if it does, we throw the exception...
+  // This helps quiet the compiler also.
 #endif
+  throw std::runtime_error(errmsg);
 }
 
 [[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg) { IOSS_ERROR(errmsg.str()); }
