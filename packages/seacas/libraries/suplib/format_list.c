@@ -16,7 +16,7 @@ void formlist(int64_t *ids, int64_t *len)
   const char *seq_sep = ", ";
 
   printf("\t\t");
-  int64_t             num = 0;
+  int64_t num = 0;
   while (num < *len) {
     if (num == 0) {
       printf("%" PRId64 "", ids[num]);
@@ -24,7 +24,7 @@ void formlist(int64_t *ids, int64_t *len)
     else {
       printf("%s%" PRId64 "", seq_sep, ids[num]);
     }
-      
+
     int64_t begin    = ids[num]; // first id in range of 1 or more ids
     int64_t previous = ids[num]; // last id in range of 1 or more ids
     // Gather a range or single value... (begin .. previous)
