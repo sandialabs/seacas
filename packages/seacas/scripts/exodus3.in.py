@@ -176,7 +176,13 @@ try:
     EXODUS_LIB = ctypes.cdll.LoadLibrary(pip_so_path)
 except Exception:
     ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
-    EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/{so_prefix}exodus.{so_suffix}"
+    paths = [f"{ACCESS}/@SEACAS_LIBDIR@/{so_prefix}exodus.{so_suffix}",
+             f"{ACCESS}/@SEACAS_LIBDIR@64/{so_prefix}exodus.{so_suffix}"]
+    EXODUS_SO = next((path for path in paths if os.path.exists(path)), None)
+
+    if EXODUS_SO is None:
+        raise Exception(f"Exodus library not found at any of the paths expect from list:\n {paths.join}")
+
     EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
 MAX_STR_LENGTH = 32      # match exodus default
