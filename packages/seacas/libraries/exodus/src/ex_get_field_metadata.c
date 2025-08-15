@@ -381,8 +381,13 @@ int ex_get_basis(int exoid, ex_basis **pbasis, int *num_basis)
 
       if (which == -1) {
         // Internal error...
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: internal -- could not locate basis_name '%s'",
+                 basis_name);
+        ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
-
+      
       if (strcmp(basis_type, "cardinality") == 0) {
         // Cardinality already set; skip
       }
@@ -539,6 +544,11 @@ int ex_get_quadrature(int exoid, ex_quadrature **pquad, int *num_quad)
 
       if (which == -1) {
         // Internal error...
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: internal -- could not locate quadrature_name '%s'",
+                 quadrature_name);
+        ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if (strcmp(quadrature_type, "cardinality") == 0) {
