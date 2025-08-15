@@ -387,7 +387,7 @@ int ex_get_basis(int exoid, ex_basis **pbasis, int *num_basis)
         ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
         EX_FUNC_LEAVE(EX_FATAL);
       }
-      
+
       if (strcmp(basis_type, "cardinality") == 0) {
         // Cardinality already set; skip
       }

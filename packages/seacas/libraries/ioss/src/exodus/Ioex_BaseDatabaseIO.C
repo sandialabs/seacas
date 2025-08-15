@@ -1676,10 +1676,9 @@ namespace Ioex {
       util().global_array_minmax(var_count, Ioss::ParallelUtils::DO_MAX);
 
       if (var_count[0] != -var_count[1]) {
-	IOSS_ERROR(
-		   fmt::format("ERROR: Inconsistent number of {} fields ({} to {}) on file '{}'.\n",
-			       Ioss::Utils::entity_type_to_string(Ioex::map_exodus_type(type)),
-			       -var_count[1], var_count[0], get_filename()));
+        IOSS_ERROR(fmt::format("ERROR: Inconsistent number of {} fields ({} to {}) on file '{}'.\n",
+                               Ioss::Utils::entity_type_to_string(Ioex::map_exodus_type(type)),
+                               -var_count[1], var_count[0], get_filename()));
       }
     }
 
