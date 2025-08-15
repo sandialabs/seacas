@@ -729,22 +729,22 @@ namespace Ioex {
           auto max_timestep_count =
               util().global_minmax(timestepCount, Ioss::ParallelUtils::DO_MAX);
           if (max_timestep_count != 0) {
-	    std::vector<int> all_counts;
-	    util().gather(timestepCount, all_counts);
-             if (myProcessor == 0) {
-	      // Determine which rank(s) have no timesteps..
-	      std::vector<size_t> ranks;
-	      for (size_t i = 0; i < all_counts.size(); i++) {
-		if (all_counts[i] == 0) {
-		  ranks.push_back(i);
-		}
-	      }
+            std::vector<int> all_counts;
+            util().gather(timestepCount, all_counts);
+            if (myProcessor == 0) {
+              // Determine which rank(s) have no timesteps..
+              std::vector<size_t> ranks;
+              for (size_t i = 0; i < all_counts.size(); i++) {
+                if (all_counts[i] == 0) {
+                  ranks.push_back(i);
+                }
+              }
               // NOTE: Don't want to warn on all processors if the
               // timestep count is zero on some, but not all ranks.
               fmt::print(Ioss::WarnOut(),
                          "On rank(s) {}, the database `{}` has no timesteps.\n"
-			 "\tNo times will be read on ANY rank for consistency.\n\n",
-			 Ioss::Utils::format_id_list(ranks, ".."), get_filename());
+                         "\tNo times will be read on ANY rank for consistency.\n\n",
+                         Ioss::Utils::format_id_list(ranks, ".."), get_filename());
             }
           }
         }
@@ -845,8 +845,8 @@ namespace Ioex {
       util().global_array_minmax(step_count, Ioss::ParallelUtils::DO_MIN);
       if (step_count[0] != -step_count[1]) {
         IOSS_ERROR(fmt::format("ERROR: The database file '{}' does not contain the same number\n"
-			       "       of timesteps (or time values) on all processors."
-			       "  The range is {} to {}.\n",
+                               "       of timesteps (or time values) on all processors."
+                               "  The range is {} to {}.\n",
                                get_filename(), step_count[0], -step_count[1]));
       }
 
