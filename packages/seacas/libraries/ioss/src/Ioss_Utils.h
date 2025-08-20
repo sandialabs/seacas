@@ -35,10 +35,7 @@ namespace Ioss {
   enum class ElementShape : unsigned int;
 } // namespace Ioss
 
-[[noreturn]] inline void IOSS_ERROR(const std::string &errmsg)
-{
-  throw std::runtime_error(errmsg);
-}
+[[noreturn]] inline void IOSS_ERROR(const std::string &errmsg) { throw std::runtime_error(errmsg); }
 
 [[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg) { IOSS_ERROR(errmsg.str()); }
 
