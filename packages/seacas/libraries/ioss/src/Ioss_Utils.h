@@ -41,6 +41,13 @@ namespace Ioss {
 
 [[noreturn]] inline void IOSS_ABORT(const std::string &errmsg)
 {
+  throw std::runtime_error(errmsg);
+}
+
+[[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg) { IOSS_ERROR(errmsg.str()); }
+
+[[noreturn]] inline void IOSS_ABORT(const std::string &errmsg)
+{
   std::cerr << "ERROR: " << errmsg << "\n";
 #if defined(SEACAS_HAVE_MPI)
   int parallelSize = 1;
