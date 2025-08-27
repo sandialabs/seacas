@@ -1964,10 +1964,10 @@ enum ex_error_return_code {
   EX_INTSIZEMISMATCH =
       -1009, /**< integer sizes do not match on input/output databases in ex_copy  */
 
-  EX_RANGE         = -1010, /**< numeric conversion warning */
-  EX_FATAL = -1, /**< fatal error flag def                     */
-  EX_NOERR = 0,  /**< no error flag def                        */
-  EX_WARN  = 1   /**< warning flag def                         */
+  EX_RANGE = -1010, /**< numeric conversion warning */
+  EX_FATAL = -1,    /**< fatal error flag def                     */
+  EX_NOERR = 0,     /**< no error flag def                        */
+  EX_WARN  = 1      /**< warning flag def                         */
 };
 typedef enum ex_error_return_code ex_error_return_code;
 

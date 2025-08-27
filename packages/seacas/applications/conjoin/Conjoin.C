@@ -1469,8 +1469,9 @@ namespace {
       return;
     }
 
-    size_t max_id        = global->elementCount > 0 ? global_element_map[global->elementCount - 1].first : 0;
-    bool   is_contiguous = max_id == global_element_map.size();
+    size_t max_id =
+        global->elementCount > 0 ? global_element_map[global->elementCount - 1].first : 0;
+    bool is_contiguous = max_id == global_element_map.size();
     // fmt::print("Element id map {}.\n", (is_contiguous ? "is" : "is not"));
 
     // The global_element_map may or may not be globally sorted; however, each

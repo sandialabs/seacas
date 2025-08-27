@@ -356,12 +356,15 @@ int ex_put_var_multi_time(int exoid, ex_entity_type var_type, int var_index, ex_
 
   if (status != EX_NOERR) {
     if (status == NC_ERANGE) {
-      /* NetCDF reports this, but still writes the data (possibly NaN), Should report, but not exit */
+      /* NetCDF reports this, but still writes the data (possibly NaN), Should report, but not exit
+       */
       snprintf(errmsg, MAX_ERR_LENGTH,
-             "WARNING: Numeric conversion error %s writing %s %" PRId64 " variable %d at steps %d to %d in file id %d",
-	       exi_comp_ws(exoid) == 4 ? "(double to float)" : "", ex_name_of_object(var_type), obj_id, var_index, beg_time_step, end_time_step, exoid);
+               "WARNING: Numeric conversion error %s writing %s %" PRId64
+               " variable %d at steps %d to %d in file id %d",
+               exi_comp_ws(exoid) == 4 ? "(double to float)" : "", ex_name_of_object(var_type),
+               obj_id, var_index, beg_time_step, end_time_step, exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_RANGE);
-    EX_FUNC_LEAVE(EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store %s %" PRId64 " variable %d at steps %d to %d in file id %d",
