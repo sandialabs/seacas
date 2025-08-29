@@ -652,7 +652,7 @@ namespace SEAMS {
       fmt::print(stderr,
                  "\tDocumentation: "
                  "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#aprepro\n\n"
-                 "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n");
+                 "\t->->-> Send email to sierra-help@sandia.gov for aprepro support.\n\n");
       exit(EXIT_SUCCESS);
     }
     else {
