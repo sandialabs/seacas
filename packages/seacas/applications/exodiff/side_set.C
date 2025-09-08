@@ -11,6 +11,7 @@
 #include "smart_assert.h" // for SMART_ASSERT
 #include <cstdlib>        // for exit
 #include <vector>         // for vector
+#include <fmt/format.h>
 
 template <typename INT> Side_Set<INT>::Side_Set() : Exo_Entity() {}
 

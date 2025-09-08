@@ -7,8 +7,7 @@
 #include "ED_SystemInterface.h" // for SystemInterface, interFace
 #include "assembly.h"
 #include "exodusII.h" // for ex_block, etc
-#include "fmt/ostream.h"
-#include "smart_assert.h" // for SMART_ASSERT
+#include <smart_assert.h> // for SMART_ASSERT
 #include <cstdlib>        // for exit, nullptr
 #include <string>         // for string, char_traits
 

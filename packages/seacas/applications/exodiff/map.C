@@ -9,14 +9,14 @@
 #include <cstdlib>
 #include <iomanip>
 #include <numeric>
+#include <fmt/ostream.h>
+#include <smart_assert.h>
 
 #include "ED_SystemInterface.h"
 #include "Tolerance.h"
 #include "exo_block.h"
 #include "exo_read.h"
-#include "fmt/ostream.h"
 #include "iqsort.h"
-#include "smart_assert.h"
 #include "util.h"
 
 namespace {

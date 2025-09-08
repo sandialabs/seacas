@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "fmt/color.h"
-#include "fmt/ostream.h"
+#include <fmt/color.h>
+#include <fmt/ostream.h>
 #include "util.h"
 #include <cstring> // for nullptr, memset
 #include <iostream>

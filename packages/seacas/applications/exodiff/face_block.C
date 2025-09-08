@@ -1,4 +1,4 @@
-// Copyright(C) 1999-, 20212021, ,  National Technology & Engineering Solutions
+// Copyright(C) 1999-, 20212021, , ,  National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -10,6 +10,7 @@
 #include "iqsort.h"       // for index_qsort
 #include "smart_assert.h" // for SMART_ASSERT
 #include <cstdlib>        // for exit
+#include <fmt/format.h>
 #include <vector>         // for vector
 
 template <typename INT> Face_Block<INT>::Face_Block() : Exo_Entity() {}
