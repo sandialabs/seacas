@@ -1607,7 +1607,7 @@ namespace Ioex {
       for (const auto &att : attr) {
         if (att.value_count == 0) {
           // Just an attribute name.  Give it an empty value...
-          entity->property_add(Ioss::Property(att.name, "", Ioss::Property::ATTRIBUTE));
+          entity->property_add(Ioss::Property(att.name, "", Ioss::Property::Origin::ATTRIBUTE));
           continue;
         }
         assert(att.values != nullptr);
@@ -1616,28 +1616,28 @@ namespace Ioex {
         case EX_INTEGER: {
           const auto *idata = static_cast<int *>(att.values);
           if (att.value_count == 1) {
-            entity->property_add(Ioss::Property(att.name, *idata, Ioss::Property::ATTRIBUTE));
+            entity->property_add(Ioss::Property(att.name, *idata, Ioss::Property::Origin::ATTRIBUTE));
           }
           else {
             std::vector<int> tmp(att.value_count);
             std::copy(idata, idata + att.value_count, tmp.begin());
-            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::Origin::ATTRIBUTE));
           }
         } break;
         case EX_DOUBLE: {
           const auto *ddata = static_cast<double *>(att.values);
           if (att.value_count == 1) {
-            entity->property_add(Ioss::Property(att.name, *ddata, Ioss::Property::ATTRIBUTE));
+            entity->property_add(Ioss::Property(att.name, *ddata, Ioss::Property::Origin::ATTRIBUTE));
           }
           else {
             std::vector<double> tmp(att.value_count);
             std::copy(ddata, ddata + att.value_count, tmp.begin());
-            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::Origin::ATTRIBUTE));
           }
         } break;
         case EX_CHAR: {
           const auto *cdata = static_cast<char *>(att.values);
-          entity->property_add(Ioss::Property(att.name, cdata, Ioss::Property::ATTRIBUTE));
+          entity->property_add(Ioss::Property(att.name, cdata, Ioss::Property::Origin::ATTRIBUTE));
         } break;
         }
       }
