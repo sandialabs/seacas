@@ -7,11 +7,11 @@
 #include "ED_SystemInterface.h"
 
 #include <algorithm>
+#include <fmt/ostream.h>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <vector>
-#include <fmt/ostream.h>
 
 #include <climits>
 #include <cstdlib>

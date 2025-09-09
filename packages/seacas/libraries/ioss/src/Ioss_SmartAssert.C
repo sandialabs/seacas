@@ -8,9 +8,9 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sstream>
 
 namespace {
   // in case we're logging using the default logger...

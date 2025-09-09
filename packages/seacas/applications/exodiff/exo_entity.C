@@ -7,14 +7,14 @@
 #include "ED_SystemInterface.h"
 #include "exo_entity.h"
 #include "exodusII.h" // for ex_get_var, EX_INVALID_ID, etc
-#include "stringx.h"      // for to_lower
+#include "stringx.h"  // for to_lower
 
+#include <cstdint> // for int64_t
+#include <cstdlib> // for exit
+#include <cstring> // for strlen
 #include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <smart_assert.h>
-#include <cstdint>        // for int64_t
-#include <cstdlib>        // for exit
-#include <cstring>        // for strlen
 #include <string>
 #include <vector>
 

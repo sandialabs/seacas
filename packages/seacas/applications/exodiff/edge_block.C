@@ -10,8 +10,8 @@
 #include "iqsort.h"       // for index_qsort
 #include "smart_assert.h" // for SMART_ASSERT
 #include <cstdlib>        // for exit
-#include <vector>         // for vector
 #include <fmt/format.h>
+#include <vector> // for vector
 
 template <typename INT> Edge_Block<INT>::Edge_Block() : Exo_Entity() {}
 
