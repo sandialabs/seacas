@@ -235,7 +235,8 @@ bool read_blob()
     std::cout << "\nBlob " << blob->name() << " contains: " << blob->entity_count()
               << " item(s).\n";
 
-    Ioss::Utils::info_property(blob, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ");
+    Ioss::Utils::info_property(blob, Ioss::Property::Origin::ATTRIBUTE,
+                               "\tAttributes (Reduction): ");
     Ioss::Utils::info_fields(blob, Ioss::Field::TRANSIENT, "\n\tTransient: ");
     Ioss::Utils::info_fields(blob, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ", "\t");
   }

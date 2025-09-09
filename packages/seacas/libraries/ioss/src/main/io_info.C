@@ -391,7 +391,8 @@ namespace {
 
       info_aliases(region, as, true, false);
       fmt::print("\n");
-      Ioss::Utils::info_property(as, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(as, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
       Ioss::Utils::info_fields(as, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
     }
   }
@@ -427,7 +428,8 @@ namespace {
       fmt::print("\n");
       Ioss::Utils::info_fields(eb, Ioss::Field::MAP, "\n\tMap Fields: ");
       Ioss::Utils::info_fields(eb, Ioss::Field::ATTRIBUTE, "\n\tAttributes: ");
-      Ioss::Utils::info_property(eb, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(eb, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
 
       if (interFace.adjacencies()) {
         Ioss::NameList blocks = eb->get_block_adjacencies();

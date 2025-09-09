@@ -1616,7 +1616,8 @@ namespace Ioex {
         case EX_INTEGER: {
           const auto *idata = static_cast<int *>(att.values);
           if (att.value_count == 1) {
-            entity->property_add(Ioss::Property(att.name, *idata, Ioss::Property::Origin::ATTRIBUTE));
+            entity->property_add(
+                Ioss::Property(att.name, *idata, Ioss::Property::Origin::ATTRIBUTE));
           }
           else {
             std::vector<int> tmp(att.value_count);
@@ -1627,7 +1628,8 @@ namespace Ioex {
         case EX_DOUBLE: {
           const auto *ddata = static_cast<double *>(att.values);
           if (att.value_count == 1) {
-            entity->property_add(Ioss::Property(att.name, *ddata, Ioss::Property::Origin::ATTRIBUTE));
+            entity->property_add(
+                Ioss::Property(att.name, *ddata, Ioss::Property::Origin::ATTRIBUTE));
           }
           else {
             std::vector<double> tmp(att.value_count);

@@ -409,7 +409,8 @@ namespace {
     fmt::print("{:14} cells, {:14} nodes\n", fmt::group_digits(num_cell),
                fmt::group_digits(num_node));
     if (show_property) {
-      Ioss::Utils::info_property(sb, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(sb, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -439,7 +440,8 @@ namespace {
     }
     fmt::print("\n");
     if (show_property) {
-      Ioss::Utils::info_property(as, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(as, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -462,7 +464,8 @@ namespace {
     fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14} elements, {:3d} attributes.\n", name(eb),
                id(eb), type, fmt::group_digits(num_elem), num_attrib);
     if (show_property) {
-      Ioss::Utils::info_property(eb, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(eb, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -486,7 +489,8 @@ namespace {
                  fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
     }
     if (show_property) {
-      Ioss::Utils::info_property(ss, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(ss, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -498,7 +502,8 @@ namespace {
     fmt::print("\n{} id: {:6d}, {:8} nodes, {:3d} attributes, {:8} distribution factors.\n",
                name(ns), id(ns), fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
     if (show_property) {
-      Ioss::Utils::info_property(ns, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(ns, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -509,7 +514,8 @@ namespace {
     fmt::print("\n{} {:14} nodes, {:3d} attributes.\n", name(nb), fmt::group_digits(num_nodes),
                num_attrib);
     if (show_property) {
-      Ioss::Utils::info_property(nb, Ioss::Property::Origin::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(nb, Ioss::Property::Origin::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
