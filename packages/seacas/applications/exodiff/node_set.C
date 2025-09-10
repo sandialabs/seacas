@@ -6,12 +6,12 @@
 
 #include "ED_SystemInterface.h" // for SystemInterface, etc
 #include "exodusII.h"           // for ex_set, etc
-#include "iqsort.h" // for index_qsort
+#include "iqsort.h"             // for index_qsort
 #include "node_set.h"
-#include <smart_assert.h> 
+#include <cstdlib> // for exit
 #include <fmt/format.h>
-#include <cstdlib>        // for exit
-#include <vector>         // for vector
+#include <smart_assert.h>
+#include <vector> // for vector
 
 template <typename INT> Node_Set<INT>::Node_Set() : Exo_Entity() {}
 

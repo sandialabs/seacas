@@ -8,9 +8,9 @@
 #include "exo_block.h"
 #include "exodusII.h" // for ex_block, etc
 
+#include <cstdlib> // for exit, nullptr
 #include <fmt/ostream.h>
 #include <smart_assert.h> // for SMART_ASSERT
-#include <cstdlib>        // for exit, nullptr
 #include <string>         // for string, char_traits
 
 template <typename INT> Exo_Block<INT>::Exo_Block() : Exo_Entity() {}

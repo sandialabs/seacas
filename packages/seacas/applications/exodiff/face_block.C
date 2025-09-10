@@ -11,7 +11,7 @@
 #include "smart_assert.h" // for SMART_ASSERT
 #include <cstdlib>        // for exit
 #include <fmt/format.h>
-#include <vector>         // for vector
+#include <vector> // for vector
 
 template <typename INT> Face_Block<INT>::Face_Block() : Exo_Entity() {}
 

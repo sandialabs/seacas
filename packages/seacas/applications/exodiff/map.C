@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <cfloat>
 #include <cstdlib>
+#include <fmt/ostream.h>
 #include <iomanip>
 #include <numeric>
-#include <fmt/ostream.h>
 #include <smart_assert.h>
 
 #include "ED_SystemInterface.h"

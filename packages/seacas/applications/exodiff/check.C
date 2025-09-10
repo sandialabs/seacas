@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
-#include <vector>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 #include <smart_assert.h>
+#include <vector>
 
 #include "ED_SystemInterface.h"
 #include "Tolerance.h"

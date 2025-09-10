@@ -8,11 +8,11 @@
 
 #include "Ioss_TransformFactory.h"
 #include "Ioss_Utils.h"
+#include <fmt/format.h>
 #include <map>
 #include <ostream>
 #include <string>
 #include <utility>
-#include <fmt/format.h>
 
 namespace Ioss {
   class Transform;
@@ -24,7 +24,7 @@ namespace Ioss {
     if (iter == registry().end()) {
       if (registry().empty()) {
         std::string errmsg = "ERROR: No transformations have been registered.\n"
-	  "       Was Iotr::Initializer::initialize() called?\n\n";
+                             "       Was Iotr::Initializer::initialize() called?\n\n";
         IOSS_ERROR(errmsg);
       }
       else {
