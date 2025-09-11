@@ -398,15 +398,15 @@ namespace Ioss {
         const int mode = 0777; // Users umask will be applied to this.
         if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
 #endif
-          fmt::print(errmsg, "ERROR: Cannot create directory '{}': {}\n", path_root,
-                     std::strerror(errno));
+	  errmsg = fmt::format("ERROR: Cannot create directory '{}': {}\n", 
+		     path_root, std::strerror(errno));
           error_found = true;
           break;
         }
       }
       else if (!S_ISDIR(st.st_mode)) {
         errno = ENOTDIR;
-        fmt::print(errmsg, "ERROR: Path '{}' is not a directory.\n", path_root);
+	errmsg = fmt::format("ERROR: Path '{}' is not a directory.\n", path_root);
         error_found = true;
         break;
       }
