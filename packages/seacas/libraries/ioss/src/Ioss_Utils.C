@@ -641,6 +641,7 @@ namespace {
       }
       suffix_size--;
     }
+    // This should never be reached...
     return {"", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1};
   }
 
