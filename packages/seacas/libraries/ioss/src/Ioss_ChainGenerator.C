@@ -151,6 +151,7 @@ namespace {
       for (int i = 0; i < face.element_count(); i++) {
         auto element                     = face.element[i] / 10 - offset;
         auto side                        = face.element[i] % 10; // 0-based side
+	assert(side < 6);
         face_connectivity[element][side] = &face;
       }
     }
