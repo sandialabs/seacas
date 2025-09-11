@@ -384,9 +384,9 @@ Ioss::ElementPermutation *Ioss::ElementTopology::permutation() const
   if (validate_permutation_nodes()) {
     if (static_cast<int>(perm->num_permutation_nodes()) != number_corner_nodes()) {
       IOSS_ERROR(fmt::format(
-                 "ERROR: The permutation node count: {} for topology '{}' does not match expected "
-                 "value: {}.",
-                 perm->num_permutation_nodes(), name(), number_corner_nodes()));
+          "ERROR: The permutation node count: {} for topology '{}' does not match expected "
+          "value: {}.",
+          perm->num_permutation_nodes(), name(), number_corner_nodes()));
     }
   }
   return perm;
@@ -411,7 +411,7 @@ Ioss::ElementTopology::topology_shape_to_permutation_name(Ioss::ElementShape top
   auto iter = shapeToPermutationNameMap_.find(topoShape);
   if (iter == shapeToPermutationNameMap_.end()) {
     IOSS_ERROR(fmt::format("ERROR: The topology shape '{}' is not supported.",
-			   Ioss::Utils::shape_to_string(topoShape)));
+                           Ioss::Utils::shape_to_string(topoShape)));
   }
 
   return iter->second;

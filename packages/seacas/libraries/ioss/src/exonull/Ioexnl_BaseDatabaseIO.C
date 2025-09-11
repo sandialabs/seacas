@@ -291,12 +291,12 @@ namespace Ioexnl {
     int step = get_region()->get_current_state();
 
     if (step <= 0) {
-      IOSS_ERROR(fmt::format(
-                 "ERROR: No currently active state.  The calling code must call "
-                 "Ioss::Region::begin_state(int step)\n"
-                 "       to set the database timestep from which to read the transient data.\n"
-                 "       [{}]\n",
-                 get_filename()));
+      IOSS_ERROR(
+          fmt::format("ERROR: No currently active state.  The calling code must call "
+                      "Ioss::Region::begin_state(int step)\n"
+                      "       to set the database timestep from which to read the transient data.\n"
+                      "       [{}]\n",
+                      get_filename()));
     }
     return step;
   }
@@ -1004,10 +1004,9 @@ namespace Ioexnl {
 
     // Verify that exodus supports the mesh_type...
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-      IOSS_ERROR(fmt::format(
-                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
-                 "       Only 'Unstructured' is supported at this time.\n",
-                 region->mesh_type_string()));
+      IOSS_ERROR(fmt::format("ERROR: The mesh type is '{}' which Exodus does not support.\n"
+                             "       Only 'Unstructured' is supported at this time.\n",
+                             region->mesh_type_string()));
     }
 
     const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
@@ -1459,13 +1458,13 @@ namespace {
       for (int i = field_offset; i < field_offset + comp_count; i++) {
         if (attributes[i] != 0) {
           IOSS_ERROR(fmt::format(
-				 "INTERNAL ERROR: For block '{}', attribute '{}', indexes into the same location as a "
-				 "previous attribute.\n"
-				 "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
-				 "report.\n",
+              "INTERNAL ERROR: For block '{}', attribute '{}', indexes into the same location as a "
+              "previous attribute.\n"
+              "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
+              "report.\n",
               block->name(), field_name, __func__));
-	}
-	attributes[i] = 1;
+        }
+        attributes[i] = 1;
       }
     }
 
@@ -1484,10 +1483,10 @@ namespace {
       for (int i = 1; i <= attribute_count; i++) {
         if (attributes[i] == 0) {
           IOSS_ERROR(fmt::format(
-                     "INTERNAL ERROR: Block '{}' has an incomplete set of attributes.\n"
-                     "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
-                     "report.\n",
-                     block->name(), __func__));
+              "INTERNAL ERROR: Block '{}' has an incomplete set of attributes.\n"
+              "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
+              "report.\n",
+              block->name(), __func__));
         }
       }
       return;

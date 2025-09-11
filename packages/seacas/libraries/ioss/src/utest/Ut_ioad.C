@@ -345,8 +345,8 @@ template <typename Entity> void write_fields(Entity *e, Ioss::Field::RoleType ro
       break;
     default:
       IOSS_ERROR("INTERNAL ERROR: Invalid field type. "
-		 "Something is wrong in the Ioad::DatabaseIO::get_field_internal_t() function. "
-		 "Please report.\n");
+                 "Something is wrong in the Ioad::DatabaseIO::get_field_internal_t() function. "
+                 "Please report.\n");
     }
   }
 }

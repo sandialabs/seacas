@@ -445,12 +445,12 @@ namespace Ioex {
     // can cause hard to track down problems...
     if (decomposition.m_globalElementCount != decomposition.m_fileBlockIndex[block_count]) {
       IOSS_ERROR(fmt::format(
-                 "ERROR: The sum of the element counts in each element block gives a total of {} "
-                 "elements.\n"
-                 "       This does not match the total element count of {} which indicates a "
-                 "corrupt mesh description.\n"
-                 "       Contact sierra-help@sandia.gov for more details.\n",
-                 decomposition.m_fileBlockIndex[block_count], decomposition.m_globalElementCount));
+          "ERROR: The sum of the element counts in each element block gives a total of {} "
+          "elements.\n"
+          "       This does not match the total element count of {} which indicates a "
+          "corrupt mesh description.\n"
+          "       Contact sierra-help@sandia.gov for more details.\n",
+          decomposition.m_fileBlockIndex[block_count], decomposition.m_globalElementCount));
     }
 
     // Make sure 'sum' can fit in INT...
@@ -558,9 +558,10 @@ namespace Ioex {
 
     m_decomposition.show_progress(__func__);
     if (decomposition.m_fileBlockIndex.size() != block_count + 1) {
-      IOSS_ERROR(fmt::format("ERROR: The `generate_adjacency` function was not called prior to calling "
-                         "`generate_omitted_block_weights`\n"
-			     "       Contact sierra-help@sandia.gov for more details.\n"));
+      IOSS_ERROR(
+          fmt::format("ERROR: The `generate_adjacency` function was not called prior to calling "
+                      "`generate_omitted_block_weights`\n"
+                      "       Contact sierra-help@sandia.gov for more details.\n"));
     }
 
     // Get the global element block index list at this time also.
@@ -655,12 +656,12 @@ namespace Ioex {
 
     size_t one = 1;
     if (entitylist_size >= one << 31) {
-      IOSS_ERROR(fmt::format(
-                 "ERROR: The sum of the {} entity counts is larger than 2.1 Billion "
-                 " which cannot be correctly handled with the current IOSS decomposition "
-                 "implementation.\n"
-                 "       Contact sierra-help@sandia.gov for more details.\n",
-                 set_type_name));
+      IOSS_ERROR(
+          fmt::format("ERROR: The sum of the {} entity counts is larger than 2.1 Billion "
+                      " which cannot be correctly handled with the current IOSS decomposition "
+                      "implementation.\n"
+                      "       Contact sierra-help@sandia.gov for more details.\n",
+                      set_type_name));
     }
 
     std::vector<INT> entitylist(max_size);
@@ -1317,7 +1318,7 @@ namespace Ioex {
                  "supported\n");
     }
     else {
-      std::string        typestr = type == EX_NODE_SET ? "node set" : "side set";
+      std::string typestr = type == EX_NODE_SET ? "node set" : "side set";
       IOSS_ERROR(fmt::format("ERROR: Count not find {} {}\n", typestr, id));
     }
     return node_sets[0];
@@ -1915,8 +1916,8 @@ namespace Ioex {
 
       if (result != MPI_SUCCESS) {
         IOSS_ERROR(fmt::format(
-                   "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
-                   m_processor));
+            "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
+            m_processor));
       }
       df_count = nodes_per_face.back();
     }
@@ -1956,8 +1957,8 @@ namespace Ioex {
 
       if (result != MPI_SUCCESS) {
         IOSS_ERROR(fmt::format(
-                   "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
-                   m_processor));
+            "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
+            m_processor));
       }
     }
 
@@ -2099,9 +2100,9 @@ namespace Ioex {
       int                 total_errors = pu.global_minmax(error_count, Ioss::ParallelUtils::DO_MAX);
       if (total_errors > 0) {
         IOSS_ERROR(fmt::format(
-                   "ERROR: Ioss Mapping routines detected at least one error mapping global ids.\n"
-                   "       This usually means the node ownership is incorrect for some reason. "
-                   "This should not happen, please report.\n"));
+            "ERROR: Ioss Mapping routines detected at least one error mapping global ids.\n"
+            "       This usually means the node ownership is incorrect for some reason. "
+            "This should not happen, please report.\n"));
       }
     }
     // Send the data back now...

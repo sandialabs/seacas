@@ -318,8 +318,8 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   int max_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MAX);
   if (min_step_count != max_step_count) {
     IOSS_ERROR(fmt::format(
-               "ERROR: Number of timesteps does not match on all ranks.  Range from {} to {}.\n",
-               min_step_count, max_step_count));
+        "ERROR: Number of timesteps does not match on all ranks.  Range from {} to {}.\n",
+        min_step_count, max_step_count));
   }
 #endif
   for (int istep = 1; istep <= step_count; istep++) {

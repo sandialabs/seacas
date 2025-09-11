@@ -226,12 +226,11 @@ void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
       reverse_map.begin(), reverse_map.end(),
       [](const Ioss::IdPair &lhs, const Ioss::IdPair &rhs) { return lhs.first == rhs.first; });
   if (dup != reverse_map.end()) {
-    auto               other = dup + 1;
+    auto other = dup + 1;
     IOSS_ERROR(fmt::format(
-               "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
-               "       Global id {3} assigned to local {0}s {4} and {5}.\n",
-               m_entityType, m_myProcessor, m_filename, (*dup).first, (*dup).second,
-               (*other).second));
+        "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
+        "       Global id {3} assigned to local {0}s {4} and {5}.\n",
+        m_entityType, m_myProcessor, m_filename, (*dup).first, (*dup).second, (*other).second));
   }
 }
 #endif
@@ -307,10 +306,9 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     SMART_ASSERT((size_t)local_id < m_map.size())(local_id)(m_map.size());
 
     if (ids[i] <= 0) {
-      IOSS_ERROR(fmt::format(
-                 "\nERROR: {} mapping routines detected non-positive global id {}"
-                 " for local id {} on processor {}, filename '{}'.\n",
-                 m_entityType, ids[i], local_id, m_myProcessor, m_filename));
+      IOSS_ERROR(fmt::format("\nERROR: {} mapping routines detected non-positive global id {}"
+                             " for local id {} on processor {}, filename '{}'.\n",
+                             m_entityType, ids[i], local_id, m_myProcessor, m_filename));
     }
 
     m_map[local_id] = ids[i];
@@ -625,19 +623,19 @@ int64_t Ioss::Map::global_to_local_nl(int64_t global, bool must_exist, bool outp
   }
   if (local > static_cast<int64_t>(m_map.size()) - 1) {
     IOSS_ERROR(fmt::format(
-               "ERROR: Ioss Mapping routines detected {0} with global id equal to {1} returns a "
-               "local id of {2} which is\n"
-               "larger than the local {0} count {5} on processor {3}, filename '{4}'.\n"
-               "This should not happen, please report.\n",
-               m_entityType, global, local, m_myProcessor, m_filename, m_map.size() - 1));
+        "ERROR: Ioss Mapping routines detected {0} with global id equal to {1} returns a "
+        "local id of {2} which is\n"
+        "larger than the local {0} count {5} on processor {3}, filename '{4}'.\n"
+        "This should not happen, please report.\n",
+        m_entityType, global, local, m_myProcessor, m_filename, m_map.size() - 1));
   }
   else if (local <= 0 && must_exist) {
     IOSS_ERROR(fmt::format(
-               "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
-               "the {0} map\n"
-               "on processor {2}, filename '{3}'.\n"
-               "This should not happen, please report.\n",
-               m_entityType, global, m_myProcessor, m_filename));
+        "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
+        "the {0} map\n"
+        "on processor {2}, filename '{3}'.\n"
+        "This should not happen, please report.\n",
+        m_entityType, global, m_myProcessor, m_filename));
   }
   else if (local <= 0 && should_exist) {
     fmt::print(stderr,

@@ -27,31 +27,33 @@ namespace {
 
     // Don't add an assembly to itself...
     if (assem == member) {
-      IOSS_ERROR(fmt::format("\nERROR: Attempting to add assembly '{}' to itself.  This is not allowed.", name));
+      IOSS_ERROR(fmt::format(
+          "\nERROR: Attempting to add assembly '{}' to itself.  This is not allowed.", name));
     }
 
     // See if there is a member with this name...
     const Ioss::GroupingEntity *old_ge = assem->get_member(name);
 
     if (old_ge != nullptr) {
-      std::string        filename = assem->get_database()->get_filename();
-      int64_t            id1      = member->get_optional_property(id_str(), 0);
-      int64_t            id2      = old_ge->get_optional_property(id_str(), 0);
+      std::string filename = assem->get_database()->get_filename();
+      int64_t     id1      = member->get_optional_property(id_str(), 0);
+      int64_t     id2      = old_ge->get_optional_property(id_str(), 0);
       IOSS_ERROR(fmt::format("\nERROR: There are multiple assembly members named '{}' "
-			     "defined in assembly '{}' in the database file '{}'.\n"
-			     "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
-			     name, assem->name(), filename, member->type_string(), id1, old_ge->type_string(),
-			     id2, name));
+                             "defined in assembly '{}' in the database file '{}'.\n"
+                             "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
+                             name, assem->name(), filename, member->type_string(), id1,
+                             old_ge->type_string(), id2, name));
     }
 
     if (assem->member_count() > 0) {
       if (member->type() != assem->get_member_type()) {
-        std::string        filename = assem->get_database()->get_filename();
-        IOSS_ERROR(fmt::format("\nERROR: The entity type of '{}' ({}) does not match the entity type of "
-                   "assembly '{}' ({}).\n\tAn assembly's member entities must be "
-                   "homogeneous. In the database file '{}'.\n",
-                   member->name(), member->type_string(), assem->name(), assem->contains_string(),
-			       filename));
+        std::string filename = assem->get_database()->get_filename();
+        IOSS_ERROR(
+            fmt::format("\nERROR: The entity type of '{}' ({}) does not match the entity type of "
+                        "assembly '{}' ({}).\n\tAn assembly's member entities must be "
+                        "homogeneous. In the database file '{}'.\n",
+                        member->name(), member->type_string(), assem->name(),
+                        assem->contains_string(), filename));
       }
     }
   }
