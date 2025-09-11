@@ -58,12 +58,7 @@ namespace Iofaodel {
 
   void faodel_error(int exoid, int lineno, int /* processor */)
   {
-    std::ostringstream errmsg;
-
-    errmsg << "Faodel error at line " << lineno << " in file '" << Version()
-           << "' Please report to sierra-help@sandia.gov if you need help.";
-
-    IOSS_ERROR(errmsg);
+    IOSS_ERROR(fmt::print(errmsg, "Faodel error at line {} in file '{}' Please report to sierra-help@sandia.gov if you need help.\n", lineno, Version()));
   }
   //} // namespace
 

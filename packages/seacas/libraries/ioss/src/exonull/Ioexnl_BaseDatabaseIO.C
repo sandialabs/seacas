@@ -291,14 +291,12 @@ namespace Ioexnl {
     int step = get_region()->get_current_state();
 
     if (step <= 0) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
+      IOSS_ERROR(fmt::format(
                  "ERROR: No currently active state.  The calling code must call "
                  "Ioss::Region::begin_state(int step)\n"
                  "       to set the database timestep from which to read the transient data.\n"
                  "       [{}]\n",
-                 get_filename());
-      IOSS_ERROR(errmsg);
+                 get_filename()));
     }
     return step;
   }
@@ -455,14 +453,11 @@ namespace Ioexnl {
         ;
       }
       else {
-        std::ostringstream errmsg;
-        fmt::print(
-            errmsg,
+        IOSS_ERROR(fmt::format(
             "ERROR: The variable named '{}' is of the wrong type. A region variable must be of type"
             " TRANSIENT or REDUCTION.\n"
             "This is probably an internal error; please notify sierra-help@sandia.gov",
-            field.get_name());
-        IOSS_ERROR(errmsg);
+            field.get_name()));
       }
       return num_to_get;
     }
@@ -1009,12 +1004,10 @@ namespace Ioexnl {
 
     // Verify that exodus supports the mesh_type...
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
+      IOSS_ERROR(fmt::format(
                  "ERROR: The mesh type is '{}' which Exodus does not support.\n"
                  "       Only 'Unstructured' is supported at this time.\n",
-                 region->mesh_type_string());
-      IOSS_ERROR(errmsg);
+                 region->mesh_type_string()));
     }
 
     const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
@@ -1457,40 +1450,31 @@ namespace {
       }
 
       if (field_offset + comp_count - 1 > attribute_count) {
-        std::ostringstream errmsg;
-        fmt::print(
-            errmsg,
+        IOSS_ERROR(fmt::format(
             "INTERNAL ERROR: For block '{}', attribute '{}', the indexing is incorrect.\n"
             "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please report.\n",
-            block->name(), field_name, __func__);
-        IOSS_ERROR(errmsg);
+            block->name(), field_name, __func__));
       }
 
       for (int i = field_offset; i < field_offset + comp_count; i++) {
         if (attributes[i] != 0) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
-              "INTERNAL ERROR: For block '{}', attribute '{}', indexes into the same location as a "
-              "previous attribute.\n"
-              "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
-              "report.\n",
-              block->name(), field_name, __func__);
-          IOSS_ERROR(errmsg);
-        }
-        attributes[i] = 1;
+          IOSS_ERROR(fmt::format(
+				 "INTERNAL ERROR: For block '{}', attribute '{}', indexes into the same location as a "
+				 "previous attribute.\n"
+				 "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
+				 "report.\n",
+              block->name(), field_name, __func__));
+	}
+	attributes[i] = 1;
       }
     }
 
     if (component_sum > attribute_count) {
-      std::ostringstream errmsg;
-      fmt::print(
-          errmsg,
+      IOSS_ERROR(fmt::format(
           "INTERNAL ERROR: Block '{}' is supposed to have {} attributes, but {} attributes "
           "were counted.\n"
           "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please report.\n",
-          block->name(), attribute_count, component_sum, __func__);
-      IOSS_ERROR(errmsg);
+          block->name(), attribute_count, component_sum, __func__));
     }
 
     // Take care of the easy cases first...
@@ -1499,13 +1483,11 @@ namespace {
       // caught above in the duplicate index check.
       for (int i = 1; i <= attribute_count; i++) {
         if (attributes[i] == 0) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg,
+          IOSS_ERROR(fmt::format(
                      "INTERNAL ERROR: Block '{}' has an incomplete set of attributes.\n"
                      "Something is wrong in the Ioexnl::BaseDatabaseIO class, function {}. Please "
                      "report.\n",
-                     block->name(), __func__);
-          IOSS_ERROR(errmsg);
+                     block->name(), __func__));
         }
       }
       return;
@@ -1656,6 +1638,7 @@ namespace {
     any_diff = idiff == 1;
 
     if (any_diff) {
+
       std::runtime_error x(errmsg.str());
       throw x;
     }
