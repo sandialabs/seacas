@@ -169,8 +169,7 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
       const Ioss::Field &field = fields.getref(new_field.get_name());
       if (field != new_field) {
         std::string        warn_err = behavior == DuplicateFieldBehavior::WARNING_ ? "" : "ERROR: ";
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
+        std::string errmsg = fmt::format(
                    "{}Duplicate incompatible fields named '{}' on {} {}:\n"
                    "\tExisting  field: {} {} of size {} bytes with role '{}' and storage '{}',\n"
                    "\tDuplicate field: {} {} of size {} bytes with role '{}' and storage '{}'.",
@@ -181,7 +180,7 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
         if (behavior == DuplicateFieldBehavior::WARNING_) {
           auto util = get_database()->util();
           if (util.parallel_rank() == 0) {
-            fmt::print(Ioss::WarnOut(), "{}\n", errmsg.str());
+            fmt::print(Ioss::WarnOut(), "{}\n", errmsg);
           }
           return true;
         }

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -77,18 +77,15 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
   auto              iter = registry()->find(type);
   if (iter == registry()->end()) {
     if (registry()->empty()) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: No database types have been registered.\n"
-                         "       Was Ioss::Init::Initializer() called?\n\n");
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("ERROR: No database types have been registered.\n"
+		 "       Was Ioss::Init::Initializer() called?\n\n");
     }
     else {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The database type '{}' is not supported.\n", type);
       Ioss::NameList db_types;
       describe_nl(registry(), &db_types);
-      fmt::print(errmsg, "\nSupported database types:\n\t{}\n\n",
-                 fmt::join(db_types.begin(), db_types.end(), " "));
+      std::string errmsg = fmt::format("ERROR: The database type '{}' is not supported.\n"
+				       "\nSupported database types:\n\t{}\n\n", type, 
+				       fmt::join(db_types.begin(), db_types.end(), " "));
       IOSS_ERROR(errmsg);
     }
   }
