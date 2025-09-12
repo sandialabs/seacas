@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Edge2 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Edge2 registerThis; }
+    static void factory() { static St_Edge2 const registerThis; }
 
   protected:
     St_Edge2() : ElementVariableType(Ioss::Edge2::name, 2) {}
@@ -40,7 +40,7 @@ namespace {
 
 void Ioss::Edge2::factory()
 {
-  static Ioss::Edge2 registerThis;
+  static Ioss::Edge2 const registerThis;
   Ioss::St_Edge2::factory();
 }
 

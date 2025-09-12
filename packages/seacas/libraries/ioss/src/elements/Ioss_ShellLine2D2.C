@@ -19,7 +19,7 @@ namespace Ioss {
   class St_ShellLine2D2 : public ElementVariableType
   {
   public:
-    static void factory() { static St_ShellLine2D2 registerThis; }
+    static void factory() { static St_ShellLine2D2 const registerThis; }
 
   protected:
     St_ShellLine2D2() : ElementVariableType(Ioss::ShellLine2D2::name, 2) {}
@@ -40,7 +40,7 @@ namespace {
 
 void Ioss::ShellLine2D2::factory()
 {
-  static Ioss::ShellLine2D2 registerThis;
+  static Ioss::ShellLine2D2 const registerThis;
   Ioss::St_ShellLine2D2::factory();
 }
 

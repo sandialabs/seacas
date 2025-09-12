@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Tet40 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Tet40 registerThis; }
+    static void factory() { static St_Tet40 const registerThis; }
 
   protected:
     St_Tet40() : ElementVariableType(Ioss::Tet40::name, 40) {}
@@ -70,7 +70,7 @@ namespace {
 
 void Ioss::Tet40::factory()
 {
-  static Ioss::Tet40 registerThis;
+  static Ioss::Tet40 const registerThis;
   Ioss::St_Tet40::factory();
 }
 

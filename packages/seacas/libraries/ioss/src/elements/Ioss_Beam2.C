@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Beam2 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Beam2 registerThis; }
+    static void factory() { static St_Beam2 const registerThis; }
 
   protected:
     St_Beam2() : ElementVariableType(Ioss::Beam2::name, 2) {}
@@ -40,7 +40,7 @@ namespace {
 
 void Ioss::Beam2::factory()
 {
-  static Ioss::Beam2 registerThis;
+  static Ioss::Beam2 const registerThis;
   Ioss::St_Beam2::factory();
 }
 

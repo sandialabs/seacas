@@ -20,7 +20,7 @@ namespace Ioss {
   class St_Hex8 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Hex8 registerThis; }
+    static void factory() { static St_Hex8 const registerThis; }
 
   protected:
     St_Hex8() : ElementVariableType(Ioss::Hex8::name, 8) {}
@@ -62,7 +62,7 @@ namespace {
 
 void Ioss::Hex8::factory()
 {
-  static Ioss::Hex8 registerThis;
+  static Ioss::Hex8 const registerThis;
   Ioss::St_Hex8::factory();
 }
 

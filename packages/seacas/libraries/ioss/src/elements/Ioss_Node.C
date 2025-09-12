@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Node : public ElementVariableType
   {
   public:
-    static void factory() { static St_Node registerThis; }
+    static void factory() { static St_Node const registerThis; }
 
   protected:
     St_Node() : ElementVariableType(Ioss::Node::name, 1) {}
@@ -40,7 +40,7 @@ namespace {
 
 void Ioss::Node::factory()
 {
-  static Ioss::Node registerThis;
+  static Ioss::Node const registerThis;
   Ioss::St_Node::factory();
 }
 

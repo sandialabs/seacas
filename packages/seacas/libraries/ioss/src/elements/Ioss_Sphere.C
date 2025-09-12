@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Sphere : public ElementVariableType
   {
   public:
-    static void factory() { static St_Sphere registerThis; }
+    static void factory() { static St_Sphere const registerThis; }
 
   protected:
     St_Sphere() : ElementVariableType(Ioss::Sphere::name, 1) {}
@@ -39,7 +39,7 @@ namespace {
 } // namespace
 void Ioss::Sphere::factory()
 {
-  static Ioss::Sphere registerThis;
+  static Ioss::Sphere const registerThis;
   Ioss::St_Sphere::factory();
 }
 

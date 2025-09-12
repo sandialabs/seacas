@@ -26,7 +26,7 @@ namespace Ioss {
   };
 } // namespace Ioss
 
-void Ioss::St_Pyramid13::factory() { static Ioss::St_Pyramid13 registerThis; }
+void Ioss::St_Pyramid13::factory() { static Ioss::St_Pyramid13 const registerThis; }
 
 // ========================================================================
 namespace {
@@ -72,7 +72,7 @@ namespace {
 
 void Ioss::Pyramid13::factory()
 {
-  static Ioss::Pyramid13 registerThis;
+  static Ioss::Pyramid13 const registerThis;
   Ioss::St_Pyramid13::factory();
 }
 

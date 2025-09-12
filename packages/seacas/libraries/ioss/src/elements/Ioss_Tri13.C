@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Tri13 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Tri13 registerThis; }
+    static void factory() { static St_Tri13 const registerThis; }
 
   protected:
     St_Tri13() : ElementVariableType(Ioss::Tri13::name, 13) {}
@@ -45,7 +45,7 @@ namespace {
 
 void Ioss::Tri13::factory()
 {
-  static Ioss::Tri13 registerThis;
+  static Ioss::Tri13 const registerThis;
   Ioss::St_Tri13::factory();
 }
 

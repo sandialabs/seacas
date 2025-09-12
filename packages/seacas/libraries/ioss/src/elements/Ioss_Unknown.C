@@ -24,7 +24,7 @@ namespace Ioss {
     St_Unknown() : ElementVariableType(Ioss::Unknown::name, 0) {}
   };
 } // namespace Ioss
-void Ioss::St_Unknown::factory() { static Ioss::St_Unknown registerThis; }
+void Ioss::St_Unknown::factory() { static Ioss::St_Unknown const registerThis; }
 
 // ========================================================================
 namespace {
@@ -40,7 +40,7 @@ namespace {
 
 void Ioss::Unknown::factory()
 {
-  static Ioss::Unknown registerThis;
+  static Ioss::Unknown const registerThis;
   Ioss::St_Unknown::factory();
 }
 

@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Shell4 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Shell4 registerThis; }
+    static void factory() { static St_Shell4 const registerThis; }
 
   protected:
     St_Shell4() : ElementVariableType(Ioss::Shell4::name, 4) {}
@@ -64,7 +64,7 @@ namespace {
 
 void Ioss::Shell4::factory()
 {
-  static Ioss::Shell4 registerThis;
+  static Ioss::Shell4 const registerThis;
   Ioss::St_Shell4::factory();
 }
 

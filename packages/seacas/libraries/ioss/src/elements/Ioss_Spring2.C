@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Spring2 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Spring2 registerThis; }
+    static void factory() { static St_Spring2 const registerThis; }
 
   protected:
     St_Spring2() : ElementVariableType(Ioss::Spring2::name, 2) {}
@@ -40,7 +40,7 @@ namespace {
 
 void Ioss::Spring2::factory()
 {
-  static Ioss::Spring2 registerThis;
+  static Ioss::Spring2 const registerThis;
   Ioss::St_Spring2::factory();
 }
 

@@ -19,7 +19,7 @@ namespace Ioss {
   class St_Quad16 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Quad16 registerThis; }
+    static void factory() { static St_Quad16 const registerThis; }
 
   protected:
     St_Quad16() : ElementVariableType(Ioss::Quad16::name, 16) {}
@@ -44,7 +44,7 @@ namespace {
 
 void Ioss::Quad16::factory()
 {
-  static Ioss::Quad16 registerThis;
+  static Ioss::Quad16 const registerThis;
   Ioss::St_Quad16::factory();
 }
 

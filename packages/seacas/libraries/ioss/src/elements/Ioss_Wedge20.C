@@ -25,7 +25,7 @@ namespace Ioss {
     St_Wedge20() : ElementVariableType(Ioss::Wedge20::name, 20) {}
   };
 } // namespace Ioss
-void Ioss::St_Wedge20::factory() { static Ioss::St_Wedge20 registerThis; }
+void Ioss::St_Wedge20::factory() { static Ioss::St_Wedge20 const registerThis; }
 
 // ========================================================================
 namespace {
@@ -67,7 +67,7 @@ namespace {
 
 void Ioss::Wedge20::factory()
 {
-  static Ioss::Wedge20 registerThis;
+  static Ioss::Wedge20 const registerThis;
   Ioss::St_Wedge20::factory();
 }
 

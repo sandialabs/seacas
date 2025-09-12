@@ -19,7 +19,7 @@ namespace Ioss {
   class St_TriShell3 : public ElementVariableType
   {
   public:
-    static void factory() { static St_TriShell3 registerThis; }
+    static void factory() { static St_TriShell3 const registerThis; }
 
   protected:
     St_TriShell3() : ElementVariableType(Ioss::TriShell3::name, 3) {}
@@ -64,7 +64,7 @@ namespace {
 
 void Ioss::TriShell3::factory()
 {
-  static Ioss::TriShell3 registerThis;
+  static Ioss::TriShell3 const registerThis;
   Ioss::St_TriShell3::factory();
 }
 
