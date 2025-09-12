@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CodeTypes.h"
 #include "Ionit_Initializer.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"

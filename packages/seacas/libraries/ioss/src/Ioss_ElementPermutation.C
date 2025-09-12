@@ -9,8 +9,8 @@
 #include "Ioss_Utils.h"
 #include <assert.h>
 #include <fmt/ostream.h>
-#include <string>  // for string, char_traits, etc
-#include <vector>  // for vector
+#include <string> // for string, char_traits, etc
+#include <vector> // for vector
 
 namespace Ioss {
   void EPRegistry::insert(const Ioss::EPM_VP &value, bool delete_me)

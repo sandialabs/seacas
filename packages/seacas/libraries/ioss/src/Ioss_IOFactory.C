@@ -77,14 +77,14 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
   if (iter == registry()->end()) {
     if (registry()->empty()) {
       IOSS_ERROR("ERROR: No database types have been registered.\n"
-		 "       Was Ioss::Init::Initializer() called?\n\n");
+                 "       Was Ioss::Init::Initializer() called?\n\n");
     }
     else {
       Ioss::NameList db_types;
       describe_nl(registry(), &db_types);
       std::string errmsg = fmt::format("ERROR: The database type '{}' is not supported.\n"
-				       "\nSupported database types:\n\t{}\n\n", type, 
-				       fmt::join(db_types.begin(), db_types.end(), " "));
+                                       "\nSupported database types:\n\t{}\n\n",
+                                       type, fmt::join(db_types.begin(), db_types.end(), " "));
       IOSS_ERROR(errmsg);
     }
   }

@@ -167,15 +167,15 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
       // Get the existing field so we can compare with `new_field`
       const Ioss::Field &field = fields.getref(new_field.get_name());
       if (field != new_field) {
-        std::string        warn_err = behavior == DuplicateFieldBehavior::WARNING_ ? "" : "ERROR: ";
-        std::string errmsg = fmt::format(
-                   "{}Duplicate incompatible fields named '{}' on {} {}:\n"
-                   "\tExisting  field: {} {} of size {} bytes with role '{}' and storage '{}',\n"
-                   "\tDuplicate field: {} {} of size {} bytes with role '{}' and storage '{}'.",
-                   warn_err, new_field.get_name(), type_string(), name(), field.raw_count(),
-                   field.type_string(), field.get_size(), field.role_string(),
-                   field.raw_storage()->name(), new_field.raw_count(), new_field.type_string(),
-                   new_field.get_size(), new_field.role_string(), new_field.raw_storage()->name());
+        std::string warn_err = behavior == DuplicateFieldBehavior::WARNING_ ? "" : "ERROR: ";
+        std::string errmsg   = fmt::format(
+            "{}Duplicate incompatible fields named '{}' on {} {}:\n"
+              "\tExisting  field: {} {} of size {} bytes with role '{}' and storage '{}',\n"
+              "\tDuplicate field: {} {} of size {} bytes with role '{}' and storage '{}'.",
+            warn_err, new_field.get_name(), type_string(), name(), field.raw_count(),
+            field.type_string(), field.get_size(), field.role_string(), field.raw_storage()->name(),
+            new_field.raw_count(), new_field.type_string(), new_field.get_size(),
+            new_field.role_string(), new_field.raw_storage()->name());
         if (behavior == DuplicateFieldBehavior::WARNING_) {
           auto util = get_database()->util();
           if (util.parallel_rank() == 0) {
