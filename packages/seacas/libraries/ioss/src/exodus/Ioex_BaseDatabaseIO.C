@@ -1449,7 +1449,7 @@ namespace Ioex {
     fileExists = false;
 
     ex_var_params exo_params{};
-    exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
+    exo_params.num_glob  = m_reductionVariables[EX_GLOBAL].size();
     exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
     exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
     exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
@@ -1967,7 +1967,7 @@ namespace Ioex {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       ex_var_params exo_params{};
-      exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
+      exo_params.num_glob  = m_reductionVariables[EX_GLOBAL].size();
       exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
       exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
       exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
