@@ -46,6 +46,10 @@
 #include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
 
+#ifdef SEACAS_HAVE_MPI
+#include "Ioss_FileInfo.h"
+#endif
+
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
 // below to '1'.
