@@ -549,6 +549,8 @@ namespace Ioexnl {
     for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
       for (int i = 0; i < comp_count; i++) {
         std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
+
+        SMART_ASSERT(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end())
         (type)(var_name);
         var_index = m_reductionVariables[type].find(var_name)->second;
 
