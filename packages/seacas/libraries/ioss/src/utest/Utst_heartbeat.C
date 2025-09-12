@@ -2,7 +2,7 @@
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cstdlib>
-#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <math.h>
 #include <string>
 #include <vector>
@@ -16,7 +16,6 @@
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 
 namespace {

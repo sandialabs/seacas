@@ -8,7 +8,6 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Utils.h" // for IOSS_ERROR
 #include "Ioss_Version.h"
-#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 #include <map>     // for _Rb_tree_iterator, etc

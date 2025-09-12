@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -51,9 +52,6 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 #include "Ioss_use_fmt.h"
-#if defined(SEACAS_HAVE_EXODUS)
-#include "exodusII.h"
-#endif
 #include "info_interface.h"
 #if defined(SEACAS_HAVE_CGNS)
 #include <cgnslib.h>

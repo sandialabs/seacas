@@ -15,7 +15,7 @@
 
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

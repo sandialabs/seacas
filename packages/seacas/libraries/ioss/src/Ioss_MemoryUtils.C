@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023, 2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -12,7 +12,6 @@
 #elif defined(__unix__) || defined(__unix) || defined(unix) ||                                     \
     (defined(__APPLE__) && defined(__MACH__))
 #include <sys/resource.h>
-#include <unistd.h>
 
 #if defined(__APPLE__) && defined(__MACH__) && (defined(__arm__) || defined(__arm64__))
 #include <mach/arm/kern_return.h>

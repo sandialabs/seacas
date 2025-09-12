@@ -23,7 +23,6 @@
 #include "Ioss_Field.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
 

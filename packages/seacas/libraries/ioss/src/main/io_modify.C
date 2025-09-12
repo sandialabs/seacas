@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ioss_CodeTypes.h"
 #include "Ionit_Initializer.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
@@ -48,7 +49,6 @@
 #include "Ioss_EntityType.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 #include "modify_interface.h"
 

@@ -17,7 +17,6 @@
 #include <map>
 #include <sstream>
 #include <string>
-#include <tokenize.h>
 #include <vector>
 
 #include "Ioexnl_Utils.h"
@@ -34,7 +33,6 @@
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
-#include "Ioss_FileInfo.h"
 #include "Ioss_GroupingEntity.h"
 #include "Ioss_Map.h"
 #include "Ioss_MeshType.h"

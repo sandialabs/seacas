@@ -13,7 +13,6 @@
 #include <cassert>
 #include <cstddef>
 #include <fmt/ostream.h>
-#include <iostream>
 #include <string>
 
 #include "Ioss_CodeTypes.h"

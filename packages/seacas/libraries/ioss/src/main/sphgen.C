@@ -10,7 +10,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <stdio.h>
 #include <string>
@@ -27,7 +26,6 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 
 // ========================================================================
