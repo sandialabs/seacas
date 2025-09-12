@@ -1190,7 +1190,7 @@ namespace {
   {
     const auto type = region.get_database()->get_format();
     if (type != "Exodus") {
-      return std::vector<int>();
+      return {};
     }
     auto node_count = region.get_property("node_count").get_int();
     if (blocks.empty() ||
