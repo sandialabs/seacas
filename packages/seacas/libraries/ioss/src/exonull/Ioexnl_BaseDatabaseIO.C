@@ -50,11 +50,6 @@
 #include "Ioss_FileInfo.h"
 #endif
 
-// Transitioning from treating global variables as Ioss::Field::TRANSIENT
-// to Ioss::Field::REDUCTION.  To get the old behavior, define the value
-// below to '1'.
-#define GLOBALS_ARE_TRANSIENT 0
-
 // ========================================================================
 // Static internal helper functions
 // ========================================================================
@@ -554,23 +549,8 @@ namespace Ioexnl {
     for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
       for (int i = 0; i < comp_count; i++) {
         std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
-
-#if GLOBALS_ARE_TRANSIENT
-        if (type == EX_GLOBAL) {
-          SMART_ASSERT(m_variables[type].find(var_name) != m_variables[type].end())(type)(var_name);
-          var_index = m_variables[type].find(var_name)->second;
-        }
-        else {
-          SMART_ASSERT(m_reductionVariables[type].find(var_name) !=
-                       m_reductionVariables[type].end())
-          (type)(var_name);
-          var_index = m_reductionVariables[type].find(var_name)->second;
-        }
-#else
-        SMART_ASSERT(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end())
         (type)(var_name);
         var_index = m_reductionVariables[type].find(var_name)->second;
-#endif
 
         SMART_ASSERT(static_cast<int>(m_reductionValues[type][id].size()) >= var_index)
         (id)(m_reductionValues[type][id].size())(var_index);
@@ -612,23 +592,11 @@ namespace Ioexnl {
       int         var_index = 0;
       std::string var_name  = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
 
-#if GLOBALS_ARE_TRANSIENT
-      if (type == EX_GLOBAL) {
-        assert(m_variables[type].find(var_name) != m_variables[type].end());
-        var_index = m_variables[type].find(var_name)->second;
-      }
-      else {
-        assert(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end());
-        var_index = m_reductionVariables[type].find(var_name)->second;
-      }
-
-      assert(static_cast<int>(m_reductionValues[type][id].size()) >= var_index);
-#else
       SMART_ASSERT(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end())
       (type)(var_name);
       var_index = m_reductionVariables[type].find(var_name)->second;
       SMART_ASSERT(static_cast<int>(m_reductionValues[type][id].size()) >= var_index);
-#endif
+
       // Transfer to 'variables' array.
       if (ioss_type == Ioss::Field::REAL) {
         rvar[i] = m_reductionValues[type][id][var_index - 1];
@@ -719,11 +687,7 @@ namespace Ioexnl {
   {
     if (gather_data) {
       int glob_index = 0;
-#if GLOBALS_ARE_TRANSIENT
-      glob_index = gather_names(m_variables[EX_GLOBAL], get_region(), glob_index, true);
-#else
       glob_index = gather_names(m_reductionVariables[EX_GLOBAL], get_region(), glob_index, true);
-#endif
       m_reductionValues[EX_GLOBAL][0].resize(glob_index);
 
       const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
@@ -773,11 +737,7 @@ namespace Ioexnl {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       ex_var_params exo_params{};
-#if GLOBALS_ARE_TRANSIENT
-      exo_params.num_glob = m_variables[EX_GLOBAL].size();
-#else
       exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
-#endif
       exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
       exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
       exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
@@ -825,12 +785,7 @@ namespace Ioexnl {
       index     = gather_names(m_variables[type], entity, index, false);
     }
 
-#if GLOBALS_ARE_TRANSIENT
-    size_t value_size =
-        type == EX_GLOBAL ? m_variables[type].size() : m_reductionVariables[type].size();
-#else
     size_t value_size = m_reductionVariables[type].size();
-#endif
     for (const auto &entity : entities) {
       auto id = entity->get_optional_property("id", 0);
       m_reductionValues[type][id].resize(value_size);
