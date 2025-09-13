@@ -23,6 +23,7 @@
 #include "Ioss_NodeSet.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_StructuredBlock.h"

@@ -10,6 +10,7 @@
 #include "Ioss_ElementTopology.h"
 #include "Ioss_Initializer.h"
 #include "Ioss_NullEntity.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 

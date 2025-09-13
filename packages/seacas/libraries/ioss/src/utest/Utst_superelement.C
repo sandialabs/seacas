@@ -20,6 +20,7 @@
 
 #include "Ioss_Field.h"
 #include "Ioss_Property.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_Utils.h"
 
 int main(int argc, char *argv[])
