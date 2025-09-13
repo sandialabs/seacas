@@ -58,10 +58,9 @@ namespace Iofaodel {
 
   void faodel_error(int exoid, int lineno, int /* processor */)
   {
-    IOSS_ERROR(fmt::format(
-                          "Faodel error at line {} in file '{}' Please report to "
-                          "sierra-help@sandia.gov if you need help.\n",
-                          lineno, Version()));
+    IOSS_ERROR(fmt::format("Faodel error at line {} in file '{}' Please report to "
+                           "sierra-help@sandia.gov if you need help.\n",
+                           lineno, Version()));
   }
   //} // namespace
 
