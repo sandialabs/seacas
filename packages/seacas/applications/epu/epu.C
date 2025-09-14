@@ -18,8 +18,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <exception>
-#include <fmt/format.h>
 #include <fmt/chrono.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <limits>
 #include <numeric>
