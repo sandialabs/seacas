@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 #include <algorithm>
 #include <exception>
+#include <fmt/format.h>
 #include <fmt/chrono.h>
 #include <fmt/ostream.h>
 #include <iomanip>

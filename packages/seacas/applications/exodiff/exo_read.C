@@ -22,6 +22,7 @@
 #include <cstdio>    // for fclose, FILE, fopen
 #include <cstdlib>   // for exit
 #include <cstring>   // for strlen
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 #include <iostream>

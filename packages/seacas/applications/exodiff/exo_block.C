@@ -9,6 +9,7 @@
 #include "exodusII.h" // for ex_block, etc
 
 #include <cstdlib> // for exit, nullptr
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <smart_assert.h> // for SMART_ASSERT
 #include <string>         // for string, char_traits
@@ -60,7 +61,7 @@ template <typename INT> void Exo_Block<INT>::entity_load_params()
                      "\tnum nodes per elmt = {}\n"
                      "\tnum attributes     = {}\n"
                      " ... Aborting...\n"),
-        fmt::group_digits(numEntity), num_nodes_per_elmt, num_attr));
+        block.id, fmt::group_digits(numEntity), num_nodes_per_elmt, num_attr));
   }
 }
 

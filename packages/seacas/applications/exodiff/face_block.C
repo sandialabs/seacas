@@ -1,4 +1,4 @@
-// Copyright(C) 1999-, 20212021, , ,  National Technology & Engineering Solutions
+// Copyright(C) 1999-2025 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -57,7 +57,7 @@ template <typename INT> void Face_Block<INT>::entity_load_params()
             "\tnum faces per elmt = {}\n"
             "\tnum attributes     = {}\n"
             " ... Aborting...\n"),
-        fmt::group_digits(numEntity), num_faces_per_elmt, num_attr));
+        block.id, fmt::group_digits(numEntity), num_faces_per_elmt, num_attr));
   }
 }
 
