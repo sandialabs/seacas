@@ -69,10 +69,7 @@ namespace Ios3 {
     helper_context = Ios3::helpers::createContext(helper_params);
     int rc = Ios3::helpers::createBucket(helper_context, bucket_name);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     dbState = Ioss::STATE_UNKNOWN;
@@ -116,10 +113,7 @@ namespace Ios3 {
       auto value = pack_states(*get_region());
       rc = Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       }
 
@@ -134,10 +128,7 @@ namespace Ios3 {
           auto value = pack_sideblock(*sideblock);
           rc = Ios3::helpers::putValue(helper_context, bucket_name, sideblock_key.second, value);
           if (rc) {
-            std::ostringstream errmsg;
-            errmsg << "S3 Operation Failed"
-                   << "\n";
-            IOSS_ERROR(errmsg);
+            IOSS_ERROR("S3 Operation Failed");
           }
         }
       }
@@ -151,10 +142,7 @@ namespace Ios3 {
         auto value = pack_structuredblock(*structuredblock);
         rc = Ios3::helpers::putValue(helper_context, bucket_name, structuredblock_key.second, value);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
       }
 
@@ -227,10 +215,7 @@ namespace Ios3 {
     std::string qa_key{"::QA_Records"};
     int rc = Ios3::helpers::putValue(helper_context, bucket_name, qa_key, value);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
   }
 
@@ -289,10 +274,7 @@ namespace Ios3 {
     std::string info_key{"::Info_Records"};
     int rc = Ios3::helpers::putValue(helper_context, bucket_name, info_key, value);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
   }
 
@@ -354,10 +336,7 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[0], value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       auto entry = reinterpret_cast<Ios3::state_entry_t *>(value.data() + sizeof(meta_entry_t));
@@ -369,10 +348,7 @@ namespace Ios3 {
       }
     }
     else {
-      std::ostringstream errmsg;
-      errmsg << "IOSS-S3: Report error of not having 1 set of time steps"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
   }
 
@@ -387,10 +363,7 @@ namespace Ios3 {
                                        search_key.second,
                                        keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       this->read_entity_properties(keys, *(this->get_region()));
@@ -405,10 +378,7 @@ namespace Ios3 {
                                        search_key.second,
                                        keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       this->read_entity_fields(keys, *(this->get_region()));
@@ -423,10 +393,7 @@ namespace Ios3 {
                                        search_key.second,
                                        keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       this->read_entity_fields(keys, *(this->get_region()));
@@ -442,10 +409,7 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       int rc = Ios3::helpers::getValue(helper_context, bucket_name, "::QA_Records", value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       int num_qa = value.size()/sizeof(qa_element);
@@ -469,10 +433,7 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       int rc = Ios3::helpers::getValue(helper_context, bucket_name, "::Info_Records", value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       int num_info = value.size()/sizeof(info_line);
@@ -493,10 +454,7 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       int rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       auto prop = reinterpret_cast<Ios3::property_entry_t *>(value.data());
@@ -547,10 +505,7 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       int rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       auto field = reinterpret_cast<field_entry_t *>(value.data());
@@ -576,10 +531,7 @@ namespace Ios3 {
     std::vector<unsigned char> value;
     int rc = Ios3::helpers::getValue(helper_context, bucket_name, nbone_key_str, value);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto field = reinterpret_cast<field_entry_t *>(value.data());
@@ -607,10 +559,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -626,10 +575,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -638,10 +584,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             original_edge_type = property_get_int(value);
             have_original_edge_type = true;
@@ -660,10 +603,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *block);
 
@@ -675,10 +615,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *block);
 
@@ -699,10 +636,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -721,10 +655,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -734,10 +665,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             original_topology_type = property_get_string(value);
             have_original_topology_type = true;
@@ -747,10 +675,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             topology_type = property_get_string(value);
             have_topology_type = true;
@@ -780,10 +705,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *block);
 
@@ -795,10 +717,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *block);
 
@@ -810,10 +729,7 @@ namespace Ios3 {
                                      field_search_debug.second,
                                      field_keys_debug);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys_debug, *block);
 
@@ -834,10 +750,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -853,10 +766,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -866,10 +776,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             original_topology_type = property_get_string(value);
             have_original_topology_type = true;
@@ -888,10 +795,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *block);
 
@@ -903,10 +807,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *block);
 
@@ -927,10 +828,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -946,10 +844,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -959,10 +854,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             component_degree = property_get_int(value);
             have_component_degree = true;
@@ -982,10 +874,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *block);
 
@@ -997,10 +886,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *block);
 
@@ -1012,10 +898,7 @@ namespace Ios3 {
                                      field_search_debug.second,
                                      field_keys_debug);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys_debug, *block);
 
@@ -1036,10 +919,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1060,10 +940,7 @@ namespace Ios3 {
               std::vector<unsigned char> value;
               rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
               if (rc) {
-                std::ostringstream errmsg;
-                errmsg << "S3 Operation Failed"
-                       << "\n";
-                IOSS_ERROR(errmsg);
+                IOSS_ERROR("S3 Operation Failed");
               }
               ctor_properties[property_name] = property_get_int(value);
             }
@@ -1090,10 +967,7 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       rc = Ios3::helpers::getValue(helper_context, bucket_name, attribute_key.second, value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       unpack_structuredblock(value, *block);
 
@@ -1105,10 +979,7 @@ namespace Ios3 {
                                    property_search.second,
                                    property_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_properties(property_keys, *block);
 
@@ -1120,10 +991,7 @@ namespace Ios3 {
                                    field_search.second,
                                    field_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_fields(field_keys, *block);
 
@@ -1135,10 +1003,7 @@ namespace Ios3 {
                                    field_search_debug.second,
                                    field_keys_debug);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_fields(field_keys_debug, *block);
 
@@ -1158,10 +1023,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1176,10 +1038,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -1198,10 +1057,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *entity);
 
@@ -1213,10 +1069,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *entity);
 
@@ -1237,10 +1090,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1255,10 +1105,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -1277,10 +1124,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *entity);
 
@@ -1292,10 +1136,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *entity);
 
@@ -1316,10 +1157,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1334,10 +1172,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -1356,10 +1191,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *entity);
 
@@ -1371,10 +1203,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *entity);
 
@@ -1395,10 +1224,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1413,10 +1239,7 @@ namespace Ios3 {
             std::vector<unsigned char> value;
             rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
             if (rc) {
-              std::ostringstream errmsg;
-              errmsg << "S3 Operation Failed"
-                     << "\n";
-              IOSS_ERROR(errmsg);
+              IOSS_ERROR("S3 Operation Failed");
             }
             entity_count = property_get_int(value);
             have_entity_count = true;
@@ -1435,10 +1258,7 @@ namespace Ios3 {
                                      property_search.second,
                                      property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(property_keys, *entity);
 
@@ -1450,10 +1270,7 @@ namespace Ios3 {
                                      field_search.second,
                                      field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys, *entity);
 
@@ -1474,10 +1291,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1492,10 +1306,7 @@ namespace Ios3 {
                                    property_search.second,
                                    property_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_properties(property_keys, *entity);
 
@@ -1507,10 +1318,7 @@ namespace Ios3 {
                                    field_search.second,
                                    field_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_fields(field_keys, *entity);
 
@@ -1522,20 +1330,14 @@ namespace Ios3 {
                                    sideblocks_key.second,
                                    sideblocks_search_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       for (size_t i = 0; i < sideblocks_search_keys.size(); i++) {
         std::vector<unsigned char> value;
         rc = Ios3::helpers::getValue(helper_context, bucket_name, sideblocks_search_keys[i], value);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         int64_t entity_count = unpack_sideblocks(value);
 
@@ -1545,10 +1347,7 @@ namespace Ios3 {
         std::vector<unsigned char> property_value;
         rc = Ios3::helpers::getValue(helper_context, bucket_name, property_key.second, property_value);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         Ioss::Property topo_property = this->read_property(property_value);
 
@@ -1558,10 +1357,7 @@ namespace Ios3 {
         std::vector<unsigned char> parent_property_value;
         rc = Ios3::helpers::getValue(helper_context, bucket_name, parent_property_key.second, parent_property_value);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         Ioss::Property parent_topo_property = this->read_property(parent_property_value);
 
@@ -1577,10 +1373,7 @@ namespace Ios3 {
                                      sideblock_property_search.second,
                                      sideblock_property_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_properties(sideblock_property_keys, *sideblock);
 
@@ -1593,10 +1386,7 @@ namespace Ios3 {
                                      sideblock_field_search.second,
                                      sideblock_field_keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(sideblock_field_keys, *sideblock);
 
@@ -1608,10 +1398,7 @@ namespace Ios3 {
                                      field_search_debug.second,
                                      field_keys_debug);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(field_keys_debug, *sideblock);
 
@@ -1634,10 +1421,7 @@ namespace Ios3 {
                                  search_key.second,
                                  keys);
     if (rc) {
-      std::ostringstream errmsg;
-      errmsg << "S3 Operation Failed"
-             << "\n";
-      IOSS_ERROR(errmsg);
+      IOSS_ERROR("S3 Operation Failed");
     }
 
     auto entity_names = get_entity_names(keys, type_string);
@@ -1659,10 +1443,7 @@ namespace Ios3 {
               std::vector<unsigned char> value;
               rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
               if (rc) {
-                std::ostringstream errmsg;
-                errmsg << "S3 Operation Failed"
-                       << "\n";
-                IOSS_ERROR(errmsg);
+                IOSS_ERROR("S3 Operation Failed");
               }
               entity_count = property_get_int(value);
               have_entity_count = true;
@@ -1675,10 +1456,7 @@ namespace Ios3 {
               std::vector<unsigned char> value;
               rc = Ios3::helpers::getValue(helper_context, bucket_name, keys[i], value);
               if (rc) {
-                std::ostringstream errmsg;
-                errmsg << "S3 Operation Failed"
-                       << "\n";
-                IOSS_ERROR(errmsg);
+                IOSS_ERROR("S3 Operation Failed");
               }
               entity_type = property_get_string(value);
               have_entity_type = true;
@@ -1707,10 +1485,7 @@ namespace Ios3 {
                                    property_search.second,
                                    property_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_properties(property_keys, *commset);
 
@@ -1722,10 +1497,7 @@ namespace Ios3 {
                                    field_search.second,
                                    field_keys);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_fields(field_keys, *commset);
 
@@ -1737,10 +1509,7 @@ namespace Ios3 {
                                    field_search_transient.second,
                                    field_keys_transient);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_fields(field_keys_transient, *commset);
 
@@ -1799,26 +1568,20 @@ namespace Ios3 {
                                      key.second,
                                      keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         if (keys.size() == 1) {
           std::vector<unsigned char> value;
           rc = Ios3::helpers::getValue(helper_context, bucket_name, key.second, value);
           if (rc) {
-            std::ostringstream errmsg;
-            errmsg << "S3 Operation Failed"
-                   << "\n";
-            IOSS_ERROR(errmsg);
+            IOSS_ERROR("S3 Operation Failed");
           }
 
           field_entry_t* field_ptr(reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
 
           // TODO what other checks do we need here?
           if (data_size != field_ptr->value.size) {
-            std::ostringstream errmsg;
+            std::string errmsg;
             fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size, field_ptr->value.size);
             IOSS_ERROR(errmsg);
           }
@@ -1839,26 +1602,20 @@ namespace Ios3 {
                                      key.second,
                                      keys);
         if (rc) {
-          std::ostringstream errmsg;
-          errmsg << "S3 Operation Failed"
-                 << "\n";
-          IOSS_ERROR(errmsg);
+          IOSS_ERROR("S3 Operation Failed");
         }
         if (keys.size() == 1) {
           std::vector<unsigned char> value;
           rc = Ios3::helpers::getValue(helper_context, bucket_name, key.second, value);
           if (rc) {
-            std::ostringstream errmsg;
-            errmsg << "S3 Operation Failed"
-                   << "\n";
-            IOSS_ERROR(errmsg);
+            IOSS_ERROR("S3 Operation Failed");
           }
 
           field_entry_t* field_ptr(reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
 
           // TODO what other checks do we need here?
           if (data_size != field_ptr->value.size) {
-            std::ostringstream errmsg;
+            std::string errmsg;
             fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size, field_ptr->value.size);
             IOSS_ERROR(errmsg);
           }
@@ -2076,17 +1833,14 @@ namespace Ios3 {
       std::vector<unsigned char> value;
       int rc = Ios3::helpers::getValue(helper_context, bucket_name, key.second, value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
 
       field_entry_t* field_ptr(reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
 
       // TODO what other checks do we need here?
       if (data_size != field_ptr->value.size) {
-        std::ostringstream errmsg;
+        std::string errmsg;
         fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size, field_ptr->value.size);
         IOSS_ERROR(errmsg);
       }
@@ -2111,10 +1865,7 @@ namespace Ios3 {
       auto value = pack_field(*(get_region()), e, f, data, data_size);
       int rc = Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
       if (rc) {
-        std::ostringstream errmsg;
-        errmsg << "S3 Operation Failed"
-               << "\n";
-        IOSS_ERROR(errmsg);
+        IOSS_ERROR("S3 Operation Failed");
       }
     }
     return num_to_put;
