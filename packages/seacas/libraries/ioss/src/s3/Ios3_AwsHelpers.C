@@ -81,9 +81,6 @@ public:
   {
     AddProvider(Aws::MakeShared<Aws::Auth::EnvironmentAWSCredentialsProvider>(AwsHelperCredentialsProviderChainTag));
     AddProvider(Aws::MakeShared<Aws::Auth::ProfileConfigFileAWSCredentialsProvider>(AwsHelperCredentialsProviderChainTag));
-    // AddProvider(Aws::MakeShared<ProcessCredentialsProvider>(DefaultCredentialsProviderChainTag));
-    // AddProvider(Aws::MakeShared<STSAssumeRoleWebIdentityCredentialsProvider>(DefaultCredentialsProviderChainTag));
-    // AddProvider(Aws::MakeShared<SSOCredentialsProvider>(DefaultCredentialsProviderChainTag));
   }
   /**
    * Initializes the provider chain with EnvironmentAWSCredentialsProvider
@@ -93,9 +90,6 @@ public:
   {
     AddProvider(Aws::MakeShared<Aws::Auth::EnvironmentAWSCredentialsProvider>(AwsHelperCredentialsProviderChainTag));
     AddProvider(Aws::MakeShared<Aws::Auth::ProfileConfigFileAWSCredentialsProvider>(AwsHelperCredentialsProviderChainTag, profile));
-    // AddProvider(Aws::MakeShared<ProcessCredentialsProvider>(DefaultCredentialsProviderChainTag));
-    // AddProvider(Aws::MakeShared<STSAssumeRoleWebIdentityCredentialsProvider>(DefaultCredentialsProviderChainTag));
-    // AddProvider(Aws::MakeShared<SSOCredentialsProvider>(DefaultCredentialsProviderChainTag));
   }
 };
 
@@ -152,8 +146,6 @@ std::shared_ptr<HelperContext> createContext(const HelperParameters &params)
 
   context->use_transfer_manager = params.use_transfer_manager;
 
-  // print_params(params);
-
   if (params.disable_ec2_lookup) {
     // AWS tries to call out to an EC2 server.  If your S3 service doesn't
     // have EC2, setting this envvar will eliminate a 1 second
@@ -177,7 +169,6 @@ std::shared_ptr<HelperContext> createContext(const HelperParameters &params)
   Aws::Client::ClientConfiguration config;
   config.endpointOverride = params.endpoint;
   config.profileName = params.profile;
-  // config.disableExpectHeader = true;
   config.requestTimeoutMs = 100000;
   if (params.use_ca_file) {
     config.caFile = params.ca_file;
@@ -435,7 +426,6 @@ int putValue(std::shared_ptr<HelperContext> context,
 
     request.SetBody(input_stream);
     request.SetContentLength(value.size());
-    // request.SetContentType("binary/octet-stream");
 
     Aws::S3::Model::PutObjectOutcome outcome = context->client->PutObject(request);
     if (!outcome.IsSuccess()) {
