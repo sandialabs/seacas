@@ -4,7 +4,6 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <stdlib.h>
 #include <getopt.h>
 
 #include <algorithm>
@@ -13,6 +12,7 @@
 #include <cassert>
 #include <cctype>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
