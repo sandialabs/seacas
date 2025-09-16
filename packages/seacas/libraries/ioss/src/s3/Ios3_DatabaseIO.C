@@ -310,7 +310,7 @@ namespace Ios3 {
         put_info();
       }
     } else {
-      std::cout << "wrong behavior ("<<behavior<<") - not writing metadata" << std::endl;
+      fmt::print(stderr, "write_meta_data: wrong behavior ({}) - not writing metadata", static_cast<int>(behavior));
     }
   }
 

@@ -4,6 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
 #include <getopt.h>
 
 #include <algorithm>
@@ -53,10 +55,13 @@ namespace helpers {
 
 void print_params(const HelperParameters &params)
 {
-  std::cout << "use_ca_file = " << params.use_ca_file   << std::endl;
-  std::cout << "ca_file     = " << params.ca_file   << std::endl;
-  std::cout << "endpoint    = " << params.endpoint   << std::endl;
-  std::cout << "profile     = " << params.profile    << std::endl;
+  fmt::print(stdout, "INFO: endpoint             = {})", params.endpoint);
+  fmt::print(stdout, "INFO: profile              = {})", params.profile);
+  fmt::print(stdout, "INFO: use_ca_file          = {})", params.use_ca_file);
+  fmt::print(stdout, "INFO: ca_file              = {})", params.ca_file);
+  fmt::print(stdout, "INFO: use_transfer_manager = {})", params.use_transfer_manager);
+  fmt::print(stdout, "INFO: enable_aws_tracing   = {})", params.enable_aws_tracing);
+  fmt::print(stdout, "INFO: disable_ec2_lookup   = {})", params.disable_ec2_lookup);
 }
 
 static const char AwsHelperCredentialsProviderChainTag[] = "AwsHelperCredentialsProviderChain";
@@ -318,8 +323,7 @@ int createBucket(std::shared_ptr<HelperContext> context,
   Aws::S3::Model::CreateBucketOutcome outcome = context->client->CreateBucket(request);
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
-    std::cout << "Error: CreateBucket: " <<
-      err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
+    fmt::print(stderr, "Error: CreateBucket: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -364,8 +368,7 @@ int deleteBucket(std::shared_ptr<HelperContext>  context,
   Aws::S3::Model::DeleteBucketOutcome outcome = context->client->DeleteBucket(request);
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
-    std::cout << "Error: DeleteBucket: " <<
-      err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
+    fmt::print(stderr, "Error: DeleteBucket: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -385,7 +388,8 @@ int listBuckets(std::shared_ptr<HelperContext> context,
     }
   }
   else {
-    std::cout << "Error: ListBuckets: " << outcome.GetError() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: ListBuckets: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -421,7 +425,7 @@ int putValue(std::shared_ptr<HelperContext> context,
 
     if (!success) {
       auto err = uploadHandle->GetLastError();
-      std::cout << "Error: TransferManager::UploadFile: "<< err.GetMessage() << std::endl;
+      fmt::print(stderr, "Error: TransferManager::UploadFile: {}: {}", err.GetExceptionName(), err.GetMessage());
       rc=1;
     }
   } else {
@@ -435,8 +439,8 @@ int putValue(std::shared_ptr<HelperContext> context,
 
     Aws::S3::Model::PutObjectOutcome outcome = context->client->PutObject(request);
     if (!outcome.IsSuccess()) {
-      std::cout << "Error: PutObject: " <<
-        outcome.GetError().GetMessage() << std::endl;
+      auto err = outcome.GetError();
+      fmt::print(stderr, "Error: PutObject: {}: {}", err.GetExceptionName(), err.GetMessage());
       rc=1;
     }
   }
@@ -475,8 +479,8 @@ int getValue(std::shared_ptr<HelperContext> context,
     }
   }
   else {
-    std::cout << "Error: GetObject: " <<
-      outcome.GetError().GetMessage() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: GetObject: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -506,14 +510,12 @@ int putValue(std::shared_ptr<HelperContext> context,
 
     if (!success) {
       auto err = uploadHandle->GetLastError();
-      std::cout << "Error: TransferManager::UploadFile: "<< err.GetMessage() << std::endl;
+      fmt::print(stderr, "Error: TransferManager::UploadFile: {}: {}", err.GetExceptionName(), err.GetMessage());
       rc=1;
     }
   }
   else {
-    std::cout << "Error: PutValue: Putting from a file only works "
-              << "with the transfer manager."
-              << std::endl;
+    fmt::print(stderr, "Error: PutValue: Putting from a file only works with the transfer manager.");
     rc=1;
   }
 
@@ -551,8 +553,8 @@ int getValue(std::shared_ptr<HelperContext> context,
     }
   }
   else {
-    std::cout << "Error: GetObject: " <<
-      outcome.GetError().GetMessage() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: GetObject: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -573,8 +575,8 @@ int deleteValue(std::shared_ptr<HelperContext> context,
 
   Aws::S3::Model::DeleteObjectOutcome outcome = context->client->DeleteObject(request);
   if (!outcome.IsSuccess()) {
-    std::cout << "Error: DeleteObject: " <<
-      outcome.GetError().GetMessage() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: DeleteObject: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -599,7 +601,8 @@ int listKeys(std::shared_ptr<HelperContext> context,
     }
   }
   else {
-    std::cout << "Error: ListObjects: " << outcome.GetError() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: ListObjects: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -626,7 +629,8 @@ int listKeys(std::shared_ptr<HelperContext> context,
     }
   }
   else {
-    std::cout << "Error: ListObjects: " << outcome.GetError() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: ListObjects: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -650,8 +654,8 @@ int putBucketPolicy(std::shared_ptr<HelperContext>  context,
 
   Aws::S3::Model::PutBucketPolicyOutcome outcome = context->client->PutBucketPolicy(request);
   if (!outcome.IsSuccess()) {
-    std::cout << "Error: PutBucketPolicy: " <<
-      outcome.GetError().GetMessage() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: PutBucketPolicy: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -674,8 +678,8 @@ int getBucketPolicy(std::shared_ptr<HelperContext>  context,
     outcome.GetResult().GetPolicy() >> policy;
   }
   else {
-    std::cout << "Error: GetBucketPolicy: " <<
-      outcome.GetError().GetMessage() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: GetBucketPolicy: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 
@@ -694,8 +698,8 @@ int deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
 
   Aws::S3::Model::DeleteBucketPolicyOutcome outcome = context->client->DeleteBucketPolicy(request);
   if (!outcome.IsSuccess()) {
-    std::cout << "Error: DeleteBucketPolicy: " <<
-      outcome.GetError().GetMessage() << std::endl;
+    auto err = outcome.GetError();
+    fmt::print(stderr, "Error: DeleteBucketPolicy: {}: {}", err.GetExceptionName(), err.GetMessage());
     rc=1;
   }
 

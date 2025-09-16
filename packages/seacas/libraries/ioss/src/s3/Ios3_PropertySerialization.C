@@ -4,6 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+
 #include "Ios3_PropertySerialization.h"
 #include "Ios3_Utils.h"
 
@@ -155,8 +158,8 @@ namespace Ios3 {
     }
 
     if (entry->value.size != Ios3::data_size(property)) {
-      std::cerr << "value.size mismatch: " << entry->value.size
-                << " ?= " << Ios3::data_size(property);
+      fmt::print(stderr, "pack_property: value.size mismatch: {} != {}",
+                 entry->value.size, Ios3::data_size(property));
     }
     return v;
   }
