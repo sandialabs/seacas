@@ -170,14 +170,14 @@ namespace Ios3 {
     void get_commsets();
 
 
-    int spatialDimension;
+    int spatialDimension{3};
 
-    int nodeBlockCount;
-    int elementBlockCount;
-    int nodesetCount;
-    int sidesetCount;
-    int commsetNodeCount;
-    int commsetElemCount;
+    int nodeBlockCount{0};
+    int elementBlockCount{0};
+    int nodesetCount{0};
+    int sidesetCount{0};
+    int commsetNodeCount{0};
+    int commsetElemCount{0};
 
     mutable Ioss::Map nodeMap;
 

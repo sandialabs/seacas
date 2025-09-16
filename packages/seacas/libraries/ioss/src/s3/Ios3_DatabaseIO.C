@@ -53,13 +53,6 @@ namespace Ios3 {
                          Ioss_MPI_Comm                communicator,
                          const Ioss::PropertyManager &props)
     : Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
-      spatialDimension(3),
-      nodeBlockCount(0),
-      elementBlockCount(0),
-      nodesetCount(0),
-      sidesetCount(0),
-      commsetNodeCount(0),
-      commsetElemCount(0),
       bucket_name(Ios3::helpers::cleanBucketName(decoded_filename()))
   {
     Ios3::helpers::getParamsFromEnvVars(helper_params);

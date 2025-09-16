@@ -76,15 +76,15 @@ namespace Ios3 {
   {
     Ioss::Field::BasicType basic_type;
     Ioss::Field::RoleType  role_type;
-    bool                   is_implicit;
-    bool                   is_valid;
-    size_t                 raw_count;
+    bool                   is_implicit{false};
+    bool                   is_valid{false};
+    size_t                 raw_count{0};
 
-    // value_entry_t storage;
-    value_entry_t name;
-    value_entry_t value;
-    value_entry_t storage;
-    size_t        data_size; // Total size of data stored in the value vector
+    value_entry_t name;    // offset from data[0]
+    value_entry_t value;   // offset from data[0]
+    value_entry_t storage; // offset from data[0]
+
+    size_t data_size{0}; // Total size of data stored in the value vector
 
     char data[0];
 

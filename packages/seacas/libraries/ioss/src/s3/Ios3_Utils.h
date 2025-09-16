@@ -20,8 +20,8 @@ namespace Ios3 {
 
   struct IOS3_EXPORT value_entry_t
   {
-    size_t offset;
-    size_t size;
+    size_t offset{0};
+    size_t size{0};
   };
 
   struct IOS3_EXPORT meta_entry_t
@@ -41,7 +41,7 @@ namespace Ios3 {
   struct IOS3_EXPORT state_entry_t
   {
     using basic_type = double;
-    size_t        count;
+    size_t        count{0};
     value_entry_t value;
     char          data[0];
 
@@ -50,7 +50,7 @@ namespace Ios3 {
 
   struct IOS3_EXPORT sideblock_entry_t
   {
-    size_t entity_count;
+    size_t entity_count{0};
 
     explicit sideblock_entry_t(const Ioss::SideBlock &sb);
   };

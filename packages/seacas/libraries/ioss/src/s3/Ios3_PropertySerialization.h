@@ -50,14 +50,13 @@ namespace Ios3 {
   struct IOS3_EXPORT property_entry_t
   {
     Ioss::Property::BasicType basic_type;
+    bool is_implicit{false};
+    bool is_valid{false};
+    value_entry_t name;  // offset from data[0]
+    value_entry_t value; // offset from data[0]
 
-    bool is_implicit;
-    bool is_valid;
+    size_t data_size{0}; // Total size of data stored in data[0] ptr
 
-    value_entry_t name;  // offsets from data[0]
-    value_entry_t value; // offsets from data[0]
-
-    size_t data_size; // Total size of data stored in data[0] ptr
     char   data[0];
 
     explicit property_entry_t(const Ioss::Property &property, const size_t start = 0);

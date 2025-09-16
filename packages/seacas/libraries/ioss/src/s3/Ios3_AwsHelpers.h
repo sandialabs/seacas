@@ -29,7 +29,7 @@ struct HelperParameters {
 };
 
 struct HelperContext {
-  bool use_transfer_manager;
+  bool use_transfer_manager{false};
 
   //The Aws::SDKOptions struct contains SDK configuration options.
   //An instance of Aws::SDKOptions is passed to the Aws::InitAPI and
