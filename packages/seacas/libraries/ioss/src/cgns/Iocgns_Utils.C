@@ -34,7 +34,6 @@
 #include "Ioss_Wedge18.h"
 #include "Ioss_Wedge6.h"
 #include <assert.h>
-#include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <stdint.h>
@@ -51,7 +50,6 @@
 #include <ctime>
 #include <limits>
 #include <numeric>
-#include <ostream>
 #include <set>
 #include <string>
 #include <tokenize.h>

@@ -9,6 +9,7 @@
 #include "Ioss_FileInfo.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_ParallelUtils.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_Utils.h"
 #include "cgns/Iocgns_Utils.h"
 #include <cassert>

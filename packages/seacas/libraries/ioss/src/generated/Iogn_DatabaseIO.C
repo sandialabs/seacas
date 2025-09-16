@@ -12,7 +12,6 @@
 #include <cassert>                        // for assert
 #include <cmath>                          // for sqrt
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <stdlib.h>
 #include <string> // for string, operator==, etc
 
