@@ -27,7 +27,9 @@
 
 namespace Ios3 {
 
-  const std::size_t MAX_STR_LENGTH=32;
+  // constants copied from exodusII.h
+  const std::size_t MAX_STR_LENGTH=32; // Maximum length of QA record
+  const std::size_t MAX_LINE_LENGTH=80; // Maximum length of an information record
 
   // ========================================================================
   const IOFactory *IOFactory::factory()
@@ -214,7 +216,7 @@ namespace Ios3 {
 
   void DatabaseIO::put_info()
   {
-    using info_line = char[MAX_STR_LENGTH+1];
+    using info_line = char[MAX_LINE_LENGTH+1];
     int total_lines = 0;
 
     // dump info records, include the product_registry
@@ -223,7 +225,7 @@ namespace Ios3 {
     if (get_region()->property_exists("input_file_name")) {
       std::string filename = get_region()->get_property("input_file_name").get_string();
       // Determine size of input file so can embed it in info records...
-      Ioss::Utils::input_file(filename, &input_lines, MAX_STR_LENGTH);
+      Ioss::Utils::input_file(filename, &input_lines, MAX_LINE_LENGTH);
     }
 
     // Get configuration information for IOSS library.
@@ -248,20 +250,20 @@ namespace Ios3 {
     auto info = reinterpret_cast<info_line *>(value.data());
 
     int i = 0;
-    Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information(), MAX_STR_LENGTH + 1);
+    Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information(), MAX_LINE_LENGTH + 1);
 
     // Copy input file lines into 'info' array...
     for (size_t j = 0; j < input_lines.size(); j++, i++) {
-      Ioss::Utils::copy_string(info[i], input_lines[j], MAX_STR_LENGTH + 1);
+      Ioss::Utils::copy_string(info[i], input_lines[j], MAX_LINE_LENGTH + 1);
     }
 
     // Copy "information_records" property data ...
     for (size_t j = 0; j < informationRecords.size(); j++, i++) {
-      Ioss::Utils::copy_string(info[i], informationRecords[j], MAX_STR_LENGTH + 1);
+      Ioss::Utils::copy_string(info[i], informationRecords[j], MAX_LINE_LENGTH + 1);
     }
 
     for (size_t j = 0; j < lines.size(); j++, i++) {
-      Ioss::Utils::copy_string(info[i], lines[j], MAX_STR_LENGTH + 1);
+      Ioss::Utils::copy_string(info[i], lines[j], MAX_LINE_LENGTH + 1);
     }
 
     std::string info_key{"::Info_Records"};
