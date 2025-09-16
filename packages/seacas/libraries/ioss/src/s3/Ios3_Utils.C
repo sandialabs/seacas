@@ -540,7 +540,7 @@ namespace Ios3 {
   {
     std::string name;
 
-    std::string front(target + "::");
+    std::string front = fmt::format("{}::", target);
     auto        begin = k.find(front);
     if (begin != std::string::npos) {
       name = k.substr(begin + front.size());
@@ -554,7 +554,7 @@ namespace Ios3 {
   {
     std::set<std::string> names;
     for (auto k : keys) {
-      std::string front("Entity::" + target + "::Name::");
+      std::string front = fmt::format("Entity::{}::Name::", target);
       auto        begin = k.find(front);
       if (begin != std::string::npos) {
         {
