@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cfloat>
 #include <cstdlib>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <iomanip>
 #include <numeric>

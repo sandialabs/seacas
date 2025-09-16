@@ -6,6 +6,7 @@
 
 #include <ctime>
 #include <fmt/chrono.h>
+#include <fmt/format.h>
 #include <time_stamp.h>
 
 std::string time_stamp(const std::string &format)

@@ -57,7 +57,7 @@ template <typename INT> void Edge_Block<INT>::entity_load_params()
             "\tnum edges per elmt = {}\n"
             "\tnum attributes     = {}\n"
             " ... Aborting...\n"),
-        fmt::group_digits(numEntity), num_edges_per_elmt, num_attr));
+        block.id, fmt::group_digits(numEntity), num_edges_per_elmt, num_attr));
   }
 }
 

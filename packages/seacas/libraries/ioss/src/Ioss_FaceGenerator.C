@@ -17,6 +17,7 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <numeric>
 #include <vector>

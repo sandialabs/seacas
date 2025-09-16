@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <exception>
 #include <fmt/chrono.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <iomanip>
 #include <iostream>
