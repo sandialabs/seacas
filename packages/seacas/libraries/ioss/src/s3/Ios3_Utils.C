@@ -69,7 +69,7 @@ namespace Ios3 {
     return v;
   }
 
-  int64_t unpack_sideblocks(std::vector<unsigned char> v)
+  int64_t unpack_sideblocks(std::vector<unsigned char> &v)
   {
     auto meta = reinterpret_cast<meta_entry_t *>(v.data());
     assert(meta->ioss_type == meta_entry_t::IossType::Ios3SideBlock);

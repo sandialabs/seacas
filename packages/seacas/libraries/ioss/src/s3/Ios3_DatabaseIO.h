@@ -150,7 +150,7 @@ namespace Ios3 {
     void get_step_times_nl() override;
 
     void read_region();
-    void read_entity_properties(std::vector<std::string> keys, Ioss::GroupingEntity &entity);
+    void read_entity_properties(std::vector<std::string> &keys, Ioss::GroupingEntity &entity);
     Ioss::Property read_property(std::vector<unsigned char> &value);
     void read_entity_fields(std::vector<std::string> &keys, Ioss::GroupingEntity &entity);
 

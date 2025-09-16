@@ -439,7 +439,7 @@ namespace Ios3 {
     }
   }
 
-  void DatabaseIO::read_entity_properties(std::vector<std::string> keys, Ioss::GroupingEntity &entity)
+  void DatabaseIO::read_entity_properties(std::vector<std::string> &keys, Ioss::GroupingEntity &entity)
   {
     // TODO do we need to update default properties upon construction?
     // Properties

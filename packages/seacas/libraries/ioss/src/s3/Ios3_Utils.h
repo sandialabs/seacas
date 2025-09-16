@@ -58,7 +58,7 @@ namespace Ios3 {
   IOS3_EXPORT std::vector<unsigned char> pack_states(const Ioss::Region &r);
 
   IOS3_EXPORT std::vector<unsigned char> pack_sideblock(const Ioss::SideBlock &sb);
-  IOS3_EXPORT int64_t unpack_sideblocks(std::vector<unsigned char> v);
+  IOS3_EXPORT int64_t unpack_sideblocks(std::vector<unsigned char> &v);
 
   IOS3_EXPORT std::vector<unsigned char> pack_structuredblock(const Ioss::StructuredBlock &sb);
   IOS3_EXPORT void unpack_structuredblock(std::vector<unsigned char> &v, Ioss::StructuredBlock &sb);
