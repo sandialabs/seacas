@@ -30,6 +30,8 @@ namespace Ios3 {
                                              const Ioss::GroupingEntity &,
                                              const Ioss::Property &)>;
 
+  using PackedBytes = std::vector<unsigned char>;
+
   // Applies PropertyFunction 'op' to all properties encountered in
   // the Ioss::Region and it's various Ioss::GroupingEntities
   //
@@ -43,9 +45,9 @@ namespace Ios3 {
                                  const Ioss::GroupingEntity &grouping_entity,
                                  PropertyFunction            op);
 
-  IOS3_EXPORT std::vector<unsigned char> pack_property(const Ioss::Region         &region,
-                                                       const Ioss::GroupingEntity &entity,
-                                                       const Ioss::Property       &property);
+  IOS3_EXPORT PackedBytes pack_property(const Ioss::Region         &region,
+                                        const Ioss::GroupingEntity &entity,
+                                        const Ioss::Property       &property);
 
   struct IOS3_EXPORT property_entry_t
   {
@@ -62,7 +64,7 @@ namespace Ios3 {
     explicit property_entry_t(const Ioss::Property &property, const size_t start = 0);
   };
 
-  IOS3_EXPORT int64_t property_get_int(std::vector<unsigned char> &p);
-  IOS3_EXPORT std::string property_get_string(std::vector<unsigned char> &p);
+  IOS3_EXPORT int64_t property_get_int(PackedBytes &p);
+  IOS3_EXPORT std::string property_get_string(PackedBytes &p);
 
 } // namespace Ios3

@@ -7,11 +7,6 @@
 #include "Ios3_FieldSerialization.h"
 #include "Ios3_Utils.h"
 
-#ifdef NDEBUG
-#undef NDEBUG
-#endif
-#include <cassert>
-
 namespace Ios3 {
 
   size_t data_size(const Ioss::Field &f)
@@ -89,18 +84,18 @@ namespace Ios3 {
   {
   }
 
-  std::vector<unsigned char> pack_field(const Ioss::Region         &region,
-                                        const Ioss::GroupingEntity &entity,
-                                        const Ioss::Field          &field)
+  PackedBytes pack_field(const Ioss::Region         &region,
+                         const Ioss::GroupingEntity &entity,
+                         const Ioss::Field          &field)
   {
     field_entry_t field_entry(field);
 
-    std::vector<unsigned char> v(sizeof(field_entry_t) + field_entry.data_size);
+    PackedBytes v(sizeof(field_entry_t) + field_entry.data_size);
 
     // copy field_entry_t to meta section
-    std::memcpy(v.data(), &field_entry, sizeof(field_entry_t));
+    std::memcpy(Data(v), &field_entry, sizeof(field_entry_t));
 
-    auto entry       = reinterpret_cast<field_entry_t *>(v.data());
+    auto entry       = reinterpret_cast<field_entry_t *>(Data(v));
     auto name_ptr    = reinterpret_cast<char *>(entry->data) + entry->name.offset;
     auto value_ptr   = reinterpret_cast<void *>(entry->data + entry->value.offset);
     auto storage_ptr = reinterpret_cast<char *>(entry->data) + entry->storage.offset;
@@ -116,20 +111,20 @@ namespace Ios3 {
     return v;
   }
 
-  std::vector<unsigned char> pack_field(const Ioss::Region         &r,
-                                        const Ioss::GroupingEntity &e,
-                                        const Ioss::Field          &f,
-                                        void                       *data,
-                                        size_t                      data_size)
+  PackedBytes pack_field(const Ioss::Region         &r,
+                         const Ioss::GroupingEntity &e,
+                         const Ioss::Field          &f,
+                         void                       *data,
+                         size_t                      data_size)
   {
     field_entry_t field_entry(f);
 
-    std::vector<unsigned char> v(sizeof(field_entry_t) + field_entry.data_size);
+    PackedBytes v(sizeof(field_entry_t) + field_entry.data_size);
 
     // copy field_entry_t to meta section
-    std::memcpy(v.data(), &field_entry, sizeof(field_entry_t));
+    std::memcpy(Data(v), &field_entry, sizeof(field_entry_t));
 
-    auto entry       = reinterpret_cast<field_entry_t *>(v.data());
+    auto entry       = reinterpret_cast<field_entry_t *>(Data(v));
     auto name_ptr    = reinterpret_cast<char *>(entry->data) + entry->name.offset;
     auto value_ptr   = reinterpret_cast<void *>(reinterpret_cast<char *>(entry->data) + entry->value.offset);
     auto storage_ptr = reinterpret_cast<char *>(entry->data) + entry->storage.offset;

@@ -16,6 +16,8 @@
 
 namespace Ios3 {
 
+  using PackedBytes = std::vector<unsigned char>;
+
   using key_t = std::pair<std::string,std::string>;
 
   struct IOS3_EXPORT value_entry_t
@@ -55,13 +57,13 @@ namespace Ios3 {
     explicit sideblock_entry_t(const Ioss::SideBlock &sb);
   };
 
-  IOS3_EXPORT std::vector<unsigned char> pack_states(const Ioss::Region &r);
+  IOS3_EXPORT PackedBytes pack_states(const Ioss::Region &r);
 
-  IOS3_EXPORT std::vector<unsigned char> pack_sideblock(const Ioss::SideBlock &sb);
-  IOS3_EXPORT int64_t unpack_sideblocks(std::vector<unsigned char> &v);
+  IOS3_EXPORT PackedBytes pack_sideblock(const Ioss::SideBlock &sb);
+  IOS3_EXPORT int64_t unpack_sideblocks(PackedBytes &v);
 
-  IOS3_EXPORT std::vector<unsigned char> pack_structuredblock(const Ioss::StructuredBlock &sb);
-  IOS3_EXPORT void unpack_structuredblock(std::vector<unsigned char> &v, Ioss::StructuredBlock &sb);
+  IOS3_EXPORT PackedBytes pack_structuredblock(const Ioss::StructuredBlock &sb);
+  IOS3_EXPORT void unpack_structuredblock(PackedBytes &v, Ioss::StructuredBlock &sb);
 
   IOS3_EXPORT key_t make_node_map_search_key(int rank,
                                              const std::string& name="");

@@ -32,11 +32,6 @@
 #include "Ioss_State.h" // for State
 #include "Ioss_StructuredBlock.h"
 
-#ifdef NDEBUG
-#undef NDEBUG
-#endif
-#include <cassert>
-
 namespace Ios3 {
 
   size_t data_size(const Ioss::Property &p)
@@ -125,18 +120,18 @@ namespace Ios3 {
   {
   }
 
-  std::vector<unsigned char> pack_property(const Ioss::Region         &region,
-                                           const Ioss::GroupingEntity &entity,
-                                           const Ioss::Property       &property)
+  PackedBytes pack_property(const Ioss::Region         &region,
+                            const Ioss::GroupingEntity &entity,
+                            const Ioss::Property       &property)
   {
     property_entry_t property_entry(property);
 
-    std::vector<unsigned char> v(sizeof(property_entry_t) + property_entry.data_size);
+    PackedBytes v(sizeof(property_entry_t) + property_entry.data_size);
 
     // copy property_entry_t to meta section
-    std::memcpy(reinterpret_cast<char *>(v.data()), &property_entry, sizeof(property_entry_t));
+    std::memcpy(reinterpret_cast<char *>(Data(v)), &property_entry, sizeof(property_entry_t));
 
-    auto entry     = reinterpret_cast<property_entry_t *>(v.data());
+    auto entry     = reinterpret_cast<property_entry_t *>(Data(v));
     auto name_ptr  = reinterpret_cast<char *>(entry->data) + entry->name.offset;
     auto value_ptr = reinterpret_cast<void *>(reinterpret_cast<char *>(entry->data) + entry->value.offset);
 
@@ -164,16 +159,16 @@ namespace Ios3 {
     return v;
   }
 
-  int64_t property_get_int(std::vector<unsigned char> &p)
+  int64_t property_get_int(PackedBytes &p)
   {
-    auto prop(reinterpret_cast<Ios3::property_entry_t *>(p.data()));
+    auto prop(reinterpret_cast<Ios3::property_entry_t *>(Data(p)));
     auto value_ptr = reinterpret_cast<void *>(prop->data + prop->value.offset);
     return *(reinterpret_cast<int64_t *>(value_ptr));
   }
 
-  std::string property_get_string(std::vector<unsigned char> &p)
+  std::string property_get_string(PackedBytes &p)
   {
-    auto prop(reinterpret_cast<Ios3::property_entry_t *>(p.data()));
+    auto prop(reinterpret_cast<Ios3::property_entry_t *>(Data(p)));
     return std::string(prop->data + prop->value.offset, prop->value.size);
   }
 } // namespace Ios3

@@ -55,10 +55,10 @@ namespace Ios3 {
      neither properties nor fields.  This function collects and
      serializes these attributes so that the SideBlock can be
      reconstructed from the data stored in S3. */
-  std::vector<unsigned char> pack_sideblock(const Ioss::SideBlock &sb)
+  PackedBytes pack_sideblock(const Ioss::SideBlock &sb)
   {
     // meta, entry, data, data_size
-    auto v = std::vector<unsigned char>(sizeof(meta_entry_t) + sizeof(sideblock_entry_t));
+    auto v = PackedBytes(sizeof(meta_entry_t) + sizeof(sideblock_entry_t));
 
     auto meta          = reinterpret_cast<meta_entry_t *>(v.data());
     meta->ioss_type    = meta_entry_t::IossType::Ios3SideBlock;
@@ -72,7 +72,7 @@ namespace Ios3 {
     return v;
   }
 
-  int64_t unpack_sideblocks(std::vector<unsigned char> &v)
+  int64_t unpack_sideblocks(PackedBytes &v)
   {
     auto meta = reinterpret_cast<meta_entry_t *>(v.data());
     assert(meta->ioss_type == meta_entry_t::IossType::Ios3SideBlock);
@@ -86,7 +86,7 @@ namespace Ios3 {
      neither properties nor fields. This function collects and
      serializes these attributes so that the StructuredBlock can be
      reconstructed from the data stored in S3. */
-  std::vector<unsigned char> pack_structuredblock(const Ioss::StructuredBlock &sb)
+  PackedBytes pack_structuredblock(const Ioss::StructuredBlock &sb)
   {
     std::ostringstream                  outstream;
     cereal::PortableBinaryOutputArchive oarchive(outstream);
@@ -94,14 +94,14 @@ namespace Ios3 {
     std::streamoff length = outstream.tellp();
 
     // meta, entry, data, data_size
-    auto v = std::vector<unsigned char>(length);
+    auto v = PackedBytes(length);
     std::string outstring = outstream.str();
     outstring.copy(reinterpret_cast<char *>(v.data()), length);
 
     return v;
   }
 
-  void unpack_structuredblock(std::vector<unsigned char> &v, Ioss::StructuredBlock &sb)
+  void unpack_structuredblock(PackedBytes &v, Ioss::StructuredBlock &sb)
   {
     std::stringstream instream;
     char *p = (char *)v.data();
@@ -114,14 +114,14 @@ namespace Ios3 {
     iarchive(sb);
   }
 
-  std::vector<unsigned char> pack_states(const Ioss::Region &r)
+  PackedBytes pack_states(const Ioss::Region &r)
   {
     // meta, entry, data, data_size
     auto state_count = r.get_property("state_count").get_int();
 
     auto data_size = state_count * sizeof(state_entry_t::basic_type);
 
-    auto v = std::vector<unsigned char>(sizeof(meta_entry_t) + sizeof(state_entry_t) + data_size);
+    auto v = PackedBytes(sizeof(meta_entry_t) + sizeof(state_entry_t) + data_size);
 
     auto meta          = reinterpret_cast<meta_entry_t *>(v.data());
     meta->ioss_type    = meta_entry_t::IossType::Ios3States;

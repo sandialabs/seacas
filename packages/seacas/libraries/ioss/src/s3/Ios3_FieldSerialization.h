@@ -49,6 +49,8 @@ namespace Ios3 {
                                           const Ioss::GroupingEntity &,
                                           const Ioss::Field &)>;
 
+  using PackedBytes = std::vector<unsigned char>;
+
   // Applies FieldFunction 'op' to all fields encountered in the
   // Ioss::Region and it's various Ioss::GroupingEntities
   //
@@ -62,15 +64,15 @@ namespace Ios3 {
                              const Ioss::GroupingEntity &grouping_entity,
                              FieldFunction               op);
 
-  IOS3_EXPORT std::vector<unsigned char> pack_field(const Ioss::Region         &region,
-                                                    const Ioss::GroupingEntity &entity,
-                                                    const Ioss::Field          &field);
+  IOS3_EXPORT PackedBytes pack_field(const Ioss::Region         &region,
+                                     const Ioss::GroupingEntity &entity,
+                                     const Ioss::Field          &field);
 
-  IOS3_EXPORT std::vector<unsigned char> pack_field(const Ioss::Region         &r,
-                                                    const Ioss::GroupingEntity &e,
-                                                    const Ioss::Field          &f,
-                                                    void                       *data,
-                                                    size_t                      data_size);
+  IOS3_EXPORT PackedBytes pack_field(const Ioss::Region         &r,
+                                     const Ioss::GroupingEntity &e,
+                                     const Ioss::Field          &f,
+                                     void                       *data,
+                                     size_t                      data_size);
 
   struct IOS3_EXPORT field_entry_t
   {
