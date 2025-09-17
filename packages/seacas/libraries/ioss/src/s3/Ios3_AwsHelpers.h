@@ -15,12 +15,17 @@
 #include <string>
 #include <vector>
 
+namespace Ioss {
+  class ParallelUtils;
+  class PropertyManager;
+};
+
 namespace Ios3 {
 namespace helpers {
 
 struct HelperParameters {
   std::string endpoint             { "" };
-  std::string profile              { "" };
+  std::string profile              { "default" };
   std::string ca_file              { "" };
   bool        use_ca_file          { false };
   bool        use_transfer_manager { false };
@@ -78,7 +83,10 @@ void print_params(const HelperParameters &params);
 
 std::string cleanBucketName(const std::string &name);
 
-void getParamsFromEnvVars(HelperParameters &params);
+void getPropertiesFromEnvVars(Ioss::PropertyManager &properties,
+                              const Ioss::ParallelUtils &utils);
+void getParamsFromProperties(Ioss::PropertyManager &properties,
+                             HelperParameters &params);
 
 std::shared_ptr<HelperContext> createContext(const HelperParameters &params);
 

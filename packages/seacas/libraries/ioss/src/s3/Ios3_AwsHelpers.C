@@ -48,20 +48,43 @@
 #include <aws/transfer/TransferManager.h>
 #include <aws/transfer/TransferHandle.h>
 
+#include <Ioss_ParallelUtils.h>
+#include <Ioss_Property.h>
+#include <Ioss_PropertyManager.h>
+#include <Ioss_Utils.h>
+
 #include "Ios3_AwsHelpers.h"
 
 namespace Ios3 {
 namespace helpers {
 
+const std::string env_base_name{"IOSS_S3_"};
+const std::string env_name_endpoint{env_base_name+"ENDPOINT"};
+const std::string env_name_profile{env_base_name+"PROFILE"};
+const std::string env_name_ca_file{env_base_name+"CA_FILE"};
+const std::string env_name_use_ca_file{env_base_name+"USE_CA_FILE"};
+const std::string env_name_use_transfer_manager{env_base_name+"USE_TRANSFER_MANAGER"};
+const std::string env_name_enable_aws_tracing{env_base_name+"ENABLE_AWS_TRACING"};
+const std::string env_name_disable_ec2_lookup{env_base_name+"DISABLE_EC2_LOOKUP"};
+
+const std::string prop_base_name{"S3_"};
+const std::string prop_name_endpoint{prop_base_name+"ENDPOINT"};
+const std::string prop_name_profile{prop_base_name+"PROFILE"};
+const std::string prop_name_ca_file{prop_base_name+"CA_FILE"};
+const std::string prop_name_use_ca_file{prop_base_name+"USE_CA_FILE"};
+const std::string prop_name_use_transfer_manager{prop_base_name+"USE_TRANSFER_MANAGER"};
+const std::string prop_name_enable_aws_tracing{prop_base_name+"ENABLE_AWS_TRACING"};
+const std::string prop_name_disable_ec2_lookup{prop_base_name+"DISABLE_EC2_LOOKUP"};
+
 void print_params(const HelperParameters &params)
 {
-  fmt::print(stdout, "INFO: endpoint             = {})", params.endpoint);
-  fmt::print(stdout, "INFO: profile              = {})", params.profile);
-  fmt::print(stdout, "INFO: use_ca_file          = {})", params.use_ca_file);
-  fmt::print(stdout, "INFO: ca_file              = {})", params.ca_file);
-  fmt::print(stdout, "INFO: use_transfer_manager = {})", params.use_transfer_manager);
-  fmt::print(stdout, "INFO: enable_aws_tracing   = {})", params.enable_aws_tracing);
-  fmt::print(stdout, "INFO: disable_ec2_lookup   = {})", params.disable_ec2_lookup);
+  fmt::print(stdout, "INFO: endpoint             = {}\n", params.endpoint);
+  fmt::print(stdout, "INFO: profile              = {}\n", params.profile);
+  fmt::print(stdout, "INFO: use_ca_file          = {}\n", params.use_ca_file);
+  fmt::print(stdout, "INFO: ca_file              = {}\n", params.ca_file);
+  fmt::print(stdout, "INFO: use_transfer_manager = {}\n", params.use_transfer_manager);
+  fmt::print(stdout, "INFO: enable_aws_tracing   = {}\n", params.enable_aws_tracing);
+  fmt::print(stdout, "INFO: disable_ec2_lookup   = {}\n", params.disable_ec2_lookup);
 }
 
 static const char AwsHelperCredentialsProviderChainTag[] = "AwsHelperCredentialsProviderChain";
@@ -96,46 +119,76 @@ public:
 static int context_count=0;
 static Aws::SDKOptions options;
 
-void getParamsFromEnvVars(HelperParameters &params)
+void getPropertiesFromEnvVars(Ioss::PropertyManager &properties,
+                              const Ioss::ParallelUtils &utils)
 {
-  const std::string env_base_name{"IOSS_S3_"};
-  const std::string env_name_endpoint{env_base_name+"ENDPOINT"};
-  const std::string env_name_profile{env_base_name+"PROFILE"};
-  const std::string env_name_ca_file{env_base_name+"CA_FILE"};
-  const std::string env_name_use_ca_file{env_base_name+"USE_CA_FILE"};
-  const std::string env_name_use_transfer_manager{env_base_name+"USE_TRANSFER_MANAGER"};
-  const std::string env_name_enable_aws_tracing{env_base_name+"ENABLE_AWS_TRACING"};
-  const std::string env_name_disable_ec2_lookup{env_base_name+"DISABLE_EC2_LOOKUP"};
+  std::string value;
+  if (utils.get_environment(env_name_endpoint, value, utils.parallel_size() > 1)) {
+    properties.add(Ioss::Property(prop_name_endpoint, value));
+  }
+  if (utils.get_environment(env_name_profile, value, utils.parallel_size() > 1)) {
+    properties.add(Ioss::Property(prop_name_profile, value));
+  }
+  if (utils.get_environment(env_name_ca_file, value, utils.parallel_size() > 1)) {
+    properties.add(Ioss::Property(prop_name_ca_file, value));
+  }
+  if (utils.get_environment(env_name_use_ca_file, value, utils.parallel_size() > 1)) {
+    bool bool_value = false;
+    std::string up_value = Ioss::Utils::uppercase(value);
+    if (up_value == "1" || up_value == "TRUE" || up_value == "YES" || up_value == "ON") {
+      bool_value = true;
+    }
+    properties.add(Ioss::Property(prop_name_use_ca_file, bool_value));
+  }
+  if (utils.get_environment(env_name_use_transfer_manager, value, utils.parallel_size() > 1)) {
+    bool bool_value = false;
+    std::string up_value = Ioss::Utils::uppercase(value);
+    if (up_value == "1" || up_value == "TRUE" || up_value == "YES" || up_value == "ON") {
+      bool_value = true;
+    }
+    properties.add(Ioss::Property(prop_name_use_transfer_manager, bool_value));
+  }
+  if (utils.get_environment(env_name_enable_aws_tracing, value, utils.parallel_size() > 1)) {
+    bool bool_value = false;
+    std::string up_value = Ioss::Utils::uppercase(value);
+    if (up_value == "1" || up_value == "TRUE" || up_value == "YES" || up_value == "ON") {
+      bool_value = true;
+    }
+    properties.add(Ioss::Property(prop_name_enable_aws_tracing, bool_value));
+  }
+  if (utils.get_environment(env_name_disable_ec2_lookup, value, utils.parallel_size() > 1)) {
+    bool bool_value = true;
+    std::string up_value = Ioss::Utils::uppercase(value);
+    if (up_value == "0" || up_value == "FALSE" || up_value == "NO" || up_value == "OFF") {
+      bool_value = false;
+    }
+    properties.add(Ioss::Property(prop_name_disable_ec2_lookup, bool_value));
+  }
+}
 
-  char *envvar;
-
-  envvar = std::getenv(env_name_endpoint.c_str());
-  if (envvar != nullptr) {
-    params.endpoint = std::string(envvar);
+void getParamsFromProperties(Ioss::PropertyManager &properties,
+                             HelperParameters &params)
+{
+  if (properties.exists(prop_name_endpoint)) {
+    params.endpoint = properties.get(prop_name_endpoint).get_string();
   }
-  envvar = std::getenv(env_name_profile.c_str());
-  if (envvar != nullptr) {
-    params.profile = std::string(envvar);
+  if (properties.exists(prop_name_profile)) {
+    params.profile = properties.get(prop_name_profile).get_string();
   }
-  envvar = std::getenv(env_name_ca_file.c_str());
-  if (envvar != nullptr) {
-    params.ca_file = std::string(envvar);
+  if (properties.exists(prop_name_ca_file)) {
+    params.ca_file = properties.get(prop_name_ca_file).get_string();
   }
-  envvar = std::getenv(env_name_use_ca_file.c_str());
-  if (envvar != nullptr) {
-    params.use_ca_file = envvar[0]=='0' ? false : true;
+  if (properties.exists(prop_name_use_ca_file)) {
+    params.use_ca_file = true;
   }
-  envvar = std::getenv(env_name_use_transfer_manager.c_str());
-  if (envvar != nullptr) {
-    params.use_transfer_manager = envvar[0]=='0' ? false : true;
+  if (properties.exists(prop_name_use_transfer_manager)) {
+    params.use_transfer_manager = true;
   }
-  envvar = std::getenv(env_name_enable_aws_tracing.c_str());
-  if (envvar != nullptr) {
-    params.enable_aws_tracing = envvar[0]=='0' ? false : true;
+  if (properties.exists(prop_name_enable_aws_tracing)) {
+    params.enable_aws_tracing = true;
   }
-  envvar = std::getenv(env_name_disable_ec2_lookup.c_str());
-  if (envvar != nullptr) {
-    params.disable_ec2_lookup = envvar[0]=='0' ? false : true;
+  if (properties.exists(prop_name_disable_ec2_lookup)) {
+    params.disable_ec2_lookup = true;
   }
 }
 

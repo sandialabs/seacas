@@ -57,7 +57,9 @@ namespace Ios3 {
     : Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
       bucket_name(Ios3::helpers::cleanBucketName(decoded_filename()))
   {
-    Ios3::helpers::getParamsFromEnvVars(helper_params);
+    Ioss::PropertyManager local_properties(props);
+    Ios3::helpers::getPropertiesFromEnvVars(local_properties, util());
+    Ios3::helpers::getParamsFromProperties(local_properties, helper_params);
 
     Ios3::helpers::print_params(helper_params);
 
