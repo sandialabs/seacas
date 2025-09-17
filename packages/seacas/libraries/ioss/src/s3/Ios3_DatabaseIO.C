@@ -114,10 +114,10 @@ namespace Ios3 {
       }
       }
 
-      auto sidesets = get_region()->get_sidesets();
-      for (auto sideset : sidesets) {
-        auto sideblocks = sideset->get_side_blocks();
-        for (auto sideblock : sideblocks) {
+      const auto &sidesets = get_region()->get_sidesets();
+      for (const auto &sideset : sidesets) {
+        const auto &sideblocks = sideset->get_side_blocks();
+        for (const auto &sideblock : sideblocks) {
           key_t sideblock_key =
               make_sideblock_key(parallel_rank(), *(get_region()), *sideset, *sideblock);
 
@@ -130,8 +130,8 @@ namespace Ios3 {
         }
       }
 
-      auto structuredblocks = get_region()->get_structured_blocks();
-      for (auto structuredblock : structuredblocks) {
+      const auto &structuredblocks = get_region()->get_structured_blocks();
+      for (const auto &structuredblock : structuredblocks) {
         key_t structuredblock_key =
             make_structuredblock_key(parallel_rank(), *(get_region()), *structuredblock);
 
@@ -288,8 +288,6 @@ namespace Ios3 {
       if (!omit_info) {
         put_info();
       }
-    } else {
-      fmt::print(stderr, "write_meta_data: wrong behavior ({}) - not writing metadata", static_cast<int>(behavior));
     }
   }
 
@@ -560,7 +558,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool        have_entity_count(false);
       int64_t     entity_count(0);
       bool        have_original_edge_type(false);
@@ -637,7 +635,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool        have_entity_count(false);
       int64_t     entity_count(0);
       bool        have_original_topology_type(false);
@@ -751,7 +749,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool        have_entity_count(false);
       int64_t     entity_count(0);
       bool        have_original_topology_type(false);
@@ -829,7 +827,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool    have_entity_count(false);
       int64_t entity_count(0);
       bool    have_component_degree(false);
@@ -920,14 +918,14 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       std::unordered_map<std::string, int> ctor_properties;
       std::list<std::string>               property_names = {
           "component_degree", "ni",        "nj",       "nk",       "ni_global",
           "nj_global",        "nk_global", "offset_i", "offset_j", "offset_k"};
 
       for (size_t i = 0; i < keys.size(); i++) {
-        for (auto property_name : property_names) {
+        for (const auto &property_name : property_names) {
           // NOTE: ordinary find won't work b/c the names of multiple properties share substrings,
           // e.g., "ni" and "ni_global" (a string find on "ni" will match both)
           if (keys[i].find(entity_name) != std::string::npos) {
@@ -946,11 +944,9 @@ namespace Ios3 {
       }
 
       if (ctor_properties.size() != property_names.size()) {
-        fmt::print(
-            stderr,
-            "[ERROR] Unable to reconstruct StructuredBlock ({}): FOUND {} of {} properties\n",
+        std::string errmsg = fmt::print("[ERROR] Unable to reconstruct StructuredBlock ({}): FOUND {} of {} properties",
             entity_name.c_str(), ctor_properties.size(), property_names.size());
-        return;
+        IOSS_ERROR(errmsg);
       }
 
       auto block = new Ioss::StructuredBlock(
@@ -1024,7 +1020,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool    have_entity_count(false);
       int64_t entity_count(0);
       bool    have_component_degree(false);
@@ -1091,7 +1087,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool    have_entity_count(false);
       int64_t entity_count(0);
       bool    have_component_degree(false);
@@ -1158,7 +1154,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool    have_entity_count(false);
       int64_t entity_count(0);
       bool    have_component_degree(false);
@@ -1225,7 +1221,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool    have_entity_count(false);
       int64_t entity_count(0);
 
@@ -1292,7 +1288,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       auto entity = new Ioss::SideSet(this, entity_name);
 
       // Add Properties that aren't created in the CTor
@@ -1422,7 +1418,7 @@ namespace Ios3 {
     }
 
     auto entity_names = get_entity_names(keys, type_string);
-    for (auto entity_name : entity_names) {
+    for (const auto &entity_name : entity_names) {
       bool        have_entity_count(false);
       int64_t     entity_count(0);
       bool        have_entity_type(false);
