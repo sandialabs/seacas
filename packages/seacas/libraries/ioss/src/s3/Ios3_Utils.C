@@ -534,7 +534,10 @@ namespace Ios3 {
     }
   }
 
-  std::string to_string(const Ioss::EntityType &t) { return Ioss::Utils::entity_type_to_string(t); }
+  std::string to_string(const Ioss::EntityType &t)
+  {
+    return Ioss::Utils::entity_type_to_string(t);
+  }
 
   std::string get_entity_name(const std::string &k, const std::string &target)
   {
