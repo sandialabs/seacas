@@ -263,6 +263,8 @@ void destroyContext(std::shared_ptr<HelperContext> context)
   context.reset();
 }
 
+namespace {
+
 // derived from example found here: https://en.cppreference.com/w/cpp/string/byte/tolower
 std::string tolower(std::string s)
 {
@@ -285,6 +287,8 @@ std::string replace_aws_illegal_chars(std::string s)
                    }
     );
   return s;
+}
+
 }
 
 std::string cleanBucketName(const std::string &name)
