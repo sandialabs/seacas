@@ -679,11 +679,9 @@ namespace Ios3 {
       }
 
       if (!have_original_topology_type && !have_topology_type) {
-        fmt::print(
-          stderr,
-          "[ERROR] Unable to reconstruct ElementBlock ({}): couldn't determine topology\n",
-          entity_name.c_str());
-        continue;
+        std::string errmsg;
+        fmt::print(errmsg, "Unable to reconstruct ElementBlock ({}): couldn't determine topology\n", entity_name.c_str());
+        IOSS_ERROR(errmsg);
       }
       if (have_entity_count) {
         if (!have_original_topology_type) {
@@ -944,7 +942,8 @@ namespace Ios3 {
       }
 
       if (ctor_properties.size() != property_names.size()) {
-        std::string errmsg = fmt::print("[ERROR] Unable to reconstruct StructuredBlock ({}): FOUND {} of {} properties",
+        std::string errmsg;
+        fmt::print(errmsg, "Unable to reconstruct StructuredBlock ({}): FOUND {} of {} properties",
             entity_name.c_str(), ctor_properties.size(), property_names.size());
         IOSS_ERROR(errmsg);
       }
@@ -1459,13 +1458,15 @@ namespace Ios3 {
       }
 
       if (!have_entity_type) {
-        fmt::print(stderr, "[ERROR] Unable to reconstruct CommSet (entity_type NOT found)\n");
-        return;
+        std::string errmsg;
+        fmt::print(errmsg, "Unable to reconstruct CommSet (entity_type NOT found)\n");
+        IOSS_ERROR(errmsg);
       }
 
       if (!have_entity_count) {
-        fmt::print(stderr, "[ERROR] Unable to reconstruct CommSet (entity_count NOT found)\n");
-        return;
+        std::string errmsg;
+        fmt::print(errmsg, "Unable to reconstruct CommSet (entity_count NOT found)\n");
+        IOSS_ERROR(errmsg);
       }
 
       auto commset = new Ioss::CommSet(this, entity_name, entity_type, entity_count);
