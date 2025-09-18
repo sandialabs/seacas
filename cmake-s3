@@ -32,6 +32,7 @@ PYTHON_VER=${PYTHON_VER:-"3.0"}
 
 
 ### Set to YES for parallel compile; otherwise NO for serial (default)
+NETCDF_ROOT=${NETCDF_ROOT:-${TPL_INSTALL}}
 netcdf_parallel=$($NETCDF_ROOT/bin/nc-config --has-parallel)
 if [ "${netcdf_parallel}" == "yes" ]
 then
