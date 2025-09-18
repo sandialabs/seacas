@@ -188,7 +188,7 @@ fi
 if [ "$OS" == "Darwin" ] ; then
   OSX_TARGET=${OSX_TARGET:-}
   if [ "$OSX_TARGET" != "" ] ; then
-      export MACOS_DEPLOYMENT_TARGET=${OSX_TARGET}
+      export MACOSX_DEPLOYMENT_TARGET=${OSX_TARGET}
   fi
 fi
 
