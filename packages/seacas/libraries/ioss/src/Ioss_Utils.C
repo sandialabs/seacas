@@ -159,6 +159,7 @@ std::ostream &Ioss::Utils::get_debug_stream() { return *m_debugStream; }
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
 {
 #if FMT_VERSION < 110000
+  // Trigger rebuild
   std::time_t t    = std::time(nullptr);
   std::string time = fmt::format("{:%H:%M:%S}", *std::localtime(&t));
   std::string date;
