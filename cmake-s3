@@ -191,6 +191,9 @@ if [ "${AWSSDK_INSTALL}" == "" ]; then
   if [ -e ${AWSSDK_DIR}/AWSSDK/AWSSDKConfig.cmake ]; then
     # AWSSDK_DIR points to the cmake directory, so trim it.
     AWSSDK_INSTALL=${AWSSDK_DIR}/../..
+  elif [ -e ${AWSSDK_DIR}/lib/cmake/AWSSDK/AWSSDKConfig.cmake ]; then
+    # AWSSDK_DIR points to the install root, so just use it.
+    AWSSDK_INSTALL=${AWSSDK_DIR}
   elif [ -e ${AWSSDK_DIR}/lib64/cmake/AWSSDK/AWSSDKConfig.cmake ]; then
     # AWSSDK_DIR points to the install root, so just use it.
     AWSSDK_INSTALL=${AWSSDK_DIR}
@@ -292,17 +295,13 @@ then
 		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
 fi
 
-if [ "$HAVE_CEREAL" == "YES" ]
+if [ "$HAVE_AWSSDK" == "YES" ] && [ "$HAVE_CEREAL" == "YES" ]
 then
   CEREAL_SYMBOLS=" -D TPL_ENABLE_Cereal:BOOL=${HAVE_CEREAL}   \
     -D Cereal_INCLUDE_DIRS:PATH=${CEREAL_PATH}/include \
     "
-fi
 
-if [ "$HAVE_AWSSDK" == "YES" ]
-then
   export AWSSDK_DIR
-
   AWSSDK_SYMBOLS=" -D TPL_ENABLE_AWSSDK:BOOL=${HAVE_AWSSDK}   \
     -D AWSSDK_ROOT:PATH=${AWSSDK_PATH} \
     "
@@ -339,6 +338,7 @@ cmake -G "${GENERATOR}" \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+-D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
 ${SUBSET_OPTIONS} \
 -D Seacas_ENABLE_Zoltan:BOOL=${ZOLTAN} \
 -D Seacas_ENABLE_TESTS=ON \
