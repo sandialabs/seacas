@@ -33,6 +33,7 @@ jobs:
     - run: |
        spack external find
        spack compiler find
+       spack install fmt cxxstd=17
        spack spec seacas@master~mpi
        spack install seacas@master~mpi
        spack find
