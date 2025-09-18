@@ -161,13 +161,13 @@ void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t len
 #if FMT_VERSION < 110000
   std::time_t t    = std::time(nullptr);
   std::string time = fmt::format("{:%H:%M:%S}", *std::localtime(&t));
-   std::string date;
-   if (length >= 10) {
+  std::string date;
+  if (length >= 10) {
     date = fmt::format("{:%Y/%m/%d}", *std::localtime(&t));
-   }
-   else {
+  }
+  else {
     date = fmt::format("{:%y/%m/%d}", *std::localtime(&t));
-   }
+  }
 #else
   auto        now  = std::chrono::system_clock::now();
   std::string time = fmt::format("{:%T}", std::chrono::time_point_cast<std::chrono::seconds>(now));
