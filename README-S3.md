@@ -39,7 +39,7 @@ The parameters are descibed in the table below.
 | IOSS_S3_USE_CA_FILE              | enable the CA file                   | False   |  |
 | IOSS_S3_USE_TRANSFER_MANAGER     | enable the transfer manager          | False   | Enable to transfer large data. |
 | IOSS_S3_ENABLE_AWS_TRACING       | enable debug in AWSSDK               | False   | Caution: the output is very verbose. |
-| IOSS_S3_DISABLE_EC2_LOOKUP       | disable an EC2 lookup at startup     | False   | Useful for on-prem object stores. |
+| IOSS_S3_DISABLE_EC2_LOOKUP       | disable an EC2 lookup at startup     | True    | Useful for on-prem object stores. |
 
 
 ## Example: copy an Exodus file to S3 and back
