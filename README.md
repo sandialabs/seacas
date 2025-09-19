@@ -46,9 +46,9 @@ cd seacas && export ACCESS=`pwd`
 
 There are a few externally developed third-party libraries (TPL) that
 are required (or optional) to build SEACAS: HDF5, NetCDF, CGNS, MatIO,
-Kokkos, and (if MPI set) PnetCDF libraries. You can build the
-libraries using the `install-tpl.sh` script, or you can install them
-manually as detailed in
+Kokkos, (if MPI set) PnetCDF, AWS SDK for C++ and Cereal
+libraries. You can build the libraries using the `install-tpl.sh`
+script, or you can install them manually as detailed in
 [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
 *  The script requires bash and curl, which you may need to install.
@@ -77,6 +77,8 @@ manually as detailed in
 | PARMETIS        | YES, NO | NO  | Should parmetis TPL be built (parallel decomposition). |
 | ADIOS2          | YES, NO | NO  | Should adios2 TPL be built. |
 | CATALYST2       | YES, NO | NO  | Should catalyst 2 TPL be built. |
+| AWSSDK          | YES, NO | NO  | Should AWS SDK for C++ TPL be built. |
+| CEREAL          | YES, NO | NO  | Should Cereal TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
