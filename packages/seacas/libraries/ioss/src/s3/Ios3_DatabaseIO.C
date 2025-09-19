@@ -28,8 +28,8 @@
 namespace Ios3 {
 
   // constants copied from exodusII.h
-  const std::size_t MAX_STR_LENGTH=32; // Maximum length of QA record
-  const std::size_t MAX_LINE_LENGTH=80; // Maximum length of an information record
+  const std::size_t MAX_STR_LENGTH  = 32; // Maximum length of QA record
+  const std::size_t MAX_LINE_LENGTH = 80; // Maximum length of an information record
 
   // ========================================================================
   const IOFactory *IOFactory::factory()
@@ -40,22 +40,18 @@ namespace Ios3 {
 
   IOFactory::IOFactory() : Ioss::IOFactory("s3") {}
 
-  Ioss::DatabaseIO *IOFactory::make_IO(const std::string           &filename,
-                                       Ioss::DatabaseUsage          db_usage,
+  Ioss::DatabaseIO *IOFactory::make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
                                        Ioss_MPI_Comm                communicator,
                                        const Ioss::PropertyManager &properties) const
   {
     return new DatabaseIO(nullptr, filename, db_usage, communicator, properties);
   }
 
-
-  DatabaseIO::DatabaseIO(Ioss::Region                *region,
-                         const std::string           &filename,
-                         Ioss::DatabaseUsage          db_usage,
-                         Ioss_MPI_Comm                communicator,
+  DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
+                         Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-    : Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
-      bucket_name(Ios3::helpers::cleanBucketName(decoded_filename()))
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
+        bucket_name(Ios3::helpers::cleanBucketName(decoded_filename()))
   {
     Ioss::PropertyManager local_properties(props);
     Ios3::helpers::getPropertiesFromEnvVars(local_properties, util());
@@ -66,7 +62,7 @@ namespace Ios3 {
     }
 
     helper_context = Ios3::helpers::createContext(helper_params);
-    bool success = Ios3::helpers::createBucket(helper_context, bucket_name);
+    bool success   = Ios3::helpers::createBucket(helper_context, bucket_name);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -74,20 +70,16 @@ namespace Ios3 {
     dbState = Ioss::STATE_UNKNOWN;
   }
 
-  DatabaseIO::~DatabaseIO()
-  {
-    Ios3::helpers::destroyContext(helper_context);
-  }
+  DatabaseIO::~DatabaseIO() { Ios3::helpers::destroyContext(helper_context); }
 
   bool DatabaseIO::put_properties() const
   {
     auto property_op = [this](const Ioss::Region &r, const Ioss::GroupingEntity &e,
-                              const Ioss::Property &p)
-      {
-        key_t key = make_key(parallel_rank(), r, e, p);
-        auto value = pack_property(r, e, p);
-        return Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
-      };
+                              const Ioss::Property &p) {
+      key_t key   = make_key(parallel_rank(), r, e, p);
+      auto  value = pack_property(r, e, p);
+      return Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
+    };
 
     // TODO add check to see what's been published before publishing again
     int num_failed = map_properties(*(get_region()), property_op);
@@ -108,12 +100,12 @@ namespace Ios3 {
         this->usage() == Ioss::DatabaseUsage::WRITE_HEARTBEAT) {
 
       {
-      key_t key = make_states_key(parallel_rank(), *get_region());
-      auto value = pack_states(*get_region());
-      success = Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
-      if (!success) {
-        IOSS_ERROR("S3 Operation Failed");
-      }
+        key_t key   = make_states_key(parallel_rank(), *get_region());
+        auto  value = pack_states(*get_region());
+        success     = Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
+        if (!success) {
+          IOSS_ERROR("S3 Operation Failed");
+        }
       }
 
       const auto &sidesets = get_region()->get_sidesets();
@@ -125,7 +117,8 @@ namespace Ios3 {
 
           /* PUBLISH the SideBlocks that the SideSet references. */
           auto value = pack_sideblock(*sideblock);
-          success = Ios3::helpers::putValue(helper_context, bucket_name, sideblock_key.second, value);
+          success =
+              Ios3::helpers::putValue(helper_context, bucket_name, sideblock_key.second, value);
           if (!success) {
             IOSS_ERROR("S3 Operation Failed");
           }
@@ -139,7 +132,8 @@ namespace Ios3 {
 
         /* PUBLISH the attributes of StructuredBlock */
         auto value = pack_structuredblock(*structuredblock);
-        success = Ios3::helpers::putValue(helper_context, bucket_name, structuredblock_key.second, value);
+        success =
+            Ios3::helpers::putValue(helper_context, bucket_name, structuredblock_key.second, value);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -149,7 +143,7 @@ namespace Ios3 {
     }
   }
 
-  bool DatabaseIO::begin_nl(Ioss::State state) 
+  bool DatabaseIO::begin_nl(Ioss::State state)
   {
     dbState = state;
     return true;
@@ -178,14 +172,14 @@ namespace Ios3 {
   {
     struct qa_element
     {
-      char qa_record[4][MAX_STR_LENGTH+1];
+      char qa_record[4][MAX_STR_LENGTH + 1];
     };
 
     size_t num_qa_records = qaRecords.size() / 4;
 
-    int num_to_put = sizeof(qa_element) * (num_qa_records+1);
+    int                        num_to_put = sizeof(qa_element) * (num_qa_records + 1);
     std::vector<unsigned char> value(num_to_put);
-    auto qa = reinterpret_cast<qa_element *>(value.data());
+    auto                       qa = reinterpret_cast<qa_element *>(value.data());
     {
       int j = 0;
       for (size_t i = 0; i < num_qa_records; i++) {
@@ -196,8 +190,7 @@ namespace Ios3 {
       }
     }
 
-    Ioss::Utils::time_and_date(qa[num_qa_records].qa_record[3],
-                               qa[num_qa_records].qa_record[2],
+    Ioss::Utils::time_and_date(qa[num_qa_records].qa_record[3], qa[num_qa_records].qa_record[2],
                                MAX_STR_LENGTH);
 
     std::string codename = "unknown";
@@ -212,7 +205,7 @@ namespace Ios3 {
     Ioss::Utils::copy_string(qa[num_qa_records].qa_record[1], version, MAX_STR_LENGTH + 1);
 
     std::string qa_key{"::QA_Records"};
-    bool success = Ios3::helpers::putValue(helper_context, bucket_name, qa_key, value);
+    bool        success = Ios3::helpers::putValue(helper_context, bucket_name, qa_key, value);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -220,7 +213,7 @@ namespace Ios3 {
 
   void DatabaseIO::put_info()
   {
-    using info_line = char[MAX_LINE_LENGTH+1];
+    using info_line = char[MAX_LINE_LENGTH + 1];
     int total_lines = 0;
 
     // dump info records, include the product_registry
@@ -249,9 +242,9 @@ namespace Ios3 {
 
     total_lines = in_lines + qa_lines + info_rec_size + config_lines;
 
-    int num_to_put = total_lines * sizeof(info_line);
+    int                        num_to_put = total_lines * sizeof(info_line);
     std::vector<unsigned char> value(num_to_put);
-    auto info = reinterpret_cast<info_line *>(value.data());
+    auto                       info = reinterpret_cast<info_line *>(value.data());
 
     int i = 0;
     Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information(), MAX_LINE_LENGTH + 1);
@@ -271,7 +264,7 @@ namespace Ios3 {
     }
 
     std::string info_key{"::Info_Records"};
-    bool success = Ios3::helpers::putValue(helper_context, bucket_name, info_key, value);
+    bool        success = Ios3::helpers::putValue(helper_context, bucket_name, info_key, value);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -323,12 +316,9 @@ namespace Ios3 {
   {
     bool success = true;
 
-    key_t search_key = make_states_search_key(parallel_rank(), *get_region());
+    key_t                    search_key = make_states_search_key(parallel_rank(), *get_region());
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (success && keys.size() == 1) {
       std::vector<unsigned char> value;
       success = Ios3::helpers::getValue(helper_context, bucket_name, keys[0], value);
@@ -338,7 +328,8 @@ namespace Ios3 {
 
       auto entry = reinterpret_cast<Ios3::state_entry_t *>(value.data() + sizeof(meta_entry_t));
 
-      auto data = reinterpret_cast<Ios3::state_entry_t::basic_type *>(reinterpret_cast<void *>(entry->data + entry->value.offset));
+      auto data = reinterpret_cast<Ios3::state_entry_t::basic_type *>(
+          reinterpret_cast<void *>(entry->data + entry->value.offset));
 
       for (size_t state(1); state <= entry->count; state++) {
         get_region()->add_state(data[state - 1]);
@@ -355,10 +346,7 @@ namespace Ios3 {
       // Region Properties
       key_t search_key = property_search_key(parallel_rank(), *(get_region()), *(get_region()));
       std::vector<std::string> keys;
-      bool success = Ios3::helpers::listKeys(helper_context,
-                                       bucket_name,
-                                       search_key.second,
-                                       keys);
+      bool success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -370,10 +358,7 @@ namespace Ios3 {
       // Region Fields
       key_t search_key = field_search_key(parallel_rank(), *(get_region()), *(get_region()));
       std::vector<std::string> keys;
-      bool success = Ios3::helpers::listKeys(helper_context,
-                                       bucket_name,
-                                       search_key.second,
-                                       keys);
+      bool success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -385,10 +370,7 @@ namespace Ios3 {
       // Region TRANSIENT Fields
       key_t search_key = field_search_key(parallel_rank(), 1, *(get_region()), *(get_region()));
       std::vector<std::string> keys;
-      bool success = Ios3::helpers::listKeys(helper_context,
-                                       bucket_name,
-                                       search_key.second,
-                                       keys);
+      bool success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -400,7 +382,7 @@ namespace Ios3 {
     {
       struct qa_element
       {
-        char qa_record[4][MAX_STR_LENGTH+1];
+        char qa_record[4][MAX_STR_LENGTH + 1];
       };
 
       std::vector<unsigned char> value;
@@ -409,15 +391,13 @@ namespace Ios3 {
         IOSS_ERROR("S3 Operation Failed");
       }
 
-      int num_qa = value.size()/sizeof(qa_element);
+      int num_qa = value.size() / sizeof(qa_element);
 
       if (num_qa > 0) {
         auto qa = reinterpret_cast<qa_element *>(value.data());
 
         for (int i = 0; i < num_qa; i++) {
-          add_qa_record(qa[i].qa_record[0],
-                        qa[i].qa_record[1],
-                        qa[i].qa_record[2],
+          add_qa_record(qa[i].qa_record[0], qa[i].qa_record[1], qa[i].qa_record[2],
                         qa[i].qa_record[3]);
         }
       }
@@ -425,7 +405,7 @@ namespace Ios3 {
 
     // Get information records from database and add to informationRecords...
     {
-      using info_line = char[MAX_STR_LENGTH+1];
+      using info_line = char[MAX_STR_LENGTH + 1];
 
       std::vector<unsigned char> value;
       bool success = Ios3::helpers::getValue(helper_context, bucket_name, "::Info_Records", value);
@@ -433,7 +413,7 @@ namespace Ios3 {
         IOSS_ERROR("S3 Operation Failed");
       }
 
-      int num_info = value.size()/sizeof(info_line);
+      int num_info = value.size() / sizeof(info_line);
       if (num_info > 0) {
         auto info = reinterpret_cast<info_line *>(value.data());
         for (int i = 0; i < num_info; i++) {
@@ -443,7 +423,8 @@ namespace Ios3 {
     }
   }
 
-  void DatabaseIO::read_entity_properties(std::vector<std::string> &keys, Ioss::GroupingEntity &entity)
+  void DatabaseIO::read_entity_properties(std::vector<std::string> &keys,
+                                          Ioss::GroupingEntity     &entity)
   {
     // TODO do we need to update default properties upon construction?
     // Properties
@@ -523,7 +504,8 @@ namespace Ios3 {
       return this->nodeMap;
     }
 
-    std::string nbone_key_str = "::State::-1::Entity::NodeBlock::Name::nodeblock_1::Field::RoleType::MESH::BasicType::INTEGER::Name::ids";
+    std::string nbone_key_str = "::State::-1::Entity::NodeBlock::Name::nodeblock_1::Field::"
+                                "RoleType::MESH::BasicType::INTEGER::Name::ids";
 
     std::vector<unsigned char> value;
     bool success = Ios3::helpers::getValue(helper_context, bucket_name, nbone_key_str, value);
@@ -546,15 +528,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_edgeblocks()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("EdgeBlock");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -574,7 +553,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
           if (keys[i].find("original_edge_type") != std::string::npos) {
@@ -583,7 +562,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            original_edge_type = property_get_int(value);
+            original_edge_type      = property_get_int(value);
             have_original_edge_type = true;
           }
         }
@@ -595,10 +574,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -607,10 +584,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -623,15 +598,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_elemblocks()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("ElementBlock");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -654,7 +626,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
 
@@ -664,7 +636,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            original_topology_type = property_get_string(value);
+            original_topology_type      = property_get_string(value);
             have_original_topology_type = true;
           }
 
@@ -674,7 +646,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            topology_type = property_get_string(value);
+            topology_type      = property_get_string(value);
             have_topology_type = true;
           }
         }
@@ -682,7 +654,8 @@ namespace Ios3 {
 
       if (!have_original_topology_type && !have_topology_type) {
         std::string errmsg;
-        fmt::print(errmsg, "Unable to reconstruct ElementBlock ({}): couldn't determine topology\n", entity_name.c_str());
+        fmt::print(errmsg, "Unable to reconstruct ElementBlock ({}): couldn't determine topology\n",
+                   entity_name.c_str());
         IOSS_ERROR(errmsg);
       }
       if (have_entity_count) {
@@ -690,15 +663,13 @@ namespace Ios3 {
           original_topology_type = topology_type;
         }
         Ioss::ElementBlock *block =
-          new Ioss::ElementBlock(this, entity_name, original_topology_type, entity_count);
+            new Ioss::ElementBlock(this, entity_name, original_topology_type, entity_count);
 
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -707,10 +678,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -719,10 +688,8 @@ namespace Ios3 {
         // Add TRANSIENT fields that aren't created in the CTor
         key_t field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
         std::vector<std::string> field_keys_debug;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search_debug.second,
-                                     field_keys_debug);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, field_search_debug.second,
+                                          field_keys_debug);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -735,15 +702,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_faceblocks()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("FaceBlock");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -763,7 +727,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
 
@@ -773,7 +737,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            original_topology_type = property_get_string(value);
+            original_topology_type      = property_get_string(value);
             have_original_topology_type = true;
           }
         }
@@ -785,10 +749,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -797,10 +759,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -813,15 +773,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_nodeblocks()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("NodeBlock");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -841,7 +798,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
 
@@ -851,7 +808,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            component_degree = property_get_int(value);
+            component_degree      = property_get_int(value);
             have_component_degree = true;
           }
         }
@@ -864,10 +821,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -876,10 +831,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *block);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -888,10 +841,8 @@ namespace Ios3 {
         // Add TRANSIENT fields that aren't created in the CTor
         key_t field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
         std::vector<std::string> field_keys_debug;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search_debug.second,
-                                     field_keys_debug);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, field_search_debug.second,
+                                          field_keys_debug);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -904,15 +855,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_structuredblocks()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("StructuredBlock");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -946,7 +894,7 @@ namespace Ios3 {
       if (ctor_properties.size() != property_names.size()) {
         std::string errmsg;
         fmt::print(errmsg, "Unable to reconstruct StructuredBlock ({}): FOUND {} of {} properties",
-            entity_name.c_str(), ctor_properties.size(), property_names.size());
+                   entity_name.c_str(), ctor_properties.size(), property_names.size());
         IOSS_ERROR(errmsg);
       }
 
@@ -968,10 +916,8 @@ namespace Ios3 {
       // Add Properties that aren't created in the CTor
       key_t property_search = property_search_key(parallel_rank(), *(get_region()), *block);
       std::vector<std::string> property_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   property_search.second,
-                                   property_keys);
+      success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                        property_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -980,10 +926,8 @@ namespace Ios3 {
       // Add fields that aren't created in the CTor
       key_t field_search = field_search_key(parallel_rank(), *(get_region()), *block);
       std::vector<std::string> field_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   field_search.second,
-                                   field_keys);
+      success =
+          Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -992,10 +936,8 @@ namespace Ios3 {
       // Add TRANSIENT fields that aren't created in the CTor
       key_t field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
       std::vector<std::string> field_keys_debug;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   field_search_debug.second,
-                                   field_keys_debug);
+      success = Ios3::helpers::listKeys(helper_context, bucket_name, field_search_debug.second,
+                                        field_keys_debug);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -1007,15 +949,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_edgesets()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("EdgeSet");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -1034,7 +973,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
         }
@@ -1046,10 +985,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1058,10 +995,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1074,15 +1009,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_elemsets()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("ElementSet");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -1101,7 +1033,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
         }
@@ -1113,10 +1045,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1125,10 +1055,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1141,15 +1069,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_facesets()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("FaceSet");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -1168,7 +1093,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
         }
@@ -1180,10 +1105,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1192,10 +1115,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1208,15 +1129,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_nodesets()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("NodeSet");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -1235,7 +1153,7 @@ namespace Ios3 {
             if (!success) {
               IOSS_ERROR("S3 Operation Failed");
             }
-            entity_count = property_get_int(value);
+            entity_count      = property_get_int(value);
             have_entity_count = true;
           }
         }
@@ -1247,10 +1165,8 @@ namespace Ios3 {
         // Add Properties that aren't created in the CTor
         key_t property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     property_search.second,
-                                     property_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                          property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1259,10 +1175,8 @@ namespace Ios3 {
         // Add fields that aren't created in the CTor
         key_t field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
         std::vector<std::string> field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search.second,
-                                     field_keys);
+        success =
+            Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1275,15 +1189,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_sidesets()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("SideSet");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -1295,10 +1206,8 @@ namespace Ios3 {
       // Add Properties that aren't created in the CTor
       key_t property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
       std::vector<std::string> property_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   property_search.second,
-                                   property_keys);
+      success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                        property_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -1307,10 +1216,8 @@ namespace Ios3 {
       // Add fields that aren't created in the CTor
       key_t field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
       std::vector<std::string> field_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   field_search.second,
-                                   field_keys);
+      success =
+          Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -1319,27 +1226,27 @@ namespace Ios3 {
       // FIND the SideBlocks that this SideSet references
       key_t sideblocks_key = sideblocks_search_key(parallel_rank(), *(get_region()), *entity);
       std::vector<std::string> sideblocks_search_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   sideblocks_key.second,
-                                   sideblocks_search_keys);
+      success = Ios3::helpers::listKeys(helper_context, bucket_name, sideblocks_key.second,
+                                        sideblocks_search_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
 
       for (size_t i = 0; i < sideblocks_search_keys.size(); i++) {
         std::vector<unsigned char> value;
-        success = Ios3::helpers::getValue(helper_context, bucket_name, sideblocks_search_keys[i], value);
+        success =
+            Ios3::helpers::getValue(helper_context, bucket_name, sideblocks_search_keys[i], value);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
         int64_t entity_count = unpack_sideblocks(value);
 
-        auto sideblock_name = get_entity_name(sideblocks_search_keys[i], "SideBlock");
-        key_t property_key  = make_property_key(parallel_rank(), *(get_region()), "SideBlock",
-                                                sideblock_name, "STRING", "topology_type");
+        auto  sideblock_name = get_entity_name(sideblocks_search_keys[i], "SideBlock");
+        key_t property_key   = make_property_key(parallel_rank(), *(get_region()), "SideBlock",
+                                                 sideblock_name, "STRING", "topology_type");
         std::vector<unsigned char> property_value;
-        success = Ios3::helpers::getValue(helper_context, bucket_name, property_key.second, property_value);
+        success = Ios3::helpers::getValue(helper_context, bucket_name, property_key.second,
+                                          property_value);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1349,7 +1256,8 @@ namespace Ios3 {
             make_property_key(parallel_rank(), *(get_region()), "SideBlock", sideblock_name,
                               "STRING", "parent_topology_type");
         std::vector<unsigned char> parent_property_value;
-        success = Ios3::helpers::getValue(helper_context, bucket_name, parent_property_key.second, parent_property_value);
+        success = Ios3::helpers::getValue(helper_context, bucket_name, parent_property_key.second,
+                                          parent_property_value);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1362,10 +1270,8 @@ namespace Ios3 {
         key_t sideblock_property_search =
             property_search_key(parallel_rank(), *(get_region()), *sideblock);
         std::vector<std::string> sideblock_property_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     sideblock_property_search.second,
-                                     sideblock_property_keys);
+        success = Ios3::helpers::listKeys(
+            helper_context, bucket_name, sideblock_property_search.second, sideblock_property_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1375,22 +1281,19 @@ namespace Ios3 {
         key_t sideblock_field_search =
             field_search_key(parallel_rank(), *(get_region()), *sideblock);
         std::vector<std::string> sideblock_field_keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     sideblock_field_search.second,
-                                     sideblock_field_keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name,
+                                          sideblock_field_search.second, sideblock_field_keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
         this->read_entity_fields(sideblock_field_keys, *sideblock);
 
         // Add TRANSIENT fields that aren't created in the CTor
-        key_t field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *sideblock);
+        key_t field_search_debug =
+            field_search_key(parallel_rank(), 1, *(get_region()), *sideblock);
         std::vector<std::string> field_keys_debug;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     field_search_debug.second,
-                                     field_keys_debug);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, field_search_debug.second,
+                                          field_keys_debug);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1405,15 +1308,12 @@ namespace Ios3 {
 
   void DatabaseIO::get_commsets()
   {
-    bool success=true;
+    bool success = true;
 
     std::string type_string("CommSet");
-    key_t search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    key_t       search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     std::vector<std::string> keys;
-    success = Ios3::helpers::listKeys(helper_context,
-                                 bucket_name,
-                                 search_key.second,
-                                 keys);
+    success = Ios3::helpers::listKeys(helper_context, bucket_name, search_key.second, keys);
     if (!success) {
       IOSS_ERROR("S3 Operation Failed");
     }
@@ -1439,7 +1339,7 @@ namespace Ios3 {
               if (!success) {
                 IOSS_ERROR("S3 Operation Failed");
               }
-              entity_count = property_get_int(value);
+              entity_count      = property_get_int(value);
               have_entity_count = true;
             }
           }
@@ -1452,7 +1352,7 @@ namespace Ios3 {
               if (!success) {
                 IOSS_ERROR("S3 Operation Failed");
               }
-              entity_type = property_get_string(value);
+              entity_type      = property_get_string(value);
               have_entity_type = true;
             }
           }
@@ -1476,10 +1376,8 @@ namespace Ios3 {
       // Add Properties that aren't created in the CTor
       key_t property_search = property_search_key(parallel_rank(), *(get_region()), *commset);
       std::vector<std::string> property_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   property_search.second,
-                                   property_keys);
+      success = Ios3::helpers::listKeys(helper_context, bucket_name, property_search.second,
+                                        property_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -1488,22 +1386,19 @@ namespace Ios3 {
       // Add fields that aren't created in the CTor
       key_t field_search = field_search_key(parallel_rank(), *(get_region()), *commset);
       std::vector<std::string> field_keys;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   field_search.second,
-                                   field_keys);
+      success =
+          Ios3::helpers::listKeys(helper_context, bucket_name, field_search.second, field_keys);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
       this->read_entity_fields(field_keys, *commset);
 
       // Add TRANSIENT fields that aren't created in the CTor
-      key_t field_search_transient = field_search_key(parallel_rank(), 1, *(get_region()), *commset);
+      key_t field_search_transient =
+          field_search_key(parallel_rank(), 1, *(get_region()), *commset);
       std::vector<std::string> field_keys_transient;
-      success = Ios3::helpers::listKeys(helper_context,
-                                   bucket_name,
-                                   field_search_transient.second,
-                                   field_keys_transient);
+      success = Ios3::helpers::listKeys(helper_context, bucket_name, field_search_transient.second,
+                                        field_keys_transient);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }
@@ -1536,22 +1431,25 @@ namespace Ios3 {
   int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    bool success = true;
+    bool   success    = true;
     size_t num_to_get = field.verify(data_size);
 
     int64_t count = get_field_internal(*eb, field, data, data_size);
     if (count > 0) {
       if (field.get_name() == "connectivity_raw") {
-        const auto& node_map = get_node_map();
-        int *dup_data = (int*)malloc(data_size);
+        const auto &node_map = get_node_map();
+        int        *dup_data = (int *)malloc(data_size);
         memcpy(dup_data, data, data_size);
-        node_map.map_data(dup_data, field, field.verify(data_size) * field.raw_storage()->component_count());
+        node_map.map_data(dup_data, field,
+                          field.verify(data_size) * field.raw_storage()->component_count());
         free(dup_data);
-      } else if (field.get_name() == "connectivity") {
-        const auto& node_map = get_node_map();
-        int *dup_data = (int*)malloc(data_size);
+      }
+      else if (field.get_name() == "connectivity") {
+        const auto &node_map = get_node_map();
+        int        *dup_data = (int *)malloc(data_size);
         memcpy(dup_data, data, data_size);
-        node_map.reverse_map_data(dup_data, field, field.verify(data_size) * field.raw_storage()->component_count());
+        node_map.reverse_map_data(dup_data, field,
+                                  field.verify(data_size) * field.raw_storage()->component_count());
         free(dup_data);
       }
     }
@@ -1559,10 +1457,7 @@ namespace Ios3 {
       if (field.get_name() == "connectivity_raw") {
         Ios3::key_t key = make_key(parallel_rank(), *(get_region()), *eb, field, "connectivity");
         std::vector<std::string> keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     key.second,
-                                     keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, key.second, keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1573,30 +1468,29 @@ namespace Ios3 {
             IOSS_ERROR("S3 Operation Failed");
           }
 
-          field_entry_t* field_ptr(reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
+          field_entry_t *field_ptr(
+              reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
 
           // TODO what other checks do we need here?
           if (data_size != field_ptr->value.size) {
             std::string errmsg;
-            fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size, field_ptr->value.size);
+            fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size,
+                       field_ptr->value.size);
             IOSS_ERROR(errmsg);
           }
 
-          std::memcpy(data,
-                      reinterpret_cast<void *>(field_ptr->data + field_ptr->value.offset),
+          std::memcpy(data, reinterpret_cast<void *>(field_ptr->data + field_ptr->value.offset),
                       field_ptr->value.size);
 
           get_node_map().reverse_map_data(
-            data, field, field.verify(data_size) * field.raw_storage()->component_count());
+              data, field, field.verify(data_size) * field.raw_storage()->component_count());
         }
       }
       else if (field.get_name() == "connectivity") {
-        Ios3::key_t key = make_key(parallel_rank(), *(get_region()), *eb, field, "connectivity_raw");
+        Ios3::key_t key =
+            make_key(parallel_rank(), *(get_region()), *eb, field, "connectivity_raw");
         std::vector<std::string> keys;
-        success = Ios3::helpers::listKeys(helper_context,
-                                     bucket_name,
-                                     key.second,
-                                     keys);
+        success = Ios3::helpers::listKeys(helper_context, bucket_name, key.second, keys);
         if (!success) {
           IOSS_ERROR("S3 Operation Failed");
         }
@@ -1607,24 +1501,24 @@ namespace Ios3 {
             IOSS_ERROR("S3 Operation Failed");
           }
 
-          field_entry_t* field_ptr(reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
+          field_entry_t *field_ptr(
+              reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
 
           // TODO what other checks do we need here?
           if (data_size != field_ptr->value.size) {
             std::string errmsg;
-            fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size, field_ptr->value.size);
+            fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size,
+                       field_ptr->value.size);
             IOSS_ERROR(errmsg);
           }
 
-          std::memcpy(data,
-                      reinterpret_cast<void *>(field_ptr->data + field_ptr->value.offset),
+          std::memcpy(data, reinterpret_cast<void *>(field_ptr->data + field_ptr->value.offset),
                       field_ptr->value.size);
 
-          get_node_map().map_data(
-            data, field, field.verify(data_size) * field.raw_storage()->component_count());
+          get_node_map().map_data(data, field,
+                                  field.verify(data_size) * field.raw_storage()->component_count());
         }
       }
-
     }
 
     return num_to_get;
@@ -1816,10 +1710,8 @@ namespace Ios3 {
     return 0;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::GroupingEntity &e,
-                                         const Ioss::Field &f,
-                                         void *data,
-                                         size_t data_size) const
+  int64_t DatabaseIO::get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f,
+                                         void *data, size_t data_size) const
   {
     size_t num_to_get = f.verify(data_size);
 
@@ -1832,34 +1724,33 @@ namespace Ios3 {
         IOSS_ERROR("S3 Operation Failed");
       }
 
-      field_entry_t* field_ptr(reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
+      field_entry_t *field_ptr(
+          reinterpret_cast<field_entry_t *>(reinterpret_cast<void *>(value.data())));
 
       // TODO what other checks do we need here?
       if (data_size != field_ptr->value.size) {
         std::string errmsg;
-        fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size, field_ptr->value.size);
+        fmt::print(errmsg, "ERROR: data_size({}) != field_ptr->value.size({})", data_size,
+                   field_ptr->value.size);
         IOSS_ERROR(errmsg);
       }
 
-      std::memcpy(data,
-                  reinterpret_cast<void *>(field_ptr->data + field_ptr->value.offset),
+      std::memcpy(data, reinterpret_cast<void *>(field_ptr->data + field_ptr->value.offset),
                   field_ptr->value.size);
     }
 
     return num_to_get;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::GroupingEntity &e,
-                                         const Ioss::Field &f,
-                                         void *data,
-                                         size_t data_size) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f,
+                                         void *data, size_t data_size) const
   {
     size_t num_to_put = f.verify(data_size);
 
     if (num_to_put > 0) {
-      key_t key = make_key(parallel_rank(), *(get_region()), e, f);
-      auto value = pack_field(*(get_region()), e, f, data, data_size);
-      bool success = Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
+      key_t key     = make_key(parallel_rank(), *(get_region()), e, f);
+      auto  value   = pack_field(*(get_region()), e, f, data, data_size);
+      bool  success = Ios3::helpers::putValue(helper_context, bucket_name, key.second, value);
       if (!success) {
         IOSS_ERROR("S3 Operation Failed");
       }

@@ -13,7 +13,6 @@
 
 #include "Ios3_AwsHelpers.h"
 
-
 namespace Ios3 {
 
   class IOS3_EXPORT IOFactory : public Ioss::IOFactory
@@ -23,8 +22,7 @@ namespace Ios3 {
 
   private:
     IOFactory();
-    Ioss::DatabaseIO *make_IO(const std::string           &filename,
-                              Ioss::DatabaseUsage          db_usage,
+    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
                               Ioss_MPI_Comm                communicator,
                               const Ioss::PropertyManager &properties) const;
   };
@@ -36,11 +34,8 @@ namespace Ios3 {
     void finalize_database() const override;
 
   public:
-    DatabaseIO(Ioss::Region                *region,
-               const std::string           &filename,
-               Ioss::DatabaseUsage          db_usage,
-               Ioss_MPI_Comm                communicator,
-               const Ioss::PropertyManager &props);
+    DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
+               Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);
 
     ~DatabaseIO() override;
 
@@ -51,8 +46,8 @@ namespace Ios3 {
     IOSS_NODISCARD virtual unsigned entity_field_support() const override
     {
       return Ioss::NODEBLOCK | Ioss::EDGEBLOCK | Ioss::FACEBLOCK | Ioss::ELEMENTBLOCK |
-        Ioss::NODESET | Ioss::EDGESET | Ioss::FACESET | Ioss::ELEMENTSET | Ioss::SIDESET |
-        Ioss::SIDEBLOCK | Ioss::REGION | Ioss::SUPERELEMENT;
+             Ioss::NODESET | Ioss::EDGESET | Ioss::FACESET | Ioss::ELEMENTSET | Ioss::SIDESET |
+             Ioss::SIDEBLOCK | Ioss::REGION | Ioss::SUPERELEMENT;
     }
 
     int spatial_dimension() const { return spatialDimension; }
@@ -129,11 +124,10 @@ namespace Ios3 {
                                        void *data, size_t data_size) const override;
 
   private:
-    int64_t get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f,
-                               void *data, size_t data_size) const;
-    int64_t put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f,
-                               void *data, size_t data_size) const;
-
+    int64_t get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f, void *data,
+                               size_t data_size) const;
+    int64_t put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f, void *data,
+                               size_t data_size) const;
 
     virtual bool begin_nl(Ioss::State state) override;
     virtual bool end_nl(Ioss::State state) override;
@@ -152,7 +146,7 @@ namespace Ios3 {
     void read_region();
     void read_entity_properties(std::vector<std::string> &keys, Ioss::GroupingEntity &entity);
     Ioss::Property read_property(std::vector<unsigned char> &value);
-    void read_entity_fields(std::vector<std::string> &keys, Ioss::GroupingEntity &entity);
+    void           read_entity_fields(std::vector<std::string> &keys, Ioss::GroupingEntity &entity);
 
     Ioss::Map &get_node_map() const;
 
@@ -169,7 +163,6 @@ namespace Ios3 {
     void get_sidesets();
     void get_commsets();
 
-
     int spatialDimension{3};
 
     int nodeBlockCount{0};
@@ -185,7 +178,6 @@ namespace Ios3 {
     std::shared_ptr<Ios3::helpers::HelperContext> helper_context;
 
     std::string bucket_name;
-
   };
 
 } // namespace Ios3

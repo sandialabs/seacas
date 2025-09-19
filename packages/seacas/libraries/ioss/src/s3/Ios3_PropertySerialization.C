@@ -49,9 +49,8 @@ namespace Ios3 {
       return 0;
   }
 
-  int map_properties(const Ioss::Region         &region,
-                     const Ioss::GroupingEntity &entity,
-                     PropertyFunction            op)
+  int map_properties(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
+                     PropertyFunction op)
   {
     int num_failed = 0;
 
@@ -63,8 +62,7 @@ namespace Ios3 {
     return num_failed;
   }
 
-  int map_properties(const Ioss::Region &region,
-                     PropertyFunction    op)
+  int map_properties(const Ioss::Region &region, PropertyFunction op)
   {
     int num_failed = 0;
 
@@ -110,20 +108,15 @@ namespace Ios3 {
     return num_failed;
   }
 
-  property_entry_t::property_entry_t(const Ioss::Property &property,
-                                     const size_t          start)
-    : basic_type(property.get_type()),
-      is_implicit(property.is_implicit()),
-      is_valid(property.is_valid()),
-      name{start, property.get_name().size()},
-      value{name.offset + name.size, Ios3::data_size(property)},
-      data_size(name.size + value.size)
+  property_entry_t::property_entry_t(const Ioss::Property &property, const size_t start)
+      : basic_type(property.get_type()), is_implicit(property.is_implicit()),
+        is_valid(property.is_valid()), name{start, property.get_name().size()},
+        value{name.offset + name.size, Ios3::data_size(property)}, data_size(name.size + value.size)
   {
   }
 
-  PackedBytes pack_property(const Ioss::Region         &region,
-                            const Ioss::GroupingEntity &entity,
-                            const Ioss::Property       &property)
+  PackedBytes pack_property(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
+                            const Ioss::Property &property)
   {
     property_entry_t property_entry(property);
 
@@ -132,9 +125,10 @@ namespace Ios3 {
     // copy property_entry_t to meta section
     std::memcpy(reinterpret_cast<char *>(Data(v)), &property_entry, sizeof(property_entry_t));
 
-    auto entry     = reinterpret_cast<property_entry_t *>(Data(v));
-    auto name_ptr  = reinterpret_cast<char *>(entry->data) + entry->name.offset;
-    auto value_ptr = reinterpret_cast<void *>(reinterpret_cast<char *>(entry->data) + entry->value.offset);
+    auto entry    = reinterpret_cast<property_entry_t *>(Data(v));
+    auto name_ptr = reinterpret_cast<char *>(entry->data) + entry->name.offset;
+    auto value_ptr =
+        reinterpret_cast<void *>(reinterpret_cast<char *>(entry->data) + entry->value.offset);
 
     // copy name to data section
     std::memcpy(name_ptr, property.get_name().data(), entry->name.size);
@@ -154,8 +148,8 @@ namespace Ios3 {
     }
 
     if (entry->value.size != Ios3::data_size(property)) {
-      fmt::print(stderr, "pack_property: value.size mismatch: {} != {}",
-                 entry->value.size, Ios3::data_size(property));
+      fmt::print(stderr, "pack_property: value.size mismatch: {} != {}", entry->value.size,
+                 Ios3::data_size(property));
     }
     return v;
   }

@@ -45,34 +45,27 @@ namespace Ios3 {
   // that are given to the user-defined function.  Some examples are
   // given in this file and are also useful
   //
-  using FieldFunction = std::function<int(const Ioss::Region &,
-                                          const Ioss::GroupingEntity &,
-                                          const Ioss::Field &)>;
+  using FieldFunction =
+      std::function<int(const Ioss::Region &, const Ioss::GroupingEntity &, const Ioss::Field &)>;
 
   using PackedBytes = std::vector<unsigned char>;
 
   // Applies FieldFunction 'op' to all fields encountered in the
   // Ioss::Region and it's various Ioss::GroupingEntities
   //
-  IOS3_EXPORT int map_fields(const Ioss::Region &region,
-                             FieldFunction       op);
+  IOS3_EXPORT int map_fields(const Ioss::Region &region, FieldFunction op);
 
   // Applies FieldFunction 'op' to all fields encountered in the
   // Ioss::GroupingEntity
   //
   IOS3_EXPORT int map_fields(const Ioss::Region         &region,
-                             const Ioss::GroupingEntity &grouping_entity,
-                             FieldFunction               op);
+                             const Ioss::GroupingEntity &grouping_entity, FieldFunction op);
 
-  IOS3_EXPORT PackedBytes pack_field(const Ioss::Region         &region,
-                                     const Ioss::GroupingEntity &entity,
-                                     const Ioss::Field          &field);
+  IOS3_EXPORT PackedBytes pack_field(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
+                                     const Ioss::Field &field);
 
-  IOS3_EXPORT PackedBytes pack_field(const Ioss::Region         &r,
-                                     const Ioss::GroupingEntity &e,
-                                     const Ioss::Field          &f,
-                                     void                       *data,
-                                     size_t                      data_size);
+  IOS3_EXPORT PackedBytes pack_field(const Ioss::Region &r, const Ioss::GroupingEntity &e,
+                                     const Ioss::Field &f, void *data, size_t data_size);
 
   struct IOS3_EXPORT field_entry_t
   {
@@ -90,8 +83,7 @@ namespace Ios3 {
 
     char data[0];
 
-    explicit field_entry_t(const Ioss::Field &field,
-                           const size_t       start = 0);
+    explicit field_entry_t(const Ioss::Field &field, const size_t start = 0);
   };
 
 } // namespace Ios3

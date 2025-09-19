@@ -9,14 +9,9 @@
 
 namespace Ios3 {
 
-  size_t data_size(const Ioss::Field &f)
-  {
-    return f.get_size();
-  }
+  size_t data_size(const Ioss::Field &f) { return f.get_size(); }
 
-  int map_fields(const Ioss::Region         &region,
-                 const Ioss::GroupingEntity &entity,
-                 FieldFunction               op)
+  int map_fields(const Ioss::Region &region, const Ioss::GroupingEntity &entity, FieldFunction op)
   {
     int num_failed = 0;
 
@@ -28,8 +23,7 @@ namespace Ios3 {
     return num_failed;
   }
 
-  int map_fields(const Ioss::Region &region,
-                 FieldFunction       op)
+  int map_fields(const Ioss::Region &region, FieldFunction op)
   {
     int num_failed = 0;
 
@@ -73,20 +67,16 @@ namespace Ios3 {
   }
 
   field_entry_t::field_entry_t(const Ioss::Field &field, const size_t start)
-    : basic_type(field.get_type()),
-      role_type(field.get_role()),
-      is_valid(field.is_valid()),
-      raw_count(field.raw_count()),
-      name{start, field.get_name().size()},
-      value{name.offset + name.size, Ios3::data_size(field)},
-      storage{value.offset + value.size, field.raw_storage()->name().size()},
-      data_size(name.size + value.size + storage.size)
+      : basic_type(field.get_type()), role_type(field.get_role()), is_valid(field.is_valid()),
+        raw_count(field.raw_count()), name{start, field.get_name().size()},
+        value{name.offset + name.size, Ios3::data_size(field)},
+        storage{value.offset + value.size, field.raw_storage()->name().size()},
+        data_size(name.size + value.size + storage.size)
   {
   }
 
-  PackedBytes pack_field(const Ioss::Region         &region,
-                         const Ioss::GroupingEntity &entity,
-                         const Ioss::Field          &field)
+  PackedBytes pack_field(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
+                         const Ioss::Field &field)
   {
     field_entry_t field_entry(field);
 
@@ -111,11 +101,8 @@ namespace Ios3 {
     return v;
   }
 
-  PackedBytes pack_field(const Ioss::Region         &r,
-                         const Ioss::GroupingEntity &e,
-                         const Ioss::Field          &f,
-                         void                       *data,
-                         size_t                      data_size)
+  PackedBytes pack_field(const Ioss::Region &r, const Ioss::GroupingEntity &e, const Ioss::Field &f,
+                         void *data, size_t data_size)
   {
     field_entry_t field_entry(f);
 
@@ -124,9 +111,10 @@ namespace Ios3 {
     // copy field_entry_t to meta section
     std::memcpy(Data(v), &field_entry, sizeof(field_entry_t));
 
-    auto entry       = reinterpret_cast<field_entry_t *>(Data(v));
-    auto name_ptr    = reinterpret_cast<char *>(entry->data) + entry->name.offset;
-    auto value_ptr   = reinterpret_cast<void *>(reinterpret_cast<char *>(entry->data) + entry->value.offset);
+    auto entry    = reinterpret_cast<field_entry_t *>(Data(v));
+    auto name_ptr = reinterpret_cast<char *>(entry->data) + entry->name.offset;
+    auto value_ptr =
+        reinterpret_cast<void *>(reinterpret_cast<char *>(entry->data) + entry->value.offset);
     auto storage_ptr = reinterpret_cast<char *>(entry->data) + entry->storage.offset;
 
     // copy name to data section

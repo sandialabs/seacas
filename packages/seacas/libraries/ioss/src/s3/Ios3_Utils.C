@@ -41,13 +41,12 @@
 namespace Ios3 {
 
   state_entry_t::state_entry_t(const Ioss::Region &r)
-    : count(r.get_property("state_count").get_int()),
-      value{0, count * sizeof(state_entry_t::basic_type)}
+      : count(r.get_property("state_count").get_int()),
+        value{0, count * sizeof(state_entry_t::basic_type)}
   {
   }
 
-  sideblock_entry_t::sideblock_entry_t(const Ioss::SideBlock &sb)
-    : entity_count(sb.entity_count())
+  sideblock_entry_t::sideblock_entry_t(const Ioss::SideBlock &sb) : entity_count(sb.entity_count())
   {
   }
 
@@ -65,7 +64,8 @@ namespace Ios3 {
     meta->value.offset = 0;
     meta->value.size   = sizeof(sideblock_entry_t);
 
-    auto entry = reinterpret_cast<sideblock_entry_t *>(reinterpret_cast<void *>(v.data() + sizeof(meta_entry_t) + meta->value.offset));
+    auto entry = reinterpret_cast<sideblock_entry_t *>(
+        reinterpret_cast<void *>(v.data() + sizeof(meta_entry_t) + meta->value.offset));
 
     entry->entity_count = sb.entity_count();
 
@@ -77,7 +77,8 @@ namespace Ios3 {
     auto meta = reinterpret_cast<meta_entry_t *>(v.data());
     assert(meta->ioss_type == meta_entry_t::IossType::Ios3SideBlock);
 
-    auto entry = reinterpret_cast<sideblock_entry_t *>(v.data() + sizeof(meta_entry_t) + meta->value.offset);
+    auto entry =
+        reinterpret_cast<sideblock_entry_t *>(v.data() + sizeof(meta_entry_t) + meta->value.offset);
 
     return entry->entity_count;
   }
@@ -94,7 +95,7 @@ namespace Ios3 {
     std::streamoff length = outstream.tellp();
 
     // meta, entry, data, data_size
-    auto v = PackedBytes(length);
+    auto        v         = PackedBytes(length);
     std::string outstring = outstream.str();
     outstring.copy(reinterpret_cast<char *>(v.data()), length);
 
@@ -104,7 +105,7 @@ namespace Ios3 {
   void unpack_structuredblock(PackedBytes &v, Ioss::StructuredBlock &sb)
   {
     std::stringstream instream;
-    char *p = (char *)v.data();
+    char             *p = (char *)v.data();
     for (uint64_t i = 0; i < v.size(); i++) {
       instream << p[i];
     }
@@ -128,12 +129,14 @@ namespace Ios3 {
     meta->value.offset = 0;
     meta->value.size   = sizeof(state_entry_t) + data_size;
 
-    auto entry = reinterpret_cast<state_entry_t *>(reinterpret_cast<void *>(v.data() + sizeof(meta_entry_t)));
+    auto entry = reinterpret_cast<state_entry_t *>(
+        reinterpret_cast<void *>(v.data() + sizeof(meta_entry_t)));
     entry->count        = state_count;
     entry->value.offset = 0;
     entry->value.size   = data_size;
 
-    auto data = reinterpret_cast<Ios3::state_entry_t::basic_type *>(reinterpret_cast<void *>(entry->data + entry->value.offset));
+    auto data = reinterpret_cast<Ios3::state_entry_t::basic_type *>(
+        reinterpret_cast<void *>(entry->data + entry->value.offset));
 
     for (uint64_t state(1); state <= entry->count; state++) {
       data[state - 1] = r.get_state_time(state);
@@ -142,74 +145,61 @@ namespace Ios3 {
     return v;
   };
 
-  key_t make_map_search_key(int rank,
-                            const std::string& type,
-                            const std::string& name)
+  key_t make_map_search_key(int rank, const std::string &type, const std::string &name)
   {
-    std::string key="::Map::"+type;
+    std::string key = "::Map::" + type;
     if (not name.empty()) {
-      key += "::Name::"+name;
+      key += "::Name::" + name;
     }
     return key_t(std::to_string(rank), key);
   }
 
-  key_t make_map_key(int rank,
-                     const std::string& type,
-                     const std::string& name)
+  key_t make_map_key(int rank, const std::string &type, const std::string &name)
   {
-    return key_t(std::to_string(rank), "::Map::"+type+"::Name::"+name);
+    return key_t(std::to_string(rank), "::Map::" + type + "::Name::" + name);
   }
 
-  key_t make_node_map_search_key(int rank,
-                                 const std::string& name)
+  key_t make_node_map_search_key(int rank, const std::string &name)
   {
     return make_map_search_key(rank, "NodeMap", name);
   }
 
-  key_t make_node_map_key(int rank,
-                          const std::string& name)
+  key_t make_node_map_key(int rank, const std::string &name)
   {
     return make_map_key(rank, "NodeMap", name);
   }
 
-  key_t make_edge_map_search_key(int rank,
-                                 const std::string& name)
+  key_t make_edge_map_search_key(int rank, const std::string &name)
   {
     return make_map_search_key(rank, "EdgeMap", name);
   }
 
-  key_t make_edge_map_key(int rank,
-                          const std::string& name)
+  key_t make_edge_map_key(int rank, const std::string &name)
   {
     return make_map_key(rank, "EdgeMap", name);
   }
 
-  key_t make_face_map_search_key(int rank,
-                                 const std::string& name)
+  key_t make_face_map_search_key(int rank, const std::string &name)
   {
     return make_map_search_key(rank, "FaceMap", name);
   }
 
-  key_t make_face_map_key(int rank,
-                          const std::string& name)
+  key_t make_face_map_key(int rank, const std::string &name)
   {
     return make_map_key(rank, "FaceMap", name);
   }
 
-  key_t make_elem_map_search_key(int rank,
-                                 const std::string& name)
+  key_t make_elem_map_search_key(int rank, const std::string &name)
   {
     return make_map_search_key(rank, "ElemMap", name);
   }
 
-  key_t make_elem_map_key(int rank,
-                          const std::string& name)
+  key_t make_elem_map_key(int rank, const std::string &name)
   {
     return make_map_key(rank, "ElemMap", name);
   }
 
-  key_t make_states_search_key(int rank,
-                               const Ioss::Region &region)
+  key_t make_states_search_key(int rank, const Ioss::Region &region)
   {
     auto region_name = region.name();
     if (region_name.empty()) {
@@ -218,8 +208,7 @@ namespace Ios3 {
     return key_t(std::to_string(rank), "::TimeSteps");
   }
 
-  key_t make_states_key(int rank,
-                        const Ioss::Region &region)
+  key_t make_states_key(int rank, const Ioss::Region &region)
   {
     auto region_name = region.name();
     if (region_name.empty()) {
@@ -228,9 +217,7 @@ namespace Ios3 {
     return key_t(std::to_string(rank), "::TimeSteps");
   }
 
-  key_t sideblocks_search_key(int rank,
-                              const Ioss::Region &region,
-                              const Ioss::SideSet &sideset)
+  key_t sideblocks_search_key(int rank, const Ioss::Region &region, const Ioss::SideSet &sideset)
   {
     auto region_name = region.name();
     if (region_name.empty()) {
@@ -238,13 +225,10 @@ namespace Ios3 {
     }
 
     std::string value = fmt::format("::SideSet::{}::SideBlock::", sideset.name());
-    return key_t(std::to_string(rank),
-                 value);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_sideblock_key(int rank,
-                           const Ioss::Region &region,
-                           const Ioss::SideSet &sideset,
+  key_t make_sideblock_key(int rank, const Ioss::Region &region, const Ioss::SideSet &sideset,
                            const Ioss::SideBlock &sideblock)
   {
     auto region_name = region.name();
@@ -252,13 +236,12 @@ namespace Ios3 {
       region_name = "UNNAMED";
     }
 
-    std::string value = fmt::format("::SideSet::{}::SideBlock::{}", sideset.name(), sideblock.name());
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::SideSet::{}::SideBlock::{}", sideset.name(), sideblock.name());
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t structuredblock_search_key(int rank,
-                                   const Ioss::Region &region,
+  key_t structuredblock_search_key(int rank, const Ioss::Region &region,
                                    const Ioss::StructuredBlock &structuredblock)
   {
     auto region_name = region.name();
@@ -267,12 +250,10 @@ namespace Ios3 {
     }
 
     std::string value = fmt::format("::StructuredBlock::{}::Attributes", structuredblock.name());
-    return key_t(std::to_string(rank),
-                 value);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_structuredblock_key(int rank,
-                                 const Ioss::Region &region,
+  key_t make_structuredblock_key(int rank, const Ioss::Region &region,
                                  const Ioss::StructuredBlock &structuredblock)
   {
     auto region_name = region.name();
@@ -281,15 +262,11 @@ namespace Ios3 {
     }
 
     std::string value = fmt::format("::StructuredBlock::{}::Attributes", structuredblock.name());
-    return key_t(std::to_string(rank),
-                 value);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_key(int rank,
-                 const Ioss::Region &region,
-                 const Ioss::GroupingEntity &grouping_entity,
-                 const Ioss::Field &field,
-                 const std::string &name)
+  key_t make_key(int rank, const Ioss::Region &region, const Ioss::GroupingEntity &grouping_entity,
+                 const Ioss::Field &field, const std::string &name)
   {
     std::string grouping_entity_name;
     if (grouping_entity.type() == Ioss::EntityType::REGION) {
@@ -299,17 +276,14 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}::Field::RoleType::{}::BasicType::{}::Name::{}",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name, to_string(field.get_role()),
-                                    to_string(field.get_type()), name);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::State::{}::Entity::{}{}::Field::RoleType::{}::BasicType::{}::Name::{}",
+                    region.get_current_state(), grouping_entity.type_string(), grouping_entity_name,
+                    to_string(field.get_role()), to_string(field.get_type()), name);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_key(int rank,
-                 const Ioss::Region &region,
-                 const Ioss::GroupingEntity &grouping_entity,
+  key_t make_key(int rank, const Ioss::Region &region, const Ioss::GroupingEntity &grouping_entity,
                  const Ioss::Field &field)
   {
     std::string grouping_entity_name;
@@ -320,17 +294,14 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}::Field::RoleType::{}::BasicType::{}::Name::{}",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name, to_string(field.get_role()),
-                                    to_string(field.get_type()), field.get_name());
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::State::{}::Entity::{}{}::Field::RoleType::{}::BasicType::{}::Name::{}",
+                    region.get_current_state(), grouping_entity.type_string(), grouping_entity_name,
+                    to_string(field.get_role()), to_string(field.get_type()), field.get_name());
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_key(int rank,
-                 const Ioss::Region &region,
-                 const Ioss::GroupingEntity &grouping_entity,
+  key_t make_key(int rank, const Ioss::Region &region, const Ioss::GroupingEntity &grouping_entity,
                  const Ioss::Property &property)
   {
     std::string grouping_entity_name;
@@ -341,17 +312,14 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}::Property::BasicType::{}::Name::{}",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name, to_string(property.get_type()),
-                                    property.get_name());
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::State::{}::Entity::{}{}::Property::BasicType::{}::Name::{}",
+                    region.get_current_state(), grouping_entity.type_string(), grouping_entity_name,
+                    to_string(property.get_type()), property.get_name());
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_key(int rank,
-                 const Ioss::Region &region,
-                 const Ioss::GroupingEntity &grouping_entity)
+  key_t make_key(int rank, const Ioss::Region &region, const Ioss::GroupingEntity &grouping_entity)
   {
     std::string grouping_entity_name;
     if (grouping_entity.type() == Ioss::EntityType::REGION) {
@@ -361,30 +329,24 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value = fmt::format("::State::{}::Entity::{}{}", region.get_current_state(),
+                                    grouping_entity.type_string(), grouping_entity_name);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t entity_search_key(int rank,
-                          const Ioss::Region &region,
-                          const std::string &entity)
+  key_t entity_search_key(int rank, const Ioss::Region &region, const std::string &entity)
   {
     auto region_name = region.name();
     if (region_name.empty()) {
       region_name = "UNNAMED";
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}::",
-                                    region.get_current_state(), entity);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::State::{}::Entity::{}::", region.get_current_state(), entity);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t entity_search_key(int rank,
-                          const Ioss::Region &region,
+  key_t entity_search_key(int rank, const Ioss::Region &region,
                           const Ioss::GroupingEntity &grouping_entity)
   {
     std::string grouping_entity_name;
@@ -395,15 +357,12 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value = fmt::format("::State::{}::Entity::{}{}", region.get_current_state(),
+                                    grouping_entity.type_string(), grouping_entity_name);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t property_search_key(int rank,
-                            const Ioss::Region &region,
+  key_t property_search_key(int rank, const Ioss::Region &region,
                             const Ioss::GroupingEntity &grouping_entity)
   {
     std::string grouping_entity_name;
@@ -414,18 +373,14 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}::Property::",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::State::{}::Entity::{}{}::Property::", region.get_current_state(),
+                    grouping_entity.type_string(), grouping_entity_name);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t make_property_key(int rank,
-                          const Ioss::Region &region,
-                          const std::string &entity_type,
-                          const std::string &entity_name,
-                          const std::string &property_type,
+  key_t make_property_key(int rank, const Ioss::Region &region, const std::string &entity_type,
+                          const std::string &entity_name, const std::string &property_type,
                           const std::string &property_name)
   {
     std::string grouping_entity_name;
@@ -437,15 +392,12 @@ namespace Ios3 {
     }
 
     std::string value = fmt::format("::State::{}::Entity::{}{}::Property::BasicType::{}::Name::{}",
-                                    region.get_current_state(), entity_type,
-                                    grouping_entity_name, property_type,
-                                    property_name);
-    return key_t(std::to_string(rank),
-                 value);
+                                    region.get_current_state(), entity_type, grouping_entity_name,
+                                    property_type, property_name);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t field_search_key(int rank,
-                         const Ioss::Region &region,
+  key_t field_search_key(int rank, const Ioss::Region &region,
                          const Ioss::GroupingEntity &grouping_entity)
   {
     std::string grouping_entity_name;
@@ -456,16 +408,13 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}::Field::",
-                                    region.get_current_state(), grouping_entity.type_string(),
-                                    grouping_entity_name);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value =
+        fmt::format("::State::{}::Entity::{}{}::Field::", region.get_current_state(),
+                    grouping_entity.type_string(), grouping_entity_name);
+    return key_t(std::to_string(rank), value);
   }
 
-  key_t field_search_key(int rank,
-                         int state,
-                         const Ioss::Region &region,
+  key_t field_search_key(int rank, int state, const Ioss::Region &region,
                          const Ioss::GroupingEntity &grouping_entity)
   {
     // The default Region state is -1. When the mesh data is being
@@ -483,11 +432,9 @@ namespace Ios3 {
       grouping_entity_name = "::Name::" + grouping_entity.name();
     }
 
-    std::string value = fmt::format("::State::{}::Entity::{}{}::Field::",
-                                    state, grouping_entity.type_string(),
-                                    grouping_entity_name);
-    return key_t(std::to_string(rank),
-                 value);
+    std::string value = fmt::format("::State::{}::Entity::{}{}::Field::", state,
+                                    grouping_entity.type_string(), grouping_entity_name);
+    return key_t(std::to_string(rank), value);
   }
 
   std::string to_string(const Ioss::Property::BasicType &t)
@@ -534,10 +481,7 @@ namespace Ios3 {
     }
   }
 
-  std::string to_string(const Ioss::EntityType &t)
-  {
-    return Ioss::Utils::entity_type_to_string(t);
-  }
+  std::string to_string(const Ioss::EntityType &t) { return Ioss::Utils::entity_type_to_string(t); }
 
   std::string get_entity_name(const std::string &k, const std::string &target)
   {
@@ -553,7 +497,7 @@ namespace Ios3 {
   }
 
   std::set<std::string> get_entity_names(const std::vector<std::string> &keys,
-                                         const std::string &target)
+                                         const std::string              &target)
   {
     std::set<std::string> names;
     for (auto k : keys) {
