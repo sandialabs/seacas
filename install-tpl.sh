@@ -139,6 +139,12 @@ ADIOS2=$(check_valid ADIOS2) || exit
 CATALYST2=${CATALYST2:-NO}
 CATALYST2=$(check_valid CATALYST2) || exit
 
+AWSSDK=${AWSSDK:-NO}
+AWSSDK=$(check_valid AWSSDK) || exit
+
+CEREAL=${CEREAL:-NO}
+CEREAL=$(check_valid CEREAL) || exit
+
 GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST) || exit
 
@@ -222,6 +228,8 @@ if [ $# -gt 0 ]; then
         echo "   FAODEL       = ${FAODEL}"
         echo "   ADIOS2       = ${ADIOS2}"
         echo "   CATALYST2    = ${CATALYST2}"
+        echo "   AWSSDK       = ${AWSSDK}"
+        echo "   CEREAL       = ${CEREAL}"
         echo "   CATCH2       = ${CATCH2}"
         echo "   GTEST        = ${GTEST}"
         echo ""
@@ -1131,11 +1139,56 @@ then
   fi
 fi
 
-# =================== INSTALL CEREAL ===============
-if [ "$FAODEL" == "YES" ]
+# =================== INSTALL aws-sdk-cpp ===============
+if [ "$AWSSDK" == "YES" ]
 then
-  # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
-  if [ "$FORCE" == "YES" ] || [ "$FORCE_FAODEL" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/aws/core/Aws.h ]
+  then
+    echo "${txtgrn}+++ aws-sdk-cpp${txtrst}"
+    cd $ACCESS || exit
+    cd TPL/aws-sdk-cpp || exit
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Downloading...${txtrst}"
+      rm -rf aws-sdk-cpp
+      git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp
+      cd aws-sdk-cpp
+      git branch branch/tag-1.11.77 1.11.77
+      git checkout branch/tag-1.11.77
+      git submodule update --recursive
+      cd ..
+    fi
+
+    if [ "$BUILD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+      cd aws-sdk-cpp || exit
+      rm -rf build
+      mkdir build
+      cd build || exit
+      CRAY=${CRAY} DEBUG=${DEBUG} SHARED=${SHARED} MPI=${MPI} bash -x ../../runcmake.sh
+      if [[ $? != 0 ]]
+      then
+  	echo 1>&2 ${txtred}couldn\'t configure aws-sdk-cpp. exiting.${txtrst}
+  	exit 1
+      fi
+      make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
+      if [[ $? != 0 ]]
+      then
+  	echo 1>&2 ${txtred}couldn\'t build aws-sdk-cpp. exiting.${txtrst}
+  	exit 1
+      fi
+    fi
+  else
+    echo "${txtylw}+++ aws-sdk-cpp already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
+# =================== INSTALL CEREAL ===============
+if [ "$AWSSDK" == "YES" ] || [ "$FAODEL" == "YES" ]
+then
+  # Currently, the S3 and FAODEL backends require cereal.  If S3 or Faodel are enabled, we'll install cereal too.
+  if [ "$FORCE" == "YES" ] || [ "$FORCE_AWSSDK" == "YES" ] || [ "$FORCE_FAODEL" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
   then
     echo "${txtgrn}+++ Cereal${txtrst}"
     cd $ACCESS || exit
@@ -1143,20 +1196,20 @@ then
     if [ ! -d "${CEREAL_DIR}" ]; then
       mkdir ${CEREAL_DIR}
     fi
-    cd ${CEREAL} || exit
+    cd ${CEREAL_DIR} || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf cereal*
-      curl -O -L --insecure https://github.com/USCiLab/cereal/archive/v1.3.0.tar.gz
-      tar xzf v1.3.0.tar.gz
-      rm -f v1.3.0.tar.gz
-      cp -R cereal-1.3.0/include/cereal $INSTALL_PATH/include/
+      curl -O -L --insecure https://github.com/USCiLab/cereal/archive/v1.3.2.tar.gz
+      tar xzf v1.3.2.tar.gz
+      rm -f v1.3.2.tar.gz
     fi
 
     if [ "$BUILD" == "YES" ]
     then
       echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+      cp -R cereal-1.3.2/include/cereal $INSTALL_PATH/include/
     fi
   else
     echo "${txtylw}+++ Cereal already installed.  Skipping download and installation.${txtrst}"
