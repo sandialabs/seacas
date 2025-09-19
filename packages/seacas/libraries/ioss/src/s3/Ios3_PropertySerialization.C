@@ -53,60 +53,61 @@ namespace Ios3 {
                      const Ioss::GroupingEntity &entity,
                      PropertyFunction            op)
   {
-    int rc = 0;
+    int num_failed = 0;
+
     std::vector<std::string> description;
     entity.property_describe(&description);
     for (auto name : description)
-      rc += op(region, entity, entity.get_property(name));
+      num_failed += op(region, entity, entity.get_property(name));
 
-    return rc;
+    return num_failed;
   }
 
   int map_properties(const Ioss::Region &region,
                      PropertyFunction    op)
   {
-    int rc = 0;
+    int num_failed = 0;
 
-    rc += map_properties(region, region, op);
+    num_failed += map_properties(region, region, op);
 
     for (auto entity : region.get_edge_blocks())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_element_blocks())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_face_blocks())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_node_blocks())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_structured_blocks())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_edgesets())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_elementsets())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_facesets())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_nodesets())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto entity : region.get_commsets())
-      rc += map_properties(region, *entity, op);
+      num_failed += map_properties(region, *entity, op);
 
     for (auto sideset : region.get_sidesets()) {
-      rc += map_properties(region, *sideset, op);
+      num_failed += map_properties(region, *sideset, op);
       for (auto sideblock : sideset->get_side_blocks()) {
-        rc += map_properties(region, *sideblock, op);
+        num_failed += map_properties(region, *sideblock, op);
       }
     }
 
-    return rc;
+    return num_failed;
   }
 
   property_entry_t::property_entry_t(const Ioss::Property &property,

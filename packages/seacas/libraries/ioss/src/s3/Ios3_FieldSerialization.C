@@ -18,20 +18,20 @@ namespace Ios3 {
                  const Ioss::GroupingEntity &entity,
                  FieldFunction               op)
   {
-    int rc = 0;
+    int num_failed = 0;
 
     std::vector<std::string> description;
     entity.field_describe(&description);
     for (auto name : description)
-      rc += op(region, entity, entity.get_field(name));
+      num_failed += op(region, entity, entity.get_field(name));
 
-    return rc;
+    return num_failed;
   }
 
   int map_fields(const Ioss::Region &region,
                  FieldFunction       op)
   {
-    int rc = 0;
+    int num_failed = 0;
 
     std::vector<std::string> description;
     region.field_describe(&description);
@@ -43,33 +43,33 @@ namespace Ios3 {
     }
 
     for (auto entity : region.get_edge_blocks())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_element_blocks())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_face_blocks())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_node_blocks())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_edgesets())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_elementsets())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_facesets())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_nodesets())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
     for (auto entity : region.get_sidesets())
-      rc += map_fields(region, *entity, op);
+      num_failed += map_fields(region, *entity, op);
 
-    return rc;
+    return num_failed;
   }
 
   field_entry_t::field_entry_t(const Ioss::Field &field, const size_t start)
