@@ -77,7 +77,7 @@ script, or you can install them manually as detailed in
 | PARMETIS        | YES, NO | NO  | Should parmetis TPL be built (parallel decomposition). |
 | ADIOS2          | YES, NO | NO  | Should adios2 TPL be built. |
 | CATALYST2       | YES, NO | NO  | Should catalyst 2 TPL be built. |
-| AWSSDK          | YES, NO | NO  | Should AWS SDK for C++ TPL be built. |
+| AWSSDK          | YES, NO | NO  | Should AWS SDK for C++ TPL be built. See [README-S3.md](README-S3.md). |
 | CEREAL          | YES, NO | NO  | Should Cereal TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
