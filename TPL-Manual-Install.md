@@ -11,6 +11,8 @@ described in the previous section.
 *  [GNU Parallel](#gnu-parallel) -- optional
 *  [CGNS](#cgns) -- experimental optional
 *  [Faodel](#faodel) -- optional
+*  [AWS SDK for C++](#aws-sdk-cpp) -- optional
+*  [Cereal](#cereal) -- optional
 
 ## Zoltan
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
@@ -154,3 +156,72 @@ The IOSS library supports using CGNS for structured and unstructred meshes.  To 
 Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
 
 Faodel is available at [Faodel](https://github.com/faodel/faodel). And is built here as a SEACAS TPL.
+
+## AWS SDK for C++
+The AWS SDK for C++ is the official C++ interface to the entire Amazon
+Web Services ecosystem.  This includes packages for transferring data
+to and from S3 (Simple Storage Service) object stores.  For SEACAS,
+AWS support means adding a new backend to IOSS that stores mesh data
+in S3.
+
+The AWS SDK for C++ is available at
+[aws-sdk-cpp](https://github.com/aws/aws-sdk-cpp). And is built here
+as a SEACAS TPL.
+
+The AWS SDK for C++ is in multiple github repositories and composed
+using submodules.  Below is an example of building the tested version
+1.11.77.  Complete build instructions for the AWS SDK for C++ can be
+found here:
+https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/setup-linux.html
+
+
+*  Cloning from github.
+
+  * `cd TPL/aws-sdk-cpp`
+  
+  * `git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp`
+  
+  * `cd aws-sdk-cpp`
+  
+  * `git branch branch/tag-1.11.77 1.11.77`
+  
+  * `git checkout branch/tag-1.11.77`
+  
+  * `git submodule update --recursive`
+
+*  Build using CMake.
+
+  *  Modify `TPL/aws-sdk-cpp/runcmake.sh` to meet your environment
+
+  *  `mkdir build`
+
+  *  `cd build`
+
+  *  `../../runcmake.sh`
+
+  *  `make && make install`
+
+
+## Cereal
+cereal is a serialization library that transforms C++ objects into
+transportable representations that can be transferred between process
+spaces and storage.  For SEACAS, cereal support is required to store
+complex IOSS objects in Faodel and S3.  The Faodel and S3 database
+components require that cereal be installed.
+
+cereal is available at
+[cereal](https://github.com/USCiLab/cereal). And is built here as a
+SEACAS TPL.
+
+cereal is a header-only library so installation is as simple as
+copying the files to your install directory.
+
+  * `mkdir TPL/cereal`
+  
+  * `cd TPL/cereal`
+  
+  * `curl -O -L --insecure https://github.com/USCiLab/cereal/archive/v1.3.2.tar.gz`
+  
+  * `tar xzf v1.3.2.tar.gz`
+  
+  * `cp -R cereal-1.3.2/include/cereal $INSTALL_PATH/include/`

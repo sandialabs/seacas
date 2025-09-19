@@ -59,7 +59,10 @@ void IOShell::Interface::enroll_options()
 #if defined(SEACAS_HAVE_FAODEL)
                   " faodel"
 #endif
-                  " null.\n\t\tIf not specified, guess from extension or exodus is the default.",
+#if defined(SEACAS_HAVE_S3)
+                  " s3"
+#endif
+                  "null.\n\t\tIf not specified, guess from extension or exodus is the default.",
                   "unknown");
   options_.enroll("compare", Ioss::GetLongOption::OptType::NoValue,
                   "Compare the contents of the INPUT and OUTPUT files.", nullptr);
