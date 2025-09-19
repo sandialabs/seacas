@@ -92,64 +92,64 @@ std::shared_ptr<HelperContext> createContext(const HelperParameters &params);
 
 void destroyContext(std::shared_ptr<HelperContext> context);
 
-int createBucket(std::shared_ptr<HelperContext> context,
-                 const std::string             &bucket);
+bool createBucket(std::shared_ptr<HelperContext> context,
+                  const std::string             &bucket);
 
-int waitBucket(std::shared_ptr<HelperContext> context,
-               const std::string             &bucket,
-               uint64_t                       wait_usec);
-
-int deleteBucket(std::shared_ptr<HelperContext> context,
-                 const std::string             &bucket);
-
-int listBuckets(std::shared_ptr<HelperContext> context,
-                std::vector<std::string>      &bucket_names);
-
-template<typename T, typename A>
-int putValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             const std::vector<T,A>        &value);
-
-template<typename T, typename A>
-int getValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             std::vector<T,A>              &value);
-
-int putValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             const std::string             &filename);
-
-int getValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             std::string                   &filename);
-
-int deleteValue(std::shared_ptr<HelperContext> context,
+bool waitBucket(std::shared_ptr<HelperContext> context,
                 const std::string             &bucket,
-                const std::string             &key);
+                uint64_t                       wait_usec);
 
-int listKeys(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             std::vector<std::string>      &keys);
+bool deleteBucket(std::shared_ptr<HelperContext> context,
+                  const std::string             &bucket);
 
-int listKeys(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key_prefix,
-             std::vector<std::string>      &keys);
+bool listBuckets(std::shared_ptr<HelperContext> context,
+                 std::vector<std::string>      &bucket_names);
 
-int putBucketPolicy(std::shared_ptr<HelperContext>  context,
-                    const std::string              &bucket,
-                    const std::string              &policy);
+template<typename T, typename A>
+bool putValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              const std::vector<T,A>        &value);
 
-int getBucketPolicy(std::shared_ptr<HelperContext>  context,
-                    const std::string              &bucket,
-                    std::string                    &policy);
+template<typename T, typename A>
+bool getValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              std::vector<T,A>              &value);
 
-int deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
-                       const std::string              &bucket);
+bool putValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              const std::string             &filename);
+
+bool getValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              std::string                   &filename);
+
+bool deleteValue(std::shared_ptr<HelperContext> context,
+                 const std::string             &bucket,
+                 const std::string             &key);
+
+bool listKeys(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              std::vector<std::string>      &keys);
+
+bool listKeys(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key_prefix,
+              std::vector<std::string>      &keys);
+
+bool putBucketPolicy(std::shared_ptr<HelperContext>  context,
+                     const std::string              &bucket,
+                     const std::string              &policy);
+
+bool getBucketPolicy(std::shared_ptr<HelperContext>  context,
+                     const std::string              &bucket,
+                     std::string                    &policy);
+
+bool deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
+                        const std::string              &bucket);
 
 }
 }

@@ -358,10 +358,10 @@ std::string cleanBucketName(const std::string &name)
   return valid;
 }
 
-int createBucket(std::shared_ptr<HelperContext> context,
-                 const std::string             &bucket)
+bool createBucket(std::shared_ptr<HelperContext> context,
+                  const std::string             &bucket)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -372,17 +372,17 @@ int createBucket(std::shared_ptr<HelperContext> context,
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: CreateBucket: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int waitBucket(std::shared_ptr<HelperContext> context,
-               const std::string             &bucket,
-               uint64_t                       wait_usec)
+bool waitBucket(std::shared_ptr<HelperContext> context,
+                const std::string             &bucket,
+                uint64_t                       wait_usec)
 {
-  int rc=1;
+  bool success=false;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -394,19 +394,19 @@ int waitBucket(std::shared_ptr<HelperContext> context,
     headBucketRequest.SetBucket(clean_bucket_name);
     Aws::S3::Model::HeadBucketOutcome headBucketOutcome = context->client->HeadBucket(headBucketRequest);
     if (headBucketOutcome.IsSuccess()) {
-      rc=0;
+      success=true;
       break;
     }
     std::this_thread::sleep_for(std::chrono::nanoseconds(per_sleep_nsec));
   }
 
-  return rc;
+  return success;
 }
 
-int deleteBucket(std::shared_ptr<HelperContext>  context,
-                 const std::string              &bucket)
+bool deleteBucket(std::shared_ptr<HelperContext>  context,
+                  const std::string              &bucket)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -417,16 +417,16 @@ int deleteBucket(std::shared_ptr<HelperContext>  context,
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: DeleteBucket: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int listBuckets(std::shared_ptr<HelperContext> context,
-                std::vector<std::string>      &bucket_names)
+bool listBuckets(std::shared_ptr<HelperContext> context,
+                 std::vector<std::string>      &bucket_names)
 {
-  int rc=0;
+  bool success=true;
 
   auto outcome = context->client->ListBuckets();
   if (outcome.IsSuccess()) {
@@ -438,19 +438,19 @@ int listBuckets(std::shared_ptr<HelperContext> context,
   else {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: ListBuckets: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
 template<typename T, typename A>
-int putValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             const std::vector<T,A>        &value)
+bool putValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              const std::vector<T,A>        &value)
 {
-  int rc=0;
+  bool success=true;
 
   // PreallocatedStreamBuf doesn't have a read-only behavior, so the underlying data can't be const.
   std::vector<T,A>* vec = const_cast<std::vector<T,A>*>(&value);
@@ -469,12 +469,11 @@ int putValue(std::shared_ptr<HelperContext> context,
     std::shared_ptr<Aws::Transfer::TransferHandle> uploadHandle =
       context->transfer_manager->UploadFile(input_stream, clean_bucket_name, key, "binary/octet-stream", Aws::Map<Aws::String, Aws::String>());
     uploadHandle->WaitUntilFinished();
-    bool success = uploadHandle->GetStatus() == Aws::Transfer::TransferStatus::COMPLETED;
 
-    if (!success) {
+    if (uploadHandle->GetStatus() != Aws::Transfer::TransferStatus::COMPLETED) {
       auto err = uploadHandle->GetLastError();
       fmt::print(stderr, "Error: TransferManager::UploadFile: {}: {}", err.GetExceptionName(), err.GetMessage());
-      rc=1;
+      success=false;
     }
   } else {
     Aws::S3::Model::PutObjectRequest request;
@@ -488,20 +487,20 @@ int putValue(std::shared_ptr<HelperContext> context,
     if (!outcome.IsSuccess()) {
       auto err = outcome.GetError();
       fmt::print(stderr, "Error: PutObject: {}: {}", err.GetExceptionName(), err.GetMessage());
-      rc=1;
+      success=false;
     }
   }
 
-  return rc;
+  return success;
 }
 
 template<typename T, typename A>
-int getValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             std::vector<T,A>              &value)
+bool getValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              std::vector<T,A>              &value)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -528,18 +527,18 @@ int getValue(std::shared_ptr<HelperContext> context,
   else {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: GetObject: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int putValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             const std::string             &filename)
+bool putValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              const std::string             &filename)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -553,28 +552,27 @@ int putValue(std::shared_ptr<HelperContext> context,
     std::shared_ptr<Aws::Transfer::TransferHandle> uploadHandle =
       context->transfer_manager->UploadFile(filename, clean_bucket_name, key, "binary/octet-stream", Aws::Map<Aws::String, Aws::String>());
     uploadHandle->WaitUntilFinished();
-    bool success = uploadHandle->GetStatus() == Aws::Transfer::TransferStatus::COMPLETED;
 
-    if (!success) {
+    if (uploadHandle->GetStatus() != Aws::Transfer::TransferStatus::COMPLETED) {
       auto err = uploadHandle->GetLastError();
       fmt::print(stderr, "Error: TransferManager::UploadFile: {}: {}", err.GetExceptionName(), err.GetMessage());
-      rc=1;
+      success=false;
     }
   }
   else {
     fmt::print(stderr, "Error: PutValue: Putting from a file only works with the transfer manager.");
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int getValue(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key,
-             std::string                   &filename)
+bool getValue(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key,
+              std::string                   &filename)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -602,17 +600,17 @@ int getValue(std::shared_ptr<HelperContext> context,
   else {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: GetObject: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int deleteValue(std::shared_ptr<HelperContext> context,
-                const std::string             &bucket,
-                const std::string             &key)
+bool deleteValue(std::shared_ptr<HelperContext> context,
+                 const std::string             &bucket,
+                 const std::string             &key)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -624,17 +622,17 @@ int deleteValue(std::shared_ptr<HelperContext> context,
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: DeleteObject: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int listKeys(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             std::vector<std::string>      &keys)
+bool listKeys(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              std::vector<std::string>      &keys)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -650,18 +648,18 @@ int listKeys(std::shared_ptr<HelperContext> context,
   else {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: ListObjects: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int listKeys(std::shared_ptr<HelperContext> context,
-             const std::string             &bucket,
-             const std::string             &key_prefix,
-             std::vector<std::string>      &keys)
+bool listKeys(std::shared_ptr<HelperContext> context,
+              const std::string             &bucket,
+              const std::string             &key_prefix,
+              std::vector<std::string>      &keys)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -678,17 +676,17 @@ int listKeys(std::shared_ptr<HelperContext> context,
   else {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: ListObjects: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int putBucketPolicy(std::shared_ptr<HelperContext>  context,
-                    const std::string              &bucket,
-                    const std::string              &policy)
+bool putBucketPolicy(std::shared_ptr<HelperContext>  context,
+                     const std::string              &bucket,
+                     const std::string              &policy)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -703,17 +701,17 @@ int putBucketPolicy(std::shared_ptr<HelperContext>  context,
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: PutBucketPolicy: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int getBucketPolicy(std::shared_ptr<HelperContext>  context,
-                    const std::string              &bucket,
-                    std::string                    &policy)
+bool getBucketPolicy(std::shared_ptr<HelperContext>  context,
+                     const std::string              &bucket,
+                     std::string                    &policy)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -727,16 +725,16 @@ int getBucketPolicy(std::shared_ptr<HelperContext>  context,
   else {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: GetBucketPolicy: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
-int deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
-                       const std::string              &bucket)
+bool deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
+                        const std::string              &bucket)
 {
-  int rc=0;
+  bool success=true;
 
   std::string clean_bucket_name = cleanBucketName(bucket);
 
@@ -747,10 +745,10 @@ int deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
   if (!outcome.IsSuccess()) {
     auto err = outcome.GetError();
     fmt::print(stderr, "Error: DeleteBucketPolicy: {}: {}", err.GetExceptionName(), err.GetMessage());
-    rc=1;
+    success=false;
   }
 
-  return rc;
+  return success;
 }
 
 
@@ -759,28 +757,28 @@ int deleteBucketPolicy(std::shared_ptr<HelperContext>  context,
  */
 
 template
-int putValue(
+bool putValue(
   std::shared_ptr<HelperContext>                    context,
   const std::string                                &bucket,
   const std::string                                &key,
   const std::vector<unsigned char,
                     std::allocator<unsigned char>> &value);
 template
-int putValue(
+bool putValue(
   std::shared_ptr<HelperContext>           context,
   const std::string                        &bucket,
   const std::string                        &key,
   const UninitializedVector<unsigned char> &value);
 
 template
-int getValue(
+bool getValue(
   std::shared_ptr<HelperContext>              context,
   const std::string                          &bucket,
   const std::string                          &key,
   std::vector<unsigned char,
               std::allocator<unsigned char>> &value);
 template
-int getValue(
+bool getValue(
   std::shared_ptr<HelperContext>      context,
   const std::string                  &bucket,
   const std::string                  &key,
