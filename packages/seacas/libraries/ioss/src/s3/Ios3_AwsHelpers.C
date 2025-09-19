@@ -122,47 +122,47 @@ static Aws::SDKOptions options;
 void getPropertiesFromEnvVars(Ioss::PropertyManager &properties,
                               const Ioss::ParallelUtils &utils)
 {
-  std::string value;
-  if (utils.get_environment(env_name_endpoint, value, utils.parallel_size() > 1)) {
-    properties.add(Ioss::Property(prop_name_endpoint, value));
+  std::string env_value;
+  if (utils.get_environment(env_name_endpoint, env_value, utils.parallel_size() > 1)) {
+    properties.add(Ioss::Property(prop_name_endpoint, env_value));
   }
-  if (utils.get_environment(env_name_profile, value, utils.parallel_size() > 1)) {
-    properties.add(Ioss::Property(prop_name_profile, value));
+  if (utils.get_environment(env_name_profile, env_value, utils.parallel_size() > 1)) {
+    properties.add(Ioss::Property(prop_name_profile, env_value));
   }
-  if (utils.get_environment(env_name_ca_file, value, utils.parallel_size() > 1)) {
-    properties.add(Ioss::Property(prop_name_ca_file, value));
+  if (utils.get_environment(env_name_ca_file, env_value, utils.parallel_size() > 1)) {
+    properties.add(Ioss::Property(prop_name_ca_file, env_value));
   }
-  if (utils.get_environment(env_name_use_ca_file, value, utils.parallel_size() > 1)) {
-    bool bool_value = false;
-    std::string up_value = Ioss::Utils::uppercase(value);
-    if (up_value == "1" || up_value == "TRUE" || up_value == "YES" || up_value == "ON") {
-      bool_value = true;
+  if (utils.get_environment(env_name_use_ca_file, env_value, utils.parallel_size() > 1)) {
+    int prop_value = 0;
+    std::string up_env_value = Ioss::Utils::uppercase(env_value);
+    if (up_env_value == "1" || up_env_value == "TRUE" || up_env_value == "YES" || up_env_value == "ON") {
+      prop_value = 1;
     }
-    properties.add(Ioss::Property(prop_name_use_ca_file, bool_value));
+    properties.add(Ioss::Property(prop_name_use_ca_file, prop_value));
   }
-  if (utils.get_environment(env_name_use_transfer_manager, value, utils.parallel_size() > 1)) {
-    bool bool_value = false;
-    std::string up_value = Ioss::Utils::uppercase(value);
-    if (up_value == "1" || up_value == "TRUE" || up_value == "YES" || up_value == "ON") {
-      bool_value = true;
+  if (utils.get_environment(env_name_use_transfer_manager, env_value, utils.parallel_size() > 1)) {
+    int prop_value = 0;
+    std::string up_env_value = Ioss::Utils::uppercase(env_value);
+    if (up_env_value == "1" || up_env_value == "TRUE" || up_env_value == "YES" || up_env_value == "ON") {
+      prop_value = 1;
     }
-    properties.add(Ioss::Property(prop_name_use_transfer_manager, bool_value));
+    properties.add(Ioss::Property(prop_name_use_transfer_manager, prop_value));
   }
-  if (utils.get_environment(env_name_enable_aws_tracing, value, utils.parallel_size() > 1)) {
-    bool bool_value = false;
-    std::string up_value = Ioss::Utils::uppercase(value);
-    if (up_value == "1" || up_value == "TRUE" || up_value == "YES" || up_value == "ON") {
-      bool_value = true;
+  if (utils.get_environment(env_name_enable_aws_tracing, env_value, utils.parallel_size() > 1)) {
+    int prop_value = 0;
+    std::string up_env_value = Ioss::Utils::uppercase(env_value);
+    if (up_env_value == "1" || up_env_value == "TRUE" || up_env_value == "YES" || up_env_value == "ON") {
+      prop_value = 1;
     }
-    properties.add(Ioss::Property(prop_name_enable_aws_tracing, bool_value));
+    properties.add(Ioss::Property(prop_name_enable_aws_tracing, prop_value));
   }
-  if (utils.get_environment(env_name_disable_ec2_lookup, value, utils.parallel_size() > 1)) {
-    bool bool_value = true;
-    std::string up_value = Ioss::Utils::uppercase(value);
-    if (up_value == "0" || up_value == "FALSE" || up_value == "NO" || up_value == "OFF") {
-      bool_value = false;
+  if (utils.get_environment(env_name_disable_ec2_lookup, env_value, utils.parallel_size() > 1)) {
+    int prop_value = 1;
+    std::string up_env_value = Ioss::Utils::uppercase(env_value);
+    if (up_env_value != "1" && up_env_value != "TRUE" && up_env_value != "YES" && up_env_value != "ON") {
+      prop_value = 0;
     }
-    properties.add(Ioss::Property(prop_name_disable_ec2_lookup, bool_value));
+    properties.add(Ioss::Property(prop_name_disable_ec2_lookup, prop_value));
   }
 }
 
@@ -179,16 +179,16 @@ void getParamsFromProperties(Ioss::PropertyManager &properties,
     params.ca_file = properties.get(prop_name_ca_file).get_string();
   }
   if (properties.exists(prop_name_use_ca_file)) {
-    params.use_ca_file = true;
+    params.use_ca_file = (1 == properties.get(prop_name_use_ca_file).get_int());
   }
   if (properties.exists(prop_name_use_transfer_manager)) {
-    params.use_transfer_manager = true;
+    params.use_transfer_manager = (1 == properties.get(prop_name_use_transfer_manager).get_int());
   }
   if (properties.exists(prop_name_enable_aws_tracing)) {
-    params.enable_aws_tracing = true;
+    params.enable_aws_tracing = (1 == properties.get(prop_name_enable_aws_tracing).get_int());
   }
   if (properties.exists(prop_name_disable_ec2_lookup)) {
-    params.disable_ec2_lookup = true;
+    params.disable_ec2_lookup = (1 == properties.get(prop_name_disable_ec2_lookup).get_int());
   }
 }
 
