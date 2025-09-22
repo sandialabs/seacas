@@ -111,7 +111,7 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  IGNORE_ATTRIBUTE_NAMES   | on/[off] | Do not read the attribute names that may exist on an input database. Instead for an element block with N attributes, the fields will be named `attribute_1` ... `attribute_N`
  SURFACE_SPLIT_TYPE       | {type} | Specify how to split sidesets into homogeneous sideblocks. Either an integer or string: 1 or `TOPOLOGY`, 2 or `BLOCK`, 3 or `NO_SPLIT`.  Default is `TOPOLOGY` if not specified.
  DUPLICATE_FIELD_NAME_BEHAVIOR | {behavior} | Determine how to handle duplicate incompatible fields on a database.  Valid values are `IGNORE`, `WARNING`, or `ERROR` (default).  An incompatible field is two or more fields with the same name, but different sizes or roles or types.
-
+ OUTPUT_FIELD_METADATA    | on/[off] | Should the enhanced field metadata attributes be used for output.
 ## Output Database-Related Properties
  Property        | Value  | Description
 -----------------|:------:|-----------------------------------------------------------
