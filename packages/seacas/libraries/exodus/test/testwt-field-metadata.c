@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright(C) 2022, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
@@ -265,7 +265,7 @@ int main(int argc, char **argv)
                              blocks[k].num_entry, var_vals));
         }
         free(var_vals);
-	var_idx_off += num_block_vars[k];
+        var_idx_off += num_block_vars[k];
       }
     }
   }
