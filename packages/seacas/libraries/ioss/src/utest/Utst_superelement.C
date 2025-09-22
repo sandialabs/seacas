@@ -16,7 +16,7 @@
 #include "Ioss_ConcreteVariableType.h"
 #include "exodus/Ioex_SuperElement.h"
 #include <cassert>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "Ioss_Field.h"
 #include "Ioss_Property.h"

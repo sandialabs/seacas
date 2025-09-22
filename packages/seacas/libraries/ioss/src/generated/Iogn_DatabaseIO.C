@@ -12,7 +12,7 @@
 #include <cassert>                        // for assert
 #include <cmath>                          // for sqrt
 #include <fmt/format.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string> // for string, operator==, etc
 
 #include "Ioss_CommSet.h"         // for CommSet

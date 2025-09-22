@@ -10,7 +10,7 @@
 #include "Ioss_CodeTypes.h" // for Int64Vector, IntVector
 #include <cassert>          // for assert
 #include <fmt/ostream.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string> // for string, operator==, etc
 #include <vector>
 

@@ -11,7 +11,7 @@
 #include <cassert>
 #include <cmath>
 #include <iosfwd>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <vector>
 

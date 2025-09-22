@@ -8,7 +8,7 @@
 
 #include <fmt/format.h>
 #include <ostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 
 #include "Ionit_Initializer.h"

@@ -37,7 +37,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <stdint.h>
-#include <stdlib.h>
+#include <cstdlib>
 #if !defined __NVCC__
 #include <fmt/color.h>
 #endif

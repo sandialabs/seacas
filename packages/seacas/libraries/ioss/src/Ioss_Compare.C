@@ -9,7 +9,7 @@
 #include <fmt/ostream.h>
 #include <iosfwd>
 #include <stdint.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <vector>
 

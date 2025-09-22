@@ -14,7 +14,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <iostream> // for ostringstream
-#include <stdlib.h>
+#include <cstdlib>
 #include <string> // for string, operator==, etc
 #include <vector>
 

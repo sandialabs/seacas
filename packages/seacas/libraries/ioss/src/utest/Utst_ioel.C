@@ -18,7 +18,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <vector>
 

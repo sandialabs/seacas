@@ -11,7 +11,7 @@
 #include <cstring>
 #include <fmt/ostream.h>
 #include <ostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <tokenize.h>
 #include <vector>

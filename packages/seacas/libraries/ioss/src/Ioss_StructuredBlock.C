@@ -19,7 +19,7 @@
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string> // for string
 #include <vector> // for vector
 

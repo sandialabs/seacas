@@ -18,7 +18,7 @@
 #include <iostream>
 #include <ostream>
 #include <stddef.h> // for size_t
-#include <stdlib.h> // for rand, srand, RAND_MAX
+#include <cstdlib> // for rand, srand, RAND_MAX
 #include <string>
 #include <vector>
 
