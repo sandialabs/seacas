@@ -72,6 +72,7 @@ SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   Matio           "cmake/TPLs/"    SS
   CUDA            "cmake/TPLs/"    SS
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
+  AWSSDK          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
   Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
   Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
   ADIOS2          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  EX

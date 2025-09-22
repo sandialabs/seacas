@@ -75,6 +75,8 @@ KOKKOS_PATH=${KOKKOS_PATH:-${INSTALL_PATH}}
 METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
 PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
 FMT_PATH=${FMT_PATH:-${INSTALL_PATH}}
+AWSSDK_PATH=${AWSSDK_PATH:-${INSTALL_PATH}}
+CEREAL_PATH=${CEREAL_PATH:-${INSTALL_PATH}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
@@ -330,6 +332,8 @@ HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
 HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
 HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
 HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
+HAVE_AWSSDK=$(check_enable "${AWSSDK_PATH}/include/aws/core/Aws.h")
+HAVE_CEREAL=$(check_enable "${CEREAL_PATH}/include/cereal/cereal.hpp")
 HAVE_CATALYST2=$(check_enable "${CATALYST2_PATH}/include/catalyst-2.0/catalyst.h")
 HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
 HAVE_CATCH2=$(check_enable "${CATCH2_PATH}/include/catch2/catch_all.hpp")
@@ -397,6 +401,16 @@ then
                     -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
                     -DTPL_Kokkos_INCLUDE_DIRS:PATH=${KOKKOS_PATH}/include \
                     -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkoscore.${LD_EXT}"
+fi
+
+if [ "$HAVE_AWSSDK" == "YES" ] && [ "$HAVE_CEREAL" == "YES" ]
+then
+  AWSSDK_SYMBOLS=" -D TPL_ENABLE_AWSSDK:BOOL=${HAVE_AWSSDK}   \
+    -D AWSSDK_ROOT:PATH=${AWSSDK_PATH} \
+    "
+  CEREAL_SYMBOLS=" -D TPL_ENABLE_Cereal:BOOL=${HAVE_CEREAL}   \
+    -D Cereal_INCLUDE_DIRS:PATH=${CEREAL_PATH}/include \
+    "
 fi
 
 if [ "$HAVE_FAODEL" == "YES" ]
@@ -547,6 +561,8 @@ ${MPI_SYMBOLS} \
 ${DARWIN_OPT} \
 ${FAODEL_SYMBOLS} \
 ${ADIOS2_SYMBOLS} \
+${AWSSDK_SYMBOLS} \
+${CEREAL_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
@@ -589,6 +605,9 @@ echo "  CATALYST2: ${HAVE_CATALYST2}"
 echo "      METIS: ${HAVE_METIS}"
 echo "   PARMETIS: ${HAVE_PARMETIS}"
 echo "     FAODEL: ${HAVE_FAODEL}"
+echo "     AWSSDK: ${HAVE_AWSSDK}"
+echo "AWSSDK_PATH: ${AWSSDK_PATH}"
+echo "CEREAL_PATH: ${CEREAL_PATH}"
 echo "      GTEST: ${HAVE_GTEST}"
 echo "     CATCH2: ${HAVE_CATCH2}"
 echo "    DOXYGEN: ${DOXYGEN}"
