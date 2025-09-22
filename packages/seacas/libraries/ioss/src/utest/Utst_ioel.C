@@ -16,9 +16,9 @@
 
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <cstdlib>
 #include <fmt/ostream.h>
 #include <stdio.h>
-#include <cstdlib>
 #include <string>
 #include <vector>
 

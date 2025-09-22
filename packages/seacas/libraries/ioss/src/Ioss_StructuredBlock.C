@@ -15,11 +15,11 @@
 #include "Ioss_StructuredBlock.h"
 #include <cmath>
 #include <cstddef> // for size_t
+#include <cstdlib>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 #include <iostream>
-#include <cstdlib>
 #include <string> // for string
 #include <vector> // for vector
 

@@ -11,8 +11,8 @@
 #include "generated/Iogn_GeneratedMesh.h" // for GeneratedMesh
 #include <cassert>                        // for assert
 #include <cmath>                          // for sqrt
-#include <fmt/format.h>
 #include <cstdlib>
+#include <fmt/format.h>
 #include <string> // for string, operator==, etc
 
 #include "Ioss_CommSet.h"         // for CommSet

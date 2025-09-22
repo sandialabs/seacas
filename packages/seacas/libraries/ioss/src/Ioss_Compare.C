@@ -6,10 +6,10 @@
 
 #include <assert.h>
 #include <cmath>
+#include <cstdlib>
 #include <fmt/ostream.h>
 #include <iosfwd>
 #include <stdint.h>
-#include <cstdlib>
 #include <string>
 #include <vector>
 
