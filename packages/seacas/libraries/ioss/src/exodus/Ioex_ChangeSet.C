@@ -9,8 +9,8 @@
 
 #include "Ioss_CodeTypes.h" // for Int64Vector, IntVector
 #include <cassert>          // for assert
-#include <fmt/ostream.h>
 #include <cstdlib>
+#include <fmt/ostream.h>
 #include <string> // for string, operator==, etc
 #include <vector>
 

@@ -8,10 +8,10 @@
 #include "Ioss_FileInfo.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Utils.h"
+#include <cstdlib>
 #include <cstring>
 #include <fmt/ostream.h>
 #include <ostream>
-#include <cstdlib>
 #include <string>
 #include <tokenize.h>
 #include <vector>

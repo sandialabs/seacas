@@ -15,10 +15,10 @@
 #include "adios/Ioad_TemplateToValue.h"
 
 #include <algorithm>
+#include <cstdlib> // for rand, srand, RAND_MAX
 #include <iostream>
 #include <ostream>
 #include <stddef.h> // for size_t
-#include <cstdlib> // for rand, srand, RAND_MAX
 #include <string>
 #include <vector>
 

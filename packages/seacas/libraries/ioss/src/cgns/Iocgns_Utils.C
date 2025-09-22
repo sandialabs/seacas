@@ -34,10 +34,10 @@
 #include "Ioss_Wedge18.h"
 #include "Ioss_Wedge6.h"
 #include <assert.h>
+#include <cstdlib>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <stdint.h>
-#include <cstdlib>
 #if !defined __NVCC__
 #include <fmt/color.h>
 #endif
