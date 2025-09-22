@@ -39,6 +39,9 @@
 #include "Ioss_State.h"
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_VariableType.h"
+#if IOSS_DEBUG_OUTPUT
+#include "Ioss_use_fmt.h"
+#endif
 
 namespace {
 

@@ -62,6 +62,10 @@
 #include "exodus/Ioex_BaseDatabaseIO.h"
 #include "exodus/Ioex_Internals.h"
 
+#if IOSS_DEBUG_OUTPUT
+#include "Ioss_use_fmt.h"
+#endif
+
 // ========================================================================
 // Static internal helper functions
 // ========================================================================
