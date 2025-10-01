@@ -119,10 +119,11 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  RETAIN_EMPTY_BLOCKS | on/[off] | If an element block is completely empty (on all ranks) should it be written to the output database.
  VARIABLE_NAME_CASE | upper/lower | Should all output field names be converted to uppercase or lowercase. Default is leave as is.
  FILE_TYPE             | [netcdf], netcdf4, netcdf-4, hdf5 | Underlying file type (bits on disk format)
- COMPRESSION_METHOD    | [zlib], szip | The compression method to use.  `szip` only available if HDF5 is built with that supported.
+ COMPRESSION_METHOD    | [zlib], szip, zstd, bzip2 | The compression method to use.  `szip`, `zstd`, and `bzip2` only available if HDF5 is built with that supported.
  COMPRESSION_LEVEL     | [0]-9    | If zlib: In the range [0..9]. A value of 0 indicates no compression, will automatically set `file_type=netcdf4`, recommend <=4
  COMPRESSION_LEVEL     | 4-32 | If szip: An even number in the range 4-32, will automatically set `file_type=netcdf4`.
  COMPRESSION_SHUFFLE   | on/[off] |to enable/disable hdf5's shuffle compression algorithm.
+ COMPRESSION_QUANTIZE_NSD | 1-15 | Use the lossy quantize compression method.  Value specifies number of digits to retain. [exodus only])
  MAXIMUM_NAME_LENGTH   | [32]     | Maximum length of names that will be returned/passed via api call.
  APPEND_OUTPUT         | on/[off] | Append output to end of existing output database
  APPEND_OUTPUT_AFTER_STEP | {step}| Max step to read from an input db or a db being appended to (typically used with APPEND_OUTPUT)
@@ -208,6 +209,10 @@ MEMORY_WRITE       | on/[off]   | experimental. Open and read a file into memory
 ENABLE_FILE_GROUPS | on/[off]   | experimental.  Opens database in netcdf-4 non-classic mode which is what is required to support groups at netCDF level.
 MINIMAL_NEMESIS_INFO | on/[off] | special case, omit all nemesis data except for nodal communication map
 OMIT_EXODUS_NUM_MAPS | on/[off] | special case, do not output the node and element numbering map.
+IGNORE_NODE_MAP | [on/[off] | do not read the node map from the input database
+IGNORE_EDGE_MAP | [on/[off] | do not read the edge map from the input database
+IGNORE_FACE_MAP | [on/[off] | do not read the face map from the input database
+IGNORE_ELEM_MAP | [on/[off] | do not read the element map from the input database
 EXODUS_CALL_GET_ALL_TIMES| [on] / off | special case -- should the `ex_get_all_times()` function be called.  See below.
 
 * `EXODUS_CALL_GET_ALL_TIMES`: Typically only used in `isSerialParallel`
@@ -233,7 +238,7 @@ throughout the file.
  IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create/flush
  CHECK_PARALLEL_CONSISTENCY | on/[off] | check Ioss::GroupingEntity parallel consistency
  TIME_STATE_INPUT_OUTPUT | on/[off] | show the elapsed time for reading/writing each timestep's data
-
+ NAN_DETECTION | on/[off] | 
 ## Setting properties via an environment variable
 
 Although the properties are usually accessed internally in the
