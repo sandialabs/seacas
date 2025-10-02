@@ -375,7 +375,7 @@ C *** GENESIS Print Commands ***
           if (FFMATC (IFLD, INTYP, CFIELD, 'NSET', 4) .OR.
      *      FFMATC (IFLD, INTYP, CFIELD, 'NODESET', 7)) THEN
             CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &        'nodal point set ID',
+     &        'nodal point set',
      &        NUMNPS, IDNPS, LISNPS(0), LISNPS(1), NSNAME, *270)
             if (lisnps(0) .gt. 0) then
               call selset(lisnp(0), lisnp(1),
@@ -386,7 +386,7 @@ C *** GENESIS Print Commands ***
           else if (FFMATC (IFLD, INTYP, CFIELD, 'SSET', 4) .OR.
      *      FFMATC (IFLD, INTYP, CFIELD, 'SIDESET', 7)) THEN
             CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &        'side set ID',
+     &        'side set',
      &        NUMESS, IDESS, LISESS(0), LISESS(1), SSNAME, *270)
             if (lisess(0) .gt. 0) then
                CALL MDRSRV ('SCR',    KSCR,  NUMNP)
@@ -403,7 +403,7 @@ C *** GENESIS Print Commands ***
             IF (NERR .GT. 0) GOTO 280
 
             CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &           'element block ID',
+     &           'element block',
      &           NELBLK, IDELB, IA(KLELB), IA(KLELB+1), EBNAME, *205)
  205        continue
             if (IA(KLELB) .gt. 0) then
@@ -441,7 +441,7 @@ C *** GENESIS Print Commands ***
           if (FFMATC (IFLD, INTYP, CFIELD, 'SSET', 4) .OR.
      *      FFMATC (IFLD, INTYP, CFIELD, 'SIDESET', 7)) THEN
             CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &        'side set ID',
+     &        'side set',
      &        NUMESS, IDESS, LISESS(0), LISESS(1), SSNAME, *270)
             if (lisess(0) .gt. 0) then
               call selset(IA(KLEL), IA(KLEL+1),
@@ -476,7 +476,7 @@ C *** GENESIS Print Commands ***
           IF (NERR .GT. 0) GOTO 280
 
           CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &         'element block ID',
+     &         'element block',
      &         NELBLK, IDELB, IA(KLELB), IA(KLELB+1), EBNAME, *220)
  220      CONTINUE
           CALL DBSELB (NELBLK, NUMEL, LENE, IA(KLELB),
@@ -490,7 +490,7 @@ C *** GENESIS Print Commands ***
           CALL CKNONE (NUMNPS, .FALSE., 'nodal point sets', *270)
 
           CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &         'nodal point set ID',
+     &         'nodal point set',
      &         NUMNPS, IDNPS, LISNPS(0), LISNPS(1), NSNAME, *270)
 
         ELSE IF (LISTYP .EQ. 'SSETS') THEN
@@ -499,7 +499,7 @@ C *** GENESIS Print Commands ***
           CALL CKNONE (NUMESS, .FALSE., 'element side sets', *270)
 
           CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
-     &         'element side set ID',
+     &         'element side set',
      &         NUMESS, IDESS, LISESS(0), LISESS(1), SSNAME, *270)
 
 C *** EXODUS Movement Commands ***

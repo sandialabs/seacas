@@ -83,10 +83,17 @@ C      --Reset to none selected unless ADD
                      goto 208
                   end if
                end do
-               call prterr('CMDERR',
-     $              'Could not find ' // SELMSG // ' ' // WORD)
+               ERRMSG = SELMSG // ' "' // WORD //
+     $              '" does not exist, ignored'
+               call sqzstr(errmsg, lstr)
+               call prterr('CMDERR', errmsg(:lstr))
                goto 110
  208           continue
+               IF (NUMSEL .GE. MAXSEL) THEN
+                  ERRMSG = 'Too many ' // SELMSG // 's selected'
+                  CALL PRTERR ('CMDERR', ERRMSG(:LENSTR(ERRMSG)))
+                  GOTO 120
+               END IF
                numsel = numsel + 1
                ixsel(numsel) = i
             ELSE
@@ -101,10 +108,9 @@ C         --Find and store the index of the ID
 
                IF (IX .LE. 0) THEN
                   CALL INTSTR (1, 0, ID, WORD, LSTR)
-                  ERRMSG = SELMSG // ' ' //
-     &                 WORD(:LSTR) // ' does not exist, ignored'
-                  CALL PRTERR ('CMDERR', word(:lstr))
-
+                  write (*,*) 'WORD: ', WORD(:LSTR), ID
+                  CALL PRTERR ('CMDERR', SELMSG // ' ' //
+     &                 WORD(:LSTR) // ' does not exist, ignored')
                ELSE IF (LOCINT (IX, NUMSEL, IXSEL) .LE. 0) THEN
                   CALL FFADDI (ID, INLINE)
                   IF (NUMSEL .GE. MAXSEL) THEN
