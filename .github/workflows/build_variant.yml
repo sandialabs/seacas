@@ -439,7 +439,7 @@ jobs:
         run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
       - name: install additional TPL
-        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_faodel == 'YES' || matrix.config.use_catalyst == 'YES' || matrix.config.use_metis == 'YES' || atrix.config.aws == 'YES'}}
+        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_faodel == 'YES' || matrix.config.use_catalyst == 'YES' || matrix.config.use_metis == 'YES' || matrix.config.aws == 'YES'}}
         run: |
           set -x
           COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} FAODEL=${{ matrix.config.use_faodel }} METIS=${{ matrix.config.use_metis }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} AWSSDK=${{ matrix.config.aws }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
