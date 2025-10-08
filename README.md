@@ -11,6 +11,7 @@
 [![Github Actions -- CI Static](https://github.com/sandialabs/seacas/actions/workflows/build_static.yml/badge.svg)](https://github.com/sandialabs/seacas)
 [![Github Actions -- CI External Lib](https://github.com/sandialabs/seacas/actions/workflows/build_external_lib.yml/badge.svg)](https://github.com/sandialabs/seacas)
 [![Github Actions -- CI Spack](https://github.com/sandialabs/seacas/actions/workflows/spack.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI AWSSDK](https://github.com/sandialabs/seacas/actions/workflows/build_aws.yml/badge.svg)](https://github.com/sandialabs/seacas)
 
 *  [Get the sources](#get-the-sources)
 *  [Build instructions](#build-instructions)
