@@ -1,4 +1,4 @@
-name: Build and run SEACAS tests
+name: Build AWSSDK
 
 on:
   push:
