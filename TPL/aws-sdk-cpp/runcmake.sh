@@ -22,18 +22,6 @@ else
     SHARED="${SHARED:-YES}"
 fi
 
-if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-then
-  OS=$(uname -s)
-  if [ "$OS" = "Darwin" ] ; then
-    LD_EXT="dylib"
-  else
-    LD_EXT="so"
-  fi
-else
-  LD_EXT="a"
-fi
-
 . ${ACCESS}/TPL/compiler.sh
 
 # If using an XLF compiler on an IBM system, may need to add the following:

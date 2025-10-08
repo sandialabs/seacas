@@ -85,7 +85,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -103,7 +102,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -121,7 +119,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
@@ -139,7 +136,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
@@ -157,7 +153,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "address" # address, integer, thread, memory, undefined
@@ -175,7 +170,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
@@ -193,7 +187,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "integer" # address, integer, thread, memory, undefined
@@ -211,7 +204,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "YES",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -229,7 +221,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "APPLICATIONS=NO LEGACY=NO",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -247,7 +238,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "YES",
             gtest: "YES",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -265,7 +255,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -283,7 +272,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "OMIT_DEPRECATED=YES",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -301,7 +289,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "YES",
-	    aws: "NO",
             extra: "MODERN=YES",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -319,7 +306,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "YES",
-	    aws: "NO",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -337,25 +323,6 @@ jobs:
             use_metis: "YES",
             use_catalyst2: "NO",
             gtest: "YES",
-	    aws: "NO",
-            extra: "",
-            extra_args: "",
-            sanitizer: "NO" # address, integer, thread, memory, undefined
-          }
-        - {
-            name: "AWSSDK enabled serial",
-            os: ubuntu-latest,
-            compiler: "clang",
-            debug: "NO",
-            threadsafe: "NO",
-            fortran: "YES",
-            use_kokkos: "NO",
-            use_adios2: "NO",
-            use_faodel: "NO",
-            use_metis: "NO",
-            use_catalyst2: "NO",
-            gtest: "NO",
-	    aws: "YES",
             extra: "",
             extra_args: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -373,7 +340,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "-DCMAKE_CXX_STANDARD:STRING=20",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -391,7 +357,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "-DCMAKE_CXX_STANDARD:STRING=20",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -409,7 +374,6 @@ jobs:
             use_metis: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
-	    aws: "NO",
             extra: "",
             extra_args: "-DCMAKE_CXX_STANDARD:STRING=20",
             sanitizer: "NO" # address, integer, thread, memory, undefined
@@ -439,10 +403,10 @@ jobs:
         run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
       - name: install additional TPL
-        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_faodel == 'YES' || matrix.config.use_catalyst == 'YES' || matrix.config.use_metis == 'YES' || matrix.config.aws == 'YES'}}
+        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_faodel == 'YES' || matrix.config.use_catalyst == 'YES' || matrix.config.use_metis == 'YES'}}
         run: |
           set -x
-          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} FAODEL=${{ matrix.config.use_faodel }} METIS=${{ matrix.config.use_metis }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} AWSSDK=${{ matrix.config.aws }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} FAODEL=${{ matrix.config.use_faodel }} METIS=${{ matrix.config.use_metis }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 ###
