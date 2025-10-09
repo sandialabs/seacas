@@ -12,11 +12,11 @@ C    See packages/seacas/LICENSE for details
 
       CALL GSUPEV(STRING)
       WRITE (*,'(A, A)') 'SUPES VERSION ', STRING
-      WRITE (*,*) 'Enter "END" to exit'
+      WRITE (*,*) 'Enter "EXIT" to exit'
    10 CALL FREFLD( 0,0,'AUTO',MFIELD,IOSTAT,NFIELD,KVALUE,
      *                   CVALUE,IVALUE,RVALUE )
       IF ( IOSTAT .EQ. 0 ) THEN
-         if (cvalue(1) .EQ. 'END') then
+         if (cvalue(1) .EQ. 'EXIT') then
             goto 20
          endif
          PRINT 1000,NFIELD
