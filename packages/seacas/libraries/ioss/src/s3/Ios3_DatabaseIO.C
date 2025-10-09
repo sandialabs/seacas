@@ -1624,7 +1624,6 @@ namespace Ios3 {
     return 0;
   }
 
-
   int64_t DatabaseIO::put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {

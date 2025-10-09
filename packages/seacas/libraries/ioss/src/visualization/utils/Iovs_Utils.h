@@ -94,11 +94,11 @@ namespace Iovs {
 #else
     const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY = "libcatalystioss.so";
 #endif
-    const char *CATALYST_PLUGIN_PYTHON_MODULE     = "PhactoriDriver.py";
-    const char *CATALYST_FILE_SUFFIX              = ".dummy.pv.catalyst.e";
-    const char *CATALYST_OUTPUT_DIRECTORY         = "CatalystOutput";
-    const char *CATALYST_INSTALL_LIB_DIR          = "/lib/";
-    const char *CATALYST_INSTALL_PHACTORI_DIR     = "/phactori/";
+    const char *CATALYST_PLUGIN_PYTHON_MODULE = "PhactoriDriver.py";
+    const char *CATALYST_FILE_SUFFIX          = ".dummy.pv.catalyst.e";
+    const char *CATALYST_OUTPUT_DIRECTORY     = "CatalystOutput";
+    const char *CATALYST_INSTALL_LIB_DIR      = "/lib/";
+    const char *CATALYST_INSTALL_PHACTORI_DIR = "/phactori/";
 #if 0
     // These are not used.  Commenting out to avoid compiler warnings
     const char *CATALYST_IOSS_CATALYST_PLUGIN_DIR = "/current_ioss_catalyst_plugin_version";
