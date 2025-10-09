@@ -115,7 +115,7 @@ namespace Ios3 {
   {
   }
 
-  PackedBytes pack_property(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
+  PackedBytes pack_property(const Ioss::Region &, const Ioss::GroupingEntity &,
                             const Ioss::Property &property)
   {
     property_entry_t property_entry(property);

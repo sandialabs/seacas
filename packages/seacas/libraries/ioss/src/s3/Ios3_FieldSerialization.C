@@ -75,7 +75,7 @@ namespace Ios3 {
   {
   }
 
-  PackedBytes pack_field(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
+  PackedBytes pack_field(const Ioss::Region &, const Ioss::GroupingEntity &entity,
                          const Ioss::Field &field)
   {
     field_entry_t field_entry(field);
@@ -101,8 +101,8 @@ namespace Ios3 {
     return v;
   }
 
-  PackedBytes pack_field(const Ioss::Region &r, const Ioss::GroupingEntity &e, const Ioss::Field &f,
-                         void *data, size_t data_size)
+  PackedBytes pack_field(const Ioss::Region &, const Ioss::GroupingEntity &, const Ioss::Field &f,
+                         void *data, size_t)
   {
     field_entry_t field_entry(f);
 

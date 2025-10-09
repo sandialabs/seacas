@@ -595,12 +595,10 @@ namespace Ios3 {
         constexpr int   max_read              = 16385;
         char            object_data[max_read] = {0};
         int64_t         contentLength         = outcome.GetResultWithOwnership().GetContentLength();
-        std::streamsize total_bytes_read      = 0;
         std::streamsize bytes_left            = contentLength;
 
         while (bytes_left > 0) {
           std::streamsize bytes_read = retrieved_obj_body.readsome(object_data, max_read);
-          total_bytes_read += bytes_read;
           bytes_left -= bytes_read;
           obj_ofs.write(object_data, bytes_read);
         }

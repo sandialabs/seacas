@@ -85,12 +85,10 @@ namespace Ios3 {
                                        void *data, size_t data_size) const override;
     virtual int64_t get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
                                        void *data, size_t data_size) const override;
-    virtual int64_t get_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
-                                       void *data, size_t data_size) const override;
-    virtual int64_t get_field_internal(const Ioss::Blob *bl, const Ioss::Field &field, void *data,
-                                       size_t data_size) const override;
     virtual int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                        void *data, size_t data_size) const override;
+    IOSS_NOOP_GFI(Ioss::Assembly)
+    IOSS_NOOP_GFI(Ioss::Blob)
 
     virtual int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
                                        void *data, size_t data_size) const override;
@@ -116,12 +114,10 @@ namespace Ios3 {
                                        void *data, size_t data_size) const override;
     virtual int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
                                        void *data, size_t data_size) const override;
-    virtual int64_t put_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
-                                       void *data, size_t data_size) const override;
-    virtual int64_t put_field_internal(const Ioss::Blob *bl, const Ioss::Field &field, void *data,
-                                       size_t data_size) const override;
     virtual int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                        void *data, size_t data_size) const override;
+    IOSS_NOOP_PFI(Ioss::Assembly)
+    IOSS_NOOP_PFI(Ioss::Blob)
 
   private:
     int64_t get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f, void *data,
@@ -169,8 +165,6 @@ namespace Ios3 {
     int elementBlockCount{0};
     int nodesetCount{0};
     int sidesetCount{0};
-    int commsetNodeCount{0};
-    int commsetElemCount{0};
 
     mutable Ioss::Map nodeMap;
 

@@ -1623,16 +1623,7 @@ namespace Ios3 {
     }
     return 0;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
-                                         void *data, size_t data_size) const
-  {
-    return 0;
-  }
-  int64_t DatabaseIO::get_field_internal(const Ioss::Blob *bl, const Ioss::Field &field, void *data,
-                                         size_t data_size) const
-  {
-    return 0;
-  }
+
 
   int64_t DatabaseIO::put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -1698,16 +1689,6 @@ namespace Ios3 {
                                          void *data, size_t data_size) const
   {
     return put_field_internal(*sb, field, data, data_size);
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
-                                         void *data, size_t data_size) const
-  {
-    return 0;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::Blob *bl, const Ioss::Field &field, void *data,
-                                         size_t data_size) const
-  {
-    return 0;
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f,

@@ -414,7 +414,7 @@ namespace Ios3 {
     return key_t(std::to_string(rank), value);
   }
 
-  key_t field_search_key(int rank, int state, const Ioss::Region &region,
+  key_t field_search_key(int rank, int state, const Ioss::Region &,
                          const Ioss::GroupingEntity &grouping_entity)
   {
     // The default Region state is -1. When the mesh data is being
