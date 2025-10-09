@@ -971,7 +971,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf googletest
-            git clone --branch ${gtest_version} --depth 1 https://github.com/google/googletest.git
+            git clone --depth 1 --branch ${gtest_version} --depth 1 https://github.com/google/googletest.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -1013,7 +1013,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf Catch2
-            git clone --branch ${catch2_version} --depth 1 https://github.com/catchorg/Catch2.git
+            git clone --depth 1 --branch ${catch2_version} --depth 1 https://github.com/catchorg/Catch2.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -1161,7 +1161,7 @@ then
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf aws-sdk-cpp
-      git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp
+      git clone --depth 1 --recurse-submodules https://github.com/aws/aws-sdk-cpp
       cd aws-sdk-cpp
       git branch branch/tag-1.11.77 1.11.77
       git checkout branch/tag-1.11.77

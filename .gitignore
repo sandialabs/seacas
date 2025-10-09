@@ -112,6 +112,7 @@ SNTools.project
 *ioss.doxygen.warn
 *ioss.tags
 SeacasRepoVersion.txt
+TPL/aws-sdk-cpp/aws-sdk-cpp/
 TPL/adios2/ADIOS2/
 TPL/cgns/CGNS/
 TPL/catch2/Catch2/
