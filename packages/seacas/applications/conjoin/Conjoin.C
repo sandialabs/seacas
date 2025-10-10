@@ -4,8 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 #include <algorithm>
+#include <chrono>
 #include <exception>
 #include <fmt/chrono.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <iomanip>
 #include <iostream>
@@ -951,12 +953,11 @@ namespace {
     copy_string(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH + 1); // Code
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
-    std::time_t date_time = std::time(nullptr);
-
-    auto date = fmt::format("{:%Y/%m/%d}", *std::localtime(&date_time));
+    auto now  = std::chrono::system_clock::now();
+    auto date = fmt::format("{:%Y/%m/%d}", now);
     copy_string(qaRecord[num_qa_records].qa_record[0][2], date.c_str(), MAX_STR_LENGTH + 1);
 
-    auto time = fmt::format("{:%T}", *std::localtime(&date_time));
+    auto time = fmt::format("{:%T}", std::chrono::time_point_cast<std::chrono::seconds>(now));
     copy_string(qaRecord[num_qa_records].qa_record[0][3], time.c_str(), MAX_STR_LENGTH + 1);
 
     error += ex_put_qa(id_out, num_qa_records + 1, qaRecord[0].qa_record);
@@ -1469,8 +1470,9 @@ namespace {
       return;
     }
 
-    size_t max_id        = global_element_map[global->elementCount - 1].first;
-    bool   is_contiguous = max_id == global_element_map.size();
+    size_t max_id =
+        global->elementCount > 0 ? global_element_map[global->elementCount - 1].first : 0;
+    bool is_contiguous = max_id == global_element_map.size();
     // fmt::print("Element id map {}.\n", (is_contiguous ? "is" : "is not"));
 
     // The global_element_map may or may not be globally sorted; however, each
@@ -1599,7 +1601,7 @@ namespace {
     // the nodes back to their original location. Since the nodes are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
-    INT  max_id = global_node_map[global->nodeCount - 1].id;
+    INT  max_id = global->nodeCount > 0 ? global_node_map[global->nodeCount - 1].id : 0;
     bool is_contiguous =
         static_cast<int64_t>(max_id) == static_cast<int64_t>(global_node_map.size());
     fmt::print("Node map {} contiguous.\n", (is_contiguous ? "is" : "is not"));

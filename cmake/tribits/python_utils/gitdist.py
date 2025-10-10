@@ -1152,6 +1152,7 @@ def getCommandlineOps():
 
   distHelpArgName = "--dist-help" # Must match --dist-help before --help!
   helpArgName = "--help"
+  shortHelpArgName = "-h"
   withGitArgName = "--dist-use-git"
   reposArgName = "--dist-repos"
   notReposArgName = "--dist-not-repos"
@@ -1164,7 +1165,7 @@ def getCommandlineOps():
   legendName = "--dist-legend"
   shortName = "--dist-short"
 
-  nativeArgNames = [ distHelpArgName, helpArgName, withGitArgName, \
+  nativeArgNames = [ distHelpArgName, helpArgName, shortHelpArgName, withGitArgName, \
     reposArgName, notReposArgName, \
     versionFileName, versionFile2Name, noColorArgName, debugArgName, noOptName, \
     modifiedOnlyName, legendName, shortName ]

@@ -69,7 +69,7 @@ When your changes are ready to be integrated into seacas' `master` branch:
     *   head fork:  `<username>/seacas`
     *   compare:  `<branchName>`
 
-  *   On the new pull request creation page, you'll notice the *Description* field will be pre-populated with some text.  Follow the instructions in that template to give us as much information as you can such that we can review and approve the issue as soon as is practicable.
+  *   Please give us as much information as you can such that we can review and approve the issue as soon as is practicable.
 
 ### Feedback
 

@@ -139,6 +139,12 @@ ADIOS2=$(check_valid ADIOS2) || exit
 CATALYST2=${CATALYST2:-NO}
 CATALYST2=$(check_valid CATALYST2) || exit
 
+AWSSDK=${AWSSDK:-NO}
+AWSSDK=$(check_valid AWSSDK) || exit
+
+CEREAL=${CEREAL:-NO}
+CEREAL=$(check_valid CEREAL) || exit
+
 GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST) || exit
 
@@ -185,6 +191,13 @@ else
     LD_EXT="a"
 fi
 
+if [ "$OS" == "Darwin" ] ; then
+  OSX_TARGET=${OSX_TARGET:-}
+  if [ "$OSX_TARGET" != "" ] ; then
+      export MACOSX_DEPLOYMENT_TARGET=${OSX_TARGET}
+  fi
+fi
+
 if [ $# -gt 0 ]; then
     if [ "$1" == "--help" ]; then
         echo "${txtcyn}Environment Variables used in the script and their default values:"
@@ -201,6 +214,9 @@ if [ $# -gt 0 ]; then
         echo "   SHARED       = ${SHARED}"
         echo "   DEBUG        = ${DEBUG}"
         echo "   USE_PROXY    = ${USE_PROXY}"
+if [ "$OS" == "Darwin" ] ; then
+        echo "   OSX_TARGET   = ${OSX_TARGET:-default}"
+fi
         echo ""
         echo "   NETCDF       = ${NETCDF}"
         echo "   PNETCDF      = ${PNETCDF}"
@@ -222,6 +238,8 @@ if [ $# -gt 0 ]; then
         echo "   FAODEL       = ${FAODEL}"
         echo "   ADIOS2       = ${ADIOS2}"
         echo "   CATALYST2    = ${CATALYST2}"
+        echo "   AWSSDK       = ${AWSSDK}"
+        echo "   CEREAL       = ${CEREAL}"
         echo "   CATCH2       = ${CATCH2}"
         echo "   GTEST        = ${GTEST}"
         echo ""
@@ -415,43 +433,43 @@ if [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_HDF5" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
     then
-	hdf_suffix=""
-	if [ "${H5VERSION}" == "V110" ]; then
-	    hdf_version="hdf5-1_10_11"
-	elif [ "${H5VERSION}" == "V112" ]; then
+        hdf_suffix=""
+        if [ "${H5VERSION}" == "V110" ]; then
+            hdf_version="hdf5-1_10_11"
+        elif [ "${H5VERSION}" == "V112" ]; then
             hdf_version="hdf5-1_12_3"
-	elif [ "${H5VERSION}" == "V114" ]; then
+        elif [ "${H5VERSION}" == "V114" ]; then
             hdf_version="hdf5_1.14.6"
-	elif [ "${H5VERSION}" == "develop" ]; then
+        elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
-	else
+        else
             echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V110, V112, or V114 [default]. exiting.${txtrst}
             exit 1
-	fi
+        fi
 
-	echo "${txtgrn}+++ HDF5 ${hdf_version}${txtrst}"
-	
-	cd $ACCESS || exit
-	cd TPL/hdf5 || exit
-	if [ "$DOWNLOAD" == "YES" ]
-	then
+        echo "${txtgrn}+++ HDF5 ${hdf_version}${txtrst}"
+        
+        cd $ACCESS || exit
+        cd TPL/hdf5 || exit
+        if [ "$DOWNLOAD" == "YES" ]
+        then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf hdf5-${hdf_version}${hdf_suffix}
             rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
             if [ "${H5VERSION}" == "develop" ]; then
-		git clone --depth=1 https://github.com/HDFGroup/hdf5.git hdf5-develop
+                git clone --depth=1 https://github.com/HDFGroup/hdf5.git hdf5-develop
             else
-		curl -O -L --insecure https://github.com/HDFGroup/hdf5/archive/refs/tags/${hdf_version}.tar.gz
+                curl -O -L --insecure https://github.com/HDFGroup/hdf5/archive/refs/tags/${hdf_version}.tar.gz
             fi
             if [ "${H5VERSION}" != "develop" ]
             then
-		tar -zxf ${hdf_version}.tar.gz
-		rm -f ${hdf_version}.tar.gz
+                tar -zxf ${hdf_version}.tar.gz
+                rm -f ${hdf_version}.tar.gz
             fi
-	fi
-	
-	if [ "$BUILD" == "YES" ]
-	then
+        fi
+        
+        if [ "$BUILD" == "YES" ]
+        then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd hdf5-${hdf_version} || exit
             rm -rf build
@@ -461,23 +479,23 @@ then
             #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
-		echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
-		exit 1
+                echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
+                exit 1
             fi
             make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
             if [[ $? != 0 ]]
             then
-		echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
-		exit 1
+                echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
+                exit 1
             fi
-	fi
-	# Create default plugin directory...
-	mkdir  ${INSTALL_PATH}/lib
-	mkdir  ${INSTALL_PATH}/lib/hdf5
-	mkdir  ${INSTALL_PATH}/lib/hdf5/lib
-	mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
+        fi
+        # Create default plugin directory...
+        mkdir  ${INSTALL_PATH}/lib
+        mkdir  ${INSTALL_PATH}/lib/hdf5
+        mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+        mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
     else
-	echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -554,7 +572,7 @@ then
 
     if [ "$netcdf_version" == "v4.9.3" ]
     then
-	PREFIX="NETCDF_"
+        PREFIX="NETCDF_"
     fi
 
     if [ "$BUILD" == "YES" ]
@@ -564,10 +582,10 @@ then
         rm -rf build
         mkdir build
         cd build || exit
-	if [ "$HDF5" == "YES" ]
-	then
+        if [ "$HDF5" == "YES" ]
+        then
            export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
-	fi
+        fi
         PREFIX=${PREFIX} CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
@@ -591,7 +609,7 @@ if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_CGNS" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
-	cgns_version="v4.5.0"
+        cgns_version="v4.5.0"
         echo "${txtgrn}+++ CGNS ${cgns_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/cgns || exit
@@ -861,7 +879,7 @@ if [ "$ADIOS2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_ADIOS2" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
-	adios2_version="v2.10.2"
+        adios2_version="v2.10.2"
         echo "${txtgrn}+++ ADIOS2 ${adios2_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/adios2 || exit
@@ -869,7 +887,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf ADIOS2
-	    git clone --depth 1 --branch ${adios2_version} https://github.com/ornladios/ADIOS2.git
+            git clone --depth 1 --branch ${adios2_version} https://github.com/ornladios/ADIOS2.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -953,7 +971,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf googletest
-            git clone --branch ${gtest_version} --depth 1 https://github.com/google/googletest.git
+            git clone --depth 1 --branch ${gtest_version} --depth 1 https://github.com/google/googletest.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -995,7 +1013,7 @@ then
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf Catch2
-            git clone --branch ${catch2_version} --depth 1 https://github.com/catchorg/Catch2.git
+            git clone --depth 1 --branch ${catch2_version} --depth 1 https://github.com/catchorg/Catch2.git
         fi
 
         if [ "$BUILD" == "YES" ]
@@ -1075,15 +1093,15 @@ then
     BOOST_VER="1_82_0"
     if [ "$DOWNLOAD" == "YES" ]
     then
-	curl -O -L --insecure "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_${BOOST_VER}.tar.bz2" 
-	tar xf boost_${BOOST_VER}.tar.bz2
+        curl -O -L --insecure "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_${BOOST_VER}.tar.bz2" 
+        tar xf boost_${BOOST_VER}.tar.bz2
     fi
     if [ "$BUILD" == "YES" ]
     then
-	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-	cd boost_${BOOST_VER}
-	./bootstrap.sh --prefix=${INSTALL_PATH}
-	./b2 -a install
+        echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        cd boost_${BOOST_VER}
+        ./bootstrap.sh --prefix=${INSTALL_PATH}
+        ./b2 -a install
     fi
   else
     echo "${txtylw}+++ Boost already installed.  Skipping download and installation.${txtrst}"
@@ -1131,11 +1149,56 @@ then
   fi
 fi
 
-# =================== INSTALL CEREAL ===============
-if [ "$FAODEL" == "YES" ]
+# =================== INSTALL aws-sdk-cpp ===============
+if [ "$AWSSDK" == "YES" ]
 then
-  # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
-  if [ "$FORCE" == "YES" ] || [ "$FORCE_FAODEL" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/aws/core/Aws.h ]
+  then
+    echo "${txtgrn}+++ aws-sdk-cpp${txtrst}"
+    cd $ACCESS || exit
+    cd TPL/aws-sdk-cpp || exit
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Downloading...${txtrst}"
+      rm -rf aws-sdk-cpp
+      git clone --depth 1 --recurse-submodules https://github.com/aws/aws-sdk-cpp
+      cd aws-sdk-cpp
+      git branch branch/tag-1.11.77 1.11.77
+      git checkout branch/tag-1.11.77
+      git submodule update --recursive
+      cd ..
+    fi
+
+    if [ "$BUILD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+      cd aws-sdk-cpp || exit
+      rm -rf build
+      mkdir build
+      cd build || exit
+      CRAY=${CRAY} DEBUG=${DEBUG} SHARED=${SHARED} MPI=${MPI} bash -x ../../runcmake.sh
+      if [[ $? != 0 ]]
+      then
+  	echo 1>&2 ${txtred}couldn\'t configure aws-sdk-cpp. exiting.${txtrst}
+  	exit 1
+      fi
+      make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
+      if [[ $? != 0 ]]
+      then
+  	echo 1>&2 ${txtred}couldn\'t build aws-sdk-cpp. exiting.${txtrst}
+  	exit 1
+      fi
+    fi
+  else
+    echo "${txtylw}+++ aws-sdk-cpp already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
+# =================== INSTALL CEREAL ===============
+if [ "$AWSSDK" == "YES" ] || [ "$FAODEL" == "YES" ]
+then
+  # Currently, the S3 and FAODEL backends require cereal.  If S3 or Faodel are enabled, we'll install cereal too.
+  if [ "$FORCE" == "YES" ] || [ "$FORCE_AWSSDK" == "YES" ] || [ "$FORCE_FAODEL" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
   then
     echo "${txtgrn}+++ Cereal${txtrst}"
     cd $ACCESS || exit
@@ -1143,20 +1206,20 @@ then
     if [ ! -d "${CEREAL_DIR}" ]; then
       mkdir ${CEREAL_DIR}
     fi
-    cd ${CEREAL} || exit
+    cd ${CEREAL_DIR} || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf cereal*
-      curl -O -L --insecure https://github.com/USCiLab/cereal/archive/v1.3.0.tar.gz
-      tar xzf v1.3.0.tar.gz
-      rm -f v1.3.0.tar.gz
-      cp -R cereal-1.3.0/include/cereal $INSTALL_PATH/include/
+      curl -O -L --insecure https://github.com/USCiLab/cereal/archive/v1.3.2.tar.gz
+      tar xzf v1.3.2.tar.gz
+      rm -f v1.3.2.tar.gz
     fi
 
     if [ "$BUILD" == "YES" ]
     then
       echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+      cp -R cereal-1.3.2/include/cereal $INSTALL_PATH/include/
     fi
   else
     echo "${txtylw}+++ Cereal already installed.  Skipping download and installation.${txtrst}"

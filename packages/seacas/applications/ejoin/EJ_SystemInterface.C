@@ -164,12 +164,12 @@ void SystemInterface::enroll_options()
 
   options_.enroll(
       "block_prefix", GetLongOption::MandatoryValue,
-      "Prefix used on the input block names of second and subsequent meshes to make them\n"
+      "Prefix used on the input block names of second and subsequent part meshes to make them\n"
       "\t\tunique.  Default is 'p'.  Example: block1, p2_block1, p3_block1.",
       "p");
 
   options_.enroll("offset", GetLongOption::MandatoryValue,
-                  "Comma-separated x,y,z offset for coordinates of second and subsequent meshes.\n"
+                  "Comma-separated x,y,z offset for coordinates of second and subsequent parts.\n"
                   "\t\tIf there are only 3 values specified, then The offset will be multiplied by "
                   "the part number-1 so:\n"
                   "\t\tP1: no offset; P2: 1x, 1y, 1z; P3: 2x, 2y, 2z; P(n+1): nx, ny, nz\n"
@@ -180,7 +180,7 @@ void SystemInterface::enroll_options()
                   nullptr, nullptr, true);
 
   options_.enroll("scale", GetLongOption::MandatoryValue,
-                  "Comma-separated x,y,z scale for coordinates of second and subsequent meshes.\n"
+                  "Comma-separated x,y,z scale for coordinates of input parts.\n"
                   "\t\tIf there are only 3 values specified, then The same scale will be used by "
                   "all parts (including the first)\n"
                   "\t\tYou can also specify the scale of specific parts using the syntax:\n"
@@ -289,7 +289,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         stderr,
         "\n\tCan also set options via EJOIN_OPTIONS environment variable.\n"
         "\n\tDocumentation: https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#ejoin\n"
-        "\n\t->->-> Send email to gdsjaar@sandia.gov for ejoin support.<-<-<-\n");
+        "\n\t->->-> Send email to sierra-help@sandia.gov for ejoin support.<-<-<-\n");
     exit(EXIT_SUCCESS);
   }
 

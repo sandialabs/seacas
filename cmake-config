@@ -75,22 +75,24 @@ KOKKOS_PATH=${KOKKOS_PATH:-${INSTALL_PATH}}
 METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
 PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
 FMT_PATH=${FMT_PATH:-${INSTALL_PATH}}
+AWSSDK_PATH=${AWSSDK_PATH:-${INSTALL_PATH}}
+CEREAL_PATH=${CEREAL_PATH:-${INSTALL_PATH}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
 then
     if [[ -f "$NETCDF_PATH/bin/nc-config" ]]; then
-	netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
-	if [ "${netcdf_parallel}" == "yes" ]
-	then
-	    MPI=YES
-	else
-	    MPI=NO
-	fi
+        netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
+        if [ "${netcdf_parallel}" == "yes" ]
+        then
+            MPI=YES
+        else
+            MPI=NO
+        fi
     else
-	echo "Unable to determine whether netCDF is parallel or serial.  Assuming serial"
-	echo "Set either \"NETCDF_PATH\" or \"MPI\" manually if the assumption is incorrect."
-	MPI=NO
+        echo "Unable to determine whether netCDF is parallel or serial.  Assuming serial"
+        echo "Set either \"NETCDF_PATH\" or \"MPI\" manually if the assumption is incorrect."
+        MPI=NO
     fi
 fi
 
@@ -195,10 +197,10 @@ then
 else
      SUBSET_OPTIONS="-DSeacas_ENABLE_ALL_PACKAGES:BOOL=OFF \
                      -DSeacas_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
-		     -DSeacas_ENABLE_SECONDARY_TESTED_CODE:BOOL=OFF \
+                     -DSeacas_ENABLE_SECONDARY_TESTED_CODE:BOOL=OFF \
                      -DSeacas_ENABLE_SEACASIoss:BOOL=ON \
-		     -DSeacas_ENABLE_SEACASExodus:BOOL=ON \
-		     -DSeacas_ENABLE_SEACASExodus_for:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExodus:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExodus_for:BOOL=ON \
                      -DSeacas_ENABLE_SEACASExoIIv2for32:BOOL=ON"
 
 if [ "${APPLICATIONS}" == "YES" ]
@@ -220,10 +222,10 @@ then
                      -DSeacas_ENABLE_SEACASNemspread:BOOL=ON"
 
      if [ "${FORTRAN}" == "YES" ]
-	then
-	    SUBSET_OPTIONS="${SUBSET_OPTIONS} \
-            		  -DSeacas_ENABLE_SEACASExplore:BOOL=ON \
-			  -DSeacas_ENABLE_SEACASGrepos:BOOL=ON"
+        then
+            SUBSET_OPTIONS="${SUBSET_OPTIONS} \
+                          -DSeacas_ENABLE_SEACASExplore:BOOL=ON \
+                          -DSeacas_ENABLE_SEACASGrepos:BOOL=ON"
      fi
 
 elif [ "${LEGACY}" == "YES" ] && [ "${FORTRAN}" == "YES" ]
@@ -293,13 +295,13 @@ if [ ! -z ${DEBUG+x} ]
 then
     if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ] || [ "${DEBUG}" == "on" ] || [ "${DEBUG}" == "yes" ]
     then
-	BUILD_TYPE="DEBUG"
+        BUILD_TYPE="DEBUG"
     elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ] || [ "${DEBUG}" == "off" ] || [ "${DEBUG}" == "no" ]
     then
-	BUILD_TYPE="RELEASE"
+        BUILD_TYPE="RELEASE"
     else
-	echo "${txtred}\nERROR: Invalid value for DEBUG ('$DEBUG') -- Must be ON, YES, NO, or OFF\n${txtrst}" >& 2
-	exit
+        echo "${txtred}\nERROR: Invalid value for DEBUG ('$DEBUG') -- Must be ON, YES, NO, or OFF\n${txtrst}" >& 2
+        exit
     fi
 fi
 
@@ -319,9 +321,9 @@ function check_enable()
     local path=$1
     if [ -e "${path}" ]
     then
-	echo "YES"
+        echo "YES"
     else
-	echo "NO"
+        echo "NO"
     fi
 }
 
@@ -330,6 +332,8 @@ HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
 HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
 HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
 HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
+HAVE_AWSSDK=$(check_enable "${AWSSDK_PATH}/include/aws/core/Aws.h")
+HAVE_CEREAL=$(check_enable "${CEREAL_PATH}/include/cereal/cereal.hpp")
 HAVE_CATALYST2=$(check_enable "${CATALYST2_PATH}/include/catalyst-2.0/catalyst.h")
 HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
 HAVE_CATCH2=$(check_enable "${CATCH2_PATH}/include/catch2/catch_all.hpp")
@@ -379,9 +383,9 @@ OS=$(uname -s)
 if [ "$SHARED" == "YES" ]
 then
     if [ "$OS" == "Darwin" ] ; then
-	LD_EXT="dylib"
+        LD_EXT="dylib"
     else
-	LD_EXT="so"
+        LD_EXT="so"
     fi
 else
 # NOTE: Some systems may need `curl` added to Seacas_EXTRA_LINK_FLAGS`
@@ -394,9 +398,19 @@ fi
 if [ "${HAVE_KOKKOS}" == "YES" ]
 then
     KOKKOS_SYMBOLS="-DKOKKOS_SRC_PATH:PATH=${INSTALL_PATH}/TPL/kokkos/kokkos \
-		    -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
-		    -DTPL_Kokkos_INCLUDE_DIRS:PATH=${KOKKOS_PATH}/include \
-		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkoscore.${LD_EXT}"
+                    -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
+                    -DTPL_Kokkos_INCLUDE_DIRS:PATH=${KOKKOS_PATH}/include \
+                    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkoscore.${LD_EXT}"
+fi
+
+if [ "$HAVE_AWSSDK" == "YES" ] && [ "$HAVE_CEREAL" == "YES" ]
+then
+  AWSSDK_SYMBOLS=" -D TPL_ENABLE_AWSSDK:BOOL=${HAVE_AWSSDK}   \
+    -D AWSSDK_ROOT:PATH=${AWSSDK_PATH} \
+    "
+  CEREAL_SYMBOLS=" -D TPL_ENABLE_Cereal:BOOL=${HAVE_CEREAL}   \
+    -D Cereal_INCLUDE_DIRS:PATH=${CEREAL_PATH}/include \
+    "
 fi
 
 if [ "$HAVE_FAODEL" == "YES" ]
@@ -417,7 +431,11 @@ then
 fi
 
 if [ "$OS" == "Darwin" ] ; then
-  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
+  OSX_TARGET=${OSX_TARGET:-}
+  if [ "$OSX_TARGET" != "" ] ; then
+      OSX_TARGET_OPT="-DCMAKE_OSX_DEPLOYMENT_TARGET=${OSX_TARGET}"
+  fi
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include ${OSX_TARGET_OPT}"
 else
   DARWIN_OPT=""
 fi
@@ -430,7 +448,7 @@ if [[ "$DOXYGEN" == "NO" && "$OS" == "Darwin" && "$MPI" == "NO" ]] ; then
     branch=$(git branch |grep \* |cut -c3-)
     USER=$(id -nu)
     if [ "$USER" == "gdsjaar" ] && [ "$branch" == "master" ]; then
-	DOXYGEN=YES
+        DOXYGEN=YES
     fi
 fi
 
@@ -543,6 +561,8 @@ ${MPI_SYMBOLS} \
 ${DARWIN_OPT} \
 ${FAODEL_SYMBOLS} \
 ${ADIOS2_SYMBOLS} \
+${AWSSDK_SYMBOLS} \
+${CEREAL_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
@@ -585,9 +605,15 @@ echo "  CATALYST2: ${HAVE_CATALYST2}"
 echo "      METIS: ${HAVE_METIS}"
 echo "   PARMETIS: ${HAVE_PARMETIS}"
 echo "     FAODEL: ${HAVE_FAODEL}"
+echo "     AWSSDK: ${HAVE_AWSSDK}"
+echo "AWSSDK_PATH: ${AWSSDK_PATH}"
+echo "CEREAL_PATH: ${CEREAL_PATH}"
 echo "      GTEST: ${HAVE_GTEST}"
 echo "     CATCH2: ${HAVE_CATCH2}"
 echo "    DOXYGEN: ${DOXYGEN}"
+if [ "$OSX_TARGET" != "" ] ; then
+echo " OSX_TARGET: ${OSX_TARGET}"
+fi
 echo ""
 
 if [ "${TRAVIS}" == "true" ]

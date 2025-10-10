@@ -34,11 +34,10 @@
 #include "Ioss_Wedge18.h"
 #include "Ioss_Wedge6.h"
 #include <assert.h>
-#include <fmt/chrono.h>
-#include <fmt/core.h>
+#include <cstdlib>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <stdint.h>
-#include <stdlib.h>
 #if !defined __NVCC__
 #include <fmt/color.h>
 #endif
@@ -49,10 +48,8 @@
 #include <cmath>
 #include <cstring>
 #include <ctime>
-#include <fmt/ostream.h>
 #include <limits>
 #include <numeric>
-#include <ostream>
 #include <set>
 #include <string>
 #include <tokenize.h>
@@ -494,7 +491,7 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   if (processor >= 0) {
     fmt::print(errmsg, " on processor {}", processor);
   }
-  fmt::print(errmsg, ". Please report to gdsjaar@sandia.gov if you need help.");
+  fmt::print(errmsg, ". Please report to sierra-help@sandia.gov if you need help.");
   if (cgnsid > 0) {
 #if CG_BUILD_PARALLEL
     // This can cause a hang if not all processors call this routine
@@ -1050,9 +1047,9 @@ size_t Iocgns::Utils::common_write_metadata(int file_ptr, const Ioss::Region &re
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
 
   CGERR(cg_goto(file_ptr, base, "end"));
-  std::time_t t    = std::time(nullptr);
-  std::string date = fmt::format("{:%Y/%m/%d}", *std::localtime(&t));
-  std::string time = fmt::format("{:%H:%M:%S}", *std::localtime(&t));
+  auto        now  = std::chrono::system_clock::now();
+  std::string date = fmt::format("{:%Y/%m/%d}", now);
+  std::string time = fmt::format("{:%T}", std::chrono::time_point_cast<std::chrono::seconds>(now));
 
   std::string code_version = region.get_optional_property("code_version", "unknown");
   std::string code_name    = region.get_optional_property("code_name", "unknown");

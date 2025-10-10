@@ -11,7 +11,6 @@
 #include "Ioss_VariableType.h"
 #include "exodus/Ioex_Utils.h"
 #include <cstring>
-#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <iosfwd>
@@ -723,10 +722,10 @@ namespace Ioex {
     if (!extra.empty()) {
       fmt::print(errmsg, " {}", extra);
     }
-    fmt::print(errmsg, " Please report to gdsjaar@sandia.gov if you need help.");
+    fmt::print(errmsg, " Please report to sierra-help@sandia.gov if you need help.");
 
     ex_err_fn(exoid, nullptr, nullptr, EX_PRTLASTMSG);
-    IOSS_ERROR(errmsg);
+    IOSS_ABORT(errmsg);
   }
 
   int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
@@ -930,7 +929,7 @@ namespace Ioex {
       for (size_t iel = 0; iel < element.size(); iel++) {
         int64_t elem_id = element[iel];
         if (elem_id <= 0) {
-          IOSS_ERROR(fmt::format(
+          IOSS_ABORT(fmt::format(
               "ERROR: In sideset/surface '{}' an element with id {} is specified.  Element "
               "ids must be greater than zero. ({})",
               surface_name, elem_id, __func__));
@@ -951,7 +950,7 @@ namespace Ioex {
         if (common_ftopo == nullptr && sides[iel] != current_side) {
           current_side = sides[iel];
           if (current_side <= 0 || current_side > block->topology()->number_boundaries()) {
-            IOSS_ERROR(fmt::format(
+            IOSS_ABORT(fmt::format(
                 "ERROR: In sideset/surface '{}' for the element with id {} of topology '{}';\n\t"
                 "an invalid face index '{}' is specified.\n\tFace indices "
                 "must be between 1 and {}. ({})",
