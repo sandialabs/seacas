@@ -83,14 +83,14 @@ namespace {
     for (const auto &part : local_mesh) {
       size_t node_count = part.count(Excn::ObjectType::NODE);
       if (node_count != global_node_count) {
-	return true;
+        return true;
       }
     }
     return false;
   }
-    
+
   bool is_element_status_needed(std::vector<std::vector<Excn::Block>> &part_blocks,
-				const std::vector<Excn::Block> &glob_blocks)
+                                const std::vector<Excn::Block>        &glob_blocks)
   {
     // Returns true if an element status variable is needed (i.e., the
     // global model contains a different number of elements than one or
@@ -98,24 +98,24 @@ namespace {
 
     // Could iterate all elements in the local element blocks, but if
     // the global block element counts and all local part element
-    // block element counts are the same, then there can be no 
+    // block element counts are the same, then there can be no
     // dead elements...
     // Assumes global and local element blocks are in the same order...
     for (const auto &global_block : glob_blocks) {
       for (const auto &blocks : part_blocks) {
-	bool match = false;
-	for (const auto &local_block : blocks) {
-	  if (local_block.id == global_block.id) {
-	    if (local_block.entity_count() != global_block.entity_count()) {
-	      return true;
-	    }
-	    match = true;
-	    break;
-	  }
-	}
-	if (match == false) { // Did not find a matching element block
-	  return true; // We need a status variable
-	}
+        bool match = false;
+        for (const auto &local_block : blocks) {
+          if (local_block.id == global_block.id) {
+            if (local_block.entity_count() != global_block.entity_count()) {
+              return true;
+            }
+            match = true;
+            break;
+          }
+        }
+        if (match == false) { // Did not find a matching element block
+          return true;        // We need a status variable
+        }
       }
     }
     return false;
@@ -644,7 +644,6 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
         global.nodesetCount = glob_nsets.size();
       }
     }
-
 
     /************************************************************************/
     // Start writing the output file...
