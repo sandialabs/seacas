@@ -717,8 +717,8 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   fmt::print("Nodal   status variable {} required.\n", need_n_status ? "is" : "is not");
   fmt::print("Element status variable {} required.\n", need_e_status ? "is" : "is not");
 
-  bool add_n_status = need_n_status && interFace.nodal_status_variable() != "NONE";
-  bool add_e_status = need_e_status && interFace.element_status_variable() != "NONE";
+  bool add_n_status = interFace.force_status_variable() || (need_n_status && interFace.nodal_status_variable() != "NONE");
+  bool add_e_status = interFace.force_status_variable() || (need_e_status && interFace.element_status_variable() != "NONE");
 
   //  NOTE: it is assumed that every part has the same global, nodal,
   //        and element lists
