@@ -238,7 +238,8 @@ throughout the file.
  IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create/flush
  CHECK_PARALLEL_CONSISTENCY | on/[off] | check Ioss::GroupingEntity parallel consistency
  TIME_STATE_INPUT_OUTPUT | on/[off] | show the elapsed time for reading/writing each timestep's data
- NAN_DETECTION | on/[off] | 
+ NAN_DETECTION | on/[off] | Output a warning if a NaN is detected while reading/writing field data.
+ 
 ## Setting properties via an environment variable
 
 Although the properties are usually accessed internally in the
