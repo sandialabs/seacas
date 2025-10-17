@@ -71,32 +71,32 @@ namespace Ioss {
      */
     enum RoleType {
       INTERNAL,
-      MESH,      /**< A field which is used to define the basic geometry
-                      or topology of the model and is not normally transient
-                      in nature. Examples would be element connectivity or
-                      nodal coordinates. */
-      ATTRIBUTE, /**< A field which is used to define an attribute on an
-                      EntityBlock derived class. Examples would be thickness
-                      of the elements in a shell element block or the radius
-                      of particles in a particle element block. */
-      MAP, ///< A list of integers specifying some ordering or mapping of the entties
-      COMMUNICATION, ///< Related to parallel communication
+      MESH,           /**< A field which is used to define the basic geometry
+                           or topology of the model and is not normally transient
+                           in nature. Examples would be element connectivity or
+                           nodal coordinates. */
+      ATTRIBUTE,      /**< A field which is used to define an attribute on an
+                           EntityBlock derived class. Examples would be thickness
+                           of the elements in a shell element block or the radius
+                           of particles in a particle element block. */
+      MAP,            ///< A list of integers specifying some ordering or mapping of the entties
+      COMMUNICATION,  ///< Related to parallel communication
       MESH_REDUCTION, /**< A field which summarizes some non-transient data
                          about an entity (\sa REDUCTION). This could be an
                          offset applied to an element block, or the units
                          system of a model or the name of the solid model
                          which this entity is modelling... */
       INFORMATION = MESH_REDUCTION, ///< Same as MESH_REDUCTION
-      REDUCTION, /**< A field which typically summarizes some transient data
-                      about an entity. The size of this field is typically not
-                      proportional to the number of entities in a GroupingEntity.
-                      An example would be average displacement over a group of
-                      nodes or the kinetic energy of a model. This data is also
-                      transient. */
-      TRANSIENT  /**< A field which is typically calculated at multiple steps
-                      or times in an analysis. These are typically "results"
-                      data. Examples would be nodal displacement or element
-                      stress. */
+      REDUCTION,                    /**< A field which typically summarizes some transient data
+                                         about an entity. The size of this field is typically not
+                                         proportional to the number of entities in a GroupingEntity.
+                                         An example would be average displacement over a group of
+                                         nodes or the kinetic energy of a model. This data is also
+                                         transient. */
+      TRANSIENT                     /**< A field which is typically calculated at multiple steps
+                                         or times in an analysis. These are typically "results"
+                                         data. Examples would be nodal displacement or element
+                                         stress. */
     };
 
     Field();
@@ -109,21 +109,21 @@ namespace Ioss {
           size_t value_count = 0, size_t index = 0);
 
     /**< Create a composite field named 'name' that contains values of type 'type'
-     in a storage format of type 'storage'.  There will be `copies` instances of the `storage` format. 
-     There are 'value_count' items in the field. If `value_count==0`, then the correct size
+     in a storage format of type 'storage'.  There will be `copies` instances of the `storage`
+     format. There are 'value_count' items in the field. If `value_count==0`, then the correct size
      will be set when the field is added to a `GroupingEntity` */
     Field(std::string name, BasicType type, const std::string &storage, int copies, RoleType role,
           size_t value_count = 0, size_t index = 0);
 
     /**< Create a composed field named 'name' that contains values of type 'type'
-     in a primary storage format of type 'storage' and a secondary storage format of type `secondary`. 
-     There are 'value_count' items in the field. If `value_count==0`, then the correct size
-     will be set when the field is added to a `GroupingEntity` */
+     in a primary storage format of type 'storage' and a secondary storage format of type
+     `secondary`. There are 'value_count' items in the field. If `value_count==0`, then the correct
+     size will be set when the field is added to a `GroupingEntity` */
     Field(std::string name, BasicType type, const std::string &storage,
           const std::string &secondary, RoleType role, size_t value_count = 0, size_t index = 0);
 
     /**< Create a field named 'name' that contains values of type 'type'
-     in a storage format of type 'storage' (specified via instance and not name).  
+     in a storage format of type 'storage' (specified via instance and not name).
      There are 'value_count' items in the field. If `value_count==0`, then the correct size
      will be set when the field is added to a `GroupingEntity` */
     Field(std::string name, BasicType type, const VariableType *storage, RoleType role,
@@ -184,7 +184,7 @@ namespace Ioss {
     IOSS_NODISCARD const VariableType *transformed_storage() const { return transStorage_; }
 
     IOSS_NODISCARD size_t raw_count() const { return rawCount_; } ///< Number of items in field
-    IOSS_NODISCARD size_t transformed_count() const 
+    IOSS_NODISCARD size_t transformed_count() const
     {
       return transCount_;
     } ///< Number of items in field after transforms have been applied.
@@ -244,8 +244,8 @@ namespace Ioss {
     mutable size_t
         index_{}; ///< Optional flag that can be used by a client to indicate an ordering.
                   // Unused by field itself.  Used by some DatabaeIO objects to set ordering.
-    BasicType type_{INVALID}; ///< The basic type of the field (Integer, Real, String)
-    RoleType  role_{INTERNAL}; ///< The role of the field. 
+    BasicType type_{INVALID};  ///< The basic type of the field (Integer, Real, String)
+    RoleType  role_{INTERNAL}; ///< The role of the field.
 
     const VariableType *rawStorage_{nullptr};   ///< Storage type of raw field
     const VariableType *transStorage_{nullptr}; ///< Storage type after transformation
