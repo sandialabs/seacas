@@ -126,9 +126,9 @@ namespace Ioss {
     // Get time corresponding to specified state
 
     IOSS_NODISCARD double get_state_time(int state = -1) const;
-    IOSS_NODISCARD int            get_current_state() const;
-    double                        begin_state(int state);
-    double                        end_state(int state);
+    IOSS_NODISCARD int    get_current_state() const;
+    double                begin_state(int state);
+    double                end_state(int state);
 
     /** \brief Determine whether the metadata defining the model (nontransient,
      *         geometry, and toploloty) has been set.
