@@ -129,7 +129,9 @@ to configure the SEACAS CMake build.
 | EXTRA_WARNINGS  | YES, NO | NO   | Build with extra warnings enabled; see list in `cmake-config` |
 | SANITIZER       | many    | NO   | If not NO, build using specified sanitizer; see list in `cmake-config` |
 | GENERATOR       | many    | "Unix Makefiles" | what generator should CMake use; see cmake doc |
-*  The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
+
+* If the script enables a TPL that you do not want enabled, you can use a variable with the TPL name set to NO.  For example, to explicitly disable MATIO, use `MATIO=NO ../cmake-config`.  The names of the TPLs and, if enabled, the path to the TPL root directory are echoed at the end of the configuration process.
+*  The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ../cmake-config`
 
 ## Parallel Build
 
