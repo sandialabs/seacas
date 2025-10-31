@@ -79,7 +79,7 @@ AWSSDK_PATH=${AWSSDK_PATH:-${INSTALL_PATH}}
 CEREAL_PATH=${CEREAL_PATH:-${INSTALL_PATH}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-if [ "${MPI}" = "" ]
+if [ "${MPI}" == "" ]
 then
     if [[ -f "$NETCDF_PATH/bin/nc-config" ]]; then
         netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
