@@ -64,8 +64,8 @@ extern "C" {
 namespace {
   auto initial_time = std::chrono::steady_clock::now();
 
-  void log_time(const std::string &region_name,
-		std::chrono::time_point<std::chrono::steady_clock> &start,
+  void log_time(const std::string                                  &region_name,
+                std::chrono::time_point<std::chrono::steady_clock> &start,
                 std::chrono::time_point<std::chrono::steady_clock> &finish, int current_state,
                 double state_time, bool is_input, bool single_proc_only,
                 const Ioss::ParallelUtils &util);
@@ -671,7 +671,8 @@ namespace Ioss {
     bool res = end_state_nl(state, time);
     if (m_timeStateInOut) {
       auto finish = std::chrono::steady_clock::now();
-      log_time(get_region()->name(), m_stateStart, finish, state, time, is_input(), singleProcOnly, util_);
+      log_time(get_region()->name(), m_stateStart, finish, state, time, is_input(), singleProcOnly,
+               util_);
     }
     progress("DatabaseIO::end_state(int state, double time)");
     return res;
@@ -1576,8 +1577,8 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace {
-  void log_time(const std::string &region_name,
-		std::chrono::time_point<std::chrono::steady_clock> &start,
+  void log_time(const std::string                                  &region_name,
+                std::chrono::time_point<std::chrono::steady_clock> &start,
                 std::chrono::time_point<std::chrono::steady_clock> &finish, int current_state,
                 double state_time, bool is_input, bool single_proc_only,
                 const Ioss::ParallelUtils &util)
@@ -1593,8 +1594,8 @@ namespace {
 
     if (util.parallel_rank() == 0 || single_proc_only) {
       std::ostringstream strm;
-      fmt::print(strm, "\nIOSS: [{}] Time to {} state {}, time {} is ", region_name, (is_input ? "read " : "write"),
-                 current_state, state_time);
+      fmt::print(strm, "\nIOSS: [{}] Time to {} state {}, time {} is ", region_name,
+                 (is_input ? "read " : "write"), current_state, state_time);
 
       double total = 0.0;
       for (const auto &p_time : all_times) {
