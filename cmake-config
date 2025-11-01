@@ -309,8 +309,8 @@ fi
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "YES"
 ### below to "NO". It will disable blot and fastq
-HAVE_X11=${HAVE_X11:-YES}
-HAVE_X11=$(check_valid HAVE_X11) || exit
+USE_X11=${USE_X11:-YES}
+USE_X11=$(check_valid USE_X11) || exit
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
@@ -327,19 +327,33 @@ function check_enable()
     fi
 }
 
-HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
-HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
-HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
-HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
-HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
-HAVE_AWSSDK=$(check_enable "${AWSSDK_PATH}/include/aws/core/Aws.h")
-HAVE_CEREAL=$(check_enable "${CEREAL_PATH}/include/cereal/cereal.hpp")
-HAVE_CATALYST2=$(check_enable "${CATALYST2_PATH}/include/catalyst-2.0/catalyst.h")
-HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
-HAVE_CATCH2=$(check_enable "${CATCH2_PATH}/include/catch2/catch_all.hpp")
-HAVE_KOKKOS=$(check_enable "${KOKKOS_PATH}/include/Kokkos_Core.hpp")
-HAVE_METIS=$(check_enable "${METIS_PATH}/include/metis.h")
-HAVE_PARMETIS=$(check_enable "${METIS_PATH}/include/parmetis.h")
+USE_NETCDF=${NETCDF:-$(check_enable "${NETCDF_PATH}/include/netcdf.h")}
+USE_MATIO=${MATIO:-$(check_enable "${MATIO_PATH}/include/matio.h")}
+USE_CGNS=${CGNS:-$(check_enable "${CGNS_PATH}/include/cgnslib.h")}
+USE_FAODEL=${FAODEL:-$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")}
+USE_ADIOS2=${ADIOS2:-$(check_enable "${ADIOS2_PATH}/include/adios2.h")}
+USE_AWSSDK=${AWSSDK:-$(check_enable "${AWSSDK_PATH}/include/aws/core/Aws.h")}
+USE_CEREAL=${CEREAL:-$(check_enable "${CEREAL_PATH}/include/cereal/cereal.hpp")}
+USE_CATALYST2=${CATALYST2:-$(check_enable "${CATALYST2_PATH}/include/catalyst-2.0/catalyst.h")}
+USE_GTEST=${GTEST:-$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")}
+USE_CATCH2=${CATCH2:-$(check_enable "${CATCH2_PATH}/include/catch2/catch_all.hpp")}
+USE_KOKKOS=${KOKKOS:-$(check_enable "${KOKKOS_PATH}/include/Kokkos_Core.hpp")}
+USE_METIS=${METIS:-$(check_enable "${METIS_PATH}/include/metis.h")}
+USE_PARMETIS=${USE_PARMETIS:-$(check_enable "${METIS_PATH}/include/parmetis.h")}
+
+USE_NETCDF=$(check_valid USE_NETCDF) || exit
+USE_MATIO=$(check_valid USE_MATIO) || exit
+USE_CGNS=$(check_valid USE_CGNS) || exit
+USE_FAODEL=$(check_valid USE_FAODEL) || exit
+USE_ADIOS2=$(check_valid USE_ADIOS2) || exit
+USE_AWSSDK=$(check_valid USE_AWSSDK) || exit
+USE_CEREAL=$(check_valid USE_CEREAL) || exit
+USE_CATALYST2=$(check_valid USE_CATALYST2) || exit
+USE_GTEST=$(check_valid USE_GTEST) || exit
+USE_CATCH2=$(check_valid USE_CATCH2) || exit
+USE_KOKKOS=$(check_valid USE_KOKKOS) || exit
+USE_METIS=$(check_valid USE_METIS) || exit
+USE_PARMETIS=$(check_valid USE_PARMETIS) || exit
 
 ### DataWarp (Burst Buffer)
 ### I use the following for mutrino (10/16/2018):
@@ -395,7 +409,7 @@ else
     LD_EXT="a"
 fi
 
-if [ "${HAVE_KOKKOS}" == "YES" ]
+if [ "${USE_KOKKOS}" == "YES" ]
 then
     KOKKOS_SYMBOLS="-DKOKKOS_SRC_PATH:PATH=${INSTALL_PATH}/TPL/kokkos/kokkos \
                     -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
@@ -403,25 +417,25 @@ then
                     -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkoscore.${LD_EXT}"
 fi
 
-if [ "$HAVE_AWSSDK" == "YES" ] && [ "$HAVE_CEREAL" == "YES" ]
+if [ "$USE_AWSSDK" == "YES" ] && [ "$USE_CEREAL" == "YES" ]
 then
-  AWSSDK_SYMBOLS=" -D TPL_ENABLE_AWSSDK:BOOL=${HAVE_AWSSDK}   \
+  AWSSDK_SYMBOLS=" -D TPL_ENABLE_AWSSDK:BOOL=${USE_AWSSDK}   \
     -D AWSSDK_ROOT:PATH=${AWSSDK_PATH} \
     "
-  CEREAL_SYMBOLS=" -D TPL_ENABLE_Cereal:BOOL=${HAVE_CEREAL}   \
+  CEREAL_SYMBOLS=" -D TPL_ENABLE_Cereal:BOOL=${USE_CEREAL}   \
     -D Cereal_INCLUDE_DIRS:PATH=${CEREAL_PATH}/include \
     "
 fi
 
-if [ "$HAVE_FAODEL" == "YES" ]
+if [ "$USE_FAODEL" == "YES" ]
 then
-  FAODEL_SYMBOLS=" -D TPL_ENABLE_Faodel:BOOL=${HAVE_FAODEL} \
+  FAODEL_SYMBOLS=" -D TPL_ENABLE_Faodel:BOOL=${USE_FAODEL} \
     -D Faodel_ROOT:PATH=${FAODEL_PATH} \
     -D Faodel_INCLUDE_DIRS:PATH=${FAODEL_PATH}/include/faodel \
     "
 fi
 
-if [ "$HAVE_ADIOS2" == "YES" ]
+if [ "$USE_ADIOS2" == "YES" ]
 then
   ADIOS2_SYMBOLS=" -D TPL_ENABLE_ADIOS2:BOOL=YES \
     -DTPL_ADIOS2_INCLUDE_DIRS:PATH=${ADIOS2_PATH}/include/ADIOS2 \
@@ -536,22 +550,22 @@ ${SUBSET_OPTIONS} \
 ${EXTRA_LIB} \
 ${MODERN_ARG} \
 \
--D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
--D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
--D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
--D TPL_ENABLE_ADIOS2:BOOL=${HAVE_ADIOS2} \
--D TPL_ENABLE_Catalyst2:BOOL=${HAVE_CATALYST2} \
--D TPL_ENABLE_GTest:BOOL=${HAVE_GTEST} \
--D TPL_ENABLE_Catch2:BOOL=${HAVE_CATCH2} \
--D TPL_ENABLE_Kokkos:BOOL=${HAVE_KOKKOS} \
--D TPL_ENABLE_METIS:BOOL=${HAVE_METIS} \
--D TPL_ENABLE_ParMETIS:BOOL=${HAVE_PARMETIS} \
+-D TPL_ENABLE_Netcdf:BOOL=${USE_NETCDF} \
+-D TPL_ENABLE_Matio:BOOL=${USE_MATIO} \
+-D TPL_ENABLE_CGNS:BOOL=${USE_CGNS} \
+-D TPL_ENABLE_ADIOS2:BOOL=${USE_ADIOS2} \
+-D TPL_ENABLE_Catalyst2:BOOL=${USE_CATALYST2} \
+-D TPL_ENABLE_GTest:BOOL=${USE_GTEST} \
+-D TPL_ENABLE_Catch2:BOOL=${USE_CATCH2} \
+-D TPL_ENABLE_Kokkos:BOOL=${USE_KOKKOS} \
+-D TPL_ENABLE_METIS:BOOL=${USE_METIS} \
+-D TPL_ENABLE_ParMETIS:BOOL=${USE_PARMETIS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
 -D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
 ${THREAD_SAFE_OPT} \
--D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
+-D TPL_ENABLE_X11:BOOL=${USE_X11} \
 \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
@@ -580,6 +594,15 @@ ${CEREAL_SYMBOLS} \
 $EXTRA_ARGS \
 ${ACCESS}
 
+function echo_if_enabled()
+{
+    if [ "${1}" == "YES" ]; then
+	echo -e "${1}\t\t${2}"
+    else
+	echo "${1}"
+    fi
+}
+
 echo ""
 echo "          OS: ${OS}"
 echo "      ACCESS: ${ACCESS}"
@@ -595,21 +618,20 @@ echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "       CRAY: ${CRAY}"
 echo " "
-echo "     NETCDF: ${HAVE_NETCDF}"
-echo "      MATIO: ${HAVE_MATIO}"
-echo "       CGNS: ${HAVE_CGNS}"
-echo "     KOKKOS: ${HAVE_KOKKOS}"
-echo "     ZOLTAN: ${ZOLTAN}"
-echo "     ADIOS2: ${HAVE_ADIOS2}"
-echo "  CATALYST2: ${HAVE_CATALYST2}"
-echo "      METIS: ${HAVE_METIS}"
-echo "   PARMETIS: ${HAVE_PARMETIS}"
-echo "     FAODEL: ${HAVE_FAODEL}"
-echo "     AWSSDK: ${HAVE_AWSSDK}"
-echo "AWSSDK_PATH: ${AWSSDK_PATH}"
-echo "CEREAL_PATH: ${CEREAL_PATH}"
-echo "      GTEST: ${HAVE_GTEST}"
-echo "     CATCH2: ${HAVE_CATCH2}"
+echo -e "     NETCDF: $(echo_if_enabled ${USE_NETCDF} ${NETCDF_PATH})"
+echo -e "      MATIO: $(echo_if_enabled ${USE_MATIO} ${MATIO_PATH})"
+echo -e "       CGNS: $(echo_if_enabled ${USE_CGNS} ${CGNS_PATH})"
+echo -e "     KOKKOS: $(echo_if_enabled ${USE_KOKKOS} ${KOKKOS_PATH})"
+echo -e "     ZOLTAN: $(echo_if_enabled ${ZOLTAN} ${INSTALL_PATH})"
+echo -e "     ADIOS2: $(echo_if_enabled ${USE_ADIOS2} ${ADIOS2_PATH})"
+echo -e "  CATALYST2: $(echo_if_enabled ${USE_CATALYST2} ${CATALYST2_PATH})"
+echo -e "      METIS: $(echo_if_enabled ${USE_METIS} ${METIS_PATH})"
+echo -e "   PARMETIS: $(echo_if_enabled ${USE_PARMETIS} ${PARMETIS_PATH})"
+echo -e "     FAODEL: $(echo_if_enabled ${USE_FAODEL} ${FAODEL_PATH})"
+echo -e "     AWSSDK: $(echo_if_enabled ${USE_AWSSDK} ${AWSSDK_PATH})"
+echo -e "     CEREAL: $(echo_if_enabled ${USE_CEREAL} ${CEREAL_PATH})"
+echo -e "      GTEST: $(echo_if_enabled ${USE_GTEST} ${GTEST_PATH})"
+echo -e "     CATCH2: $(echo_if_enabled ${USE_CATCH2} ${CATCH2_PATH})"
 echo "    DOXYGEN: ${DOXYGEN}"
 if [ "$OSX_TARGET" != "" ] ; then
 echo " OSX_TARGET: ${OSX_TARGET}"
