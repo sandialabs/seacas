@@ -125,7 +125,7 @@ Ioss::Property::Property(std::string name, void *value, Origin origin)
 {
 }
 
-/** \brief Set implicit property with a specified type.
+/** \brief Create an implicit property with a specified type.
  *
  *  \param[in] ge The property value.
  *  \param[in] name The property name.

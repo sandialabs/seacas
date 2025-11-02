@@ -31,6 +31,7 @@ catalyst_exodus  | Output        | Visualization pipeline, exodus-based
 catalyst_cgns    | Output        | Visualization pipeline, cgns-based
 null             | Output        | No data written to disk, no calculations done by ioss
 exonull          | Output        | No data written to disk, but uses all of the exodus io database infrastructure/calculations
+s3               | Input/Output  | Cloud storage using Amazon AWS
 adios            | Input/Output  | Adaptable Input/Output system, (https://adios2.readthedocs.io/en/latest/)
 faodel           | Input/Output  | (https://github.com/faodel/faodel)
 exodusii         | Input/Output  | alias for exodus
@@ -238,7 +239,8 @@ throughout the file.
  IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create/flush
  CHECK_PARALLEL_CONSISTENCY | on/[off] | check Ioss::GroupingEntity parallel consistency
  TIME_STATE_INPUT_OUTPUT | on/[off] | show the elapsed time for reading/writing each timestep's data
- NAN_DETECTION | on/[off] | 
+ NAN_DETECTION | on/[off] | Output a warning if a NaN is detected while reading/writing field data.
+ 
 ## Setting properties via an environment variable
 
 Although the properties are usually accessed internally in the

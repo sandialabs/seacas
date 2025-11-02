@@ -162,12 +162,12 @@ jobs:
           echo "------------"
           ls /opt/intel/oneapi/
           echo "------------"
-          ls /opt/intel/oneapi/2025.2/
+          ls /opt/intel/oneapi/2025.3/
           echo "------------"
-          ls /opt/intel/oneapi/2025.2/bin/
+          ls /opt/intel/oneapi/2025.3/bin/
           echo "------------"
-          export PATH=/opt/intel/oneapi/2025.2/bin/:$PATH
-          export LD_LIBRARY_PATH=/opt/intel/oneapi/2025.2/lib/:$LD_LIBRARY_PATH
+          export PATH=/opt/intel/oneapi/2025.3/bin/:$PATH
+          export LD_LIBRARY_PATH=/opt/intel/oneapi/2025.3/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
