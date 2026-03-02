@@ -144,7 +144,7 @@ public:
 
 private:
   void          enroll_options();
-  GetLongOption options_{}; //!< Options parsing
+  suplib_cpp::GetLongOption options_{}; //!< Options parsing
 };
 
 extern SystemInterface interFace;

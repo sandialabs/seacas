@@ -9,6 +9,8 @@
 #include <fmt/format.h>
 #include <time_stamp.h>
 
+namespace suplib_cpp {
+
 std::string time_stamp(const std::string &format)
 {
   if (format.empty()) {
@@ -18,4 +20,6 @@ std::string time_stamp(const std::string &format)
   auto        now         = std::chrono::system_clock::now();
   std::string time_string = fmt::format(fmt::runtime(format), now);
   return time_string;
+}
+
 }

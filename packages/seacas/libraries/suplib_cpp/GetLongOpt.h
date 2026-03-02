@@ -14,8 +14,12 @@
 /** \brief A database of program command line and environment variable options and methods for
  * manipulating them.
  *
- *  A collection of long command line option names for a program that uses the Ioss library.
+ *  A collection of long command line option names.
+ *
  */
+
+namespace suplib_cpp {
+
 class GetLongOption
 {
 public:
@@ -106,3 +110,5 @@ public:
     return value;
   }
 };
+
+}

@@ -36,6 +36,8 @@
 #include <spi/include/kernel/memory.h>
 #endif
 
+namespace suplib_cpp {
+
 size_t get_hwm_memory_info()
 {
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
@@ -75,4 +77,6 @@ size_t get_hwm_memory_info()
 #endif
 #endif
   return memory_usage;
+}
+
 }

@@ -569,6 +569,8 @@ namespace pdqsort_detail {
   }
 } // namespace pdqsort_detail
 
+namespace suplib_cpp {
+
 template <class Iter, class Compare> inline void pdqsort(Iter begin, Iter end, Compare comp)
 {
   if (begin == end)
@@ -605,6 +607,8 @@ template <class Iter> inline void pdqsort_branchless(Iter begin, Iter end)
 {
   typedef typename std::iterator_traits<Iter>::value_type T;
   pdqsort_branchless(begin, end, std::less<T>());
+}
+
 }
 
 #undef PDQSORT_PREFER_MOVE

@@ -39,6 +39,8 @@ namespace {
   bool do_stat(const std::string &filename, struct stat *s);
 } // namespace
 
+namespace suplib_cpp {
+
 FileInfo::FileInfo() = default;
 
 FileInfo::FileInfo(std::string my_filename) : filename_(std::move(my_filename))
@@ -264,6 +266,8 @@ bool FileInfo::remove_file()
 {
   int success = std::remove(filename_.c_str());
   return success == 0;
+}
+
 }
 
 namespace {

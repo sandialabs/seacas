@@ -12,6 +12,8 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace suplib_cpp {
+
 void break_into_debugger() { std::cerr << "Not Implemented.\n"; }
 
 namespace {
@@ -205,11 +207,11 @@ namespace Private {
 
   void init_assert()
   {
-    Assert::set_log(&::smart_assert::default_logger);
-    Assert::set_handler(lvl_warn, &::smart_assert::default_warn_handler);
-    Assert::set_handler(lvl_debug, &::smart_assert::default_debug_handler);
-    Assert::set_handler(lvl_error, &::smart_assert::default_error_handler);
-    Assert::set_handler(lvl_fatal, &::smart_assert::default_fatal_handler);
+    Assert::set_log(&smart_assert::default_logger);
+    Assert::set_handler(lvl_warn, &smart_assert::default_warn_handler);
+    Assert::set_handler(lvl_debug, &smart_assert::default_debug_handler);
+    Assert::set_handler(lvl_error, &smart_assert::default_error_handler);
+    Assert::set_handler(lvl_fatal, &smart_assert::default_fatal_handler);
   }
 
   // sets the default logger to write to this stream
@@ -228,3 +230,5 @@ namespace Private {
   }
 
 } // namespace Private
+
+}

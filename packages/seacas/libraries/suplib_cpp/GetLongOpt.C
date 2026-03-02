@@ -11,6 +11,8 @@
 #include <fmt/ostream.h>
 #include <sstream>
 
+namespace suplib_cpp {
+
 /** \brief Create an empty options database.
  *
  * \param optmark The command line symbol designating options.
@@ -407,4 +409,6 @@ void GetLongOption::usage(std::ostream &outfile) const
     }
     outfile.flush();
   }
+}
+
 }

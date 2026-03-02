@@ -35,6 +35,9 @@ template <typename INT> struct NODE_COMM_MAP;
 #define FALL_THROUGH ((void)0)
 #endif
 
+using suplib_cpp::Data;
+using suplib_cpp::copy_string;
+
 namespace {
   template <typename INT>
   void reverse_map(INT *global, int p01, size_t gsize, INT *glmap, INT *index, INT *mapout);

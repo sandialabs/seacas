@@ -24,6 +24,8 @@
 #include <fmt/format.h>
 #include <string>
 
+using suplib_cpp::Data;
+
 char **qa_record_ptr, **inf_record_ptr;
 int    num_inf_rec = 0, num_qa_rec = 0, length_qa = 0;
 

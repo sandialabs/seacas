@@ -9,6 +9,8 @@
 #include <fmt/format.h>
 #include <format_time.h>
 
+namespace suplib_cpp {
+
 std::string format_time(double seconds)
 {
   std::string suffix("u");
@@ -32,4 +34,6 @@ std::string format_time(double seconds)
     suffix = "s";
   }
   return fmt::format("{:.3}{}", seconds, suffix);
+}
+
 }

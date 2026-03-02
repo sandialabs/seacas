@@ -7,4 +7,8 @@
 
 #include <string>
 
+namespace suplib_cpp {
+
 std::string sys_info(const std::string &codename);
+
+}

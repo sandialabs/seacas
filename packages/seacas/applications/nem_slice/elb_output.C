@@ -25,6 +25,9 @@
 #include <iostream>
 #include <vector> // for vector
 
+using suplib_cpp::Data;
+using suplib_cpp::copy_string;
+
 namespace {
   std::string remove_extension(const std::string &filename)
   {

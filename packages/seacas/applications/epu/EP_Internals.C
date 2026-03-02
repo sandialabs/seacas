@@ -29,6 +29,9 @@ extern "C" {
 #include <netcdf.h>
 }
 
+using suplib_cpp::Data;
+using suplib_cpp::copy_string;
+
 // Explicit Initialization of the functions used...
 namespace Excn {
   template int Internals<int>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,

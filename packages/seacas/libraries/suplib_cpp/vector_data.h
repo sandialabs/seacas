@@ -17,6 +17,9 @@
 //
 // We don't have any systems on which we have found that (yet?), but this is proactive
 // in removing our use of `.data()` on potentially empty vectors...
+
+namespace suplib_cpp {
+
 template <typename T> constexpr T *Data(std::vector<T> &vec)
 {
   if (vec.empty()) {
@@ -41,4 +44,6 @@ template <typename T, size_t N> constexpr T *Data(std::array<T, N> &arr)
 template <typename T, size_t N> constexpr const T *Data(const std::array<T, N> &arr)
 {
   return N == 0 ? nullptr : arr.data();
+}
+
 }

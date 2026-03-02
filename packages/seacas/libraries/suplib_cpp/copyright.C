@@ -7,6 +7,8 @@
 #include <fmt/format.h>
 #include <string>
 
+namespace suplib_cpp {
+
 std::string copyright(const std::string &year_range)
 {
   return fmt::format("\n"
@@ -43,4 +45,6 @@ std::string copyright(const std::string &year_range)
                      "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
                      "\n",
                      year_range);
+}
+
 }

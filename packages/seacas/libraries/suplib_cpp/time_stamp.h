@@ -6,4 +6,9 @@
 #pragma once
 
 #include <string>
+
+namespace suplib_cpp {
+
 std::string time_stamp(const std::string &format);
+
+}

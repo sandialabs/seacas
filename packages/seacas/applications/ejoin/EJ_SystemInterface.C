@@ -19,6 +19,9 @@
 #include <utility>
 #include <vector>
 
+using suplib_cpp::GetLongOption;
+using suplib_cpp::copyright;
+
 namespace {
   bool str_equal(const std::string &s1, const std::string &s2)
   {

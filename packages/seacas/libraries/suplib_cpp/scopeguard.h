@@ -12,6 +12,8 @@
   Modified by Joshua Lehrer, FactSet Research Systems, November 2005.
 */
 
+namespace suplib_cpp {
+
 template <class T> class RefHolder
 {
   T &ref_;
@@ -263,9 +265,11 @@ MakeGuard(Ret (Obj2::*memFun)(P1a, P2a), Obj1 *obj, P1b p1, P2b p2)
                                                                                    p2);
 }
 
+}
+
 #define CONCATENATE_DIRECT(s1, s2) s1##s2
 #define CONCATENATE(s1, s2)        CONCATENATE_DIRECT(s1, s2)
 #define ANONYMOUS_VARIABLE(str)    CONCATENATE(str, __LINE__)
 
-#define ON_BLOCK_EXIT     ScopeGuard ANONYMOUS_VARIABLE(scopeGuard) = MakeGuard
-#define ON_BLOCK_EXIT_OBJ ScopeGuard ANONYMOUS_VARIABLE(scopeGuard) = MakeObjGuard
+#define ON_BLOCK_EXIT     suplib_cpp::ScopeGuard ANONYMOUS_VARIABLE(scopeGuard) = suplib_cpp::MakeGuard
+#define ON_BLOCK_EXIT_OBJ suplib_cpp::ScopeGuard ANONYMOUS_VARIABLE(scopeGuard) = suplib_cpp::MakeObjGuard

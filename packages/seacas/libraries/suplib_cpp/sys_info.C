@@ -22,6 +22,8 @@
 #endif
 #include <fmt/format.h>
 
+namespace suplib_cpp {
+
 std::string sys_info(const std::string &codename)
 {
   // Return 'uname' output.  This is used as information data records
@@ -63,4 +65,6 @@ std::string sys_info(const std::string &codename)
                   sys_info.sysname, sys_info.release, sys_info.version, sys_info.machine);
 #endif
   return info;
+}
+
 }

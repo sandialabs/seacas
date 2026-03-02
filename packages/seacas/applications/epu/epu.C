@@ -63,6 +63,20 @@ using StringVector = std::vector<std::string>;
 
 #include "add_to_log.h"
 
+namespace suplib_cpp {
+
+extern double seacas_timer();
+
+}
+
+using suplib_cpp::Data;
+using suplib_cpp::seacas_timer;
+using suplib_cpp::time_stamp;
+using suplib_cpp::format_time;
+using suplib_cpp::copy_string;
+using suplib_cpp::get_hwm_memory_info;
+using suplib_cpp::sys_info;
+
 // The main program templated to permit float/double transfer.
 template <typename T, typename INT>
 int epu(Excn::SystemInterface &interFace, int start_part, int part_count, int cycle);
@@ -96,7 +110,6 @@ public:
 using ExodusIdVector                          = std::vector<ex_entity_id>;
 template <typename T> using MasterValueVector = std::vector<T>;
 
-extern double seacas_timer();
 namespace {
   unsigned int debug_level = 0;
   const double FILL_VALUE  = FLT_MAX;

@@ -22,6 +22,9 @@
  *  file class.
  */
 
+namespace suplib_cpp {
+ 
+
 class FileInfo
 {
 public:
@@ -80,3 +83,5 @@ private:
   bool        exists_{false};   ///< this is used frequently, check on creation
   bool        readable_{false}; ///< this is used frequently, check on creation
 };
+
+ }

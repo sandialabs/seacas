@@ -9,7 +9,11 @@
 #ifndef SUPLIB_CPP_FORMAT_TIME
 #define SUPLIB_CPP_FORMAT_TIME
 
+namespace suplib_cpp {
+
 #include <string>
 std::string format_time(double seconds);
 
 #endif
+
+}
