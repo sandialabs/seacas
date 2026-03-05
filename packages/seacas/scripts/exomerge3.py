@@ -212,18 +212,22 @@ class ExodusModel(object):
         ("line2", (2, 3)),
         ("line2", (3, 0)),
     ]
-    FACE_MAPPING["shell4"] = [("quad4",(0,1,2,3)),
-                              ("quad4",(0,3,2,1)),
-                              ("line2", (0, 1)),
-                             ("line2", (1, 2)),
-                             ("line2", (2, 3)),
-                             ("line2", (3, 0))]
-    FACE_MAPPING["shell"] = [("quad4",(0,1,2,3)),
-                              ("quad4",(0,3,2,1)),
-                              ("line2", (0, 1)),
-                             ("line2", (1, 2)),
-                             ("line2", (2, 3)),
-                             ("line2", (3, 0))]
+    FACE_MAPPING["shell4"] = [
+        ("quad4", (0, 1, 2, 3)),
+        ("quad4", (0, 3, 2, 1)),
+        ("line2", (0, 1)),
+        ("line2", (1, 2)),
+        ("line2", (2, 3)),
+        ("line2", (3, 0))
+    ]
+    FACE_MAPPING["shell"] = [
+        ("quad4", (0, 1, 2, 3)),
+        ("quad4", (0, 3, 2, 1)),
+        ("line2", (0, 1)),
+        ("line2", (1, 2)),
+        ("line2", (2, 3)),
+        ("line2", (3, 0))
+    ]
     FACE_MAPPING["quad6"] = [
         ("line3", (0, 1, 4)),
         ("line2", (1, 2)),
