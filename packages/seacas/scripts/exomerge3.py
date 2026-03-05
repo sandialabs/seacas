@@ -127,6 +127,8 @@ class ExodusModel(object):
     VOLUME_FORMULA["quad4"] = [0.5, (0, 2), (1, 3)]
     VOLUME_FORMULA["quad6"] = VOLUME_FORMULA["quad4"]
     VOLUME_FORMULA["quad8"] = VOLUME_FORMULA["quad4"]
+    VOLUME_FORMULA["shell4"] = VOLUME_FORMULA["quad4"]
+    VOLUME_FORMULA["shell"] = VOLUME_FORMULA["quad4"]
     VOLUME_FORMULA["tet4"] = [1.0 / 6.0, (0, 1), (0, 2), (0, 3)]
     VOLUME_FORMULA["tet10"] = VOLUME_FORMULA["tet4"]
     VOLUME_FORMULA["wedge6"] = [
@@ -209,6 +211,22 @@ class ExodusModel(object):
         ("line2", (1, 2)),
         ("line2", (2, 3)),
         ("line2", (3, 0)),
+    ]
+    FACE_MAPPING["shell4"] = [
+        ("quad4", (0, 1, 2, 3)),
+        ("quad4", (0, 3, 2, 1)),
+        ("line2", (0, 1)),
+        ("line2", (1, 2)),
+        ("line2", (2, 3)),
+        ("line2", (3, 0))
+    ]
+    FACE_MAPPING["shell"] = [
+        ("quad4", (0, 1, 2, 3)),
+        ("quad4", (0, 3, 2, 1)),
+        ("line2", (0, 1)),
+        ("line2", (1, 2)),
+        ("line2", (2, 3)),
+        ("line2", (3, 0))
     ]
     FACE_MAPPING["quad6"] = [
         ("line3", (0, 1, 4)),
@@ -298,6 +316,8 @@ class ExodusModel(object):
     INVERTED_CONNECTIVITY["tri3"] = (0, 2, 1)
     INVERTED_CONNECTIVITY["tri6"] = (0, 2, 1, 5, 4, 3)
     INVERTED_CONNECTIVITY["quad4"] = (0, 3, 2, 1)
+    INVERTED_CONNECTIVITY["shell4"] = INVERTED_CONNECTIVITY["quad4"]
+    INVERTED_CONNECTIVITY["shell"] = INVERTED_CONNECTIVITY["quad4"]
     INVERTED_CONNECTIVITY["quad6"] = (3, 2, 1, 0, 5, 4)
     INVERTED_CONNECTIVITY["quad8"] = (0, 3, 2, 1, 7, 6, 5, 4)
     INVERTED_CONNECTIVITY["line2"] = (1, 0)
@@ -319,6 +339,8 @@ class ExodusModel(object):
     DIMENSION["tri3"] = 2
     DIMENSION["tri6"] = 2
     DIMENSION["quad4"] = 2
+    DIMENSION["shell4"] = 3
+    DIMENSION["shell"] = 3
     DIMENSION["quad6"] = 2
     DIMENSION["quad8"] = 2
     DIMENSION["hex8"] = 3
