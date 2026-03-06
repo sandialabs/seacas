@@ -569,7 +569,7 @@ TEST_F(ManagerTest, ManagerAddExecuteDataThreeInputs)
 TEST_F(ManagerTest, ManagerCallExecuteWithTwoInputsOneScript)
 {
   reset();
- 
+
   conduit_cpp::Node m1;
   std::string       m1Channel = "m1";
   m1["m1/data"]               = 100;
@@ -584,20 +584,19 @@ TEST_F(ManagerTest, ManagerCallExecuteWithTwoInputsOneScript)
   props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
   props.add(Ioss::Property(CatalystManager::CATALYST_INPUT_NAME, "inputx"));
   initialize();
-  //CatalystManager::getInstance().setMultiInputWaitState(id, state, time, n);
+  // CatalystManager::getInstance().setMultiInputWaitState(id, state, time, n);
   conduit_cpp::Node m;
-
 
   Ioss::PropertyManager propsTwo;
   propsTwo.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
   propsTwo.add(Ioss::Property(CatalystManager::CATALYST_INPUT_NAME, "inputy"));
   auto idTwo = CatalystManager::getInstance().initialize(propsTwo, putils);
 
-  CatalystManager &catMgr = CatalystManager::getInstance();
-  auto pppa = catMgr.getCatalystProps(id);
+  CatalystManager  &catMgr = CatalystManager::getInstance();
+  auto              pppa   = catMgr.getCatalystProps(id);
   conduit_cpp::Node nnna;
   catMgr.addExecuteProps(nnna, pppa, state, time);
-  auto pppb = CatalystManager::getInstance().getCatalystProps(idTwo);
+  auto              pppb = CatalystManager::getInstance().getCatalystProps(idTwo);
   conduit_cpp::Node nnnb;
   catMgr.addExecuteProps(nnnb, pppb, state, time);
   bool returnDueToMultiPipeNotReady = false;
@@ -609,16 +608,15 @@ TEST_F(ManagerTest, ManagerCallExecuteWithTwoInputsOneScript)
   std::string datapathb = "catalyst/channels/inputy/data/m2/data";
   EXPECT_TRUE(nnnb.has_path(datapatha));
   EXPECT_TRUE(nnnb.has_path(datapathb));
-  if(nnnb.has_path(datapatha) && nnnb.has_path(datapathb)) {
+  if (nnnb.has_path(datapatha) && nnnb.has_path(datapathb)) {
     std::string resa = nnnb[datapatha].to_json();
     std::string resb = nnnb[datapathb].to_json();
-    if((resa != "100") || (resb != "500")) {
+    if ((resa != "100") || (resb != "500")) {
       std::cerr << "ManagerCallExecuteWithTwoInputsOneScript test failing, "
-	      "printing bad conduit node:\n";
+                   "printing bad conduit node:\n";
       std::cerr << nnnb.to_json() << "\n";
     }
     EXPECT_TRUE(resa == "100");
     EXPECT_TRUE(resb == "500");
   }
 }
-

@@ -142,8 +142,9 @@ namespace Iocatalyst {
     return catPipes[id];
   }
 
-  bool CatalystManager::setupConduitNodeForCatalystExecute(conduit_cpp::Node &n,
-                CatalystProps &p, int state, double time, conduit_cpp::Node &data)
+  bool CatalystManager::setupConduitNodeForCatalystExecute(conduit_cpp::Node &n, CatalystProps &p,
+                                                           int state, double time,
+                                                           conduit_cpp::Node &data)
   {
     if (p.enableCatalystMultiInputPipeline) {
       setMultiInputWaitState(p.catalystPipelineID, state, time, data);
@@ -189,7 +190,7 @@ namespace Iocatalyst {
     bool returnDueToMultiPipeNotReady = false;
 
     returnDueToMultiPipeNotReady = setupConduitNodeForCatalystExecute(n, p, state, time, data);
-    if(returnDueToMultiPipeNotReady) {
+    if (returnDueToMultiPipeNotReady) {
       return;
     }
 
