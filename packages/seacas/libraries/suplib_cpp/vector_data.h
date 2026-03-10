@@ -20,30 +20,30 @@
 
 namespace suplib_cpp {
 
-template <typename T> constexpr T *Data(std::vector<T> &vec)
-{
-  if (vec.empty()) {
-    return nullptr;
+  template <typename T> constexpr T *Data(std::vector<T> &vec)
+  {
+    if (vec.empty()) {
+      return nullptr;
+    }
+    return vec.data();
   }
-  return vec.data();
-}
 
-template <typename T> constexpr const T *Data(const std::vector<T> &vec)
-{
-  if (vec.empty()) {
-    return nullptr;
+  template <typename T> constexpr const T *Data(const std::vector<T> &vec)
+  {
+    if (vec.empty()) {
+      return nullptr;
+    }
+    return vec.data();
   }
-  return vec.data();
-}
 
-template <typename T, size_t N> constexpr T *Data(std::array<T, N> &arr)
-{
-  return N == 0 ? nullptr : arr.data();
-}
+  template <typename T, size_t N> constexpr T *Data(std::array<T, N> &arr)
+  {
+    return N == 0 ? nullptr : arr.data();
+  }
 
-template <typename T, size_t N> constexpr const T *Data(const std::array<T, N> &arr)
-{
-  return N == 0 ? nullptr : arr.data();
-}
+  template <typename T, size_t N> constexpr const T *Data(const std::array<T, N> &arr)
+  {
+    return N == 0 ? nullptr : arr.data();
+  }
 
-}
+} // namespace suplib_cpp

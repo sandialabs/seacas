@@ -40,7 +40,6 @@
 
 #include <sys/types.h>
 
-
 #ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
@@ -55,13 +54,13 @@
 
 namespace suplib_cpp {
 
-extern double seacas_timer();
+  extern double seacas_timer();
 
 }
 
 using suplib_cpp::seacas_timer;
 
-int           debug_level = 0;
+int debug_level = 0;
 
 // size_t partial_count = 1'00'000;
 size_t partial_count = 1'000'000'000;

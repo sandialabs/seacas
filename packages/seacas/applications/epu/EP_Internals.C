@@ -29,8 +29,8 @@ extern "C" {
 #include <netcdf.h>
 }
 
-using suplib_cpp::Data;
 using suplib_cpp::copy_string;
+using suplib_cpp::Data;
 
 // Explicit Initialization of the functions used...
 namespace Excn {

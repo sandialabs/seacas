@@ -36,8 +36,8 @@
 #include <cstring>    // for strcmp, strstr, strchr, etc
 #include <exodusII.h> // for ex_close, EX_READ, etc
 
-using suplib_cpp::Data;
 using suplib_cpp::copy_string;
+using suplib_cpp::Data;
 
 namespace {
   int my_getsubopt(char **optionp, char *const *tokens, char **valuep);

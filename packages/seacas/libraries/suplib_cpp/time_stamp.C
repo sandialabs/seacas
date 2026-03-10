@@ -11,15 +11,15 @@
 
 namespace suplib_cpp {
 
-std::string time_stamp(const std::string &format)
-{
-  if (format.empty()) {
-    return {""};
+  std::string time_stamp(const std::string &format)
+  {
+    if (format.empty()) {
+      return {""};
+    }
+
+    auto        now         = std::chrono::system_clock::now();
+    std::string time_string = fmt::format(fmt::runtime(format), now);
+    return time_string;
   }
 
-  auto        now         = std::chrono::system_clock::now();
-  std::string time_string = fmt::format(fmt::runtime(format), now);
-  return time_string;
-}
-
-}
+} // namespace suplib_cpp

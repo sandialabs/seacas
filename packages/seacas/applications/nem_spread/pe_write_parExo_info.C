@@ -35,8 +35,8 @@ template <typename INT> struct NODE_COMM_MAP;
 #define FALL_THROUGH ((void)0)
 #endif
 
-using suplib_cpp::Data;
 using suplib_cpp::copy_string;
+using suplib_cpp::Data;
 
 namespace {
   template <typename INT>

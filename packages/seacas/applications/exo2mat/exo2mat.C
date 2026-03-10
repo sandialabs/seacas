@@ -846,7 +846,8 @@ namespace {
 
           num_nodes_per_side.resize(n1);
           side_nodes.resize(n2);
-          ex_get_side_set_node_list(exo_file, ids[i], ::Data(num_nodes_per_side), ::Data(side_nodes));
+          ex_get_side_set_node_list(exo_file, ids[i], ::Data(num_nodes_per_side),
+                                    ::Data(side_nodes));
 
           /* number-of-nodes-per-side list */
           std::string str;

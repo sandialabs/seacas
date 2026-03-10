@@ -23,8 +23,8 @@
 #include <utility> // for pair, make_pair
 #include <vector>  // for vector
 
-using suplib_cpp::GetLongOption;
 using suplib_cpp::copyright;
+using suplib_cpp::GetLongOption;
 
 namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);

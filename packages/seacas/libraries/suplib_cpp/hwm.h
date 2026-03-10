@@ -8,6 +8,6 @@
 
 namespace suplib_cpp {
 
-size_t get_hwm_memory_info();
+  size_t get_hwm_memory_info();
 
 }

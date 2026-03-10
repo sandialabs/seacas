@@ -19,19 +19,19 @@ namespace {
 
 namespace suplib_cpp {
 
-template <typename T, typename INT> void index_qsort(const T v[], INT iv[], size_t N)
-{
-  if (N <= 1) {
-    return;
-  }
-  iqsort(v, iv, 0, N - 1);
-  iisort(v, iv, N);
+  template <typename T, typename INT> void index_qsort(const T v[], INT iv[], size_t N)
+  {
+    if (N <= 1) {
+      return;
+    }
+    iqsort(v, iv, 0, N - 1);
+    iisort(v, iv, N);
 #if defined(DEBUG_QSORT)
-  check(v, iv, N);
+    check(v, iv, N);
 #endif
-}
+  }
 
-}
+} // namespace suplib_cpp
 
 // The following are not part of the public interFace...
 
@@ -172,10 +172,10 @@ namespace {
 
 namespace suplib_cpp {
 
-template void index_qsort(const int v[], int iv[], size_t N);
-template void index_qsort(const double v[], int iv[], size_t N);
+  template void index_qsort(const int v[], int iv[], size_t N);
+  template void index_qsort(const double v[], int iv[], size_t N);
 
-template void index_qsort(const int64_t v[], int64_t iv[], size_t N);
-template void index_qsort(const double v[], int64_t iv[], size_t N);
+  template void index_qsort(const int64_t v[], int64_t iv[], size_t N);
+  template void index_qsort(const double v[], int64_t iv[], size_t N);
 
-}
+} // namespace suplib_cpp

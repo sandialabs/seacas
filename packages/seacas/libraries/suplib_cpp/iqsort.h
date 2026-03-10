@@ -8,6 +8,6 @@
 
 namespace suplib_cpp {
 
-template <typename T, typename INT> void index_qsort(const T v[], INT iv[], size_t N);
+  template <typename T, typename INT> void index_qsort(const T v[], INT iv[], size_t N);
 
 }

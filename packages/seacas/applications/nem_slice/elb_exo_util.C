@@ -28,8 +28,8 @@
 #include "elb_util.h"   // for in_list, roundfloat
 #include "vector_data.h"
 
-using suplib_cpp::Data;
 using suplib_cpp::copy_string;
+using suplib_cpp::Data;
 
 /*****************************************************************************/
 /*****************************************************************************/

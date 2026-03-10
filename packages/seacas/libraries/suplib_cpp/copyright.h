@@ -10,6 +10,6 @@
 
 namespace suplib_cpp {
 
-std::string copyright(const std::string &year_range);
+  std::string copyright(const std::string &year_range);
 
 }

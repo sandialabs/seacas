@@ -12,8 +12,7 @@
 namespace suplib_cpp {
 
 #include <string>
-std::string format_time(double seconds);
+  std::string format_time(double seconds);
 
 #endif
-
 }

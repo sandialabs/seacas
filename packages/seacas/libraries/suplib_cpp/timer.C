@@ -8,12 +8,12 @@
 
 namespace suplib_cpp {
 
-double seacas_timer()
-{
-  static auto                         start = std::chrono::steady_clock::now();
-  auto                                now   = std::chrono::steady_clock::now();
-  const std::chrono::duration<double> diff  = now - start;
-  return diff.count();
-}
+  double seacas_timer()
+  {
+    static auto                         start = std::chrono::steady_clock::now();
+    auto                                now   = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> diff  = now - start;
+    return diff.count();
+  }
 
-}
+} // namespace suplib_cpp

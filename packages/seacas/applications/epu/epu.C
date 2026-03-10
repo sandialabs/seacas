@@ -65,17 +65,17 @@ using StringVector = std::vector<std::string>;
 
 namespace suplib_cpp {
 
-extern double seacas_timer();
+  extern double seacas_timer();
 
 }
 
-using suplib_cpp::Data;
-using suplib_cpp::seacas_timer;
-using suplib_cpp::time_stamp;
-using suplib_cpp::format_time;
 using suplib_cpp::copy_string;
+using suplib_cpp::Data;
+using suplib_cpp::format_time;
 using suplib_cpp::get_hwm_memory_info;
+using suplib_cpp::seacas_timer;
 using suplib_cpp::sys_info;
+using suplib_cpp::time_stamp;
 
 // The main program templated to permit float/double transfer.
 template <typename T, typename INT>
