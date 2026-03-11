@@ -33,9 +33,17 @@
 using idx_t = int;
 #endif
 
-extern int    debug_level;
-extern double seacas_timer();
-extern void   progress(const std::string &output);
+extern int debug_level;
+
+namespace suplib_cpp {
+
+  extern double seacas_timer();
+
+}
+
+using suplib_cpp::seacas_timer;
+
+extern void progress(const std::string &output);
 
 namespace {
   char **get_name_array(size_t count, size_t size)

@@ -11,7 +11,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-char *copy_string(char *dest, char const *source, size_t elements);
+char *copy_c_string(char *dest, char const *source, size_t elements);
 #ifdef __cplusplus
 } /* close brackets on extern "C" declaration */
 #endif
