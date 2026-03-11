@@ -34,7 +34,16 @@ using idx_t = int;
 #endif
 
 extern int    debug_level;
+
+namespace suplib_cpp {
+
 extern double seacas_timer();
+
+}
+
+using suplib_cpp::seacas_timer;
+
+
 extern void   progress(const std::string &output);
 
 namespace {
