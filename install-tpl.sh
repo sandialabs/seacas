@@ -556,7 +556,8 @@ if [ "$FORCE" == "YES" ] || [ "$FORCE_NETCDF" == "YES" ] || ! [ -e $INSTALL_PATH
 then
 #   netcdf_version="v4.9.1"
 #    netcdf_version="v4.9.2"
-    netcdf_version="v4.9.3"
+#    netcdf_version="v4.9.3"
+    netcdf_version="v4.10.0"
 #   netcdf_version="v4.8.1"
 #   netcdf_version="main"
 
@@ -570,7 +571,7 @@ then
         git clone --depth 1 --branch ${netcdf_version} https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-    if [ "$netcdf_version" == "v4.9.3" ]
+    if [ "$netcdf_version" == "v4.9.3" ] || [ "$netcdf_version" == "v4.10.0" ]
     then
         PREFIX="NETCDF_"
     fi
