@@ -19,6 +19,17 @@ TRIBITS_ADD_EXECUTABLE(
  SOURCES unitMain.C UnitTestDynamicTopology.C
 )
 
+TRIBITS_ADD_EXECUTABLE(
+ Utst_generatedmesh
+ SOURCES unitMain.C UnitTestGeneratedMesh.C
+)
+
+TRIBITS_ADD_TEST(
+        Utst_generatedmesh
+        NAME Utst_generatedmesh
+        NUM_MPI_PROCS 1
+)
+
 TRIBITS_ADD_TEST(
         Utst_dynamictopology
         NAME Utst_dynamictopology

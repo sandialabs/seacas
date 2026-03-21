@@ -791,7 +791,7 @@ if [ "$FMT" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || [ "$FORCE_FMT" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
     then
-        fmt_version="11.2.0"
+        fmt_version="12.1.0"
         echo "${txtgrn}+++ FMT ${fmt_version} ${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
