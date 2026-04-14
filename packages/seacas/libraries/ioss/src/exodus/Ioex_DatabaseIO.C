@@ -88,6 +88,18 @@ namespace {
     }
   }
 
+  void get_entity_count_data(int exoid, ex_entity_type type, ex_entity_id id, void* data) 
+  {
+    int ierr = 0;
+    int* entity_counts; // ex_get_entity_count... only takes in an int* cant do the separate int64_t case
+    entity_counts = static_cast<int *>(data);
+    ierr = ex_get_entity_count_per_polyhedra(exoid, type, id, entity_counts);
+
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+  } 
+
   template <typename T>
   void compute_internal_border_maps(T *entities, T *internal, size_t count, size_t entity_count)
   {
