@@ -111,6 +111,11 @@ Ioss::ElementTopology *Ioss::ElementTopology::factory(const std::string &type, b
     }
   }
 
+  std::string base2 = "nsided";
+  if (ltype.compare(0, 6, base2) == 0) {
+      iter = registry().find(base2);
+  }
+
   if (iter == registry().end()) {
     if (!ok_to_fail) {
       IOSS_ERROR(fmt::format("ERROR: The topology type '{}' is not supported.", type));
