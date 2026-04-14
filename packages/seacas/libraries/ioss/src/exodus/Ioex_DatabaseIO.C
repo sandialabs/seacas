@@ -1366,6 +1366,13 @@ namespace Ioex {
 
       // See which connectivity options were defined for this block.
       // X -> Node is always defined.
+
+      // X -> Polyhedral or Polygonal?
+      if(type == "nfaced" || type.substr(0,6) == "nsided") {
+        block->field_add(
+          Ioss::Field("entity_counts", block->field_int_type(), "Real[" + std::to_string(1) + "]", Ioss::Field::MESH));
+      }
+      
       // X -> Face?
       if (faces_per_X > 0 && rank_offset < 1) {
         std::string storage = "Real[" + std::to_string(faces_per_X) + "]";
@@ -2579,6 +2586,9 @@ namespace Ioex {
               }
             }
           }
+          else if (field.get_name() == "entity_counts") {
+            get_entity_count_data(get_file_pointer(), EX_ELEM_BLOCK, id, data);
+          }
         }
         else if (role == Ioss::Field::MAP) {
           int component_count = field.get_component_count(Ioss::Field::InOut::INPUT);
@@ -2718,6 +2728,9 @@ namespace Ioex {
             // Map the local ids in this face block
             // (eb_offset+1...eb_offset+1+my_face_count) to global face ids.
             get_map(EX_FACE_BLOCK).map_implicit_data(data, field, num_to_get, eb->get_offset());
+          }
+          else if (field.get_name() == "entity_counts") {
+            get_entity_count_data(get_file_pointer(), EX_FACE_BLOCK, id, data);
           }
           else {
             num_to_get = Ioss::Utils::field_warning(eb, field, "input");
