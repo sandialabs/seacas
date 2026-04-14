@@ -113,6 +113,11 @@ namespace {
     unsigned int hash_val = Ioss::ElementTopology::get_unique_id(name);
     CHECK(Ioss::ElementTopology::factory(hash_val) == element);
 
+    if (element->name() == "nfaced" || element->name() == "nsided") {
+      fmt::print(stderr, "\n\tSkipping {} since cannot assume constant number of nodes", element->name());
+      return true;
+    }
+
     int order = element->order();
 
     bool homo_edges = element->edges_similar();
