@@ -1928,8 +1928,16 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
     }
 
     int nelnoddim;
-    status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_EL(iblk + 1), blocks[iblk].nodesPerEntity,
+
+    // safeguard for polyhedral elements which have variable number nodes per entity
+    if (blocks[iblk].nodesPerEntity > 0) {
+      status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_EL(iblk + 1), blocks[iblk].nodesPerEntity,
+                       &nelnoddim);
+    } else {
+      status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_EL(iblk + 1), 1,
                         &nelnoddim);
+    }
+
     if (status != EX_NOERR) {
       ex_opts(EX_VERBOSE);
       std::string errmsg =
