@@ -115,7 +115,7 @@ namespace {
 
     if (element->name() == "nfaced" || element->name() == "nsided") {
       fmt::print(stderr, "\n\tSkipping {} since cannot assume constant number of nodes", element->name());
-      return true;
+      return;
     }
 
     int order = element->order();
