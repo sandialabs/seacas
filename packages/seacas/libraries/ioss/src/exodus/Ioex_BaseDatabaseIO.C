@@ -1176,7 +1176,6 @@ namespace Ioex {
         // There should have been a warning/error message printed to the
         // log file earlier for this, so we won't print anything else
         // here since it would be printed for each and every timestep....
-        ;
       }
       else {
         IOSS_ERROR(fmt::format(
