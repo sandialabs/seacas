@@ -62,7 +62,7 @@ else
   if [ "$COMPILER" == "nvidia" ]
   then
       export CXX="nvcc -x c++"
-      expoort CC=nvcc
+      export CC=nvcc
   fi
 
 fi
