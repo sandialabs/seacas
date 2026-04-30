@@ -27,7 +27,7 @@ jobs:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V114 ]
         netcdf: [ 4.9.3 ]
-        cgns: [ 4.4.0 ]
+        cgns: [ 4.5.1 ]
     steps:
 
       - name: Harden Runner
@@ -78,7 +78,7 @@ jobs:
       matrix:
         hdf5: [ V114 ]
         netcdf: [ 4.9.3 ]
-        cgns: [ 4.4.0 ]
+        cgns: [ 4.5.1 ]
         config:
         - {
             name: "Debug serial build",
