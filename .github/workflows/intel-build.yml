@@ -52,18 +52,13 @@ jobs:
         rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
         sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
         sudo apt-get update
-    - name: install
-      run: |
-        sudo apt-get install -y intel-basekit
-        sudo apt-get install -y intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
-        sudo apt-get install -y intel-oneapi-mpi
-        sudo apt-get install -y intel-oneapi-mpi-devel
-
-    - name: Setup Intel oneAPI Fortran
-      uses: fortran-lang/setup-fortran@v1
+    - name: Install Intel oneAPI compilers
+      uses: NOAA-EMC/ci-install-intel-toolkit@develop
       with:
-        compiler: intel  # use 'intel-classic' for ifort
+        install-oneapi: true
+        oneapi-version: '2025.3'
+        install-mpi: false
+        install-mkl: false
         
     - name: Install System dependencies
       shell: bash -l {0}
@@ -124,17 +119,14 @@ jobs:
           rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-      - name: install
-        run: |
-          sudo apt-get install -y intel-basekit
-          sudo apt-get install -y intel-oneapi-common-vars
-          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
-          sudo apt-get install -y intel-oneapi-mpi
-          sudo apt-get install -y intel-oneapi-mpi-devel
-      - name: Setup Intel oneAPI Fortran
-        uses: fortran-lang/setup-fortran@v1
+          
+      - name: Install Intel oneAPI compilers
+        uses: NOAA-EMC/ci-install-intel-toolkit@develop
         with:
-          compiler: intel  # use 'intel-classic' for ifort
+          install-oneapi: true
+          oneapi-version: '2025.3'
+          install-mpi: false
+          install-mkl: false
         
       - name: Install System dependencies
         shell: bash -l {0}
