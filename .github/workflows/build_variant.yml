@@ -432,13 +432,12 @@ jobs:
           mkdir build
           cd build
           NUMPROCS=2 ${{ matrix.config.extra }} THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config ${{ matrix.config.extra_args }}
-          cat CMakeCache.txt
           
       - name: Build
         shell: bash -l {0}
         run: |
           cd build
-          make VERBOSE=1 -j 4
+          make -j 4
         if: ${{ success() }}
 
       - name: Install
