@@ -30,7 +30,7 @@ jobs:
         with:
           context: docker/seacas
           push: true
-          tags: gdsjaar/seacas:latest
+          tags: mrbuche/seacas:latest
       - name: Delay before pull
         run: sleep 234s
   test-latest:
