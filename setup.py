@@ -29,7 +29,7 @@ s = setup(name='seacas-exodus',
 )
 
 wheels = os.listdir("dist")
-platform = "linux_x86_64"
+platform = "auto"
 subprocess.run(["python", "-m", "pip", "install", "--user", "auditwheel", "patchelf>=0.14"])
 for wheel in [x for x in wheels if x.endswith(".whl")]:
       subprocess.run(["python", "-m", "auditwheel", "repair", "--plat", platform, f"dist/{wheel}"])
