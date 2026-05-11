@@ -41,7 +41,7 @@ set(CNGS_ALLOW_MODERN FALSE CACHE BOOL "Allow finding CGNS as a modern CMake con
 
 if ((CGNS_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE) OR CGNS_FORCE_MODERN)
 
-  set(minimum_modern_CGNS_version 4.0)
+  set(minimum_modern_CGNS_version 3.9)
   print_var(CGNS_ALLOW_MODERN)
   print_var(CGNS_FORCE_MODERN)
   message("-- Using find_package(CGNS ${minimum_modern_CGNS_version} CONFIG) ...")
