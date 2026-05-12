@@ -28,6 +28,9 @@
 #include <cstdlib> // for exit, free
 #include <string>  // for string
 #include <vector>  // for vector
+
+using suplib_cpp::Data;
+
 template <typename T, typename INT> class Globals;
 
 /*****************************************************************************/

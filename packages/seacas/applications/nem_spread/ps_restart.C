@@ -21,6 +21,8 @@
 #include <string>
 #include <vector> // for vector
 
+using suplib_cpp::Data;
+
 /*****************************************************************************/
 /*****************************************************************************/
 template void NemSpread<double, int>::read_restart_params();

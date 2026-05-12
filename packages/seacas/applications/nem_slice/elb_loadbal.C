@@ -34,6 +34,8 @@
 #include "fix_column_partitions.h"
 #include "vector_data.h"
 
+using suplib_cpp::Data;
+
 #ifndef M_PI
 #define M_PI   3.14159265358979323846264338327
 #define M_PI_2 (M_PI / 2.0)
