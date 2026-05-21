@@ -1283,6 +1283,7 @@ class ExodusModel(object):
                             'tetra10': 'tet10',
                             'tri': 'tri3',
                             'triangle': 'tri3',
+                            'truss': 'line2',
                             'quad': 'quad4',
                             'shell4': 'quad4',
                             'wedge': 'wedge6'}
