@@ -823,7 +823,7 @@ class ExodusModel(object):
             used_nodes.extend(
                 connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
             )
@@ -861,7 +861,7 @@ class ExodusModel(object):
             new_connectivity.extend(
                 connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
             )
@@ -1704,7 +1704,7 @@ class ExodusModel(object):
                 face_element_map = face_mapping[face_index]
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 local_node = tuple(local_node[x] for x in face_element_map[1])
@@ -1789,7 +1789,7 @@ class ExodusModel(object):
         new_connectivity = []
         element_interval_values = []
         triangles = [
-            tuple(connectivity[x * 3 : (x + 1) * 3]) for x in range(element_count)
+            tuple(connectivity[x * 3: (x + 1) * 3]) for x in range(element_count)
         ]
         for index, upper_bound in enumerate(interval_list):
             # hold new vertices we have to create
@@ -2145,7 +2145,7 @@ class ExodusModel(object):
             output.write(b" " * 80)
             output.write(struct.pack("<l", len(connectivity) // 3))
             for element_index in range(len(connectivity) // 3):
-                tri = connectivity[element_index * 3 : (element_index + 1) * 3]
+                tri = connectivity[element_index * 3: (element_index + 1) * 3]
                 normal = (
                     c[tri[1]][1] * c[tri[2]][2] - c[tri[2]][1] * c[tri[1]][2],
                     c[tri[1]][2] * c[tri[2]][0] - c[tri[2]][2] * c[tri[1]][0],
@@ -2189,7 +2189,7 @@ class ExodusModel(object):
             self._error(
                 "Unrecognized file extension.",
                 'The filename extension "%s" was not recognized.  The '
-                "list of recognized extensions is : %s"
+                "list of recognized extensions is: %s"
                 % (extension, ", ".join(list(exporters.keys()))),
             )
         exporters[extension](filename, *args, **kwargs)
@@ -2331,7 +2331,7 @@ class ExodusModel(object):
                         element_index = values.index(extreme)
                         extreme_node_indices = connectivity[
                             element_index
-                            * nodes_per_element : (element_index + 1)
+                            * nodes_per_element: (element_index + 1)
                             * nodes_per_element
                         ]
                 if extreme is None:
@@ -2914,7 +2914,7 @@ class ExodusModel(object):
             nodes_per_element = self.get_nodes_per_element(id_)
             # iterate over each element
             for local_node in [
-                connectivity[x : x + nodes_per_element]
+                connectivity[x: x + nodes_per_element]
                 for x in range(0, len(connectivity), nodes_per_element)
             ]:
                 # iterate over each new averaged node formula
@@ -2941,7 +2941,7 @@ class ExodusModel(object):
             # create the connectivity for the new element block
             new_connectivity = []
             for local_node in [
-                connectivity[x : x + nodes_per_element]
+                connectivity[x: x + nodes_per_element]
                 for x in range(0, len(connectivity), nodes_per_element)
             ]:
                 for new_element in scheme:
@@ -3152,7 +3152,7 @@ class ExodusModel(object):
         for element_index in range(element_count):
             local_node = connectivity[
                 element_index
-                * old_nodes_per_element : (element_index + 1)
+                * old_nodes_per_element: (element_index + 1)
                 * old_nodes_per_element
             ]
             for new_element in scheme:
@@ -3180,7 +3180,7 @@ class ExodusModel(object):
         for element_index in range(element_count):
             local_node = connectivity[
                 element_index
-                * old_nodes_per_element : (element_index + 1)
+                * old_nodes_per_element: (element_index + 1)
                 * old_nodes_per_element
             ]
             for new_element in scheme:
@@ -4773,7 +4773,7 @@ class ExodusModel(object):
                 new_expression = expression[:left_index]
                 left_expression = expression[left_index:separator_index].strip()
                 right_expression = expression[
-                    separator_index + len(separator) : right_index
+                    separator_index + len(separator): right_index
                 ].strip()
                 for c in transform:
                     if c == "L":
@@ -5430,7 +5430,7 @@ class ExodusModel(object):
             for element_index in range(element_count):
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 for face_index, (face_type, face_mapping) in enumerate(face_mappings):
@@ -6631,7 +6631,7 @@ class ExodusModel(object):
                 # get local node values
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 # get local coordinates
@@ -7485,7 +7485,7 @@ class ExodusModel(object):
             duplicates = []
             for x in range(0, element_count):
                 start = x * nodes_per_element
-                element = set(connectivity[start : start + nodes_per_element])
+                element = set(connectivity[start: start + nodes_per_element])
                 element = tuple(sorted(element))
                 if element in elements:
                     duplicates.append(x)
@@ -8525,7 +8525,7 @@ class ExodusModel(object):
                         new_elements[face_type] = []
                     local_node = connectivity[
                         element_index
-                        * nodes_per_element : (element_index + 1)
+                        * nodes_per_element: (element_index + 1)
                         * nodes_per_element
                     ]
                     new_elements[face_type].extend(
@@ -8620,7 +8620,7 @@ class ExodusModel(object):
             for element_index in range(element_count):
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 for edge in endpoints:
@@ -8844,7 +8844,7 @@ class ExodusModel(object):
             for element_index in range(element_count):
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 if len(set(local_node)) != nodes_per_element:
@@ -8871,7 +8871,7 @@ class ExodusModel(object):
             element_count = self.get_element_count(element_block_id)
             for i in range(element_count):
                 local_node = connectivity[
-                    i * nodes_per_element : (i + 1) * nodes_per_element
+                    i * nodes_per_element: (i + 1) * nodes_per_element
                 ]
                 # find lowest index master out of these
                 low = min(local_node)
@@ -8916,7 +8916,7 @@ class ExodusModel(object):
             for element_index, face_index in members:
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 face_nodes = [local_node[x] for x in face_mapping[face_index][1]]
@@ -8930,7 +8930,7 @@ class ExodusModel(object):
             for element_index, face_index in members:
                 local_node = connectivity[
                     element_index
-                    * nodes_per_element : (element_index + 1)
+                    * nodes_per_element: (element_index + 1)
                     * nodes_per_element
                 ]
                 face_nodes = [local_node[x] for x in face_mapping[face_index][1]]
