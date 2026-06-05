@@ -52,7 +52,7 @@ Ioss::Polyhedral::Polyhedral() : Ioss::ElementTopology(Ioss::Polyhedral::name, I
 
 int Ioss::Polyhedral::parametric_dimension() const { return 3; }
 int Ioss::Polyhedral::spatial_dimension() const { return 3; }
-int Ioss::Polyhedral::order() const { return 0; }
+int Ioss::Polyhedral::order() const { return 1; }
 
 int Ioss::Polyhedral::number_corner_nodes() const { return number_nodes(); }
 int Ioss::Polyhedral::number_nodes() const { return Constants::nnode; }
