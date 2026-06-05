@@ -52,7 +52,7 @@ Ioss::Polygonal::Polygonal() : Ioss::ElementTopology(Ioss::Polygonal::name, Ioss
 
 int Ioss::Polygonal::parametric_dimension() const { return 2; }
 int Ioss::Polygonal::spatial_dimension() const { return 2; }
-int Ioss::Polygonal::order() const { return 0; }
+int Ioss::Polygonal::order() const { return 1; }
 
 int Ioss::Polygonal::number_corner_nodes() const { return number_nodes(); }
 int Ioss::Polygonal::number_nodes() const { return Constants::nnode; }
