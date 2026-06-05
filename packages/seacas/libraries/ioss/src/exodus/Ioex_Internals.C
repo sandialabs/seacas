@@ -196,6 +196,10 @@ FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
   }
   attributeCount = other.get_property("attribute_count").get_int();
 
+  if (other.property_exists("total_nodes_polyhedra") && other.topology()->name() == "nsided") {
+    nodesPerEntity = other.get_property("total_nodes_polyhedra").get_int();
+  }
+
   std::string el_type = other.topology()->name();
   if (other.property_exists("original_topology_type")) {
     el_type = other.get_property("original_topology_type").get_string();
@@ -231,6 +235,10 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
   }
   else {
     facesPerEntity = 0;
+  }
+
+  if (other.property_exists("total_faces_polyhedra") && other.topology()->name() == "nfaced") {
+    facesPerEntity = other.get_property("total_faces_polyhedra").get_int();
   }
 
   attributeCount = other.get_property("attribute_count").get_int();
@@ -2022,19 +2030,47 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
         return EX_FATAL;
       }
 
-      // element->face connectivity array
-      std::array dims{numelbdim, nelfacdim};
-
       int connid = 0;
-      status = nc_def_var(exodusFilePtr, VAR_FCONN(iblk + 1), bulk_type, 2, Data(dims), &connid);
-      if (status != EX_NOERR) {
-        ex_opts(EX_VERBOSE);
-        std::string errmsg =
-            fmt::format("Error: failed to create element->edge connectivity array for block {}"
-                        " in file id {}",
-                        blocks[iblk].id, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return EX_FATAL;
+      if (std::strncmp(blocks[iblk].elType, "nfaced", 6) != 0) {
+        // element->face connectivity array
+        std::array dims{numelbdim, nelfacdim};
+        status = nc_def_var(exodusFilePtr, VAR_FCONN(iblk + 1), bulk_type, 2, Data(dims), &connid);
+        if (status != EX_NOERR) {
+          ex_opts(EX_VERBOSE);
+          std::string errmsg =
+              fmt::format("Error: failed to create element->face connectivity array for block {}"
+                          " in file id {}",
+                          blocks[iblk].id, exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+          return EX_FATAL;
+        }
+      }
+      else {
+        // element->face connectivity as a flat array
+        std::array dims{nelfacdim};
+        status = nc_def_var(exodusFilePtr, VAR_FCONN(iblk + 1), bulk_type, 1, Data(dims), &connid);
+        if (status != EX_NOERR) {
+          ex_opts(EX_VERBOSE);
+          std::string errmsg =
+              fmt::format("Error: failed to create element->face connectivity array for block {}"
+                          " in file id {}",
+                          blocks[iblk].id, exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+          return EX_FATAL;
+        }
+        // face count per element array
+        dims = {numelbdim};
+        int status =
+            nc_def_var(exodusFilePtr, VAR_EBEPEC(iblk + 1), bulk_type, 1, Data(dims), &connid);
+        if (status != EX_NOERR) {
+          ex_opts(EX_VERBOSE);
+          std::string errmsg =
+              fmt::format("Error: failed to create faces per element count array for block {}"
+                          " in file id {}",
+                          blocks[iblk].id, exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+          return EX_FATAL;
+        }
       }
       exi_compress_variable(exodusFilePtr, connid, 1);
     }
@@ -2243,16 +2279,46 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks, bool count_onl
 
     {
       // face connectivity array
-      std::array dims{numelbdim, nelnoddim};
-      int        connid = 0;
-      status = nc_def_var(exodusFilePtr, VAR_FBCONN(iblk + 1), bulk_type, 2, Data(dims), &connid);
-      if (status != EX_NOERR) {
-        ex_opts(EX_VERBOSE);
-        std::string errmsg =
-            fmt::format("Error: failed to create connectivity array for block {} in file id {}",
-                        blocks[iblk].id, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return EX_FATAL;
+      int connid = 0;
+      if (std::strncmp(blocks[iblk].elType, "nsided", 6) != 0) {
+        std::array dims{numelbdim, nelnoddim};
+        status = nc_def_var(exodusFilePtr, VAR_FBCONN(iblk + 1), bulk_type, 2, Data(dims), &connid);
+        if (status != EX_NOERR) {
+          ex_opts(EX_VERBOSE);
+          std::string errmsg =
+              fmt::format("Error: failed to create connectivity array for block {} in file id {}",
+                          blocks[iblk].id, exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+          return EX_FATAL;
+        }
+      }
+      else {
+
+        // node counts per face array
+        std::array dims{numelbdim};
+        status = nc_def_var(exodusFilePtr, VAR_FBEPEC(iblk + 1), bulk_type, 1, Data(dims), &connid);
+        if (status != EX_NOERR) {
+          ex_opts(EX_VERBOSE);
+          std::string errmsg =
+              fmt::format("Error: failed to create nodes per face count array for block {}"
+                          " in file id {}",
+                          blocks[iblk].id, exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+          return EX_FATAL;
+        }
+
+        // make a flat array for face connectivity
+        dims   = {nelnoddim};
+        status = nc_def_var(exodusFilePtr, VAR_FBCONN(iblk + 1), bulk_type, 1, Data(dims), &connid);
+
+        if (status != EX_NOERR) {
+          ex_opts(EX_VERBOSE);
+          std::string errmsg =
+              fmt::format("Error: failed to create connectivity array for block {} in file id {}",
+                          blocks[iblk].id, exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+          return EX_FATAL;
+        }
       }
       exi_compress_variable(exodusFilePtr, connid, 1);
 
