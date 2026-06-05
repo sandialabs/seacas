@@ -88,7 +88,7 @@ namespace {
     }
   }
 
-  void get_entity_count_data(int exoid, ex_entity_type type, ex_entity_id id, void* data) 
+  void get_polyhedra_entity_count_data(int exoid, ex_entity_type type, ex_entity_id id, void* data) 
   {
     int ierr = 0;
     int* entity_counts; // ex_get_entity_count... only takes in an int* cant do the separate int64_t case
@@ -1368,7 +1368,7 @@ namespace Ioex {
       // X -> Node is always defined.
 
       // X -> Polyhedral or Polygonal?
-      if(type == "nfaced" || type.substr(0,6) == "nsided") {
+      if(type.substr(0,6) == "nfaced" || type.substr(0,6) == "nsided") {
         block->field_add(
           Ioss::Field("entity_counts", block->field_int_type(), "Real[" + std::to_string(1) + "]", Ioss::Field::MESH));
       }
@@ -2587,7 +2587,9 @@ namespace Ioex {
             }
           }
           else if (field.get_name() == "entity_counts") {
-            get_entity_count_data(get_file_pointer(), EX_ELEM_BLOCK, id, data);
+            if (eb->topology()->name() == "nfaced") {
+              get_polyhedra_entity_count_data(get_file_pointer(), EX_ELEM_BLOCK, id, data);
+            }
           }
         }
         else if (role == Ioss::Field::MAP) {
@@ -2730,7 +2732,9 @@ namespace Ioex {
             get_map(EX_FACE_BLOCK).map_implicit_data(data, field, num_to_get, eb->get_offset());
           }
           else if (field.get_name() == "entity_counts") {
-            get_entity_count_data(get_file_pointer(), EX_FACE_BLOCK, id, data);
+            if (eb->topology()->name() == "nsided") {
+              get_polyhedra_entity_count_data(get_file_pointer(), EX_FACE_BLOCK, id, data);
+            }
           }
           else {
             num_to_get = Ioss::Utils::field_warning(eb, field, "input");
