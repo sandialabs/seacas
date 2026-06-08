@@ -1,14 +1,10 @@
 SET(SOURCES "")
 
 APPEND_GLOB(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.C)
+APPEND_GLOB(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../*.C)
 
 list(APPEND SOURCES 
-     ../EJ_index_sort.C
-     ../EJ_mapping.C
-     ../EJ_match.C
-     ../EJ_SystemInterface.C
-     ../EJ_vector3d.C
-     ../EJoin.C
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../utest_util/main/unit_main.C
 )
 
 TRIBITS_ADD_EXECUTABLE(
