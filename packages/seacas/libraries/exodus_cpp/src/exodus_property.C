@@ -462,8 +462,10 @@ bool read_exodus_entity_properties(int exoid, ex_entity_type type, int id,
 
   if (att_count > 0) {
     std::vector<EX_attribute> attr(att_count);
-    exit_on_exodus_error(exoid, ex_get_attribute_param(exoid, type, id, suplib_cpp::Data(attr)), "ex_get_attribute_param");
-    exit_on_exodus_error(exoid, ex_get_attributes(exoid, att_count, suplib_cpp::Data(attr)), "ex_get_attributes");
+    exit_on_exodus_error(exoid, ex_get_attribute_param(exoid, type, id, suplib_cpp::Data(attr)),
+                         "ex_get_attribute_param");
+    exit_on_exodus_error(exoid, ex_get_attributes(exoid, att_count, suplib_cpp::Data(attr)),
+                         "ex_get_attributes");
 
     // Create a property on `entity` for each `attribute`
     for (const auto &att : attr) {
@@ -537,12 +539,18 @@ bool write_exodus_entity_properties(int exoid, ex_entity_type type, int id,
           "ex_put_text_attribute");
       break;
     case ExodusProperty::BasicType::VEC_INTEGER:
-      exit_on_exodus_error(exoid, ex_put_integer_attribute(exoid, type, id, property_name.c_str(), prop.get_vec_int().size(),
-                           suplib_cpp::Data(prop.get_vec_int())), "ex_put_integer_attribute");
+      exit_on_exodus_error(exoid,
+                           ex_put_integer_attribute(exoid, type, id, property_name.c_str(),
+                                                    prop.get_vec_int().size(),
+                                                    suplib_cpp::Data(prop.get_vec_int())),
+                           "ex_put_integer_attribute");
       break;
     case ExodusProperty::BasicType::VEC_DOUBLE:
-      exit_on_exodus_error(exoid, ex_put_double_attribute(exoid, type, id, property_name.c_str(),
-                           prop.get_vec_double().size(), suplib_cpp::Data(prop.get_vec_double())), "ex_put_double_attribute");
+      exit_on_exodus_error(exoid,
+                           ex_put_double_attribute(exoid, type, id, property_name.c_str(),
+                                                   prop.get_vec_double().size(),
+                                                   suplib_cpp::Data(prop.get_vec_double())),
+                           "ex_put_double_attribute");
       break;
     default:; // Do nothing
     }

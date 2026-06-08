@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 #ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
