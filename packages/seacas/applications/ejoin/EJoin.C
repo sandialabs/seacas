@@ -49,6 +49,8 @@
 #include <mpi.h>
 #endif
 
+using suplib_cpp::time_stamp;
+
 // Globals...
 std::map<Ioss::NodeSet *, std::vector<size_t>> nodeset_in_out_map;
 IO_map                                         output_input_map;

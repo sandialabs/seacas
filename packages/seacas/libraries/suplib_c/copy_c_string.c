@@ -5,9 +5,9 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#include <copy_string.h>
+#include <copy_c_string.h>
 /* Safer than strncpy -- guarantees null termination */
-char *copy_string(char *dest, char const *source, size_t elements)
+char *copy_c_string(char *dest, char const *source, size_t elements)
 {
   char *d;
   for (d = dest; d + 1 < dest + elements && *source; d++, source++) {
