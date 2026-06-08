@@ -8,9 +8,11 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementTopology.h"
+#include "Ioss_FaceBlock.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
+#include "Ioss_Polyhedral.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_ScopeGuard.h"
@@ -71,19 +73,19 @@ namespace {
     return db_io;
   }
 
-  DOCTEST_TEST_CASE("Ioex::two_polys")
+  TEST_CASE("Ioex::two_polys")
   {
     Ioex::DatabaseIO *db_io = create_input_db_io("two_polys.e");
     db_io->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
 
     Ioss::Region region(db_io);
 
-    DOCTEST_CHECK(db_io->ok());
+    CHECK(db_io->ok());
 
     const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
     const std::vector<Ioss::FaceBlock *>    &face_blocks    = region.get_face_blocks();
-    DOCTEST_CHECK_EQ(2u, element_blocks.size());
-    DOCTEST_CHECK_EQ(2u, face_blocks.size());
+    CHECK(2u == element_blocks.size());
+    CHECK(2u == face_blocks.size());
 
     std::vector<std::string>      gold_strings{"block_2", "block_1"};
     std::vector<std::string>      gold_top_names{Ioss::Polyhedral::name, Ioss::Polyhedral::name};
@@ -116,33 +118,33 @@ namespace {
       std::vector<int64_t> element_face_connectivity;
       element_blocks[i]->get_field_data("connectivity_face", element_face_connectivity);
 
-      DOCTEST_CHECK_EQ(gold_element_face_conn_size[i], element_face_connectivity.size());
+      CHECK(gold_element_face_conn_size[i] == element_face_connectivity.size());
       for (size_t j = 0; j < gold_element_face_conn_size[i]; ++j) {
-        DOCTEST_CHECK_EQ(gold_element_face_connectivity[i][j], element_face_connectivity[j]);
+        CHECK(gold_element_face_connectivity[i][j] == element_face_connectivity[j]);
       }
 
       std::vector<int64_t> face_node_connectivity;
       face_blocks[i]->get_field_data("connectivity", face_node_connectivity);
 
       for (size_t j = 0; j < gold_face_node_conn_size[i]; ++j) {
-        DOCTEST_CHECK_EQ(gold_face_node_connectivity[i][j], face_node_connectivity[j]);
+        CHECK(gold_face_node_connectivity[i][j] == face_node_connectivity[j]);
       }
 
       std::vector<int64_t> ids;
       element_blocks[i]->get_field_data("ids", ids);
 
-      DOCTEST_CHECK_EQ(gold_num_elements_per_block[i], ids.size());
+      CHECK(gold_num_elements_per_block[i] == ids.size());
       for (size_t j = 0; j < ids.size(); ++j) {
-        DOCTEST_CHECK_EQ(gold_ids[i][j], ids[j]);
+        CHECK(gold_ids[i][j] == ids[j]);
       }
 
       std::vector<double> attributeValues;
-      DOCTEST_CHECK_EQ(attributes_exist[i], element_blocks[i]->field_exists("attribute"));
+      CHECK(attributes_exist[i] == element_blocks[i]->field_exists("attribute"));
       if (attributes_exist[i]) {
         int num_attr = element_blocks[i]->get_property("attribute_count").get_int();
-        DOCTEST_CHECK_EQ(1, num_attr);
+        CHECK(1 == num_attr);
         element_blocks[i]->get_field_data("attribute", attributeValues);
-        DOCTEST_CHECK_EQ(num_attributes[i], attributeValues.size());
+        CHECK(num_attributes[i] == attributeValues.size());
       }
     }
   }
