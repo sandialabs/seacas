@@ -6,13 +6,6 @@
 
 #pragma once
 
-#ifdef SEACAS_HAVE_MPI
-#include <mpi.h>
-#endif
-#include <string>
-#include <unordered_map>
-
-#include <memory>
 #include <string>
 #if defined(_WIN32) && !defined(__MINGW32__)
 #include <string.h>
@@ -21,7 +14,6 @@
 #else
 #include <strings.h>
 #endif
-#include <vector>
 
 namespace utest_util {
 

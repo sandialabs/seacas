@@ -4,12 +4,14 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <string>
 #include <vector>
+#include <memory>
 
 #ifdef SEACAS_HAVE_MPI
-#include "mpi.h"
+#include <mpi.h>
 #endif
+#include <unordered_map>
+
 #include "gtest/gtest.h"
 
 #include "FileUtils.h"
