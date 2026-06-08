@@ -27,50 +27,50 @@
 
 #include "Ionit_Initializer.h"
 
-#include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_StandardElementTypes.h"
 
 namespace utest_util {
 
-class IossMesh {
- public:
-  IossMesh();
-  IossMesh(Ioss_MPI_Comm comm);
+  class IossMesh
+  {
+  public:
+    IossMesh();
+    IossMesh(Ioss_MPI_Comm comm);
 
-  virtual ~IossMesh() { delete m_region; }
+    virtual ~IossMesh() { delete m_region; }
 
-  int get_parallel_size();
+    int get_parallel_size();
 
-  int get_parallel_rank();
+    int get_parallel_rank();
 
-  Ioss_MPI_Comm get_comm() const { return m_communicator; }
+    Ioss_MPI_Comm get_comm() const { return m_communicator; }
 
-  void fill_mesh(const std::string &meshDesc);
-  void fill_mesh(const std::string &meshDesc, const std::string &regionName);
+    void fill_mesh(const std::string &meshDesc);
+    void fill_mesh(const std::string &meshDesc, const std::string &regionName);
 
-  Ioss::DatabaseIO *get_database() { return m_database; }
+    Ioss::DatabaseIO *get_database() { return m_database; }
 
-  Ioss::Region     *get_region() { return m_region; }
+    Ioss::Region *get_region() { return m_region; }
 
- protected:
-  Ioss_MPI_Comm         m_communicator;
-  Ioss::PropertyManager m_propertyManager;
-  Ioss::DatabaseIO     *m_database = nullptr;
-  Ioss::Region         *m_region   = nullptr;
+  protected:
+    Ioss_MPI_Comm         m_communicator;
+    Ioss::PropertyManager m_propertyManager;
+    Ioss::DatabaseIO     *m_database = nullptr;
+    Ioss::Region         *m_region   = nullptr;
 
- protected:
-  void filename_substitution(std::string &filename);
+  protected:
+    void filename_substitution(std::string &filename);
 
-  std::pair<std::string, std::string>
-  get_database_type_and_filename(const std::string &meshDesc);
+    std::pair<std::string, std::string> get_database_type_and_filename(const std::string &meshDesc);
 
-  void create_ioss_region(const std::string& regionName = "input_region");
+    void create_ioss_region(const std::string &regionName = "input_region");
 
-  void create_database(const std::string &fileName, const std::string &meshType, Ioss::DatabaseUsage db_usage = Ioss::READ_MODEL);
-};
+    void create_database(const std::string &fileName, const std::string &meshType,
+                         Ioss::DatabaseUsage db_usage = Ioss::READ_MODEL);
+  };
 
-
-}
+} // namespace utest_util

@@ -6,15 +6,14 @@
  * See packages/seacas/LICENSE for details
  */
 
+#include "exodus_property.h"
+#include "vector_data.h"
+#include <assert.h>
 #include <cstdio>  // for stderr
 #include <cstdlib> // for exit
-#include <assert.h>
 #include <fmt/ostream.h>
 #include <ostream>
 #include <sstream>
-#include "vector_data.h"
-#include "exodus_property.h"
-
 
 namespace {
   std::string type_string(ExodusProperty::BasicType type)
@@ -291,9 +290,6 @@ bool ExodusProperty::get_value(std::vector<double> *value) const
   return valid_request;
 }
 
-
-
-
 /** \brief Add a property to the property manager.
  *
  *  \param[in] new_attr The property to add.
@@ -424,10 +420,7 @@ int ExodusPropertyManager::describe(NameList *names) const
  *
  *  \returns The number of properties in the property manager.
  */
-size_t ExodusPropertyManager::count() const
-{
-  return m_properties.size();
-}
+size_t ExodusPropertyManager::count() const { return m_properties.size(); }
 
 /** \brief copies all the properties from an property manager
  *
@@ -442,8 +435,6 @@ void ExodusPropertyManager::copy(const ExodusPropertyManager &from)
     add(prop);
   }
 }
-
-
 
 namespace {
   void exit_on_exodus_error(int exoid, int error, const char *function_name)
@@ -464,14 +455,17 @@ namespace {
   };
 } // namespace
 
-bool read_exodus_entity_properties(int exoid, ex_entity_type type, int id, ExodusPropertyManager& attributes)
+bool read_exodus_entity_properties(int exoid, ex_entity_type type, int id,
+                                   ExodusPropertyManager &attributes)
 {
   int att_count = ex_get_attribute_count(exoid, type, id);
 
   if (att_count > 0) {
     std::vector<EX_attribute> attr(att_count);
-    exit_on_exodus_error(exoid, ex_get_attribute_param(exoid, type, id, Data(attr)), "ex_get_attribute_param");
-    exit_on_exodus_error(exoid, ex_get_attributes(exoid, att_count, Data(attr)), "ex_get_attributes");
+    exit_on_exodus_error(exoid, ex_get_attribute_param(exoid, type, id, Data(attr)),
+                         "ex_get_attribute_param");
+    exit_on_exodus_error(exoid, ex_get_attributes(exoid, att_count, Data(attr)),
+                         "ex_get_attributes");
 
     // Create a property on `entity` for each `attribute`
     for (const auto &att : attr) {
@@ -515,7 +509,8 @@ bool read_exodus_entity_properties(int exoid, ex_entity_type type, int id, Exodu
   return true;
 }
 
-bool write_exodus_entity_properties(int exoid, ex_entity_type type, int id, ExodusPropertyManager& attributes)
+bool write_exodus_entity_properties(int exoid, ex_entity_type type, int id,
+                                    ExodusPropertyManager &attributes)
 {
   NameList properties = attributes.describe();
 
@@ -527,22 +522,35 @@ bool write_exodus_entity_properties(int exoid, ex_entity_type type, int id, Exod
     switch (prop.get_type()) {
     case ExodusProperty::BasicType::REAL:
       rval = prop.get_real();
-      exit_on_exodus_error(exoid, ex_put_double_attribute(exoid, type, id, property_name.c_str(), 1, &rval), "ex_put_double_attribute");
+      exit_on_exodus_error(
+          exoid, ex_put_double_attribute(exoid, type, id, property_name.c_str(), 1, &rval),
+          "ex_put_double_attribute");
       break;
     case ExodusProperty::BasicType::INTEGER:
       ival = prop.get_int();
-      exit_on_exodus_error(exoid, ex_put_integer_attribute(exoid, type, id, property_name.c_str(), 1, &ival), "ex_put_integer_attribute");
+      exit_on_exodus_error(
+          exoid, ex_put_integer_attribute(exoid, type, id, property_name.c_str(), 1, &ival),
+          "ex_put_integer_attribute");
       break;
     case ExodusProperty::BasicType::STRING:
-      exit_on_exodus_error(exoid, ex_put_text_attribute(exoid, type, id, property_name.c_str(), prop.get_string().c_str()), "ex_put_text_attribute");
+      exit_on_exodus_error(
+          exoid,
+          ex_put_text_attribute(exoid, type, id, property_name.c_str(), prop.get_string().c_str()),
+          "ex_put_text_attribute");
       break;
     case ExodusProperty::BasicType::VEC_INTEGER:
-      exit_on_exodus_error(exoid, ex_put_integer_attribute(exoid, type, id, property_name.c_str(), prop.get_vec_int().size(),
-                           Data(prop.get_vec_int())), "ex_put_integer_attribute");
+      exit_on_exodus_error(exoid,
+                           ex_put_integer_attribute(exoid, type, id, property_name.c_str(),
+                                                    prop.get_vec_int().size(),
+                                                    Data(prop.get_vec_int())),
+                           "ex_put_integer_attribute");
       break;
     case ExodusProperty::BasicType::VEC_DOUBLE:
-      exit_on_exodus_error(exoid, ex_put_double_attribute(exoid, type, id, property_name.c_str(),
-                           prop.get_vec_double().size(), Data(prop.get_vec_double())), "ex_put_double_attribute");
+      exit_on_exodus_error(exoid,
+                           ex_put_double_attribute(exoid, type, id, property_name.c_str(),
+                                                   prop.get_vec_double().size(),
+                                                   Data(prop.get_vec_double())),
+                           "ex_put_double_attribute");
       break;
     default:; // Do nothing
     }
@@ -550,4 +558,3 @@ bool write_exodus_entity_properties(int exoid, ex_entity_type type, int id, Exod
 
   return true;
 }
-

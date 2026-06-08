@@ -51,22 +51,22 @@
 
 namespace {
 
-void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit);
-void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit);
-void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit);
+  void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit);
+  void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit);
+  void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit);
 
-int count_omissions(Ioss::Region *region)
-{
-  int         omitted = 0;
-  const auto &blocks  = region->get_element_blocks();
-  for (const auto &block : blocks) {
-    if (block->property_exists(std::string("omitted"))) {
-      omitted++;
+  int count_omissions(Ioss::Region *region)
+  {
+    int         omitted = 0;
+    const auto &blocks  = region->get_element_blocks();
+    for (const auto &block : blocks) {
+      if (block->property_exists(std::string("omitted"))) {
+        omitted++;
+      }
     }
+    return omitted;
   }
-  return omitted;
-}
-}
+} // namespace
 
 template <typename INT>
 double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT dummy);
@@ -208,75 +208,75 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit)
-{
-  size_t part_count = part_mesh.size();
-  for (size_t p = 0; p < part_count; p++) {
-    if (!omit[p].empty()) {
-      // Get the nodesets for this part and set the "omitted" property on the nodeset
-      if (omit[p][0] == "ALL") {
-        const Ioss::NodeSetContainer &nodesets = part_mesh[p]->get_nodesets();
-        for (const auto &ns : nodesets) {
-          ns->property_add(Ioss::Property(std::string("omitted"), 1));
-        }
-      }
-      else {
-        for (const auto &omitted : omit[p]) {
-          Ioss::NodeSet *ns = part_mesh[p]->get_nodeset(omitted);
-          if (ns != nullptr) {
+  void process_nodeset_omissions(const RegionVector &part_mesh, const Omissions &omit)
+  {
+    size_t part_count = part_mesh.size();
+    for (size_t p = 0; p < part_count; p++) {
+      if (!omit[p].empty()) {
+        // Get the nodesets for this part and set the "omitted" property on the nodeset
+        if (omit[p][0] == "ALL") {
+          const Ioss::NodeSetContainer &nodesets = part_mesh[p]->get_nodesets();
+          for (const auto &ns : nodesets) {
             ns->property_add(Ioss::Property(std::string("omitted"), 1));
           }
         }
+        else {
+          for (const auto &omitted : omit[p]) {
+            Ioss::NodeSet *ns = part_mesh[p]->get_nodeset(omitted);
+            if (ns != nullptr) {
+              ns->property_add(Ioss::Property(std::string("omitted"), 1));
+            }
+          }
+        }
       }
     }
   }
-}
 
-void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit)
-{
-  size_t part_count = part_mesh.size();
-  for (size_t p = 0; p < part_count; p++) {
-    if (!omit[p].empty()) {
-      // Get the sidesets for this part and set the "omitted" property on the sideset
-      if (omit[p][0] == "ALL") {
-        const Ioss::SideSetContainer &sidesets = part_mesh[p]->get_sidesets();
-        for (const auto &ss : sidesets) {
-          ss->property_add(Ioss::Property(std::string("omitted"), 1));
-        }
-      }
-      else {
-        for (const auto &omitted : omit[p]) {
-          Ioss::SideSet *ss = part_mesh[p]->get_sideset(omitted);
-          if (ss != nullptr) {
+  void process_sideset_omissions(const RegionVector &part_mesh, const Omissions &omit)
+  {
+    size_t part_count = part_mesh.size();
+    for (size_t p = 0; p < part_count; p++) {
+      if (!omit[p].empty()) {
+        // Get the sidesets for this part and set the "omitted" property on the sideset
+        if (omit[p][0] == "ALL") {
+          const Ioss::SideSetContainer &sidesets = part_mesh[p]->get_sidesets();
+          for (const auto &ss : sidesets) {
             ss->property_add(Ioss::Property(std::string("omitted"), 1));
           }
         }
-      }
-    }
-  }
-}
-
-void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit)
-{
-  size_t part_count = part_mesh.size();
-  for (size_t p = 0; p < part_count; p++) {
-    if (!omit[p].empty()) {
-      // Get the assemblies for this part and set the "omitted" property on the assembly
-      if (omit[p][0] == "ALL") {
-        const auto &assemblies = part_mesh[p]->get_assemblies();
-        for (const auto &as : assemblies) {
-          as->property_add(Ioss::Property(std::string("omitted"), 1));
-        }
-      }
-      else {
-        for (const auto &omitted : omit[p]) {
-          auto *as = part_mesh[p]->get_assembly(omitted);
-          if (as != nullptr) {
-            as->property_add(Ioss::Property(std::string("omitted"), 1));
+        else {
+          for (const auto &omitted : omit[p]) {
+            Ioss::SideSet *ss = part_mesh[p]->get_sideset(omitted);
+            if (ss != nullptr) {
+              ss->property_add(Ioss::Property(std::string("omitted"), 1));
+            }
           }
         }
       }
     }
   }
-}
-}
+
+  void process_assembly_omissions(const RegionVector &part_mesh, const Omissions &omit)
+  {
+    size_t part_count = part_mesh.size();
+    for (size_t p = 0; p < part_count; p++) {
+      if (!omit[p].empty()) {
+        // Get the assemblies for this part and set the "omitted" property on the assembly
+        if (omit[p][0] == "ALL") {
+          const auto &assemblies = part_mesh[p]->get_assemblies();
+          for (const auto &as : assemblies) {
+            as->property_add(Ioss::Property(std::string("omitted"), 1));
+          }
+        }
+        else {
+          for (const auto &omitted : omit[p]) {
+            auto *as = part_mesh[p]->get_assembly(omitted);
+            if (as != nullptr) {
+              as->property_add(Ioss::Property(std::string("omitted"), 1));
+            }
+          }
+        }
+      }
+    }
+  }
+} // namespace

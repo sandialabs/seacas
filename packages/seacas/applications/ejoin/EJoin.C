@@ -98,7 +98,6 @@ namespace {
                               double time, const std::vector<INT> &local_node_map,
                               SystemInterface &interFace, bool merged);
 
-
   template <typename T> bool approx_equal(T v1, T v2, T offset)
   {
 #if 1
@@ -525,10 +524,8 @@ double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, INT /*du
   return end - begin;
 }
 
-template
-double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, int dummy);
-template
-double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, int64_t dummy);
+template double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, int dummy);
+template double ejoin(SystemInterface &interFace, const RegionVector &part_mesh, int64_t dummy);
 
 namespace {
   bool entity_is_omitted(Ioss::GroupingEntity *block)
@@ -537,7 +534,8 @@ namespace {
     return omitted;
   }
 
-  void transfer_info_properties(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, Ioss::Property::Origin origin)
+  void transfer_info_properties(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                                Ioss::Property::Origin origin)
   {
     Ioss::NameList properties = ige->property_describe(origin);
 
