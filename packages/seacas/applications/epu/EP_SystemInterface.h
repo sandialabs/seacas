@@ -26,6 +26,7 @@ namespace Excn {
 
     int debug() const { return debugLevel_; }
     int processor_count() const { return processorCount_; }
+    int processor_rank() const { return myRank_; }
     int start_part() const { return startPart_; }
     int part_count() const;
     int screen_width() const { return screenWidth_; }

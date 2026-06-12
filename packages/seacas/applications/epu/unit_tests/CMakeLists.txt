@@ -8,13 +8,13 @@ list(APPEND SOURCES
 )
 
 TRIBITS_ADD_EXECUTABLE(
- Utst_ejoin
+ Utst_epu
  SOURCES ${SOURCES}
 )
 
 TRIBITS_ADD_TEST(
-        Utst_ejoin
-        NAME Utst_ejoin
+        Utst_epu
+        NAME Utst_epu
         NUM_MPI_PROCS 1
 )
 

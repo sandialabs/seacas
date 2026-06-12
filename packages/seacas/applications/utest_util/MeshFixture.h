@@ -28,6 +28,9 @@
 #include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_IOFactory.h" // for IOFactory
+#include "Ioss_Region.h"    // for IOFactory
+#include "Ioss_MeshCopyOptions.h"
+#include "Ioss_PropertyManager.h"
 
 #include "IossMesh.h"
 
@@ -101,6 +104,22 @@ namespace utest_util {
     int get_parallel_rank() { return Ioss::ParallelUtils(get_comm()).parallel_rank(); }
 
     Ioss_MPI_Comm get_comm() const { return m_communicator; }
+
+  protected:
+    void add_material_property_to_element_block(Ioss::Region *region, const std::string &blockName,
+                                                const std::string &propertyName,
+                                                const std::string &propertyValue);
+
+    void test_property_from_file(const std::string &inputFile,
+                                 const std::string &propertyName, const std::string &propertyValue);
+    void test_property_from_file(Ioss_MPI_Comm comm, const std::string &inputFile,
+                                 const std::string &propertyName, const std::string &propertyValue);
+
+    void write_region_to_file(Ioss::Region *inputRegion, Ioss::PropertyManager &properties,
+                              Ioss::MeshCopyOptions &options, const std::string &outputFile);
+    void write_region_to_file(Ioss::Region *inputRegion, Ioss::PropertyManager &properties,
+                              const std::string &outputFile);
+    void write_region_to_file(Ioss::Region *inputRegion, const std::string &outputFile);
 
   protected:
     Ioss_MPI_Comm             m_communicator;
