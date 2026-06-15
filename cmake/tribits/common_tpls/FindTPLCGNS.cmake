@@ -37,7 +37,7 @@
 # ************************************************************************
 # @HEADER
 
-set(CNGS_ALLOW_MODERN FALSE CACHE BOOL "Allow finding CGNS as a modern CMake config file with exported targets (and only this way)")
+set(CGNS_ALLOW_MODERN FALSE CACHE BOOL "Allow finding CGNS as a modern CMake config file with exported targets (and only this way)")
 
 if ((CGNS_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE) OR CGNS_FORCE_MODERN)
 
