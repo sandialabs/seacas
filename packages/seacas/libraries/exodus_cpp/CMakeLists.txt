@@ -33,7 +33,7 @@ if (SEACASExodus_ENABLE_SHARED)
               ${SOURCES} ${DEP_SOURCES}
       )
       target_include_directories(exodus_cpp_shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-      target_link_libraries(exodus_cpp_shared PUBLIC exodus_shared suplib_cpp)
+      target_link_libraries(exodus_cpp_shared PUBLIC SEACASExodus::all_libs suplib_cpp)
       target_link_libraries(exodus_cpp_shared PUBLIC Netcdf::all_libs)
       set_property(TARGET exodus_cpp_shared PROPERTY C_STANDARD 99)
       # This keeps the library out of the `all_libs` targets...
@@ -53,7 +53,7 @@ if (SEACASExodus_ENABLE_STATIC AND SEACASExodus_ENABLE_SHARED)
            ${SOURCES} ${DEP_SOURCES}
    )
    target_include_directories(exodus_cpp_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-   target_link_libraries(exodus_cpp_static PUBLIC exodus_static suplib_cpp)
+   target_link_libraries(exodus_cpp_static PUBLIC SEACASExodus::all_libs suplib_cpp)
    target_link_libraries(exodus_cpp_static PUBLIC Netcdf::all_libs)
    set_property(TARGET exodus_cpp_static PROPERTY C_STANDARD 99)
    # This keeps the library out of the `all_libs` targets...
