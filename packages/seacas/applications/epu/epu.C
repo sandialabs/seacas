@@ -1931,7 +1931,7 @@ namespace {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_blocks = glob_blocks.size();
 
-    LOG("\nReading and Writing element connectivity & attributes\n");
+    LOG("\nReading and Writing element connectivity, attributes & properties\n");
 
     std::vector<INT> linkage;
     std::vector<T>   attributes;
@@ -1943,11 +1943,11 @@ namespace {
       if (debug_level & 4) {
         fmt::print("\nOutput element block info for...\n"
                    "Block {}, Id = {}, Name = '{}', Elements = {:12}, Nodes/element = {}, "
-                   "Attributes = {}\n"
+                   "Attributes = {}, Properties = {}\n"
                    "B{}:\t",
                    b, glob_blocks[b].id, glob_blocks[b].name_,
                    fmt::group_digits(glob_blocks[b].entity_count()), glob_blocks[b].nodesPerElement,
-                   glob_blocks[b].attributeCount, b);
+                   glob_blocks[b].attributeCount, glob_blocks[b].property_count(), b);
       }
 
       size_t max_nodes = glob_blocks[b].entity_count() * glob_blocks[b].nodesPerElement;
@@ -2069,17 +2069,17 @@ namespace {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_blocks = glob_blocks.size();
 
-    LOG("\nReading and Writing element connectivity & attributes (Low Memory Method)\n");
+    LOG("\nReading and Writing element connectivity, properties & attributes (Low Memory Method)\n");
 
     for (int b = 0; b < global_num_blocks; b++) {
 
       if (debug_level & 4) {
         fmt::print("\nOutput element block info for...\n"
                    "Block {}, Id = {}, Name = '{}', Elements = {:12}, Nodes/element = {}, "
-                   "Attributes = {}\n",
+                   "Attributes = {}, Properties = {}\n",
                    b, glob_blocks[b].id, glob_blocks[b].name_,
                    fmt::group_digits(glob_blocks[b].entity_count()), glob_blocks[b].nodesPerElement,
-                   glob_blocks[b].attributeCount);
+                   glob_blocks[b].attributeCount, glob_blocks[b].property_count());
       }
 
       int id_out = ExodusFile::output(); // output file identifier

@@ -265,7 +265,7 @@ namespace {
       return error;
     }
 
-    int run_serial(SystemInterface &interFace)
+    int run_serial_on_proc_0(SystemInterface &interFace)
     {
       int error           = 0;
       int start_part      = interFace.start_part();
@@ -492,7 +492,7 @@ namespace {
       error = run_parallel(interFace);
     }
     else {
-      error = run_serial(interFace);
+      error = run_serial_on_proc_0(interFace);
     }
     EXPECT_TRUE(error == 0);
 
@@ -502,7 +502,6 @@ namespace {
     if (error == 0 && interFace.remove_file_per_rank_files()) {
       ExodusFile::unlink_input_files();
     }
-
 
     if(get_parallel_rank() == 0) {
       // Load epu'd file and test for material property
@@ -521,7 +520,6 @@ namespace {
     Ioss::ParallelUtils util(get_comm());
     std::string decodedFileName = util.decode_filename(m_outputFile, (get_parallel_size() > 1));
 
-//    std::cout << "P" << get_parallel_rank() << ": decoded file = " << decodedFileName << std::endl;
     unlink(decodedFileName.c_str());
   }
 

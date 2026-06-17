@@ -510,7 +510,7 @@ bool read_exodus_entity_properties(int exoid, ex_entity_type type, int id,
 }
 
 bool write_exodus_entity_properties(int exoid, ex_entity_type type, int id,
-                                    ExodusPropertyManager &attributes)
+                                    const ExodusPropertyManager &attributes)
 {
   NameList properties = attributes.describe();
 
