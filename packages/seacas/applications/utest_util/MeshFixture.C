@@ -29,41 +29,72 @@
 #include "Ioss_ParallelUtils.h"
 
 namespace {
-Ioss::MeshCopyOptions get_default_mesh_copy_options()
-{
-  Ioss::MeshCopyOptions options{};
-  options.verbose              = true;
-  options.output_summary       = true;
-  options.debug                = false;
-  options.ints_64_bit          = false;
-  options.data_storage_type    = 1;
-  options.add_proc_id          = true;
+  Ioss::MeshCopyOptions get_default_mesh_copy_options()
+  {
+    Ioss::MeshCopyOptions options{};
+    options.verbose              = true;
+    options.output_summary       = true;
+    options.debug                = false;
+    options.ints_64_bit          = false;
+    options.data_storage_type    = 1;
+    options.add_proc_id          = true;
 
-  return options;
-}
-
-Ioss::PropertyManager get_default_properties_from_region(Ioss::Region *inputRegion)
-{
-  Ioss::PropertyManager properties;
-
-  auto inputDB = inputRegion->get_database();
-
-  // Get length of longest name on input file...
-  int max_name_length = inputDB->maximum_symbol_length();
-  if (max_name_length > 0) {
-    properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
+    return options;
   }
 
-  // Get integer size being used on the input file and propagate
-  // to output file...
-  int int_byte_size_api = inputDB->int_byte_size_api();
-  if (!properties.exists("INTEGER_SIZE_API")) {
-    properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
-    properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
+  Ioss::PropertyManager get_default_properties_from_region(Ioss::Region *inputRegion)
+  {
+    Ioss::PropertyManager properties;
+
+    auto inputDB = inputRegion->get_database();
+
+    // Get length of longest name on input file...
+    int max_name_length = inputDB->maximum_symbol_length();
+    if (max_name_length > 0) {
+      properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
+    }
+
+    // Get integer size being used on the input file and propagate
+    // to output file...
+    int int_byte_size_api = inputDB->int_byte_size_api();
+    if (!properties.exists("INTEGER_SIZE_API")) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
+    }
+
+    return properties;
   }
 
-  return properties;
-}
+  std::vector<double> get_stacked_hex_element_textmesh_coordinates(unsigned numElements)
+  {
+    std::vector<double> planeCoords = { 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 };
+
+    std::vector<double> coordinates;
+    coordinates.insert(coordinates.end(), planeCoords.begin(), planeCoords.end());
+
+    for(unsigned i = 1; i <= numElements; ++i) {
+      for(unsigned point = 0; point < 4; ++point) {
+        planeCoords[3 * point + 2] += 1;
+      }
+
+      coordinates.insert(coordinates.end(), planeCoords.begin(), planeCoords.end());
+    }
+
+    return coordinates;
+  }
+
+  std::string get_full_text_mesh_desc(const std::string& textMeshDesc, const std::vector<double>& coordVec)
+  {
+    std::stringstream coords;
+    coords << "|coordinates:";
+
+    for (double coord : coordVec) {
+      coords << coord << ",";
+    }
+
+    std::string meshDesc = textMeshDesc + coords.str();
+    return meshDesc;
+  }
 }
 
 namespace utest_util {
@@ -140,5 +171,62 @@ void MeshFixture::write_region_to_file(Ioss::Region *inputRegion, const std::str
 
   write_region_to_file(inputRegion, properties, options, outputFile);
 }
+
+void MeshFixture::fill_linear_proc_distribution(unsigned numElements, unsigned numProc, std::vector<unsigned>& procs)
+{
+  procs.resize(numElements);
+  unsigned unload = numElements % numProc;
+  unsigned initVal = numElements / numProc;
+  std::vector<unsigned> numElemsPerProc(numProc, 0);
+
+  std::fill(numElemsPerProc.begin(), numElemsPerProc.end(), initVal);
+
+  for(unsigned i = 0; i < unload; i++) {
+    numElemsPerProc[i]++;
+  }
+  for(unsigned i = 0; i < numElements; i++) {
+    for(unsigned j = 0; j < numProc; j++) {
+      if(numElemsPerProc[j] > 0) {
+        numElemsPerProc[j]--;
+        procs[i] = j;
+        break;
+      }
+    }
+  }
+}
+
+std::string MeshFixture::get_stacked_hex_element_textmesh_desc(unsigned numElements, unsigned numProcs, bool singleBlock)
+{
+  std::ostringstream oss;
+  std::vector<unsigned> procs(numElements, 0);
+  fill_linear_proc_distribution(numElements, numProcs, procs);
+
+  unsigned proc = 0;
+  for(unsigned i = 0; i < numElements; ++i) {
+    proc = procs[i];
+    unsigned elemId = i + 1;
+    unsigned firstNodeId = i * 4 + 1;
+    oss << proc << "," << elemId << ",HEX_8,";
+    for(unsigned node = firstNodeId; node < firstNodeId + 8; ++node) {
+      oss << node << ",";
+    }
+    unsigned blockId = singleBlock ? 1 : i + 1;
+    oss << "block_" << blockId;
+
+    if(i < numElements - 1) {
+      oss << '\n';
+    }
+  }
+
+  return oss.str();
+}
+
+std::string MeshFixture::get_stacked_hex_element_textmesh_desc_with_coordinates(unsigned numElements, unsigned numProcs, bool singleBlock)
+{
+  std::string baseMeshDesc = get_stacked_hex_element_textmesh_desc(numElements, numProcs, singleBlock);
+  std::vector<double> coordinates = get_stacked_hex_element_textmesh_coordinates(numElements);
+  return get_full_text_mesh_desc(baseMeshDesc, coordinates);
+}
+
 
 }

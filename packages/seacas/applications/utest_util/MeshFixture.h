@@ -105,6 +105,12 @@ namespace utest_util {
 
     Ioss_MPI_Comm get_comm() const { return m_communicator; }
 
+    void fill_linear_proc_distribution(unsigned numElements, unsigned numProc, std::vector<unsigned>& procs);
+
+    std::string get_stacked_hex_element_textmesh_desc(unsigned numElements, unsigned numProcs, bool singleBlock);
+
+    std::string get_stacked_hex_element_textmesh_desc_with_coordinates(unsigned numElements, unsigned numProcs, bool singleBlock);
+
   protected:
     void add_material_property_to_element_block(Ioss::Region *region, const std::string &blockName,
                                                 const std::string &propertyName,

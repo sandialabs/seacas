@@ -148,9 +148,9 @@ Ioss::PropertyManager set_properties(Excn::SystemInterface &interFace)
     properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
   }
 
-//  if (interFace.debug()) {
-//    properties.add(Ioss::Property("LOGGING", 1));
-//  }
+  if (interFace.debug()) {
+    properties.add(Ioss::Property("LOGGING", 1));
+  }
 
 
   if (!interFace.map_element_ids()) {
