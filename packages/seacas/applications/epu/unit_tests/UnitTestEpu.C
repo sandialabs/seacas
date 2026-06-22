@@ -438,18 +438,21 @@ namespace {
 
       add_material_property_to_element_block(inputRegion, "block_1", m_propertyName, m_propertyValue);
 
-      const int argc = 10;
-      const char *argv[argc];
-      argv[0] = "epu_unit_test";
-      argv[1] = "-extension";
-      argv[2] = "g";
-      argv[3] = "-processor_count";
-      argv[4] = "2";
-      argv[5] = uniqueBaseName.c_str();
-      argv[6] = "-remove_file_per_rank_files";
-      argv[7] = "-verify_valid_file";
-      argv[8] = "-debug";
-      argv[9] = "512";
+      int argc = 0;
+      const char *argv[10];
+
+      clear_args(argc, argv);
+      add_arg(argc, argv, "epu_unit_test");
+      add_arg(argc, argv, "-extension");
+      add_arg(argc, argv, "g");
+      add_arg(argc, argv, "-processor_count");
+      add_arg(argc, argv, "2");
+      add_arg(argc, argv, uniqueBaseName.c_str());
+      add_arg(argc, argv, "-remove_file_per_rank_files");
+      add_arg(argc, argv, "-verify_valid_file");
+      add_arg(argc, argv, "-debug");
+      add_arg(argc, argv, "512");
+
       EXPECT_TRUE(interFace.parse_options(argc, const_cast<char**>(argv)));
       interFace.set_output_filename(m_outputFile);
 

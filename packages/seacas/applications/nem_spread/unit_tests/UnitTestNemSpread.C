@@ -153,6 +153,9 @@ namespace {
     {
       int         c;
 
+      // Reset for new scan
+      optind = 1;
+
       while ((c = getopt(argc, argv, "64Vhp:r:s:n:S:c:C:")) != -1) {
         switch (c) {
         case 'h':
@@ -303,6 +306,8 @@ namespace {
       free(lqa_record);
 
       partition.write_nemesis_data(exoid);
+
+      ASSERT_FALSE (ex_close(exoid) < 0) << "fatal: unable to close nemesis file: " << m_nemesisFile;
     }
 
     void create_pex_file()
@@ -379,24 +384,24 @@ namespace {
       std::string numProcString = std::to_string(numProcs);
 
       int argc = 0;
-      const char *argv[50];
-      argv[argc++] = "nem_spread_unit_test";
-      argv[argc++] = m_pexFile.c_str();
-      argv[argc++] = "-n";
-      argv[argc++] = numProcString.c_str();
+      const char *argv[20];
+
+      clear_args(argc, argv);
+
+      add_arg(argc, argv, "nem_spread_unit_test");
+      add_arg(argc, argv, m_pexFile.c_str());
+      add_arg(argc, argv, "-n");
+      add_arg(argc, argv, numProcString.c_str());
 
       if(is64Bit) {
-        argv[argc++] = "-64";
+        add_arg(argc, argv, "-64");
       }
 
       parse_options(argc, const_cast<char**>(argv));
     }
 
-    void create_and_verify_input_mesh_file(unsigned numElems)
+    void create_and_verify_input_mesh_file(const std::string &meshDesc)
     {
-      bool singleBlock = true;
-      std::string meshDesc = "textmesh:" + get_stacked_hex_element_textmesh_desc_with_coordinates(numElems, 1, singleBlock);
-
       setup_mesh(meshDesc);
 
       // Add a material property to block_1 from textmesh
@@ -420,12 +425,10 @@ namespace {
       test_property_from_file(m_outputFile, m_propertyName, m_propertyValue);
     }
 
-    void setup_input_files(unsigned numElems)
+    void setup_input_files(const std::string &meshDesc)
     {
-      EXPECT_TRUE(numElems >= m_numProcs);
-
       // Create mesh file
-      create_and_verify_input_mesh_file(numElems);
+      create_and_verify_input_mesh_file(meshDesc);
 
       // Create pex file
       create_pex_file();
@@ -445,8 +448,11 @@ namespace {
     void run_nem_spread()
     {
       /* initialize some variables */
-      ExoFile[0]      = '\0';
-      Exo_Res_File[0] = '\0';
+      ExoFile.clear();
+      Exo_LB_File.clear();
+      Exo_Res_File.clear();
+      Output_File_Base_Name.clear();
+
       Debug_Flag      = -1;
 
       Num_Nod_Var  = -1;
@@ -586,8 +592,9 @@ namespace {
     unsigned    numProcs = 2;
     initialize_options(baseName, numProcs);
 
-    unsigned numElems = 4;
-    setup_input_files(numElems);
+    unsigned numElems = 2;
+    std::string meshDesc = "textmesh:" + get_stacked_hex_element_textmesh_desc_with_coordinates(numElems, 1, true);
+    setup_input_files(meshDesc);
 
     run_nem_spread();
 
@@ -595,5 +602,26 @@ namespace {
 
     cleanup();
   }
+
+  TEST_F(NemSpreadTester, twoBeamMeshWithMaterialProperties)
+  {
+    if (get_parallel_size() != 1) GTEST_SKIP();
+
+    std::string baseName = "twoBeamNemSpread";
+    unsigned    numProcs = 2;
+    initialize_options(baseName, numProcs);
+
+    unsigned numElems = 2;
+    std::string meshDesc = "textmesh:" + get_stacked_beam_element_textmesh_desc_with_coordinates(numElems, 1, true);
+
+    setup_input_files(meshDesc);
+
+    run_nem_spread();
+
+    verify_material_property_in_nem_spread_output();
+
+    cleanup();
+  }
+
 
 } // namespace

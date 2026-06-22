@@ -299,7 +299,7 @@ namespace utest_util {
 
     if (answer == ElementType::NULL_EL) {
       std::string errstr;
-      errstr = fmt::format("fatal: unknown element type '{}' read", elem_name);
+      errstr = fmt::format("fatal: unsupported element type '{}' read", elem_name);
       EXPECT_TRUE(false) << errstr;
       exit(1);
     }
@@ -321,7 +321,7 @@ namespace utest_util {
    *****************************************************************************/
   void get_local_side_nodes(const IossElementData &elem, int side, std::vector<EntityId>& sideNodes)
   {
-    Ioss::IntVector indices = elem.topology->face_connectivity(side);
+    Ioss::IntVector indices = elem.topology->boundary_connectivity(side);
 
     sideNodes.clear();
     for(auto i : indices) {

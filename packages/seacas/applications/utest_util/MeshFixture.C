@@ -83,6 +83,19 @@ namespace {
     return coordinates;
   }
 
+  std::vector<double> get_stacked_beam_element_textmesh_coordinates(unsigned numElements)
+  {
+    std::vector<double> coordinates{ 0, 0, 0 };
+
+    for(unsigned i = 1; i <= numElements; ++i) {
+      coordinates.push_back(0);
+      coordinates.push_back(0);
+      coordinates.push_back(i);
+    }
+
+    return coordinates;
+  }
+
   std::string get_full_text_mesh_desc(const std::string& textMeshDesc, const std::vector<double>& coordVec)
   {
     std::stringstream coords;
@@ -228,5 +241,37 @@ std::string MeshFixture::get_stacked_hex_element_textmesh_desc_with_coordinates(
   return get_full_text_mesh_desc(baseMeshDesc, coordinates);
 }
 
+std::string MeshFixture::get_stacked_beam_element_textmesh_desc(unsigned numElements, unsigned numProcs, bool singleBlock)
+{
+  std::ostringstream oss;
+  std::vector<unsigned> procs(numElements, 0);
+  fill_linear_proc_distribution(numElements, numProcs, procs);
+
+  unsigned proc = 0;
+  for(unsigned i = 0; i < numElements; ++i) {
+    proc = procs[i];
+    unsigned elemId = i + 1;
+    unsigned firstNodeId = i + 1;
+    oss << proc << "," << elemId << ",BEAM_2,";
+    for(unsigned node = firstNodeId; node < firstNodeId + 2; ++node) {
+      oss << node << ",";
+    }
+    unsigned blockId = singleBlock ? 1 : i + 1;
+    oss << "block_" << blockId;
+
+    if(i < numElements - 1) {
+      oss << '\n';
+    }
+  }
+
+  return oss.str();
+}
+
+std::string MeshFixture::get_stacked_beam_element_textmesh_desc_with_coordinates(unsigned numElements, unsigned numProcs, bool singleBlock)
+{
+  std::string baseMeshDesc = get_stacked_beam_element_textmesh_desc(numElements, numProcs, singleBlock);
+  std::vector<double> coordinates = get_stacked_beam_element_textmesh_coordinates(numElements);
+  return get_full_text_mesh_desc(baseMeshDesc, coordinates);
+}
 
 }
