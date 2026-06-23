@@ -36,21 +36,20 @@
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_ElementTopology.h"
 #include "Ioss_IOFactory.h" // for IOFactory
-#include "Ioss_Region.h"    // for IOFactory
 #include "Ioss_MeshCopyOptions.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h" // for IOFactory
 
 #include "IossMesh.h"
-#include "PartitionTypes.h"
 #include "Partition.h"
+#include "PartitionTypes.h"
 
 namespace utest_util {
 
-  template <typename INT>
-  class ElementPartition : public Partition
+  template <typename INT> class ElementPartition : public Partition
   {
   public:
-    ElementPartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
+    ElementPartition(IossMesh *mesh, const std::vector<EntityProc> &procAssign, const int nProc);
 
     void write_nemesis_data(int exoid) const override;
 
@@ -81,13 +80,15 @@ namespace utest_util {
     std::vector<std::vector<INT>>              e_cmap_neigh{};
 
   private:
-    void find_beam_internal_and_border_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
+    void find_beam_internal_and_border_elements(const std::vector<std::vector<INT>> &sur_elem,
+                                                const int                            max_nsur);
     void categorize_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
     void categorize_nodes(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
 
-    void assign_border_node_processors(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
+    void assign_border_node_processors(const std::vector<std::vector<INT>> &sur_elem,
+                                       const int                            max_nsur);
     void order_element_communication_maps();
 
     void generate_partition_maps();
   };
-}
+} // namespace utest_util

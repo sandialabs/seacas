@@ -11,11 +11,11 @@
 
 #include "NodePartition.h"
 
-#include "exodusII.h"   // for ex_opts, ex_int64_status, etc
+#include "exodusII.h" // for ex_opts, ex_int64_status, etc
 
-#include <cstdint>          // for int64_t
-#include <cstdio>           // for stderr, etc
-#include <cstdlib>          // for exit
+#include <cstdint> // for int64_t
+#include <cstdio>  // for stderr, etc
+#include <cstdlib> // for exit
 #include <cstring>
 #include <unistd.h> // for getopt, optarg, optind
 
@@ -40,39 +40,43 @@
 
 namespace utest_util {
 
-  template
-  NodePartition<int>::NodePartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
-  template
-  NodePartition<int64_t>::NodePartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
+  template NodePartition<int>::NodePartition(IossMesh                      *mesh,
+                                             const std::vector<EntityProc> &procAssign,
+                                             const int                      nProc);
+  template NodePartition<int64_t>::NodePartition(IossMesh                      *mesh,
+                                                 const std::vector<EntityProc> &procAssign,
+                                                 const int                      nProc);
 
   template <typename INT>
-  NodePartition<INT>::NodePartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc)
-    : Partition(mesh, procAssign, nProc)
+  NodePartition<INT>::NodePartition(IossMesh *mesh, const std::vector<EntityProc> &procAssign,
+                                    const int nProc)
+      : Partition(mesh, procAssign, nProc)
   {
     verify_input_partition();
     generate_partition_maps();
   }
 
-  template <typename INT>
-  size_t NodePartition<INT>::get_num_local_entities() const
+  template <typename INT> size_t NodePartition<INT>::get_num_local_entities() const
   {
     return m_mesh->get_num_local_nodes();
   }
 
-  template <typename INT>
-  int NodePartition<INT>::get_processor(size_t localId) const
+  template <typename INT> int NodePartition<INT>::get_processor(size_t localId) const
   {
     IossNodeData node = m_mesh->get_local_node(localId);
     EXPECT_TRUE(node.is_valid());
 
-    auto lowerBound = std::lower_bound(m_entityPartition.begin(), m_entityPartition.end(), node.id, EntityProcLess());
-    EXPECT_FALSE(lowerBound == m_entityPartition.end() || lowerBound->id != node.id) << "node " << node.id << " was not assigned a processor";
+    auto lowerBound = std::lower_bound(m_entityPartition.begin(), m_entityPartition.end(), node.id,
+                                       EntityProcLess());
+    EXPECT_FALSE(lowerBound == m_entityPartition.end() || lowerBound->id != node.id)
+        << "node " << node.id << " was not assigned a processor";
 
     return lowerBound->proc;
   }
 
   template <typename INT>
-  void NodePartition<INT>::categorize_nodes(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
+  void NodePartition<INT>::categorize_nodes(const std::vector<std::vector<INT>> &sur_elem,
+                                            const int                            max_nsur)
   {
     size_t numNodes = m_mesh->get_num_local_nodes();
 
@@ -83,9 +87,9 @@ namespace utest_util {
       int internal = 1;
       int flag     = 0;
       for (size_t ecnt = 0; ecnt < sur_elem[ncnt].size(); ecnt++) {
-        int               elem   = sur_elem[ncnt][ecnt];
+        int             elem     = sur_elem[ncnt][ecnt];
         IossElementData elemData = m_mesh->get_local_element(elem);
-        int               nnodes = elemData.topology->number_nodes();
+        int             nnodes   = elemData.topology->number_nodes();
 
         for (size_t i = 0; i < static_cast<size_t>(nnodes); i++) {
           int proc_n = get_processor(elemData.localConnectivity[i]);
@@ -119,13 +123,14 @@ namespace utest_util {
   }
 
   template <typename INT>
-  void NodePartition<INT>::categorize_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
+  void NodePartition<INT>::categorize_elements(const std::vector<std::vector<INT>> &sur_elem,
+                                               const int                            max_nsur)
   {
     size_t numElems = m_mesh->get_num_local_elements();
 
     for (size_t ecnt = 0; ecnt < numElems; ecnt++) {
       IossElementData elemData = m_mesh->get_local_element(ecnt);
-      int               nnodes = elemData.topology->number_nodes();
+      int             nnodes   = elemData.topology->number_nodes();
 
       for (size_t ncnt = 0; ncnt < static_cast<size_t>(nnodes); ncnt++) {
         int node = elemData.localConnectivity[ncnt];
@@ -144,8 +149,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  void NodePartition<INT>::generate_partition_maps()
+  template <typename INT> void NodePartition<INT>::generate_partition_maps()
   {
     /* Allocate memory */
     int_nodes.resize(m_numProcs);
@@ -186,34 +190,33 @@ namespace utest_util {
   template void NodePartition<int>::write_nemesis_data(int exoid) const;
   template void NodePartition<int64_t>::write_nemesis_data(int exoid) const;
 
-  template <typename INT>
-  void NodePartition<INT>::write_nemesis_data(int exoid) const
+  template <typename INT> void NodePartition<INT>::write_nemesis_data(int exoid) const
   {
-    int status = 0;
-    size_t numNodes = m_mesh->get_num_local_nodes();
-    size_t numElems = m_mesh->get_num_local_elements();
+    int    status        = 0;
+    size_t numNodes      = m_mesh->get_num_local_nodes();
+    size_t numElems      = m_mesh->get_num_local_elements();
     size_t numElemBlocks = m_mesh->get_num_global_element_blocks();
 
     /* Output the the initial Nemesis global information */
     status = ex_put_init_global(exoid, numNodes, numElems, numElemBlocks, 0, 0);
-    ASSERT_FALSE (status < 0) << "fatal: failed to output initial Nemesis parameters";
+    ASSERT_FALSE(status < 0) << "fatal: failed to output initial Nemesis parameters";
 
     {
       auto ebs = m_mesh->get_region()->get_element_blocks();
 
-      std::vector<INT> eb_ids(ebs.size(),0);
-      std::vector<INT> eb_cnts(ebs.size(),0);
+      std::vector<INT> eb_ids(ebs.size(), 0);
+      std::vector<INT> eb_cnts(ebs.size(), 0);
 
-      for(size_t i=0; i<ebs.size(); i++) {
-        eb_ids[i] = ebs[i]->get_property("id").get_int();
+      for (size_t i = 0; i < ebs.size(); i++) {
+        eb_ids[i]  = ebs[i]->get_property("id").get_int();
         eb_cnts[i] = ebs[i]->entity_count();
       }
       ex_put_eb_info_global(exoid, Data(eb_ids), Data(eb_cnts));
     }
 
     /* Set up dummy arrays for output */
-    std::vector<INT> num_nmap_cnts(m_numProcs,0);
-    std::vector<INT> num_emap_cnts(m_numProcs,0);
+    std::vector<INT> num_nmap_cnts(m_numProcs, 0);
+    std::vector<INT> num_emap_cnts(m_numProcs, 0);
 
     /* need to check and make sure that there really are comm maps */
     for (int cnt = 0; cnt < m_numProcs; cnt++) {
@@ -223,15 +226,15 @@ namespace utest_util {
     }
 
     status = ex_put_init_info(exoid, m_numProcs, m_numProcs, (char *)"s");
-    ASSERT_FALSE (status < 0) << "fatal: unable to output init info";
+    ASSERT_FALSE(status < 0) << "fatal: unable to output init info";
 
     // Need to create 5 arrays with the sizes of int_nodes[i].size()...
     {
-      std::vector<INT> ins(m_numProcs,0);
-      std::vector<INT> bns(m_numProcs,0);
-      std::vector<INT> ens(m_numProcs,0);
-      std::vector<INT> ies(m_numProcs,0);
-      std::vector<INT> bes(m_numProcs,0);
+      std::vector<INT> ins(m_numProcs, 0);
+      std::vector<INT> bns(m_numProcs, 0);
+      std::vector<INT> ens(m_numProcs, 0);
+      std::vector<INT> ies(m_numProcs, 0);
+      std::vector<INT> bes(m_numProcs, 0);
 
       for (int iproc = 0; iproc < m_numProcs; iproc++) {
         ins[iproc] = int_nodes[iproc].size();
@@ -243,7 +246,7 @@ namespace utest_util {
 
       status = ex_put_loadbal_param_cc(exoid, Data(ins), Data(bns), Data(ens), Data(ies), Data(bes),
                                        Data(num_nmap_cnts), Data(num_emap_cnts));
-      ASSERT_FALSE (status < 0) << "fatal: unable to output load-balance parameters";
+      ASSERT_FALSE(status < 0) << "fatal: unable to output load-balance parameters";
     }
 
     /* Set up for the concatenated communication map parameters */
@@ -280,4 +283,4 @@ namespace utest_util {
     } /* End "for(proc=0; proc < machine->num_procs; proc++)" */
   }
 
-}
+} // namespace utest_util

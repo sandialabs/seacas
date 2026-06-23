@@ -36,21 +36,20 @@
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_ElementTopology.h"
 #include "Ioss_IOFactory.h" // for IOFactory
-#include "Ioss_Region.h"    // for IOFactory
 #include "Ioss_MeshCopyOptions.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h" // for IOFactory
 
 #include "IossMesh.h"
-#include "PartitionTypes.h"
 #include "Partition.h"
+#include "PartitionTypes.h"
 
 namespace utest_util {
 
-  template <typename INT>
-  class NodePartition : public Partition
+  template <typename INT> class NodePartition : public Partition
   {
   public:
-    NodePartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
+    NodePartition(IossMesh *mesh, const std::vector<EntityProc> &procAssign, const int nProc);
 
     void write_nemesis_data(int exoid) const override;
 
@@ -81,4 +80,4 @@ namespace utest_util {
 
     void generate_partition_maps();
   };
-}
+} // namespace utest_util

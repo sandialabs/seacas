@@ -58,7 +58,7 @@ namespace utest_util {
 
   std::string unique_filename(const std::string &base, const std::string &extension)
   {
-    std::string                filename  = unique_basename(base);
+    std::string filename = unique_basename(base);
     filename += "." + extension;
     return filename;
   }

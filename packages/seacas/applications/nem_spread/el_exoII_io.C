@@ -765,13 +765,11 @@ void NemSpread<T, INT>::read_elem_blk_ids(int mesh_exoid, int max_name_length)
   }
 }
 
-
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
 
-template <typename T, typename INT>
-void NemSpread<T, INT>::read_elem_blk_properties(int mesh_exoid)
+template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk_properties(int mesh_exoid)
 {
 
   /* This function reads the user-defined element block properties from the EXODUS file.
@@ -783,7 +781,8 @@ void NemSpread<T, INT>::read_elem_blk_properties(int mesh_exoid)
 
     // Get "user defined element block attributes"
     // These are single key-value per element block
-    read_exodus_entity_properties(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Ids[i], Elem_Blk_Properties[i]);
+    read_exodus_entity_properties(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Ids[i],
+                                  Elem_Blk_Properties[i]);
   }
 }
 

@@ -25,8 +25,8 @@
 #include <exception>
 #include <fmt/chrono.h>
 #include <fmt/format.h>
-#include <fmt/ranges.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <limits>
 #include <numeric>
 #include <set>
@@ -56,7 +56,7 @@
 #include <exodusII.h>
 
 using StringVector = std::vector<std::string>;
-using RegionVector   = std::vector<Ioss::Region *>;
+using RegionVector = std::vector<Ioss::Region *>;
 
 #include "EP_ExodusFile.h"
 #include "EP_SystemInterface.h"
@@ -65,133 +65,132 @@ using RegionVector   = std::vector<Ioss::Region *>;
 #error "Requires exodusII version 4.68 or later"
 #endif
 
-
 // The main program templated to permit float/double transfer.
 template <typename T, typename INT>
 int epu(Excn::SystemInterface &interFace, int start_part, int part_count, int cycle);
 
 namespace {
-Ioss::MeshCopyOptions set_mesh_copy_options(Excn::SystemInterface &interFace)
-{
-  Ioss::MeshCopyOptions options{};
-  //  options.selected_times       = interFace.selected_times;
-  //  options.selected_steps       = interFace.selected_steps;
-  //  options.rel_tolerance        = interFace.rel_tolerance;
-  //  options.abs_tolerance        = interFace.abs_tolerance;
-  //  options.tol_floor            = interFace.tol_floor;
-    options.verbose              = false;
-    options.output_summary       = true;
-  //  options.memory_statistics    = interFace.memory_statistics;
-  options.debug                = false; // interFace.debug() > 0;
-  options.ints_64_bit          = interFace.int64();
-  //  options.delete_timesteps     = interFace.delete_timesteps;
-  //  options.sort_times           = interFace.sort_times;
-  //  options.shuffle_times        = interFace.shuffle_times;
-  //  options.minimum_time         = interFace.minimum_time;
-  //  options.maximum_time         = interFace.maximum_time;
-  //  options.time_scale           = interFace.time_scale;
-  //  options.time_offset          = interFace.time_offset;
-  options.data_storage_type    = 1;
-  //  options.delay                = interFace.timestep_delay;
-  //  options.reverse              = interFace.reverse;
-  options.add_proc_id          = interFace.add_processor_id_field();
-  //  options.boundary_sideset     = interFace.boundary_sideset;
-  //  options.ignore_qa_info       = interFace.ignore_qa_info;
-  //  options.omitted_blocks       = !interFace.omitted_blocks.empty();
-  //  options.selected_change_sets = interFace.selectedChangeSets;
-  //
-  //  options.omitted_sets = interFace.omitted_sets;
-  Ioss::sort(options.omitted_sets);
-  for (auto &name : options.omitted_sets) {
-    name = Ioss::Utils::lowercase(name);
-  }
-  return options;
-}
-
-Ioss::PropertyManager set_properties(Excn::SystemInterface &interFace)
-{
-  Ioss::PropertyManager properties;
-
-  if (interFace.int64()) {
-    properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-    properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+  Ioss::MeshCopyOptions set_mesh_copy_options(Excn::SystemInterface &interFace)
+  {
+    Ioss::MeshCopyOptions options{};
+    //  options.selected_times       = interFace.selected_times;
+    //  options.selected_steps       = interFace.selected_steps;
+    //  options.rel_tolerance        = interFace.rel_tolerance;
+    //  options.abs_tolerance        = interFace.abs_tolerance;
+    //  options.tol_floor            = interFace.tol_floor;
+    options.verbose        = false;
+    options.output_summary = true;
+    //  options.memory_statistics    = interFace.memory_statistics;
+    options.debug       = false; // interFace.debug() > 0;
+    options.ints_64_bit = interFace.int64();
+    //  options.delete_timesteps     = interFace.delete_timesteps;
+    //  options.sort_times           = interFace.sort_times;
+    //  options.shuffle_times        = interFace.shuffle_times;
+    //  options.minimum_time         = interFace.minimum_time;
+    //  options.maximum_time         = interFace.maximum_time;
+    //  options.time_scale           = interFace.time_scale;
+    //  options.time_offset          = interFace.time_offset;
+    options.data_storage_type = 1;
+    //  options.delay                = interFace.timestep_delay;
+    //  options.reverse              = interFace.reverse;
+    options.add_proc_id = interFace.add_processor_id_field();
+    //  options.boundary_sideset     = interFace.boundary_sideset;
+    //  options.ignore_qa_info       = interFace.ignore_qa_info;
+    //  options.omitted_blocks       = !interFace.omitted_blocks.empty();
+    //  options.selected_change_sets = interFace.selectedChangeSets;
+    //
+    //  options.omitted_sets = interFace.omitted_sets;
+    Ioss::sort(options.omitted_sets);
+    for (auto &name : options.omitted_sets) {
+      name = Ioss::Utils::lowercase(name);
+    }
+    return options;
   }
 
-  if (interFace.compress_data() > 0 || interFace.szip() || interFace.quantize() ||
-      interFace.zlib() || interFace.zstd() || interFace.bz2()) {
-    properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-    properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compress_data()));
+  Ioss::PropertyManager set_properties(Excn::SystemInterface &interFace)
+  {
+    Ioss::PropertyManager properties;
 
-    if (interFace.zlib()) {
-      properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
-    }
-    else if (interFace.szip()) {
-      properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
-    }
-    else if (interFace.zstd()) {
-      properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
-    }
-    else if (interFace.bz2()) {
-      properties.add(Ioss::Property("COMPRESSION_METHOD", "bzip2"));
+    if (interFace.int64()) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
-    if (interFace.quantize()) {
-      properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantize_nsd()));
+    if (interFace.compress_data() > 0 || interFace.szip() || interFace.quantize() ||
+        interFace.zlib() || interFace.zstd() || interFace.bz2()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compress_data()));
+
+      if (interFace.zlib()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
+      else if (interFace.szip()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zstd()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zstd"));
+      }
+      else if (interFace.bz2()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "bzip2"));
+      }
+
+      if (interFace.quantize()) {
+        properties.add(Ioss::Property("COMPRESSION_QUANTIZE_NSD", interFace.quantize_nsd()));
+      }
+    }
+
+    if (interFace.use_netcdf4()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+
+    if (interFace.use_netcdf5()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
+    }
+
+    if (interFace.debug()) {
+      properties.add(Ioss::Property("LOGGING", 1));
+    }
+
+    if (!interFace.map_element_ids()) {
+      std::cout << "Ignore elem map\n";
+      properties.add(Ioss::Property("IGNORE_ELEM_MAP", true));
+    }
+
+    if (!interFace.map_edge_ids()) {
+      std::cout << "Ignore edge map\n";
+      properties.add(Ioss::Property("IGNORE_EDGE_MAP", true));
+    }
+    if (!interFace.map_face_ids()) {
+      std::cout << "Ignore face map\n";
+      properties.add(Ioss::Property("IGNORE_FACE_MAP", true));
+    }
+
+    return properties;
+  }
+
+  void append_properties_from_region(Ioss::Region *inputRegion, Excn::SystemInterface &interFace,
+                                     Ioss::PropertyManager &properties)
+  {
+    auto inputDB = inputRegion->get_database();
+
+    // Get length of longest name on input file...
+    int max_name_length = inputDB->maximum_symbol_length();
+    if (max_name_length > 0) {
+      properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
+    }
+
+    // Get integer size being used on the input file and propagate
+    // to output file...
+    int int_byte_size_api = inputDB->int_byte_size_api();
+    if (!properties.exists("INTEGER_SIZE_API")) {
+      if (!interFace.int64()) {
+        properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+      }
+      properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
     }
   }
 
-  if (interFace.use_netcdf4()) {
-    properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-  }
-
-  if (interFace.use_netcdf5()) {
-    properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
-  }
-
-  if (interFace.debug()) {
-    properties.add(Ioss::Property("LOGGING", 1));
-  }
-
-
-  if (!interFace.map_element_ids()) {
-    std::cout << "Ignore elem map\n";
-    properties.add(Ioss::Property("IGNORE_ELEM_MAP", true));
-  }
-
-  if (!interFace.map_edge_ids()) {
-    std::cout << "Ignore edge map\n";
-    properties.add(Ioss::Property("IGNORE_EDGE_MAP", true));
-  }
-  if (!interFace.map_face_ids()) {
-    std::cout << "Ignore face map\n";
-    properties.add(Ioss::Property("IGNORE_FACE_MAP", true));
-  }
-
-  return properties;
-}
-
-void append_properties_from_region(Ioss::Region *inputRegion, Excn::SystemInterface &interFace, Ioss::PropertyManager &properties)
-{
-  auto inputDB = inputRegion->get_database();
-
-  // Get length of longest name on input file...
-  int max_name_length = inputDB->maximum_symbol_length();
-  if (max_name_length > 0) {
-    properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
-  }
-
-  // Get integer size being used on the input file and propagate
-  // to output file...
-  int int_byte_size_api = inputDB->int_byte_size_api();
-  if (!properties.exists("INTEGER_SIZE_API")) {
-    if (!interFace.int64()) {
-      properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-    }
-    properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
-  }
-}
-
-}
+} // namespace
 namespace {
 
   using namespace Excn;
@@ -273,7 +272,7 @@ namespace {
       int part_count      = interFace.part_count();
       int rank            = interFace.processor_rank();
 
-      if(get_parallel_rank() == 0) {
+      if (get_parallel_rank() == 0) {
         int max_open_file = open_file_limit() - 1; // -1 for output exodus file.
 
         // Only used to test the auto subcycle without requiring thousands of files...
@@ -296,9 +295,9 @@ namespace {
             interFace.subcycle(sub_cycle_count);
             if (rank == 0) {
               fmt::print("\tAutomatically activating subcyle mode\n\tNumber of processors ({}) "
-                  "exceeds open file limit ({}).\n"
-                  "\tUsing --subcycle={}\n\n",
-                  processor_count, max_open_file, sub_cycle_count);
+                         "exceeds open file limit ({}).\n"
+                         "\tUsing --subcycle={}\n\n",
+                         processor_count, max_open_file, sub_cycle_count);
             }
             interFace.subcycle_join(true);
           }
@@ -373,10 +372,11 @@ namespace {
 
     int finish_subcycle(SystemInterface &interFace)
     {
-      int rank = interFace.processor_rank();
+      int rank  = interFace.processor_rank();
       int error = 0;
 
-      if (interFace.subcycle() > 0 && interFace.cycle() < 0 && interFace.subcycle_join() && rank == 0) {
+      if (interFace.subcycle() > 0 && interFace.cycle() < 0 && interFace.subcycle_join() &&
+          rank == 0) {
         // Now, join the subcycled parts into a single file...
         int start_part = 0;
         int part_count = interFace.subcycle();
@@ -420,25 +420,27 @@ namespace {
       std::string baseName       = "twoHexEpu";
       std::string uniqueBaseName = utest_util::unique_basename(baseName);
 
-      m_outputFile               = utest_util::unique_filename(baseName, "g");
+      m_outputFile = utest_util::unique_filename(baseName, "g");
 
       int rank = get_parallel_rank();
       SystemInterface::show_version(rank);
 
       std::string meshDesc = "textmesh:"
-          "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
-          "1,2,HEX_8,5,6,7,8,9,10,11,12,block_1"
-          "|coordinates:   0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, 0,1,1, 0,0,2, 1,0,2, 1,1,2, 0,1,2";
+                             "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+                             "1,2,HEX_8,5,6,7,8,9,10,11,12,block_1"
+                             "|coordinates:   0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, "
+                             "0,1,1, 0,0,2, 1,0,2, 1,1,2, 0,1,2";
 
       setup_mesh(meshDesc);
 
       // Add a material property to block_1 from textmesh
       auto inputRegion = get_mesh().get_region();
-      auto inputDB = get_mesh().get_database();
+      auto inputDB     = get_mesh().get_database();
 
-      add_material_property_to_element_block(inputRegion, "block_1", m_propertyName, m_propertyValue);
+      add_material_property_to_element_block(inputRegion, "block_1", m_propertyName,
+                                             m_propertyValue);
 
-      int argc = 0;
+      int         argc = 0;
       const char *argv[10];
 
       clear_args(argc, argv);
@@ -453,7 +455,7 @@ namespace {
       add_arg(argc, argv, "-debug");
       add_arg(argc, argv, "512");
 
-      EXPECT_TRUE(interFace.parse_options(argc, const_cast<char**>(argv)));
+      EXPECT_TRUE(interFace.parse_options(argc, const_cast<char **>(argv)));
       interFace.set_output_filename(m_outputFile);
 
       Ioss::PropertyManager properties = set_properties(interFace);
@@ -483,7 +485,8 @@ namespace {
 
   TEST_F(EpuTester, epuTwoHexMesh_serial)
   {
-    if (get_parallel_size() != 2) GTEST_SKIP();
+    if (get_parallel_size() != 2)
+      GTEST_SKIP();
 
     SystemInterface interFace(get_parallel_rank());
     setup_two_proc_epu(interFace);
@@ -506,9 +509,10 @@ namespace {
       ExodusFile::unlink_input_files();
     }
 
-    if(get_parallel_rank() == 0) {
+    if (get_parallel_rank() == 0) {
       // Load epu'd file and test for material property
-      test_property_from_file(Ioss::ParallelUtils::comm_self(), m_outputFile, m_propertyName, m_propertyValue);
+      test_property_from_file(Ioss::ParallelUtils::comm_self(), m_outputFile, m_propertyName,
+                              m_propertyValue);
 
       // Delete epu'd file
       unlink(m_outputFile.c_str());

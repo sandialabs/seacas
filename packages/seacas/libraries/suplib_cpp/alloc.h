@@ -9,6 +9,6 @@
 
 namespace suplib_cpp {
 
-void *array_alloc(int numdim, ...);
+  void *array_alloc(int numdim, ...);
 
 }

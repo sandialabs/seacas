@@ -9,12 +9,12 @@
 #endif
 #include "gtest/gtest.h"
 
-#include "PartitionTypes.h"
 #include "Partition.h"
+#include "PartitionTypes.h"
 
-#include <cstdint>          // for int64_t
-#include <cstdio>           // for stderr, etc
-#include <cstdlib>          // for exit
+#include <cstdint> // for int64_t
+#include <cstdio>  // for stderr, etc
+#include <cstdlib> // for exit
 #include <cstring>
 
 #include <cstdarg> // for va_end, va_arg, va_list, etc
@@ -29,13 +29,18 @@
 
 namespace utest_util {
 
-  template
-  void fill_node_element_connectivity(IossMesh *mesh, std::vector<std::vector<int>> &surroundingElements, int &maxNumSurroundingElements);
-  template
-  void fill_node_element_connectivity(IossMesh *mesh, std::vector<std::vector<int64_t>> &surroundingElements, int &maxNumSurroundingElements);
+  template void fill_node_element_connectivity(IossMesh                      *mesh,
+                                               std::vector<std::vector<int>> &surroundingElements,
+                                               int &maxNumSurroundingElements);
+  template void
+  fill_node_element_connectivity(IossMesh                          *mesh,
+                                 std::vector<std::vector<int64_t>> &surroundingElements,
+                                 int                               &maxNumSurroundingElements);
 
   template <typename INT>
-  void fill_node_element_connectivity(IossMesh *mesh, std::vector<std::vector<INT>> &surroundingElements, int &maxNumSurroundingElements)
+  void fill_node_element_connectivity(IossMesh                      *mesh,
+                                      std::vector<std::vector<INT>> &surroundingElements,
+                                      int                           &maxNumSurroundingElements)
   {
     surroundingElements.clear();
     maxNumSurroundingElements = 0;
@@ -113,10 +118,9 @@ namespace utest_util {
 #endif
   }
 
-  Partition::Partition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc)
-    : m_mesh(mesh), m_numProcs(nProc), m_entityPartition(procAssign)
+  Partition::Partition(IossMesh *mesh, const std::vector<EntityProc> &procAssign, const int nProc)
+      : m_mesh(mesh), m_numProcs(nProc), m_entityPartition(procAssign)
   {
-
   }
 
   void Partition::verify_input_partition()
@@ -124,8 +128,9 @@ namespace utest_util {
     EXPECT_TRUE(m_numProcs > 0) << "Invalid processor decomposition count: " << m_numProcs;
 
     // Verify processor distribution
-    for(const auto& entry : m_entityPartition) {
-      EXPECT_TRUE(entry.proc >= 0 && entry.proc < m_numProcs) << "Invalid processor assignment for entity " << entry.id;
+    for (const auto &entry : m_entityPartition) {
+      EXPECT_TRUE(entry.proc >= 0 && entry.proc < m_numProcs)
+          << "Invalid processor assignment for entity " << entry.id;
     }
 
     // Sort and uniquify
@@ -136,8 +141,8 @@ namespace utest_util {
     EXPECT_EQ(get_num_local_entities(), m_entityPartition.size());
 
     // Make sure every node has an assignment
-    for(size_t i=0; i<get_num_local_entities(); i++) {
+    for (size_t i = 0; i < get_num_local_entities(); i++) {
       (void)get_processor(i);
     }
   }
-}
+} // namespace utest_util

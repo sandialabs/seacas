@@ -99,10 +99,10 @@ namespace Excn {
     int64_t                  offset_{0};
     int                      position_{0};
 
-    size_t property_count() const { return blockProperties.count(); }
-    ExodusPropertyManager    blockProperties; /* User defined properties for each *
-                                               * element block. These are single  *
-                                               * key-value per element block      */
+    size_t                property_count() const { return blockProperties.count(); }
+    ExodusPropertyManager blockProperties; /* User defined properties for each *
+                                            * element block. These are single  *
+                                            * key-value per element block      */
 
     Block &operator=(const Block &other)
     {

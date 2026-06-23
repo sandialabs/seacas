@@ -21,8 +21,8 @@
 #else
 #include <strings.h>
 #endif
-#include <vector>
 #include <limits>
+#include <vector>
 
 #include "Ioss_CodeTypes.h"
 
@@ -42,61 +42,49 @@ namespace utest_util {
 
   struct IossNodeData
   {
-    EntityId                     id{0};
+    EntityId id{0};
 
     // Local index into vector held by IossMesh
-    size_t                       localId{std::numeric_limits<size_t>::max()};
+    size_t localId{std::numeric_limits<size_t>::max()};
 
     operator EntityId() const { return id; }
 
-    bool is_valid() const
-    {
-      return (id > 0) && (localId != std::numeric_limits<size_t>::max());
-    }
+    bool is_valid() const { return (id > 0) && (localId != std::numeric_limits<size_t>::max()); }
   };
 
   struct IossNodeDataLess
   {
-    bool operator()(const IossNodeData &lhs, const IossNodeData &rhs)
-    {
-      return lhs.id < rhs.id;
-    };
+    bool operator()(const IossNodeData &lhs, const IossNodeData &rhs) { return lhs.id < rhs.id; };
 
-    bool operator()(const IossNodeData &lhs, const EntityId rhs)
-    {
-      return lhs.id < rhs;
-    };
+    bool operator()(const IossNodeData &lhs, const EntityId rhs) { return lhs.id < rhs; };
 
-    bool operator()(const EntityId lhs, const IossNodeData &rhs)
-    {
-      return lhs < rhs.id;
-    };
+    bool operator()(const EntityId lhs, const IossNodeData &rhs) { return lhs < rhs.id; };
 
     bool operator()(const EntityId lhs, const EntityId rhs) { return lhs < rhs; };
   };
 
   struct IossElementData
   {
-    EntityId                     id{0};
+    EntityId id{0};
 
     // Local index into vector held by IossMesh
-    size_t                       localId{std::numeric_limits<size_t>::max()};
+    size_t localId{std::numeric_limits<size_t>::max()};
 
     const Ioss::ElementTopology *topology{nullptr};
     const Ioss::ElementBlock    *block{nullptr};
 
     // Global node id connectivity
-    std::vector<EntityId>        nodeIds{};
+    std::vector<EntityId> nodeIds{};
 
     // Zero based local connectivity
-    std::vector<EntityId>        localConnectivity{};
+    std::vector<EntityId> localConnectivity{};
 
     operator EntityId() const { return id; }
 
     bool is_valid() const
     {
-      return (id > 0) && (localId != std::numeric_limits<size_t>::max()) &&
-             (topology != nullptr) && (block != nullptr) && !nodeIds.empty();
+      return (id > 0) && (localId != std::numeric_limits<size_t>::max()) && (topology != nullptr) &&
+             (block != nullptr) && !nodeIds.empty();
     }
   };
 
@@ -107,23 +95,17 @@ namespace utest_util {
       return lhs.id < rhs.id;
     };
 
-    bool operator()(const IossElementData &lhs, const EntityId rhs)
-    {
-      return lhs.id < rhs;
-    };
+    bool operator()(const IossElementData &lhs, const EntityId rhs) { return lhs.id < rhs; };
 
-    bool operator()(const EntityId lhs, const IossElementData &rhs)
-    {
-      return lhs < rhs.id;
-    };
+    bool operator()(const EntityId lhs, const IossElementData &rhs) { return lhs < rhs.id; };
 
     bool operator()(const EntityId lhs, const EntityId rhs) { return lhs < rhs; };
   };
 
   struct IossElementBlockData
   {
-    const Ioss::ElementBlock    *block{nullptr};
-    std::vector<size_t>          localIds;
+    const Ioss::ElementBlock *block{nullptr};
+    std::vector<size_t>       localIds;
   };
 
-}
+} // namespace utest_util

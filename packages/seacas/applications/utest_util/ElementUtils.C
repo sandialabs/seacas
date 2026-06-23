@@ -11,11 +11,11 @@
 
 #include "ElementUtils.h"
 
-#include "exodusII.h"   // for ex_opts, ex_int64_status, etc
+#include "exodusII.h" // for ex_opts, ex_int64_status, etc
 
-#include <cstdint>          // for int64_t
-#include <cstdio>           // for stderr, etc
-#include <cstdlib>          // for exit
+#include <cstdint> // for int64_t
+#include <cstdio>  // for stderr, etc
+#include <cstdlib> // for exit
 #include <cstring>
 #include <unistd.h> // for getopt, optarg, optind
 
@@ -39,29 +39,29 @@
 
 namespace utest_util {
 
-  bool is_hex(const Ioss::ElementTopology* topo)
+  bool is_hex(const Ioss::ElementTopology *topo)
   {
     return topo->shape() == Ioss::ElementShape::HEX;
   }
 
   bool is_hex(ElementType etype)
   {
-    return etype == ElementType::HEX8 || etype == ElementType::HEX27 || etype == ElementType::HEX20 ||
-           etype == ElementType::HEXSHELL;
+    return etype == ElementType::HEX8 || etype == ElementType::HEX27 ||
+           etype == ElementType::HEX20 || etype == ElementType::HEXSHELL;
   }
 
-  bool is_tet(const Ioss::ElementTopology* topo)
+  bool is_tet(const Ioss::ElementTopology *topo)
   {
     return topo->shape() == Ioss::ElementShape::TET;
   }
 
   bool is_tet(ElementType etype)
   {
-    return etype == ElementType::TET4 || etype == ElementType::TET10 || etype == ElementType::TET8 ||
-           etype == ElementType::TET14 || etype == ElementType::TET15;
+    return etype == ElementType::TET4 || etype == ElementType::TET10 ||
+           etype == ElementType::TET8 || etype == ElementType::TET14 || etype == ElementType::TET15;
   }
 
-  bool is_wedge(const Ioss::ElementTopology* topo)
+  bool is_wedge(const Ioss::ElementTopology *topo)
   {
     return topo->shape() == Ioss::ElementShape::WEDGE;
   }
@@ -73,7 +73,7 @@ namespace utest_util {
            etype == ElementType::WEDGE21;
   }
 
-  bool is_pyramid(const Ioss::ElementTopology* topo)
+  bool is_pyramid(const Ioss::ElementTopology *topo)
   {
     return topo->shape() == Ioss::ElementShape::PYRAMID;
   }
@@ -85,7 +85,7 @@ namespace utest_util {
            etype == ElementType::PYRAMID19;
   }
 
-  bool is_3d_element(const Ioss::ElementTopology* topo)
+  bool is_3d_element(const Ioss::ElementTopology *topo)
   {
     return is_hex(topo) || is_tet(topo) || is_wedge(topo) || is_pyramid(topo);
   }
@@ -108,9 +108,7 @@ namespace utest_util {
         case 16: answer = ElementType::HEX16; break;
         case 20: answer = ElementType::HEX20; break;
         case 27: answer = ElementType::HEX27; break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported HEX element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported HEX element"; exit(1);
         }
       }
       break;
@@ -150,9 +148,7 @@ namespace utest_util {
         case 4: answer = ElementType::SHELL4; break;
         case 8: answer = ElementType::SHELL8; break;
         case 9: answer = ElementType::SHELL9; break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported SHELL element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported SHELL element"; exit(1);
         }
       }
       break;
@@ -168,9 +164,7 @@ namespace utest_util {
         switch (num_nodes) {
         case 2: answer = num_dim == 1 ? ElementType::BAR1D2 : ElementType::BAR2; break;
         case 3: answer = num_dim == 1 ? ElementType::BAR1D3 : ElementType::BAR3; break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported BAR/BEAM/TRUSS element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported BAR/BEAM/TRUSS element"; exit(1);
         }
       }
       else if (strncasecmp(elem_name, "TRI", 3) == 0) {
@@ -207,9 +201,7 @@ namespace utest_util {
             answer = ElementType::TSHELL7;
           }
           break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported TRI element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported TRI element"; exit(1);
         }
       }
       else if (strncasecmp(elem_name, "TET", 3) == 0) {
@@ -219,9 +211,7 @@ namespace utest_util {
         case 10: answer = ElementType::TET10; break;
         case 14: answer = ElementType::TET14; break;
         case 15: answer = ElementType::TET15; break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported TET element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported TET element"; exit(1);
         }
       }
       break;
@@ -254,9 +244,7 @@ namespace utest_util {
             answer = ElementType::SHELL9;
           }
           break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported QUAD element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported QUAD element"; exit(1);
         }
       }
       break;
@@ -271,9 +259,7 @@ namespace utest_util {
         case 16: answer = ElementType::WEDGE16; break;
         case 20: answer = ElementType::WEDGE20; break;
         case 21: answer = ElementType::WEDGE21; break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported WEDGE element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported WEDGE element"; exit(1);
         }
       }
       break;
@@ -287,9 +273,7 @@ namespace utest_util {
         case 14: answer = ElementType::PYRAMID14; break;
         case 18: answer = ElementType::PYRAMID18; break;
         case 19: answer = ElementType::PYRAMID19; break;
-        default:
-          EXPECT_TRUE(false) << "fatal: unsupported PYRAMID element";
-          exit(1);
+        default: EXPECT_TRUE(false) << "fatal: unsupported PYRAMID element"; exit(1);
         }
       }
       break;
@@ -308,7 +292,7 @@ namespace utest_util {
 
   } /*---------------------------End get_elem_type()---------------------------*/
 
-  ElementType get_elem_type(const Ioss::ElementTopology* topo, int num_dim)
+  ElementType get_elem_type(const Ioss::ElementTopology *topo, int num_dim)
   {
     return get_elem_type(topo->name().c_str(), topo->number_nodes(), num_dim);
   }
@@ -319,12 +303,12 @@ namespace utest_util {
    * the element type, and the side id. It also returns the number of nodes
    * in that side.
    *****************************************************************************/
-  void get_local_side_nodes(const IossElementData &elem, int side, std::vector<EntityId>& sideNodes)
+  void get_local_side_nodes(const IossElementData &elem, int side, std::vector<EntityId> &sideNodes)
   {
     Ioss::IntVector indices = elem.topology->boundary_connectivity(side);
 
     sideNodes.clear();
-    for(auto i : indices) {
+    for (auto i : indices) {
       sideNodes.push_back(elem.localConnectivity[i]);
     }
   }
@@ -335,7 +319,8 @@ namespace utest_util {
    * given. This will be the node list of a face that is connected
    * to this element on this face i.e the first negative permutation
    *****************************************************************************/
-  void get_local_side_mirror_nodes(const IossElementData &elem, int side, std::vector<EntityId>& mirrorNodes)
+  void get_local_side_mirror_nodes(const IossElementData &elem, int side,
+                                   std::vector<EntityId> &mirrorNodes)
   {
     // Get positive permutation
     std::vector<EntityId> sideNodes;
@@ -345,36 +330,31 @@ namespace utest_util {
     auto sidePerm = sideTopo->permutation();
 
     unsigned firstNegativePermutation = sidePerm->num_positive_permutations();
-    if(firstNegativePermutation >= sidePerm->num_permutations()) {
+    if (firstNegativePermutation >= sidePerm->num_permutations()) {
       firstNegativePermutation = 0;
     }
 
-    std::vector<Ioss::Ordinal> permutationIndex = sidePerm->permutation_indices(static_cast<Ioss::Permutation>(firstNegativePermutation));
+    std::vector<Ioss::Ordinal> permutationIndex =
+        sidePerm->permutation_indices(static_cast<Ioss::Permutation>(firstNegativePermutation));
     mirrorNodes.clear();
-    for(size_t i=0; i<sideNodes.size(); i++) {
+    for (size_t i = 0; i < sideNodes.size(); i++) {
       mirrorNodes.push_back(sideNodes[permutationIndex[i]]);
     }
   }
 
-  template
-  int get_side_id(const IossElementData &elemData,
-                  const int              num_dim,
-                  int                    nsnodes,
-                  const int              side_nodes[]);
-  template
-  int get_side_id(const IossElementData &elemData,
-                  const int              num_dim,
-                  int                    nsnodes,
-                  const int64_t          side_nodes[]);
+  template int get_side_id(const IossElementData &elemData, const int num_dim, int nsnodes,
+                           const int side_nodes[]);
+  template int get_side_id(const IossElementData &elemData, const int num_dim, int nsnodes,
+                           const int64_t side_nodes[]);
 
   template <typename INT>
   int get_side_id(const IossElementData &elemData,
-                  const int              num_dim,         // Mesh dimension
-                  int                    nsnodes,         /* The number of side nodes */
-                  const INT              side_nodes[])    /* The list of side node IDs */
+                  const int              num_dim, // Mesh dimension
+                  int                    nsnodes, /* The number of side nodes */
+                  const INT              side_nodes[])         /* The list of side node IDs */
   {
-    const Ioss::ElementTopology *topo = elemData.topology;
-    const EntityId *connect = Data(elemData.localConnectivity);
+    const Ioss::ElementTopology *topo    = elemData.topology;
+    const EntityId              *connect = Data(elemData.localConnectivity);
 
     int count = 0;
     /*  min_match for hex elements means that min_match+1 nodes
@@ -556,7 +536,7 @@ namespace utest_util {
         if (dup) {
           for (int i = 0; i < dup; i++) {
             if (connect[0] == side_nodes[location[i]]) {
-              num   = in_list(connect[0], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
+              num = in_list(connect[0], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
               count = 0;
               count += numbermatch(side_nodes, 1, num, 4, connect[1]);
               count += numbermatch(side_nodes, 2, num, 4, connect[5]);
@@ -583,7 +563,7 @@ namespace utest_util {
         if (dup) {
           for (int i = 0; i < dup; i++) {
             if (connect[1] == side_nodes[location[i]]) {
-              num   = in_list(connect[1], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
+              num = in_list(connect[1], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
               count = 0;
               count += numbermatch(side_nodes, 1, num, 4, connect[2]);
               count += numbermatch(side_nodes, 2, num, 4, connect[6]);
@@ -610,7 +590,7 @@ namespace utest_util {
         if (dup) {
           for (int i = 0; i < dup; i++) {
             if (connect[2] == side_nodes[location[i]]) {
-              num   = in_list(connect[2], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
+              num = in_list(connect[2], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
               count = 0;
               count += numbermatch(side_nodes, 1, num, 4, connect[3]);
               count += numbermatch(side_nodes, 2, num, 4, connect[7]);
@@ -637,7 +617,7 @@ namespace utest_util {
         if (dup) {
           for (int i = 0; i < dup; i++) {
             if (connect[3] == side_nodes[location[i]]) {
-              num   = in_list(connect[3], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
+              num = in_list(connect[3], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
               count = 0;
               count += numbermatch(side_nodes, 1, num, 4, connect[0]);
               count += numbermatch(side_nodes, 2, num, 4, connect[4]);
@@ -664,7 +644,7 @@ namespace utest_util {
         if (dup) {
           for (int i = 0; i < dup; i++) {
             if (connect[0] == side_nodes[location[i]]) {
-              num   = in_list(connect[0], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
+              num = in_list(connect[0], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
               count = 0;
               count += numbermatch(side_nodes, 1, num, 4, connect[3]);
               count += numbermatch(side_nodes, 2, num, 4, connect[2]);
@@ -691,7 +671,7 @@ namespace utest_util {
         if (dup) {
           for (int i = 0; i < dup; i++) {
             if (connect[4] == side_nodes[location[i]]) {
-              num   = in_list(connect[4], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
+              num = in_list(connect[4], (nsnodes - num), &(side_nodes[num + 1])) + location[i] + 1;
               count = 0;
               count += numbermatch(side_nodes, 1, num, 4, connect[5]);
               count += numbermatch(side_nodes, 2, num, 4, connect[6]);
@@ -882,8 +862,8 @@ namespace utest_util {
 
     default: {
       std::string err_buff;
-      err_buff = fmt::format("fatal: unknown element shape {} in function {}", static_cast<int>(topo->shape()),
-                             __func__);
+      err_buff = fmt::format("fatal: unknown element shape {} in function {}",
+                             static_cast<int>(topo->shape()), __func__);
       EXPECT_TRUE(false) << err_buff;
       exit(1);
     }
@@ -892,22 +872,16 @@ namespace utest_util {
     return 0;
   }
 
-  template
-  int get_side_id_hex_tet(const Ioss::ElementTopology *topo,
-                          const int                   *connect,
-                          int                          nsnodes,
-                          const int                    side_nodes[]);
-  template
-  int get_side_id_hex_tet(const Ioss::ElementTopology *topo,
-                          const int64_t               *connect,
-                          int                          nsnodes,
-                          const int64_t                side_nodes[]);
+  template int get_side_id_hex_tet(const Ioss::ElementTopology *topo, const int *connect,
+                                   int nsnodes, const int side_nodes[]);
+  template int get_side_id_hex_tet(const Ioss::ElementTopology *topo, const int64_t *connect,
+                                   int nsnodes, const int64_t side_nodes[]);
 
   template <typename INT>
-  int get_side_id_hex_tet(const Ioss::ElementTopology *topo,   /* The element type */
+  int get_side_id_hex_tet(const Ioss::ElementTopology *topo,    /* The element type */
                           const INT                   *connect, /* The element connectivity */
                           int                          nsnodes, /* The number of side nodes */
-                          const INT                    side_nodes[])    /* The list of side node IDs */
+                          const INT                    side_nodes[])               /* The list of side node IDs */
   {
     std::vector<int> loc_node_ids;
 
@@ -989,8 +963,8 @@ namespace utest_util {
 
     default: {
       std::string err_buff;
-      err_buff = fmt::format("fatal: unknown element type {} in function {}", static_cast<int>(topo->shape()),
-                             __func__);
+      err_buff = fmt::format("fatal: unknown element type {} in function {}",
+                             static_cast<int>(topo->shape()), __func__);
       EXPECT_TRUE(false) << err_buff;
       exit(1);
     }
@@ -999,4 +973,4 @@ namespace utest_util {
 
     return 0;
   } /*-------------------------End get_side_id_hex()---------------------------*/
-}
+} // namespace utest_util

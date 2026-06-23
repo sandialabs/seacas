@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #ifdef SEACAS_HAVE_MPI
 #include "mpi.h"
@@ -35,17 +35,17 @@ namespace {
   }
 
   template <typename INT>
-  void populate_element_data(Ioss::Region *region,
-                             std::vector<utest_util::IossElementData>& elemData,
-                             std::vector<utest_util::IossElementBlockData>& elemBlockData)
+  void populate_element_data(Ioss::Region                                  *region,
+                             std::vector<utest_util::IossElementData>      &elemData,
+                             std::vector<utest_util::IossElementBlockData> &elemBlockData)
   {
     elemData.clear();
     size_t localId = 0;
 
-    for(Ioss::ElementBlock *entity : region->get_element_blocks()) {
-      std::vector<INT> elem_ids ;
-      std::vector<INT> connectivity ;
-      std::vector<INT> connectivity_raw ;
+    for (Ioss::ElementBlock *entity : region->get_element_blocks()) {
+      std::vector<INT> elem_ids;
+      std::vector<INT> connectivity;
+      std::vector<INT> connectivity_raw;
 
       entity->get_field_data("ids", elem_ids);
       entity->get_field_data("connectivity", connectivity);
@@ -63,12 +63,12 @@ namespace {
 
       const Ioss::ElementTopology *topology = entity->topology();
 
-      size_t element_count = elem_ids.size();
-      int nodes_per_elem = topology->number_nodes();
+      size_t element_count  = elem_ids.size();
+      int    nodes_per_elem = topology->number_nodes();
 
-      for(size_t i=0; i<element_count; ++i, ++localId) {
-        INT *conn = &connectivity[i*nodes_per_elem];
-        INT *conn_raw = &connectivity_raw[i*nodes_per_elem];
+      for (size_t i = 0; i < element_count; ++i, ++localId) {
+        INT *conn     = &connectivity[i * nodes_per_elem];
+        INT *conn_raw = &connectivity_raw[i * nodes_per_elem];
 
         INT id = elem_ids[i];
 
@@ -80,7 +80,7 @@ namespace {
 
         elemBlock.localIds.push_back(localId);
 
-        for(int j=0; j<nodes_per_elem; j++) {
+        for (int j = 0; j < nodes_per_elem; j++) {
           elem.nodeIds.push_back(conn[j]);
 
           INT zeroBasedLocalConn = conn_raw[j] - 1;
@@ -96,8 +96,7 @@ namespace {
   }
 
   template <typename INT>
-  void populate_node_data(Ioss::Region *region,
-                          std::vector<utest_util::IossNodeData>& nodeData)
+  void populate_node_data(Ioss::Region *region, std::vector<utest_util::IossNodeData> &nodeData)
   {
     nodeData.clear();
     size_t localId = 0;
@@ -105,23 +104,23 @@ namespace {
     Ioss::NodeBlock *nb = region->get_node_block("nodeblock_1");
     EXPECT_TRUE(nb != nullptr);
 
-    std::vector<INT> node_ids ;
+    std::vector<INT> node_ids;
 
     nb->get_field_data("ids", node_ids);
 
     size_t node_count = node_ids.size();
 
-    for(size_t i=0; i<node_count; ++i, ++localId) {
+    for (size_t i = 0; i < node_count; ++i, ++localId) {
       INT id = node_ids[i];
 
       utest_util::IossNodeData node;
-      node.id       = id;
-      node.localId  = localId;
+      node.id      = id;
+      node.localId = localId;
 
       nodeData.push_back(node);
     }
   }
-}
+} // namespace
 
 namespace utest_util {
 
@@ -218,20 +217,22 @@ namespace utest_util {
   void IossMesh::fill_element_data()
   {
     EXPECT_TRUE(m_database != nullptr) << "Database has not been read";
-    EXPECT_TRUE(m_region   != nullptr) << "Region has not been constructed";
+    EXPECT_TRUE(m_region != nullptr) << "Region has not been constructed";
 
     bool ints64bit = db_api_int_size(m_region) == 8;
 
     if (ints64bit) {
       populate_element_data<int64_t>(m_region, m_elementData, m_elementBlockData);
-    } else {
+    }
+    else {
       populate_element_data<int>(m_region, m_elementData, m_elementBlockData);
     }
   }
 
   IossElementData IossMesh::get_local_element(size_t index) const
   {
-    if(index >= m_elementData.size()) return IossElementData();
+    if (index >= m_elementData.size())
+      return IossElementData();
 
     return m_elementData[index];
   }
@@ -240,7 +241,7 @@ namespace utest_util {
   {
     auto lowerBound = std::lower_bound(m_elementData.begin(), m_elementData.end(), id);
 
-    if(lowerBound != m_elementData.end() && lowerBound->id == id) {
+    if (lowerBound != m_elementData.end() && lowerBound->id == id) {
       return *lowerBound;
     }
 
@@ -250,20 +251,22 @@ namespace utest_util {
   void IossMesh::fill_node_data()
   {
     EXPECT_TRUE(m_database != nullptr) << "Database has not been read";
-    EXPECT_TRUE(m_region   != nullptr) << "Region has not been constructed";
+    EXPECT_TRUE(m_region != nullptr) << "Region has not been constructed";
 
     bool ints64bit = db_api_int_size(m_region) == 8;
 
     if (ints64bit) {
       populate_node_data<int64_t>(m_region, m_nodeData);
-    } else {
+    }
+    else {
       populate_node_data<int>(m_region, m_nodeData);
     }
   }
 
   IossNodeData IossMesh::get_local_node(size_t index) const
   {
-    if(index >= m_nodeData.size()) return IossNodeData();
+    if (index >= m_nodeData.size())
+      return IossNodeData();
 
     return m_nodeData[index];
   }
@@ -272,7 +275,7 @@ namespace utest_util {
   {
     auto lowerBound = std::lower_bound(m_nodeData.begin(), m_nodeData.end(), id);
 
-    if(lowerBound != m_nodeData.end() && lowerBound->id == id) {
+    if (lowerBound != m_nodeData.end() && lowerBound->id == id) {
       return *lowerBound;
     }
 

@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include <vector>
 #include "IossMesh.h"
 #include "PartitionTypes.h"
+#include <vector>
 
 namespace utest_util {
 
   class Partition
   {
   public:
-    Partition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
+    Partition(IossMesh *mesh, const std::vector<EntityProc> &procAssign, const int nProc);
 
     virtual void write_nemesis_data(int exoid) const = 0;
 
@@ -30,7 +30,7 @@ namespace utest_util {
     virtual ~Partition() = default;
 
   protected:
-    IossMesh*               m_mesh{nullptr};
+    IossMesh *m_mesh{nullptr};
 
     int                     m_numProcs;
     std::vector<EntityProc> m_entityPartition;
@@ -39,8 +39,9 @@ namespace utest_util {
     void verify_input_partition();
   };
 
-template <typename INT>
-void fill_node_element_connectivity(IossMesh *mesh,
-                                    std::vector<std::vector<INT>> &surroundingElements, int &maxNumSurrroundingElements);
+  template <typename INT>
+  void fill_node_element_connectivity(IossMesh                      *mesh,
+                                      std::vector<std::vector<INT>> &surroundingElements,
+                                      int                           &maxNumSurrroundingElements);
 
-}
+} // namespace utest_util

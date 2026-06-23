@@ -795,10 +795,10 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
       /* If it's a non-null block output attribute name information */
       if (ilocal < globals.Proc_Num_Elem_Blk[iproc]) {
         // These are single key-value per element block
-        write_exodus_entity_properties(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Ids[i1], Elem_Blk_Properties[i1]);
+        write_exodus_entity_properties(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Ids[i1],
+                                       Elem_Blk_Properties[i1]);
       }
     }
-
 
     /* Reset globals.GNodes to start at 1 instead of 0 */
     for (size_t i1 = 0; i1 < itotal_nodes; (globals.GNodes[iproc][i1++])++) {

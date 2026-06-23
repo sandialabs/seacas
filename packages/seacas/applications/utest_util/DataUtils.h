@@ -43,22 +43,19 @@ namespace utest_util {
     return 0;
   }
 
-  template <typename INT>
-  inline void vec_free(std::vector<INT> &V)
+  template <typename INT> inline void vec_free(std::vector<INT> &V)
   {
     V.clear();
     V.shrink_to_fit();
   }
 
-
 #ifndef NDEBUG
-    template <typename INT>
-    inline void assert_sorted(INT *vector, size_t vecsize)
-    {
-      for (size_t i = 1; i < vecsize; i++) {
-        assert(vector[i - 1] <= vector[i]);
-      }
+  template <typename INT> inline void assert_sorted(INT *vector, size_t vecsize)
+  {
+    for (size_t i = 1; i < vecsize; i++) {
+      assert(vector[i - 1] <= vector[i]);
     }
+  }
 #endif
 
   /* Function find_intersection() begins:
@@ -138,9 +135,7 @@ namespace utest_util {
     return -1;
   }
 
-
-  template <typename INT>
-  inline void SWAP(INT &r, INT &s)
+  template <typename INT> inline void SWAP(INT &r, INT &s)
   {
     INT t = r;
     r     = s;
@@ -162,16 +157,14 @@ namespace utest_util {
 
 #define GDS_QSORT_CUTOFF 12
 
-  template <typename INT>
-  inline void ISWAP(INT *V, size_t I, size_t J)
+  template <typename INT> inline void ISWAP(INT *V, size_t I, size_t J)
   {
     INT _t = V[I];
     V[I]   = V[J];
     V[J]   = _t;
   }
 
-  template <typename INT>
-  inline size_t gds_median3(INT v[], size_t left, size_t right)
+  template <typename INT> inline size_t gds_median3(INT v[], size_t left, size_t right)
   {
     size_t center;
     center = (left + right) / 2;
@@ -190,8 +183,7 @@ namespace utest_util {
     return right - 1;
   }
 
-  template <typename INT>
-  inline void gds_qsort(INT v[], size_t left, size_t right)
+  template <typename INT> inline void gds_qsort(INT v[], size_t left, size_t right)
   {
     if (left + GDS_QSORT_CUTOFF <= right) {
       size_t pivot = gds_median3(v, left, right);
@@ -219,8 +211,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline void gds_isort(INT v[], size_t N)
+  template <typename INT> inline void gds_isort(INT v[], size_t N)
   {
     if (N <= 1) {
       return;
@@ -248,8 +239,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline void siftDowniii(INT *a, INT *b, INT *c, size_t start, size_t end)
+  template <typename INT> inline void siftDowniii(INT *a, INT *b, INT *c, size_t start, size_t end)
   {
     size_t root = start;
     while (root * 2 + 1 < end) {
@@ -270,8 +260,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline void siftDown(INT *a, INT *b, size_t start, size_t end)
+  template <typename INT> inline void siftDown(INT *a, INT *b, size_t start, size_t end)
   {
     size_t root = start;
 
@@ -291,8 +280,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline void sort2(int64_t count, INT ra[], INT rb[])
+  template <typename INT> inline void sort2(int64_t count, INT ra[], INT rb[])
   {
     if (count <= 1) {
       return;
@@ -379,8 +367,7 @@ namespace utest_util {
     return 0;
   }
 
-  template <typename INT>
-  inline void swap4(INT *v1, INT *v2, INT *v3, INT *v4, size_t i, size_t j)
+  template <typename INT> inline void swap4(INT *v1, INT *v2, INT *v3, INT *v4, size_t i, size_t j)
   {
     ISWAP(v1, i, j);
     ISWAP(v2, i, j);
@@ -437,8 +424,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline void internal_isort_4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N)
+  template <typename INT> inline void internal_isort_4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N)
   {
     size_t ndx = 0;
     for (size_t i = 1; i < N; i++) {
@@ -471,8 +457,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline int is_less_than2(INT ra1, INT rb1, INT ra2, INT rb2)
+  template <typename INT> inline int is_less_than2(INT ra1, INT rb1, INT ra2, INT rb2)
   {
     if (ra1 < ra2) {
       return 1;
@@ -489,8 +474,7 @@ namespace utest_util {
     return 0;
   }
 
-  template <typename INT>
-  inline int is_less_than2v(INT *v1, INT *v2, size_t i, size_t j)
+  template <typename INT> inline int is_less_than2v(INT *v1, INT *v2, size_t i, size_t j)
   {
     if (v1[i] < v1[j]) {
       return 1;
@@ -507,8 +491,7 @@ namespace utest_util {
     return 0;
   }
 
-  template <typename INT>
-  inline void swap2(INT *v1, INT *v2, size_t i, size_t j)
+  template <typename INT> inline void swap2(INT *v1, INT *v2, size_t i, size_t j)
   {
     ISWAP(v1, i, j);
     ISWAP(v2, i, j);
@@ -533,8 +516,7 @@ namespace utest_util {
     return right - 1;
   }
 
-  template <typename INT>
-  inline void internal_qsort_2(INT *v1, INT *v2, size_t left, size_t right)
+  template <typename INT> inline void internal_qsort_2(INT *v1, INT *v2, size_t left, size_t right)
   {
     if (left + QSORT_CUTOFF <= right) {
       size_t pivot = internal_median3_2(v1, v2, left, right);
@@ -562,8 +544,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline void internal_isort_2(INT *v1, INT *v2, size_t N)
+  template <typename INT> inline void internal_isort_2(INT *v1, INT *v2, size_t N)
   {
     size_t ndx = 0;
     for (size_t i = 1; i < N; i++) {
@@ -589,12 +570,11 @@ namespace utest_util {
     }
   }
 
-/*
- * Sort the values in 'v'
- */
+  /*
+   * Sort the values in 'v'
+   */
 
-  template <typename INT>
-  inline void qsort4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N)
+  template <typename INT> inline void qsort4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N)
   {
     if (N <= 1) {
       return;
@@ -610,8 +590,7 @@ namespace utest_util {
 #endif
   }
 
-  template <typename INT>
-  inline void qsort2(INT *v1, INT *v2, size_t N)
+  template <typename INT> inline void qsort2(INT *v1, INT *v2, size_t N)
   {
     if (N <= 1) {
       return;
@@ -627,8 +606,7 @@ namespace utest_util {
 #endif
   }
 
-  template <typename INT>
-  inline void sort3(int64_t count, INT ra[], INT rb[], INT rc[])
+  template <typename INT> inline void sort3(int64_t count, INT ra[], INT rb[], INT rc[])
   {
     if (count <= 1) {
       return;
@@ -646,8 +624,7 @@ namespace utest_util {
     }
   }
 
-  template <typename INT>
-  inline int64_t bin_search2(INT value, size_t num, INT List[])
+  template <typename INT> inline int64_t bin_search2(INT value, size_t num, INT List[])
   {
     /*
      * Searches a monotonic list of values for the value, value.
@@ -675,8 +652,7 @@ namespace utest_util {
     return -1;
   }
 
-  template <typename INT>
-  inline void gds_qsort(INT v[], size_t N)
+  template <typename INT> inline void gds_qsort(INT v[], size_t N)
   {
     if (N <= 1) {
       return;
@@ -694,9 +670,9 @@ namespace utest_util {
   template <typename INT>
   inline void find_first_last(INT val, size_t vecsize, INT *vector, INT *first, INT *last)
   {
-  #ifndef NDEBUG
+#ifndef NDEBUG
     assert_sorted(vector, vecsize);
-  #endif
+#endif
 
     *first = -1;
     *last  = -1;
@@ -729,4 +705,4 @@ namespace utest_util {
     }
   }
 
-}
+} // namespace utest_util

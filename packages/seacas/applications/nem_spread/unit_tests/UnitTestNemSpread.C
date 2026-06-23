@@ -9,25 +9,25 @@
 #endif
 #include "gtest/gtest.h"
 
+#include "ElementPartition.h"
 #include "FileUtils.h"
 #include "MeshFixture.h"
-#include "ElementPartition.h"
 #include "NodePartition.h"
 
 #include "scopeguard.h"
 #include <copy_string_cpp.h>
 
-#include "vector_data.h"
-#include "alloc.h"
 #include "add_to_log.h" // for add_to_log
-#include "exodusII.h"   // for ex_opts, ex_int64_status, etc
+#include "alloc.h"
+#include "exodusII.h" // for ex_opts, ex_int64_status, etc
 #include "fmt/ostream.h"
 #include "nem_spread.h"     // for NemSpread, second, etc
 #include "ps_pario_const.h" // for Parallel_IO
 #include "rf_allo.h"        // for safe_free
-#include <cstdint>          // for int64_t
-#include <cstdio>           // for stderr, etc
-#include <cstdlib>          // for exit
+#include "vector_data.h"
+#include <cstdint> // for int64_t
+#include <cstdio>  // for stderr, etc
+#include <cstdlib> // for exit
 #include <cstring>
 #include <unistd.h> // for getopt, optarg, optind
 
@@ -64,20 +64,21 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
 
 namespace {
 
-  template<typename INT>
-  void internal_fill_processor_id(const Ioss::ElementBlock* eb,
+  template <typename INT>
+  void internal_fill_processor_id(const Ioss::ElementBlock                  *eb,
                                   const std::vector<utest_util::EntityProc> &procAssign,
-                                  std::vector<double>& proc_id)
+                                  std::vector<double>                       &proc_id)
   {
     proc_id.clear();
     proc_id.reserve(eb->entity_count());
 
-    std::vector<INT> elem_ids ;
+    std::vector<INT> elem_ids;
 
     eb->get_field_data("ids", elem_ids);
 
-    for(INT id : elem_ids) {
-      auto lowerBound = std::lower_bound(procAssign.begin(), procAssign.end(), id, utest_util::EntityProcLess());
+    for (INT id : elem_ids) {
+      auto lowerBound =
+          std::lower_bound(procAssign.begin(), procAssign.end(), id, utest_util::EntityProcLess());
       bool found = !(lowerBound == procAssign.end() || lowerBound->id != id);
 
       EXPECT_TRUE(found) << "element " << id << " was not assigned a processor";
@@ -85,18 +86,20 @@ namespace {
     }
   }
 
-  void fill_processor_id(const Ioss::ElementBlock* eb,
+  void fill_processor_id(const Ioss::ElementBlock                  *eb,
                          const std::vector<utest_util::EntityProc> &procAssign,
-                         std::vector<double>& proc_id)
+                         std::vector<double>                       &proc_id)
   {
-    if(eb->get_database()->int_byte_size_api() == 8) {
+    if (eb->get_database()->int_byte_size_api() == 8) {
       internal_fill_processor_id<int64_t>(eb, procAssign, proc_id);
-    } else {
+    }
+    else {
       internal_fill_processor_id<int>(eb, procAssign, proc_id);
     }
   }
 
-  void add_processor_id_field(Ioss::Region *region, const std::vector<utest_util::EntityProc> &procAssign)
+  void add_processor_id_field(Ioss::Region                              *region,
+                              const std::vector<utest_util::EntityProc> &procAssign)
   {
     region->begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
@@ -144,7 +147,7 @@ namespace {
     std::string m_salsaCmdFile;
     bool        m_force64Bit        = false;
     int         m_startProc         = 0;
-    int         m_numProcs           = 0;
+    int         m_numProcs          = 0;
     int         m_subcycles         = 0;
     int         m_cycle             = -1;
     int         m_selectedChangeSet = 0;
@@ -152,7 +155,7 @@ namespace {
   protected:
     void parse_options(int argc, char *argv[])
     {
-      int         c;
+      int c;
 
       // Reset for new scan
       optind = 1;
@@ -164,7 +167,8 @@ namespace {
           fmt::print(stderr,
                      "\tnem_spread  [-s <start_proc>] [-n <num_proc>] [-S <subcycles> -c <cycle>] "
                      "[-C change_set_#] [command_file]\n");
-          fmt::print(stderr, "\t\tDecompose for processors <start_proc> to <start_proc>+<num_proc>\n");
+          fmt::print(stderr,
+                     "\t\tDecompose for processors <start_proc> to <start_proc>+<num_proc>\n");
           fmt::print(stderr, "\t\tDecompose for cycle <cycle> of <subcycle> groups\n");
           fmt::print(stderr, "\t\tRead from change_set `#` (1-based) if specified.\n");
           fmt::print(stderr, "\tnem_spread  [-V] [-h] (show version or usage info)\n");
@@ -178,13 +182,17 @@ namespace {
         case 'p': /* Which proc to use? Also for compatibility */ break;
         case 'r': /* raid number.  Seems to be unused; left around for compatibility */ break;
         case 's': /* Start with processor <x> */ sscanf(optarg, "%d", &m_startProc); break;
-        case 'n': /* Number of processors to output files for */ sscanf(optarg, "%d", &m_numProcs); break;
+        case 'n': /* Number of processors to output files for */
+          sscanf(optarg, "%d", &m_numProcs);
+          break;
         case 'C': /* change_set index <x> */ sscanf(optarg, "%d", &m_selectedChangeSet); break;
         case '6':
         case '4':
           m_force64Bit = true; /* Force storing output mesh using 64bit integers */
           break;
-        case 'S': /* Number of subcycles to use (see below) */ sscanf(optarg, "%d", &m_subcycles); break;
+        case 'S': /* Number of subcycles to use (see below) */
+          sscanf(optarg, "%d", &m_subcycles);
+          break;
         case 'c': /* Which cycle to spread (see below) */ sscanf(optarg, "%d", &m_cycle); break;
         }
       }
@@ -197,7 +205,7 @@ namespace {
       }
     }
 
-    void create_nemesis_file(const utest_util::Partition& partition)
+    void create_nemesis_file(const utest_util::Partition &partition)
     {
       int         exoid;
       std::string method1{}, method2{};
@@ -217,14 +225,15 @@ namespace {
       int mode3 = EX_CLOBBER;
       int mode4 = mode3 | EX_NETCDF4 | EX_NOCLASSIC;
 
-      if(m_force64Bit) mode4 |= EX_ALL_INT64_DB;
+      if (m_force64Bit)
+        mode4 |= EX_ALL_INT64_DB;
 
       if (partition.api_size() == 8) {
         mode4 |= EX_ALL_INT64_API;
       }
 
-      ex_opts(EX_DEFAULT); // Eliminate misleading error if the first ex_create fails, but the second
-                           // succeeds.
+      ex_opts(EX_DEFAULT); // Eliminate misleading error if the first ex_create fails, but the
+                           // second succeeds.
       if ((exoid = ex_create(m_nemesisFile.c_str(), mode4, &cpu_ws, &io_ws)) < 0) {
         /* If int64api or int64db non-zero, then netcdf-4 format is required, so
            fail now...
@@ -264,11 +273,12 @@ namespace {
       info[1] = const_cast<char *>(method1.c_str());
       info[2] = const_cast<char *>(method2.c_str());
 
-      ASSERT_FALSE (ex_put_info(exoid, 3, info) < 0) << "warning: output of info records failed";
+      ASSERT_FALSE(ex_put_info(exoid, 3, info) < 0) << "warning: output of info records failed";
 
       /* Generate a QA record for the utility */
-      auto        now  = std::chrono::system_clock::now();
-      std::string time = fmt::format("{:%T}", std::chrono::time_point_cast<std::chrono::seconds>(now));
+      auto        now = std::chrono::system_clock::now();
+      std::string time =
+          fmt::format("{:%T}", std::chrono::time_point_cast<std::chrono::seconds>(now));
       std::string date = fmt::format("{:%Y/%m/%d}", now);
 
       char qa_date[32];
@@ -296,7 +306,8 @@ namespace {
         fmt::print("\t{}\n", lqa_record[i2]);
       }
 
-      ASSERT_FALSE (ex_put_qa(exoid, 1, reinterpret_cast<char *(*)[4]>(&lqa_record[0])) < 0) << "fatal: unable to output QA records";
+      ASSERT_FALSE(ex_put_qa(exoid, 1, reinterpret_cast<char *(*)[4]>(&lqa_record[0])) < 0)
+          << "fatal: unable to output QA records";
 
       /* free up memory */
       for (int i2 = 0; i2 < 4; i2++) {
@@ -314,22 +325,22 @@ namespace {
 
 #if !defined(__IOSS_WINDOWS__)
       char *cwd = getcwd(nullptr, 0);
-      if(nullptr != cwd) {
+      if (nullptr != cwd) {
         rootdir = cwd;
       }
       free(cwd);
 
-      if(!rootdir.empty() && rootdir.back() != '/') {
+      if (!rootdir.empty() && rootdir.back() != '/') {
         rootdir += "/";
       }
 #endif
 
       std::ofstream os(m_pexFile, std::ofstream::out);
-      os << "Input FEM file                   = " << m_outputFile     << std::endl;
-      os << "LB file                          = " << m_nemesisFile    << std::endl;
+      os << "Input FEM file                   = " << m_outputFile << std::endl;
+      os << "LB file                          = " << m_nemesisFile << std::endl;
       os << "Parallel Results File Base Name  = " << m_uniqueBaseName << std::endl;
-      os << "File Extension for Spread Files  = " << ".g"             << std::endl;
-      os << "Number of Processors             = " << m_numProcs        << std::endl;
+      os << "File Extension for Spread Files  = " << ".g" << std::endl;
+      os << "Number of Processors             = " << m_numProcs << std::endl;
       os << "------------------------------------------------------------\n";
       os << "                Parallel I/O section\n";
       os << "------------------------------------------------------------\n";
@@ -340,14 +351,14 @@ namespace {
     std::vector<utest_util::EntityProc> get_linear_element_partition()
     {
       std::vector<utest_util::EntityProc> procAssign;
-      std::vector<unsigned> procs;
+      std::vector<unsigned>               procs;
 
       size_t numElems = get_mesh().get_num_local_elements();
       fill_linear_proc_distribution(numElems, m_numProcs, procs);
 
-      for(size_t i=0; i<numElems; i++) {
+      for (size_t i = 0; i < numElems; i++) {
         utest_util::IossElementData elemData = get_mesh().get_local_element(i);
-        utest_util::EntityProc eProc(elemData.id, procs[i]);
+        utest_util::EntityProc      eProc(elemData.id, procs[i]);
 
         procAssign.push_back(eProc);
       }
@@ -361,9 +372,9 @@ namespace {
       std::vector<utest_util::EntityProc> procAssign;
 
       size_t numElems = get_mesh().get_num_local_elements();
-      for(size_t i=0; i<numElems; i++) {
+      for (size_t i = 0; i < numElems; i++) {
         utest_util::IossElementData elemData = get_mesh().get_local_element(i);
-        utest_util::EntityProc eProc(elemData.id, i%m_numProcs);
+        utest_util::EntityProc      eProc(elemData.id, i % m_numProcs);
 
         procAssign.push_back(eProc);
       }
@@ -375,14 +386,14 @@ namespace {
     std::vector<utest_util::EntityProc> get_linear_node_partition()
     {
       std::vector<utest_util::EntityProc> procAssign;
-      std::vector<unsigned> procs;
+      std::vector<unsigned>               procs;
 
       size_t numNodes = get_mesh().get_num_local_nodes();
       fill_linear_proc_distribution(numNodes, m_numProcs, procs);
 
-      for(size_t i=0; i<numNodes; i++) {
+      for (size_t i = 0; i < numNodes; i++) {
         utest_util::IossNodeData nodeData = get_mesh().get_local_node(i);
-        utest_util::EntityProc eProc(nodeData.id, procs[i]);
+        utest_util::EntityProc   eProc(nodeData.id, procs[i]);
 
         procAssign.push_back(eProc);
       }
@@ -396,9 +407,9 @@ namespace {
       std::vector<utest_util::EntityProc> procAssign;
 
       size_t numNodes = get_mesh().get_num_local_nodes();
-      for(size_t i=0; i<numNodes; i++) {
+      for (size_t i = 0; i < numNodes; i++) {
         utest_util::IossNodeData nodeData = get_mesh().get_local_node(i);
-        utest_util::EntityProc eProc(nodeData.id, i%m_numProcs);
+        utest_util::EntityProc   eProc(nodeData.id, i % m_numProcs);
 
         procAssign.push_back(eProc);
       }
@@ -416,7 +427,7 @@ namespace {
 
       std::string numProcString = std::to_string(numProcs);
 
-      int argc = 0;
+      int         argc = 0;
       const char *argv[20];
 
       clear_args(argc, argv);
@@ -426,11 +437,11 @@ namespace {
       add_arg(argc, argv, "-n");
       add_arg(argc, argv, numProcString.c_str());
 
-      if(is64Bit) {
+      if (is64Bit) {
         add_arg(argc, argv, "-64");
       }
 
-      parse_options(argc, const_cast<char**>(argv));
+      parse_options(argc, const_cast<char **>(argv));
     }
 
     void create_and_verify_input_mesh_file(const std::string &meshDesc)
@@ -439,19 +450,20 @@ namespace {
 
       // Add a material property to block_1 from textmesh
       auto inputRegion = get_mesh().get_region();
-      auto inputDB = get_mesh().get_database();
+      auto inputDB     = get_mesh().get_database();
 
-      add_material_property_to_element_block(inputRegion, "block_1", m_propertyName, m_propertyValue);
+      add_material_property_to_element_block(inputRegion, "block_1", m_propertyName,
+                                             m_propertyValue);
 
       // Write the textmesh to file
       Ioss::PropertyManager properties;
       Ioss::MeshCopyOptions options;
-      options.verbose              = false;
-      options.output_summary       = true;
-      options.debug                = false;
-      options.ints_64_bit          = m_force64Bit;
-      options.data_storage_type    = 1;
-      options.add_proc_id          = false;
+      options.verbose           = false;
+      options.output_summary    = true;
+      options.debug             = false;
+      options.ints_64_bit       = m_force64Bit;
+      options.data_storage_type = 1;
+      options.add_proc_id       = false;
       write_region_to_file(inputRegion, properties, options, m_outputFile);
 
       // Load each individual file and test for material property
@@ -463,10 +475,11 @@ namespace {
       // Create partitioning
       std::vector<utest_util::EntityProc> procAssign = get_linear_element_partition();
 
-      if(m_force64Bit) {
+      if (m_force64Bit) {
         utest_util::ElementPartition<int64_t> partition(&get_mesh(), procAssign, m_numProcs);
         create_nemesis_file(partition);
-      } else {
+      }
+      else {
         utest_util::ElementPartition<int> partition(&get_mesh(), procAssign, m_numProcs);
         create_nemesis_file(partition);
       }
@@ -477,10 +490,11 @@ namespace {
       // Create partitioning
       std::vector<utest_util::EntityProc> procAssign = get_linear_node_partition();
 
-      if(m_force64Bit) {
+      if (m_force64Bit) {
         utest_util::NodePartition<int64_t> partition(&get_mesh(), procAssign, m_numProcs);
         create_nemesis_file(partition);
-      } else {
+      }
+      else {
         utest_util::NodePartition<int> partition(&get_mesh(), procAssign, m_numProcs);
         create_nemesis_file(partition);
       }
@@ -518,7 +532,7 @@ namespace {
       Exo_Res_File.clear();
       Output_File_Base_Name.clear();
 
-      Debug_Flag      = -1;
+      Debug_Flag = -1;
 
       Num_Nod_Var  = -1;
       Num_Elem_Var = -1;
@@ -577,7 +591,7 @@ namespace {
           spreader.force64db           = m_force64Bit;
           spreader.Proc_Info[4]        = m_startProc;
           spreader.Proc_Info[5]        = m_numProcs;
-          status                       = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
+          status = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
         }
         else {
           NemSpread<float, int> spreader;
@@ -588,7 +602,7 @@ namespace {
           spreader.force64db           = m_force64Bit;
           spreader.Proc_Info[4]        = m_startProc;
           spreader.Proc_Info[5]        = m_numProcs;
-          status                       = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
+          status = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
         }
       }
       else {
@@ -601,7 +615,7 @@ namespace {
           spreader.force64db           = m_force64Bit;
           spreader.Proc_Info[4]        = m_startProc;
           spreader.Proc_Info[5]        = m_numProcs;
-          status                       = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
+          status = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
         }
         else {
           NemSpread<double, int> spreader;
@@ -612,7 +626,7 @@ namespace {
           spreader.force64db           = m_force64Bit;
           spreader.Proc_Info[4]        = m_startProc;
           spreader.Proc_Info[5]        = m_numProcs;
-          status                       = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
+          status = nem_spread(spreader, m_salsaCmdFile.c_str(), m_subcycles, m_cycle);
         }
       }
 
@@ -622,9 +636,10 @@ namespace {
     void verify_material_property_in_nem_spread_output()
     {
       // Test the material property from the output files
-      for(int i=0; i<m_numProcs; i++) {
+      for (int i = 0; i < m_numProcs; i++) {
         std::string decodedFileName = Ioss::Utils::decode_filename(m_outputFile, i, m_numProcs);
-        test_property_from_file(Ioss::ParallelUtils::comm_self(), decodedFileName, m_propertyName, m_propertyValue);
+        test_property_from_file(Ioss::ParallelUtils::comm_self(), decodedFileName, m_propertyName,
+                                m_propertyValue);
       }
     }
 
@@ -640,7 +655,7 @@ namespace {
       unlink(m_nemesisFile.c_str());
 
       // Delete parallel output files
-      for(int i=0; i<m_numProcs; i++) {
+      for (int i = 0; i < m_numProcs; i++) {
         std::string decodedFileName = Ioss::Utils::decode_filename(m_outputFile, i, m_numProcs);
         unlink(decodedFileName.c_str());
       }
@@ -651,14 +666,16 @@ namespace {
 
   TEST_F(NemSpreadTester, twoHexMeshWithMaterialProperties)
   {
-    if (get_parallel_size() != 1) GTEST_SKIP();
+    if (get_parallel_size() != 1)
+      GTEST_SKIP();
 
     std::string baseName = "twoHexNemSpread";
     unsigned    numProcs = 2;
     initialize_options(baseName, numProcs);
 
-    unsigned numElems = 2;
-    std::string meshDesc = "textmesh:" + get_stacked_hex_element_textmesh_desc_with_coordinates(numElems, 1, true);
+    unsigned    numElems = 2;
+    std::string meshDesc =
+        "textmesh:" + get_stacked_hex_element_textmesh_desc_with_coordinates(numElems, 1, true);
     setup_input_files_for_element_decompsition(meshDesc);
 
     run_nem_spread();
@@ -670,14 +687,16 @@ namespace {
 
   TEST_F(NemSpreadTester, twoBeamMeshWithMaterialProperties)
   {
-    if (get_parallel_size() != 1) GTEST_SKIP();
+    if (get_parallel_size() != 1)
+      GTEST_SKIP();
 
     std::string baseName = "twoBeamNemSpread";
     unsigned    numProcs = 2;
     initialize_options(baseName, numProcs);
 
-    unsigned numElems = 2;
-    std::string meshDesc = "textmesh:" + get_stacked_beam_element_textmesh_desc_with_coordinates(numElems, 1, true);
+    unsigned    numElems = 2;
+    std::string meshDesc =
+        "textmesh:" + get_stacked_beam_element_textmesh_desc_with_coordinates(numElems, 1, true);
     setup_input_files_for_element_decompsition(meshDesc);
 
     run_nem_spread();
@@ -688,7 +707,7 @@ namespace {
   }
 
   // We can't do nodal decomp testing yet
-  //  [1] Nodal decomp of a mesh with elements doesn't work because Ioex_DatabaseIO fails on load: io_info exhibits this
-  //  [2] Can't use textmesh to generate a pure node mesh
+  //  [1] Nodal decomp of a mesh with elements doesn't work because Ioex_DatabaseIO fails on load:
+  //  io_info exhibits this [2] Can't use textmesh to generate a pure node mesh
 
 } // namespace

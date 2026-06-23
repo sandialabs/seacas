@@ -423,7 +423,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
 
   debug_level = interFace.debug();
-  rank = interFace.processor_rank();
+  rank        = interFace.processor_rank();
 
   if (rank == 0) {
     fmt::print("\nIO Word sizes: {} bytes floating point and {} bytes integer.\n", sizeof(T),
@@ -1422,14 +1422,13 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle)
   return 0;
 }
 
-template
-int epu<float, int>(SystemInterface &interFace, int start_part, int part_count, int cycle);
-template
-int epu<float, int64_t>(SystemInterface &interFace, int start_part, int part_count, int cycle);
-template
-int epu<double, int>(SystemInterface &interFace, int start_part, int part_count, int cycle);
-template
-int epu<double, int64_t>(SystemInterface &interFace, int start_part, int part_count, int cycle);
+template int epu<float, int>(SystemInterface &interFace, int start_part, int part_count, int cycle);
+template int epu<float, int64_t>(SystemInterface &interFace, int start_part, int part_count,
+                                 int cycle);
+template int epu<double, int>(SystemInterface &interFace, int start_part, int part_count,
+                              int cycle);
+template int epu<double, int64_t>(SystemInterface &interFace, int start_part, int part_count,
+                                  int cycle);
 
 namespace {
   void get_put_assemblies(int in, int out, Excn::Mesh &global)
@@ -1900,13 +1899,16 @@ namespace {
 
         // Get "user defined element block attributes"
         // These are single key-value per element block
-        read_exodus_entity_properties(id, EX_ELEM_BLOCK, block_id[b], glob_blocks[b].blockProperties);
+        read_exodus_entity_properties(id, EX_ELEM_BLOCK, block_id[b],
+                                      glob_blocks[b].blockProperties);
         blocks[p][b].blockProperties.copy(glob_blocks[b].blockProperties);
 
         if ((debug_level & 4) != 0U) {
-          fmt::print(", Name = '{}', Elements = {:12}, Nodes/element = {}, Attributes = {}, Properties = {}\n",
+          fmt::print(", Name = '{}', Elements = {:12}, Nodes/element = {}, Attributes = {}, "
+                     "Properties = {}\n",
                      blocks[p][b].name_, fmt::group_digits(blocks[p][b].entity_count()),
-                     blocks[p][b].nodesPerElement, blocks[p][b].attributeCount, blocks[p][b].property_count());
+                     blocks[p][b].nodesPerElement, blocks[p][b].attributeCount,
+                     blocks[p][b].property_count());
         }
       }
     } // end for p=0..part_count
@@ -2069,7 +2071,8 @@ namespace {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_blocks = glob_blocks.size();
 
-    LOG("\nReading and Writing element connectivity, properties & attributes (Low Memory Method)\n");
+    LOG("\nReading and Writing element connectivity, properties & attributes (Low Memory "
+        "Method)\n");
 
     for (int b = 0; b < global_num_blocks; b++) {
 

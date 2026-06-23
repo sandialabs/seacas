@@ -11,11 +11,11 @@
 
 #include "ElementPartition.h"
 
-#include "exodusII.h"   // for ex_opts, ex_int64_status, etc
+#include "exodusII.h" // for ex_opts, ex_int64_status, etc
 
-#include <cstdint>          // for int64_t
-#include <cstdio>           // for stderr, etc
-#include <cstdlib>          // for exit
+#include <cstdint> // for int64_t
+#include <cstdio>  // for stderr, etc
+#include <cstdlib> // for exit
 #include <cstring>
 #include <unistd.h> // for getopt, optarg, optind
 
@@ -40,40 +40,43 @@
 
 namespace utest_util {
 
-  template
-  ElementPartition<int>::ElementPartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
-  template
-  ElementPartition<int64_t>::ElementPartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
+  template ElementPartition<int>::ElementPartition(IossMesh                      *mesh,
+                                                   const std::vector<EntityProc> &procAssign,
+                                                   const int                      nProc);
+  template ElementPartition<int64_t>::ElementPartition(IossMesh                      *mesh,
+                                                       const std::vector<EntityProc> &procAssign,
+                                                       const int                      nProc);
 
   template <typename INT>
-  ElementPartition<INT>::ElementPartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc)
-    : Partition(mesh, procAssign, nProc)
+  ElementPartition<INT>::ElementPartition(IossMesh *mesh, const std::vector<EntityProc> &procAssign,
+                                          const int nProc)
+      : Partition(mesh, procAssign, nProc)
   {
     verify_input_partition();
     generate_partition_maps();
   }
 
-  template <typename INT>
-  size_t ElementPartition<INT>::get_num_local_entities() const
+  template <typename INT> size_t ElementPartition<INT>::get_num_local_entities() const
   {
     return m_mesh->get_num_local_elements();
   }
 
-  template <typename INT>
-  int ElementPartition<INT>::get_processor(size_t localId) const
+  template <typename INT> int ElementPartition<INT>::get_processor(size_t localId) const
   {
     IossElementData elem = m_mesh->get_local_element(localId);
     EXPECT_TRUE(elem.is_valid());
 
-    auto lowerBound = std::lower_bound(m_entityPartition.begin(), m_entityPartition.end(), elem.id, EntityProcLess());
-    EXPECT_FALSE(lowerBound == m_entityPartition.end() || lowerBound->id != elem.id) << "element " << elem.id << " was not assigned a processor";
+    auto lowerBound = std::lower_bound(m_entityPartition.begin(), m_entityPartition.end(), elem.id,
+                                       EntityProcLess());
+    EXPECT_FALSE(lowerBound == m_entityPartition.end() || lowerBound->id != elem.id)
+        << "element " << elem.id << " was not assigned a processor";
 
     return lowerBound->proc;
   }
 
   template <typename INT>
-  void ElementPartition<INT>::find_beam_internal_and_border_elements(const std::vector<std::vector<INT>> &sur_elem,
-                                                                     const int max_nsur)
+  void ElementPartition<INT>::find_beam_internal_and_border_elements(
+      const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
   {
     size_t numNodes = m_mesh->get_num_local_nodes();
     size_t numElems = m_mesh->get_num_local_elements();
@@ -81,17 +84,17 @@ namespace utest_util {
     std::vector<int> categorized(numElems, 0);
     for (size_t ecnt = 0; ecnt < numElems; ecnt++) {
       IossElementData elemData = m_mesh->get_local_element(ecnt);
-      int  nsides = elemData.topology->number_boundaries();
+      int             nsides   = elemData.topology->number_boundaries();
       assert(nsides == 2);
 
-      int  proce = get_processor(ecnt);
+      int proce = get_processor(ecnt);
       /* check each side of this element */
       for (int nscnt = 0; nscnt < nsides; nscnt++) {
 
         /* get the node on this element side (should only be one)*/
         std::vector<utest_util::EntityId> side_nodes;
 
-        get_local_side_nodes(elemData, nscnt+1 /* 1 based */, side_nodes);
+        get_local_side_nodes(elemData, nscnt + 1 /* 1 based */, side_nodes);
         assert(side_nodes.size() == 1);
 
         size_t nhold = sur_elem[side_nodes[0]].size();
@@ -115,7 +118,7 @@ namespace utest_util {
                 categorized[ecnt] = 1;
               }
               e_cmap_elems[proc2].push_back(elem);
-              e_cmap_sides[proc2].push_back(2 - ncnt);  // FIX_ME
+              e_cmap_sides[proc2].push_back(2 - ncnt); // FIX_ME
               e_cmap_procs[proc2].push_back(proce);
               e_cmap_neigh[proc2].push_back(ecnt);
             }
@@ -130,7 +133,8 @@ namespace utest_util {
   }
 
   template <typename INT>
-  void ElementPartition<INT>::categorize_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
+  void ElementPartition<INT>::categorize_elements(const std::vector<std::vector<INT>> &sur_elem,
+                                                  const int                            max_nsur)
   {
     int mesh_dim = m_mesh->get_spatial_dimension();
 
@@ -151,8 +155,8 @@ namespace utest_util {
     for (size_t ecnt = 0; ecnt < numElems; ecnt++) {
 
       IossElementData elemData = m_mesh->get_local_element(ecnt);
-      int  nsides = elemData.topology->number_boundaries();
-      int  proc = get_processor(ecnt);
+      int             nsides   = elemData.topology->number_boundaries();
+      int             proc     = get_processor(ecnt);
       assert(proc < m_numProcs);
 
       bool        internal = true;
@@ -170,7 +174,7 @@ namespace utest_util {
       for (int nscnt = 0; nscnt < nsides; nscnt++) {
 
         /* get the list of nodes on this element side */
-        get_local_side_nodes(elemData, nscnt+1 /* 1 based */, side_nodes);
+        get_local_side_nodes(elemData, nscnt + 1 /* 1 based */, side_nodes);
         int side_cnt = side_nodes.size();
 
         /*
@@ -200,8 +204,9 @@ namespace utest_util {
 
           /* ignore degenerate bars */
 
-          if (!((elemData.topology->is_alias("bar2") || elemData.topology->is_alias("shell_line_2")) &&
-              side_nodes[0] == side_nodes[1])) {
+          if (!((elemData.topology->is_alias("bar2") ||
+                 elemData.topology->is_alias("shell_line_2")) &&
+                side_nodes[0] == side_nodes[1])) {
 
             size_t nhold = sur_elem[side_nodes[0]].size();
             for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
@@ -210,8 +215,9 @@ namespace utest_util {
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
-              nelem = find_intersection(Data(hold_elem), Data(sur_elem[side_nodes[(ncnt + 1)]]),
-                                        nhold, sur_elem[side_nodes[(ncnt + 1)]].size(), Data(pt_list));
+              nelem =
+                  find_intersection(Data(hold_elem), Data(sur_elem[side_nodes[(ncnt + 1)]]), nhold,
+                                    sur_elem[side_nodes[(ncnt + 1)]].size(), Data(pt_list));
 
               if (nelem < 2) {
                 break;
@@ -322,8 +328,7 @@ namespace utest_util {
                   }
                   for (int ncnt3 = 0; ncnt3 < nelem; ncnt3++) {
                     for (size_t ncnt2 = 0; ncnt2 < nhold; ncnt2++) {
-                      if (-hold_elem[ncnt2] ==
-                          sur_elem[side_nodes[inode]][pt_list[ncnt3]]) {
+                      if (-hold_elem[ncnt2] == sur_elem[side_nodes[inode]][pt_list[ncnt3]]) {
                         hold_elem[ncnt2] = sur_elem[side_nodes[inode]][pt_list[ncnt3]];
                         break;
                       }
@@ -415,7 +420,8 @@ namespace utest_util {
                    * HEX/TET - Have to check that this tet shares a side
                    *           with the hex.
                    */
-                  sid = get_side_id_hex_tet(elemData2.topology, Data(elemData2.localConnectivity), side_cnt, Data(side_nodes));
+                  sid = get_side_id_hex_tet(elemData2.topology, Data(elemData2.localConnectivity),
+                                            side_cnt, Data(side_nodes));
                 }
                 else {
                   /*
@@ -424,7 +430,7 @@ namespace utest_util {
                    */
                   std::vector<utest_util::EntityId> mirror_nodes;
 
-                  get_local_side_mirror_nodes(elemData, nscnt+1 /* 1 based */, mirror_nodes);
+                  get_local_side_mirror_nodes(elemData, nscnt + 1 /* 1 based */, mirror_nodes);
                   side_cnt = side_nodes.size();
 
                   /*
@@ -439,7 +445,8 @@ namespace utest_util {
                    * in order to get the correct side order for elem,
                    * get the mirror of the side of ecnt
                    */
-                  sid = get_side_id(elemData2, m_mesh->get_spatial_dimension(), side_cnt, Data(mirror_nodes));
+                  sid = get_side_id(elemData2, m_mesh->get_spatial_dimension(), side_cnt,
+                                    Data(mirror_nodes));
                 }
 
                 if (sid > 0) {
@@ -456,7 +463,7 @@ namespace utest_util {
                   e_cmap_procs[proc2].push_back(proc);
                   e_cmap_neigh[proc2].push_back(ecnt);
                 }
-                else if ( sid < 0 ) {
+                else if (sid < 0) {
                   /*
                    * too many errors with bad meshes, print out
                    * more information here for diagnostics
@@ -466,9 +473,10 @@ namespace utest_util {
                   cmesg += fmt::format("Element 1: {}\n", (ecnt + 1));
 
                   nnodes = elemData.topology->number_nodes();
-                  cmesg  += "connect table:";
+                  cmesg += "connect table:";
                   for (int i = 0; i < nnodes; i++) {
-                    std::string tmpstr = fmt::format(" {}", (size_t)(elemData.localConnectivity[i] + 1));
+                    std::string tmpstr =
+                        fmt::format(" {}", (size_t)(elemData.localConnectivity[i] + 1));
                     cmesg += tmpstr;
                   }
                   cmesg += "\n";
@@ -482,9 +490,10 @@ namespace utest_util {
                   cmesg += fmt::format("Element 2: {}\n", (size_t)(elem + 1));
 
                   nnodes = elemData2.topology->number_nodes();
-                  cmesg  += "connect table:";
+                  cmesg += "connect table:";
                   for (int i = 0; i < nnodes; i++) {
-                    std::string tmpstr = fmt::format(" {}", (size_t)(elemData2.localConnectivity[i] + 1));
+                    std::string tmpstr =
+                        fmt::format(" {}", (size_t)(elemData2.localConnectivity[i] + 1));
                     cmesg += tmpstr;
                   }
                   cmesg += "\n";
@@ -505,7 +514,7 @@ namespace utest_util {
 
   template <typename INT>
   void ElementPartition<INT>::categorize_nodes(const std::vector<std::vector<INT>> &sur_elem,
-                                               const int max_nsur)
+                                               const int                            max_nsur)
   {
     size_t numNodes = m_mesh->get_num_local_nodes();
 
@@ -519,7 +528,7 @@ namespace utest_util {
 
       if (!sur_elem[ncnt].empty()) {
         size_t elem = sur_elem[ncnt][0];
-        proc = get_processor(elem);
+        proc        = get_processor(elem);
         assert(proc < m_numProcs);
         int flag = 0;
         for (size_t ecnt = 1; ecnt < sur_elem[ncnt].size(); ecnt++) {
@@ -559,8 +568,8 @@ namespace utest_util {
   }
 
   template <typename INT>
-  void ElementPartition<INT>::assign_border_node_processors(const std::vector<std::vector<INT>> &sur_elem,
-                                                            const int max_nsur)
+  void ElementPartition<INT>::assign_border_node_processors(
+      const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
   {
     size_t numNodes = m_mesh->get_num_local_nodes();
 
@@ -578,7 +587,7 @@ namespace utest_util {
 
         for (size_t ecnt = 0; ecnt < sur_elem[node].size(); ecnt++) {
           size_t elem = sur_elem[node][ecnt];
-          int proc = get_processor(elem);
+          int    proc = get_processor(elem);
           assert(proc < m_numProcs);
           if (proc != pcnt) {
             if (in_list(proc, born_procs[pcnt][ncnt]) < 0) {
@@ -590,8 +599,7 @@ namespace utest_util {
     } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
   }
 
-  template <typename INT>
-  void ElementPartition<INT>::order_element_communication_maps()
+  template <typename INT> void ElementPartition<INT>::order_element_communication_maps()
   {
     /* Order the element communication maps by processor */
     for (int pcnt = 0; pcnt < m_numProcs; pcnt++) {
@@ -613,8 +621,7 @@ namespace utest_util {
      */
     for (INT pcnt = 1; pcnt < m_numProcs; pcnt++) {
       int  save_fv1 = 0;
-      auto size =
-          static_cast<INT>(e_cmap_procs[pcnt].size()); /* Define shortcuts size and procs */
+      auto size = static_cast<INT>(e_cmap_procs[pcnt].size()); /* Define shortcuts size and procs */
       std::vector<INT> procs = e_cmap_procs[pcnt];
 
       INT fv1 = -1;
@@ -680,8 +687,7 @@ namespace utest_util {
            */
           INT fv2 = -1;
           INT lv2 = -1;
-          find_first_last(pcnt, e_cmap_procs[pcnt2].size(), &e_cmap_procs[pcnt2][0], &fv2,
-                          &lv2);
+          find_first_last(pcnt, e_cmap_procs[pcnt2].size(), &e_cmap_procs[pcnt2][0], &fv2, &lv2);
 #if 1
           if (lv2 - fv2 != lv1 - fv1) {
             fmt::print(stderr, "{}: {} to {}\n", static_cast<size_t>(pcnt2), (size_t)fv1,
@@ -712,8 +718,7 @@ namespace utest_util {
     } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
   }
 
-  template <typename INT>
-  void ElementPartition<INT>::generate_partition_maps()
+  template <typename INT> void ElementPartition<INT>::generate_partition_maps()
   {
     /* Allocate memory */
     int_nodes.resize(m_numProcs);
@@ -756,34 +761,33 @@ namespace utest_util {
   template void ElementPartition<int>::write_nemesis_data(int exoid) const;
   template void ElementPartition<int64_t>::write_nemesis_data(int exoid) const;
 
-  template <typename INT>
-  void ElementPartition<INT>::write_nemesis_data(int exoid) const
+  template <typename INT> void ElementPartition<INT>::write_nemesis_data(int exoid) const
   {
-    int status = 0;
-    size_t numNodes = m_mesh->get_num_local_nodes();
-    size_t numElems = m_mesh->get_num_local_elements();
+    int    status        = 0;
+    size_t numNodes      = m_mesh->get_num_local_nodes();
+    size_t numElems      = m_mesh->get_num_local_elements();
     size_t numElemBlocks = m_mesh->get_num_global_element_blocks();
 
     /* Output the the initial Nemesis global information */
     status = ex_put_init_global(exoid, numNodes, numElems, numElemBlocks, 0, 0);
-    ASSERT_FALSE (status < 0) << "fatal: failed to output initial Nemesis parameters";
+    ASSERT_FALSE(status < 0) << "fatal: failed to output initial Nemesis parameters";
 
     {
       auto ebs = m_mesh->get_region()->get_element_blocks();
 
-      std::vector<INT> eb_ids(ebs.size(),0);
-      std::vector<INT> eb_cnts(ebs.size(),0);
+      std::vector<INT> eb_ids(ebs.size(), 0);
+      std::vector<INT> eb_cnts(ebs.size(), 0);
 
-      for(size_t i=0; i<ebs.size(); i++) {
-        eb_ids[i] = ebs[i]->get_property("id").get_int();
+      for (size_t i = 0; i < ebs.size(); i++) {
+        eb_ids[i]  = ebs[i]->get_property("id").get_int();
         eb_cnts[i] = ebs[i]->entity_count();
       }
       ex_put_eb_info_global(exoid, Data(eb_ids), Data(eb_cnts));
     }
 
     /* Set up dummy arrays for output */
-    std::vector<INT> num_nmap_cnts(m_numProcs,0);
-    std::vector<INT> num_emap_cnts(m_numProcs,0);
+    std::vector<INT> num_nmap_cnts(m_numProcs, 0);
+    std::vector<INT> num_emap_cnts(m_numProcs, 0);
 
     /* need to check and make sure that there really are comm maps */
     for (int cnt = 0; cnt < m_numProcs; cnt++) {
@@ -798,15 +802,15 @@ namespace utest_util {
     }
 
     status = ex_put_init_info(exoid, m_numProcs, m_numProcs, (char *)"s");
-    ASSERT_FALSE (status < 0) << "fatal: unable to output init info";
+    ASSERT_FALSE(status < 0) << "fatal: unable to output init info";
 
     // Need to create 5 arrays with the sizes of int_nodes[i].size()...
     {
-      std::vector<INT> ins(m_numProcs,0);
-      std::vector<INT> bns(m_numProcs,0);
-      std::vector<INT> ens(m_numProcs,0);
-      std::vector<INT> ies(m_numProcs,0);
-      std::vector<INT> bes(m_numProcs,0);
+      std::vector<INT> ins(m_numProcs, 0);
+      std::vector<INT> bns(m_numProcs, 0);
+      std::vector<INT> ens(m_numProcs, 0);
+      std::vector<INT> ies(m_numProcs, 0);
+      std::vector<INT> bes(m_numProcs, 0);
 
       for (int iproc = 0; iproc < m_numProcs; iproc++) {
         ins[iproc] = int_nodes[iproc].size();
@@ -818,12 +822,12 @@ namespace utest_util {
 
       status = ex_put_loadbal_param_cc(exoid, Data(ins), Data(bns), Data(ens), Data(ies), Data(bes),
                                        Data(num_nmap_cnts), Data(num_emap_cnts));
-      ASSERT_FALSE (status < 0) << "fatal: unable to output load-balance parameters";
+      ASSERT_FALSE(status < 0) << "fatal: unable to output load-balance parameters";
     }
 
-    std::vector<INT> node_proc_ptr(m_numProcs + 1,0);
-    std::vector<INT> node_cmap_ids_cc(m_numProcs,0);
-    std::vector<INT> node_cmap_cnts_cc(m_numProcs,0);
+    std::vector<INT> node_proc_ptr(m_numProcs + 1, 0);
+    std::vector<INT> node_cmap_ids_cc(m_numProcs, 0);
+    std::vector<INT> node_cmap_cnts_cc(m_numProcs, 0);
 
     node_proc_ptr[0] = 0;
     for (int proc = 0; proc < m_numProcs; proc++) {
@@ -837,9 +841,9 @@ namespace utest_util {
       node_cmap_ids_cc[proc] = 1;
     }
 
-    std::vector<INT> elem_proc_ptr(m_numProcs + 1,0);
-    std::vector<INT> elem_cmap_ids_cc(m_numProcs,0);
-    std::vector<INT> elem_cmap_cnts_cc(m_numProcs,0);
+    std::vector<INT> elem_proc_ptr(m_numProcs + 1, 0);
+    std::vector<INT> elem_cmap_ids_cc(m_numProcs, 0);
+    std::vector<INT> elem_cmap_cnts_cc(m_numProcs, 0);
 
     elem_proc_ptr[0] = 0;
     for (int proc = 0; proc < m_numProcs; proc++) {
@@ -850,19 +854,21 @@ namespace utest_util {
 
     /* Output the communication map parameters */
     status = ex_put_cmap_params_cc(exoid, Data(node_cmap_ids_cc), Data(node_cmap_cnts_cc),
-                                   Data(node_proc_ptr), Data(elem_cmap_ids_cc), Data(elem_cmap_cnts_cc),
-                                   Data(elem_proc_ptr));
-    ASSERT_FALSE (status < 0) << "fatal: unable to output communication map parameters";
+                                   Data(node_proc_ptr), Data(elem_cmap_ids_cc),
+                                   Data(elem_cmap_cnts_cc), Data(elem_proc_ptr));
+    ASSERT_FALSE(status < 0) << "fatal: unable to output communication map parameters";
 
     /* Output the node and element maps */
     for (int proc = 0; proc < m_numProcs; proc++) {
       /* Output the nodal map */
-      status = ex_put_processor_node_maps(exoid, Data(int_nodes[proc]), Data(bor_nodes[proc]), nullptr, proc);
-      ASSERT_FALSE (status < 0) << "fatal: failed to output node map for proc: " << proc;
+      status = ex_put_processor_node_maps(exoid, Data(int_nodes[proc]), Data(bor_nodes[proc]),
+                                          nullptr, proc);
+      ASSERT_FALSE(status < 0) << "fatal: failed to output node map for proc: " << proc;
 
       /* Output the elemental map */
-      status = ex_put_processor_elem_maps(exoid, Data(int_elems[proc]), Data(bor_elems[proc]), proc);
-      ASSERT_FALSE (status < 0) << "fatal: failed to output element map for proc: " << proc;
+      status =
+          ex_put_processor_elem_maps(exoid, Data(int_elems[proc]), Data(bor_elems[proc]), proc);
+      ASSERT_FALSE(status < 0) << "fatal: failed to output element map for proc: " << proc;
 
       /*
        * Build a nodal communication map from the list of border nodes
@@ -874,8 +880,8 @@ namespace utest_util {
       }
 
       if (nsize > 0) {
-        std::vector<INT> n_cmap_nodes(nsize,0);
-        std::vector<INT> n_cmap_procs(nsize,0);
+        std::vector<INT> n_cmap_nodes(nsize, 0);
+        std::vector<INT> n_cmap_procs(nsize, 0);
 
         size_t cnt3 = 0;
         for (size_t cnt = 0; cnt < bor_nodes[proc].size(); cnt++) {
@@ -894,16 +900,19 @@ namespace utest_util {
 
         /* Output the nodal communication map */
         status = ex_put_node_cmap(exoid, 1, Data(n_cmap_nodes), Data(n_cmap_procs), proc);
-        ASSERT_FALSE (status < 0) << "fatal: unable to output nodal communication map for proc: " << proc;
+        ASSERT_FALSE(status < 0) << "fatal: unable to output nodal communication map for proc: "
+                                 << proc;
       } /* End "if (nsize > 0)" */
 
       /* Output the elemental communication map */
       if (!e_cmap_elems[proc].empty()) {
-        status = ex_put_elem_cmap(exoid, 1, Data(e_cmap_elems[proc]), Data(e_cmap_sides[proc]), Data(e_cmap_procs[proc]), proc);
-        ASSERT_FALSE (status < 0) << "fatal: unable to output elemental communication map for proc: " << proc;
+        status = ex_put_elem_cmap(exoid, 1, Data(e_cmap_elems[proc]), Data(e_cmap_sides[proc]),
+                                  Data(e_cmap_procs[proc]), proc);
+        ASSERT_FALSE(status < 0) << "fatal: unable to output elemental communication map for proc: "
+                                 << proc;
       }
 
     } /* End "for(proc=0; proc < m_numProcs; proc++)" */
   }
 
-}
+} // namespace utest_util

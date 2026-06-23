@@ -14,7 +14,6 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-
 /* Safe version of malloc.  Does not initialize memory .*/
 
 /*****************************************************************************/
@@ -44,105 +43,104 @@ namespace {
 } // namespace
 
 namespace suplib_cpp {
-/******************************************************************************
- *
- *                    Dynamic Allocation of Multidimensional Arrays
- *-----------------------------------------------------------------------------
- *
- * Example Usage:
- *
- *     typedef  struct
- *       {      int     bus1;
- *              int     bus2;
- *              int     dest;
- *      }       POINT;
- *
- *      POINT    **points, corner;
- *
- *      points = (POINT **) array_alloc (2, x, y, sizeof(POINT));
- *                                       ^  ^  ^
- *                                       |  |  |
- *                 number of dimensions--+  |  |
- *                   first dimension max----+  |
- *                   second dimension max------+
- *
- *         (points may be now be used as if it were declared
- *          POINT points[x][y])
- *
- *          This particular version is limited to dimensions of 3 or less.
- *
- *      corner = points[2][3]; (refer to the structure as you would any array)
- *
- *      free (points); (frees the entire structure in one fell swoop)
- *
- *****************************************************************************/
-/*****************************************************************************/
-/*****************************************************************************/
-void *array_alloc(int numdim, ...)
-{
-  struct dim
+  /******************************************************************************
+   *
+   *                    Dynamic Allocation of Multidimensional Arrays
+   *-----------------------------------------------------------------------------
+   *
+   * Example Usage:
+   *
+   *     typedef  struct
+   *       {      int     bus1;
+   *              int     bus2;
+   *              int     dest;
+   *      }       POINT;
+   *
+   *      POINT    **points, corner;
+   *
+   *      points = (POINT **) array_alloc (2, x, y, sizeof(POINT));
+   *                                       ^  ^  ^
+   *                                       |  |  |
+   *                 number of dimensions--+  |  |
+   *                   first dimension max----+  |
+   *                   second dimension max------+
+   *
+   *         (points may be now be used as if it were declared
+   *          POINT points[x][y])
+   *
+   *          This particular version is limited to dimensions of 3 or less.
+   *
+   *      corner = points[2][3]; (refer to the structure as you would any array)
+   *
+   *      free (points); (frees the entire structure in one fell swoop)
+   *
+   *****************************************************************************/
+  /*****************************************************************************/
+  /*****************************************************************************/
+  void *array_alloc(int numdim, ...)
   {
-    size_t index; /* Number of elements in the dimension        */
-    size_t total; /* Total number of elements           */
-    size_t size;  /* Size of a single element in bytes  */
-    size_t off;   /* offset from beginning of array     */
-  } dim[3];       /* Info about each dimension          */
-  va_list va;     /* Current pointer in the argument list       */
+    struct dim
+    {
+      size_t index; /* Number of elements in the dimension        */
+      size_t total; /* Total number of elements           */
+      size_t size;  /* Size of a single element in bytes  */
+      size_t off;   /* offset from beginning of array     */
+    } dim[3];       /* Info about each dimension          */
+    va_list va;     /* Current pointer in the argument list       */
 
-  va_start(va, numdim);
+    va_start(va, numdim);
 
-  if (numdim <= 0) {
-    fmt::print(stderr, "array_alloc ERROR: number of dimensions, {}, is <=0\n", numdim);
-    va_end(va);
-    return nullptr;
-  }
-  if (numdim > 3) {
-    fmt::print(stderr, "array_alloc ERROR: number of dimensions, {}, is > 3\n", numdim);
-    va_end(va);
-    return nullptr;
-  }
-
-  dim[0].index = va_arg(va, size_t);
-
-  if (dim[0].index == 0) {
-    va_end(va);
-    return nullptr;
-  }
-
-  dim[0].total = dim[0].index;
-  dim[0].size  = sizeof(void *);
-  dim[0].off   = 0;
-  for (int i = 1; i < numdim; i++) {
-    dim[i].index = va_arg(va, size_t);
-    if (dim[i].index == 0) {
+    if (numdim <= 0) {
+      fmt::print(stderr, "array_alloc ERROR: number of dimensions, {}, is <=0\n", numdim);
+      va_end(va);
+      return nullptr;
+    }
+    if (numdim > 3) {
+      fmt::print(stderr, "array_alloc ERROR: number of dimensions, {}, is > 3\n", numdim);
       va_end(va);
       return nullptr;
     }
 
-    dim[i].total = dim[i - 1].total * dim[i].index;
-    dim[i].size  = sizeof(void *);
-    dim[i].off   = dim[i - 1].off + dim[i - 1].total * dim[i - 1].size;
-  }
-  dim[numdim - 1].size = va_arg(va, size_t);
-  va_end(va);
+    dim[0].index = va_arg(va, size_t);
 
-  /* Round up the last offset value so data is properly aligned. */
-  dim[numdim - 1].off = dim[numdim - 1].size *
-      ((dim[numdim - 1].off + dim[numdim - 1].size - 1) / dim[numdim - 1].size);
-
-  size_t total = dim[numdim - 1].off + dim[numdim - 1].total * dim[numdim - 1].size;
-
-  void *dfield = smalloc(total);
-  char *field  = reinterpret_cast<char *>(dfield);
-
-  for (int i = 0; i < numdim - 1; i++) {
-    char **ptr  = reinterpret_cast<char **>(field + dim[i].off);
-    char  *data = (field + dim[i + 1].off);
-    for (size_t j = 0; j < dim[i].total; j++) {
-      ptr[j] = data + j * dim[i + 1].size * dim[i + 1].index;
+    if (dim[0].index == 0) {
+      va_end(va);
+      return nullptr;
     }
-  }
-  return (dfield);
-}
-}
 
+    dim[0].total = dim[0].index;
+    dim[0].size  = sizeof(void *);
+    dim[0].off   = 0;
+    for (int i = 1; i < numdim; i++) {
+      dim[i].index = va_arg(va, size_t);
+      if (dim[i].index == 0) {
+        va_end(va);
+        return nullptr;
+      }
+
+      dim[i].total = dim[i - 1].total * dim[i].index;
+      dim[i].size  = sizeof(void *);
+      dim[i].off   = dim[i - 1].off + dim[i - 1].total * dim[i - 1].size;
+    }
+    dim[numdim - 1].size = va_arg(va, size_t);
+    va_end(va);
+
+    /* Round up the last offset value so data is properly aligned. */
+    dim[numdim - 1].off = dim[numdim - 1].size *
+                          ((dim[numdim - 1].off + dim[numdim - 1].size - 1) / dim[numdim - 1].size);
+
+    size_t total = dim[numdim - 1].off + dim[numdim - 1].total * dim[numdim - 1].size;
+
+    void *dfield = smalloc(total);
+    char *field  = reinterpret_cast<char *>(dfield);
+
+    for (int i = 0; i < numdim - 1; i++) {
+      char **ptr  = reinterpret_cast<char **>(field + dim[i].off);
+      char  *data = (field + dim[i + 1].off);
+      for (size_t j = 0; j < dim[i].total; j++) {
+        ptr[j] = data + j * dim[i + 1].size * dim[i + 1].index;
+      }
+    }
+    return (dfield);
+  }
+} // namespace suplib_cpp

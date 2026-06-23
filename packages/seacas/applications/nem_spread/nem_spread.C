@@ -53,11 +53,10 @@ int check_change_sets(int exoid, int &selected_change_set)
 
   // File contains change sets...
   if (selected_change_set == 0) {
-    fmt::print(
-        stderr,
-        "\nWARNING: Exodus database contains {} change sets.\n         Setting to read from "
-        "first change set since `-change_set #` option not specified.\n\n",
-        num_change_sets);
+    fmt::print(stderr,
+               "\nWARNING: Exodus database contains {} change sets.\n         Setting to read from "
+               "first change set since `-change_set #` option not specified.\n\n",
+               num_change_sets);
     selected_change_set = 1;
     return exoid + selected_change_set;
   }
@@ -70,8 +69,8 @@ int check_change_sets(int exoid, int &selected_change_set)
     return 0;
   }
   // Contains change sets and selected change set is in range...
-  fmt::print(stderr, "NOTE: Mesh data will be read from change set {} of {}\n",
-             selected_change_set, num_change_sets);
+  fmt::print(stderr, "NOTE: Mesh data will be read from change set {} of {}\n", selected_change_set,
+             num_change_sets);
   return exoid + selected_change_set;
 }
 
@@ -223,13 +222,11 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
   return 0;
 }
 
-template
-int nem_spread(NemSpread<float, int> &spreader, const char *salsa_cmd_file, int subcycles, int cycle);
-template
-int nem_spread(NemSpread<double, int> &spreader, const char *salsa_cmd_file, int subcycles, int cycle);
-template
-int nem_spread(NemSpread<float, int64_t> &spreader, const char *salsa_cmd_file, int subcycles, int cycle);
-template
-int nem_spread(NemSpread<double, int64_t> &spreader, const char *salsa_cmd_file, int subcycles, int cycle);
-
-
+template int nem_spread(NemSpread<float, int> &spreader, const char *salsa_cmd_file, int subcycles,
+                        int cycle);
+template int nem_spread(NemSpread<double, int> &spreader, const char *salsa_cmd_file, int subcycles,
+                        int cycle);
+template int nem_spread(NemSpread<float, int64_t> &spreader, const char *salsa_cmd_file,
+                        int subcycles, int cycle);
+template int nem_spread(NemSpread<double, int64_t> &spreader, const char *salsa_cmd_file,
+                        int subcycles, int cycle);

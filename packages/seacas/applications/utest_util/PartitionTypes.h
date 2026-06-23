@@ -16,41 +16,29 @@ namespace utest_util {
     EntityProc() : id(0), proc(-1) {}
 
     EntityId id{0};
-    int proc{-1};
+    int      proc{-1};
   };
 
   class EntityProcLess
   {
   public:
     EntityProcLess() = default;
-    bool operator()(const EntityProc& lhs, const EntityProc& rhs) const
-    {
-      return lhs.id < rhs.id;
-    }
+    bool operator()(const EntityProc &lhs, const EntityProc &rhs) const { return lhs.id < rhs.id; }
 
-    bool operator()(const EntityProc& lhs, const EntityId& rhs) const
-    {
-      return lhs.id < rhs;
-    }
+    bool operator()(const EntityProc &lhs, const EntityId &rhs) const { return lhs.id < rhs; }
 
-    bool operator()(const EntityId& lhs, const EntityProc& rhs) const
-    {
-      return lhs < rhs.id;
-    }
+    bool operator()(const EntityId &lhs, const EntityProc &rhs) const { return lhs < rhs.id; }
 
-    bool operator()(const EntityId& lhs, const EntityId& rhs) const
-    {
-      return lhs < rhs;
-    }
+    bool operator()(const EntityId &lhs, const EntityId &rhs) const { return lhs < rhs; }
   };
 
   class EntityProcEqual
   {
   public:
     EntityProcEqual() = default;
-    bool operator()(const EntityProc& lhs, const EntityProc& rhs) const
+    bool operator()(const EntityProc &lhs, const EntityProc &rhs) const
     {
       return lhs.id == rhs.id && lhs.proc == rhs.proc;
     }
   };
-}
+} // namespace utest_util

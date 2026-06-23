@@ -85,56 +85,58 @@ namespace utest_util {
     NULL_EL
   };
 
-bool is_hex(const Ioss::ElementTopology* topo);
+  bool is_hex(const Ioss::ElementTopology *topo);
 
-bool is_hex(ElementType etype);
+  bool is_hex(ElementType etype);
 
-bool is_tet(const Ioss::ElementTopology* topo);
+  bool is_tet(const Ioss::ElementTopology *topo);
 
-bool is_tet(ElementType etype);
+  bool is_tet(ElementType etype);
 
-bool is_wedge(const Ioss::ElementTopology* topo);
+  bool is_wedge(const Ioss::ElementTopology *topo);
 
-bool is_wedge(ElementType etype);
+  bool is_wedge(ElementType etype);
 
-bool is_pyramid(const Ioss::ElementTopology* topo);
+  bool is_pyramid(const Ioss::ElementTopology *topo);
 
-bool is_pyramid(ElementType etype);
+  bool is_pyramid(ElementType etype);
 
-bool is_3d_element(const Ioss::ElementTopology* topo);
+  bool is_3d_element(const Ioss::ElementTopology *topo);
 
-bool is_3d_element(ElementType etype);
+  bool is_3d_element(ElementType etype);
 
-ElementType get_elem_type(const char *elem_name, const int num_nodes, const int num_dim);
+  ElementType get_elem_type(const char *elem_name, const int num_nodes, const int num_dim);
 
-ElementType get_elem_type(const Ioss::ElementTopology* topo, int num_dim);
+  ElementType get_elem_type(const Ioss::ElementTopology *topo, int num_dim);
 
-/*
- *----------------------------------------------------------------------------
- * This function returns the list of nodes in a side of an element given
- * the element type, and the side id. It also returns the number of nodes
- * in that side.
- *****************************************************************************/
-void get_local_side_nodes(const IossElementData &elem, int side, std::vector<EntityId>& sideNodes);
+  /*
+   *----------------------------------------------------------------------------
+   * This function returns the list of nodes in a side of an element given
+   * the element type, and the side id. It also returns the number of nodes
+   * in that side.
+   *****************************************************************************/
+  void get_local_side_nodes(const IossElementData &elem, int side,
+                            std::vector<EntityId> &sideNodes);
 
-/*
- *----------------------------------------------------------------------------
- * This function returns the node list for the mirror of the list
- * given. This will be the node list of a face that is connected
- * to this element on this face i.e the first negative permutation
- *****************************************************************************/
-void get_local_side_mirror_nodes(const IossElementData &elem, int side, std::vector<EntityId>& mirrorNodes);
+  /*
+   *----------------------------------------------------------------------------
+   * This function returns the node list for the mirror of the list
+   * given. This will be the node list of a face that is connected
+   * to this element on this face i.e the first negative permutation
+   *****************************************************************************/
+  void get_local_side_mirror_nodes(const IossElementData &elem, int side,
+                                   std::vector<EntityId> &mirrorNodes);
 
-template <typename INT>
-int get_side_id(const IossElementData &elemData,
-                const int              num_dim,         // Mesh dimension
-                int                    nsnodes,         /* The number of side nodes */
-                const INT              side_nodes[]);   /* The list of side node IDs */
+  template <typename INT>
+  int get_side_id(const IossElementData &elemData,
+                  const int              num_dim, // Mesh dimension
+                  int                    nsnodes, /* The number of side nodes */
+                  const INT              side_nodes[]);        /* The list of side node IDs */
 
-template <typename INT>
-int get_side_id_hex_tet(const Ioss::ElementTopology *topo,             /* The element type */
-                        const INT                   *connect,          /* The element connectivity */
-                        int                          nsnodes,          /* The number of side nodes */
-                        const INT                    side_nodes[]);    /* The list of side node IDs */
+  template <typename INT>
+  int get_side_id_hex_tet(const Ioss::ElementTopology *topo,    /* The element type */
+                          const INT                   *connect, /* The element connectivity */
+                          int                          nsnodes, /* The number of side nodes */
+                          const INT side_nodes[]);              /* The list of side node IDs */
 
-}
+} // namespace utest_util

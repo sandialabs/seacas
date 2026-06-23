@@ -206,5 +206,3 @@ int main(int argc, char *argv[])
   add_to_log(argv[0], g_end_t);
   return status;
 }
-
-
