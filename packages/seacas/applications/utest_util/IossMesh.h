@@ -64,10 +64,13 @@ namespace utest_util {
     int64_t get_num_global_element_blocks() const { return m_numGlobalElementBlocks; }
 
     size_t  get_num_local_elements() const { return m_elementData.size(); }
-    size_t  get_num_local_nodes() const;
+    size_t  get_num_local_nodes() const { return m_nodeData.size(); };
 
     IossElementData get_local_element(size_t index) const;
     IossElementData get_global_element(EntityId id) const;
+
+    IossNodeData get_local_node(size_t index) const;
+    IossNodeData get_global_node(EntityId id) const;
 
     unsigned get_spatial_dimension() const { return m_spatialDimension; }
 
@@ -83,6 +86,7 @@ namespace utest_util {
 
     unsigned              m_spatialDimension{0};
 
+    std::vector<IossNodeData>         m_nodeData;
     std::vector<IossElementData>      m_elementData;
     std::vector<IossElementBlockData> m_elementBlockData;
 
@@ -97,6 +101,8 @@ namespace utest_util {
                          Ioss::DatabaseUsage db_usage = Ioss::READ_MODEL);
 
     void fill_element_data();
+
+    void fill_node_data();
   };
 
 } // namespace utest_util

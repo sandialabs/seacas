@@ -47,10 +47,10 @@
 namespace utest_util {
 
   template <typename INT>
-  class ElementPartition : public Partition
+  class NodePartition : public Partition
   {
   public:
-    ElementPartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
+    NodePartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc);
 
     void write_nemesis_data(int exoid) const override;
 
@@ -60,9 +60,9 @@ namespace utest_util {
 
     size_t api_size() const override { return sizeof(INT); }
 
-    std::string type() const { return "elemental"; }
+    std::string type() const { return "nodal"; }
 
-    virtual ~ElementPartition() = default;
+    virtual ~NodePartition() = default;
 
   private:
     /* Nodal */
@@ -72,21 +72,12 @@ namespace utest_util {
     std::vector<std::vector<INT>> ext_procs{};
 
     /* Elemental */
-    std::vector<std::vector<std::vector<INT>>> born_procs{};
-    std::vector<std::vector<INT>>              int_elems{};
-    std::vector<std::vector<INT>>              bor_elems{};
-    std::vector<std::vector<INT>>              e_cmap_elems{};
-    std::vector<std::vector<INT>>              e_cmap_sides{};
-    std::vector<std::vector<INT>>              e_cmap_procs{};
-    std::vector<std::vector<INT>>              e_cmap_neigh{};
+    std::vector<std::vector<INT>> int_elems{};
+    std::vector<std::vector<INT>> bor_elems{};
 
   private:
-    void find_beam_internal_and_border_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
     void categorize_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
     void categorize_nodes(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
-
-    void assign_border_node_processors(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);
-    void order_element_communication_maps();
 
     void generate_partition_maps();
   };

@@ -94,6 +94,33 @@ namespace {
       elemBlockData.push_back(elemBlock);
     }
   }
+
+  template <typename INT>
+  void populate_node_data(Ioss::Region *region,
+                          std::vector<utest_util::IossNodeData>& nodeData)
+  {
+    nodeData.clear();
+    size_t localId = 0;
+
+    Ioss::NodeBlock *nb = region->get_node_block("nodeblock_1");
+    EXPECT_TRUE(nb != nullptr);
+
+    std::vector<INT> node_ids ;
+
+    nb->get_field_data("ids", node_ids);
+
+    size_t node_count = node_ids.size();
+
+    for(size_t i=0; i<node_count; ++i, ++localId) {
+      INT id = node_ids[i];
+
+      utest_util::IossNodeData node;
+      node.id       = id;
+      node.localId  = localId;
+
+      nodeData.push_back(node);
+    }
+  }
 }
 
 namespace utest_util {
@@ -117,6 +144,7 @@ namespace utest_util {
     create_ioss_region(regionName);
 
     fill_element_data();
+    fill_node_data();
 
     m_numGlobalNodes         = get_region()->get_optional_property("global_node_count", 1);
     m_numGlobalElements      = get_region()->get_optional_property("global_element_count", 1);
@@ -219,10 +247,35 @@ namespace utest_util {
     return IossElementData();
   }
 
-  size_t IossMesh::get_num_local_nodes() const
+  void IossMesh::fill_node_data()
   {
-    Ioss::NodeBlock *nb = m_region->get_node_block("nodeblock_1");
-    EXPECT_TRUE(nb != nullptr);
-    return nb->entity_count();
+    EXPECT_TRUE(m_database != nullptr) << "Database has not been read";
+    EXPECT_TRUE(m_region   != nullptr) << "Region has not been constructed";
+
+    bool ints64bit = db_api_int_size(m_region) == 8;
+
+    if (ints64bit) {
+      populate_node_data<int64_t>(m_region, m_nodeData);
+    } else {
+      populate_node_data<int>(m_region, m_nodeData);
+    }
+  }
+
+  IossNodeData IossMesh::get_local_node(size_t index) const
+  {
+    if(index >= m_nodeData.size()) return IossNodeData();
+
+    return m_nodeData[index];
+  }
+
+  IossNodeData IossMesh::get_global_node(EntityId id) const
+  {
+    auto lowerBound = std::lower_bound(m_nodeData.begin(), m_nodeData.end(), id);
+
+    if(lowerBound != m_nodeData.end() && lowerBound->id == id) {
+      return *lowerBound;
+    }
+
+    return IossNodeData();
   }
 } // namespace utest_util

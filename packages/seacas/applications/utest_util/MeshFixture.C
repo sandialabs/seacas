@@ -185,11 +185,11 @@ void MeshFixture::write_region_to_file(Ioss::Region *inputRegion, const std::str
   write_region_to_file(inputRegion, properties, options, outputFile);
 }
 
-void MeshFixture::fill_linear_proc_distribution(unsigned numElements, unsigned numProc, std::vector<unsigned>& procs)
+void MeshFixture::fill_linear_proc_distribution(unsigned numEntities, unsigned numProc, std::vector<unsigned>& procs)
 {
-  procs.resize(numElements);
-  unsigned unload = numElements % numProc;
-  unsigned initVal = numElements / numProc;
+  procs.resize(numEntities);
+  unsigned unload = numEntities % numProc;
+  unsigned initVal = numEntities / numProc;
   std::vector<unsigned> numElemsPerProc(numProc, 0);
 
   std::fill(numElemsPerProc.begin(), numElemsPerProc.end(), initVal);
@@ -197,7 +197,7 @@ void MeshFixture::fill_linear_proc_distribution(unsigned numElements, unsigned n
   for(unsigned i = 0; i < unload; i++) {
     numElemsPerProc[i]++;
   }
-  for(unsigned i = 0; i < numElements; i++) {
+  for(unsigned i = 0; i < numEntities; i++) {
     for(unsigned j = 0; j < numProc; j++) {
       if(numElemsPerProc[j] > 0) {
         numElemsPerProc[j]--;

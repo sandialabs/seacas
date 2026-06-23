@@ -47,122 +47,26 @@ namespace utest_util {
 
   template <typename INT>
   ElementPartition<INT>::ElementPartition(IossMesh* mesh, const std::vector<EntityProc>& procAssign, const int nProc)
-    : m_mesh(mesh), m_numProcs(nProc), m_elemPartition(procAssign)
+    : Partition(mesh, procAssign, nProc)
   {
     verify_input_partition();
     generate_partition_maps();
   }
 
   template <typename INT>
-  void ElementPartition<INT>::verify_input_partition()
+  size_t ElementPartition<INT>::get_num_local_entities() const
   {
-    EXPECT_TRUE(m_numProcs > 0) << "Invalid processor decomposition count: " << m_numProcs;
-
-    // Verify processor distribution
-    for(const auto& entry : m_elemPartition) {
-      EXPECT_TRUE(entry.proc >= 0 && entry.proc < m_numProcs) << "Invalid processor assignment for element " << entry.id;
-    }
-
-    // Sort and uniquify
-    std::sort(m_elemPartition.begin(), m_elemPartition.end(), EntityProcLess());
-    auto iter = std::unique(m_elemPartition.begin(), m_elemPartition.end(), EntityProcEqual());
-    m_elemPartition.resize(iter - m_elemPartition.begin());
-
-    EXPECT_EQ(m_mesh->get_num_local_elements(), m_elemPartition.size());
-
-    // Make sure every element has an assignment
-    for(size_t i=0; i<m_mesh->get_num_local_elements(); i++) {
-      (void)get_element_processor(i);
-    }
+    return m_mesh->get_num_local_elements();
   }
 
   template <typename INT>
-  void ElementPartition<INT>::fill_node_element_connectivity(std::vector<std::vector<INT>> &sur_elem, int &max_nsur)
-  {
-    sur_elem.clear();
-    max_nsur = 0;
-
-    size_t numNodes = m_mesh->get_num_local_nodes();
-    size_t numElems = m_mesh->get_num_local_elements();
-
-    std::vector<int>    surround_count(numNodes, 0);
-    std::vector<size_t> last_element(numNodes, 0);
-
-    size_t sur_elem_total_size = 0;
-    /* Find the count of surrounding elements for each node in the mesh */
-    // The hope is that this code will speed up the entire routine even
-    // though we are iterating the complete connectivity array twice.
-    for (size_t ecnt = 0; ecnt < numElems; ecnt++) {
-      IossElementData elem = m_mesh->get_local_element(ecnt);
-
-      int nnodes = elem.topology->number_nodes();
-
-      for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-        auto node = elem.localConnectivity[ncnt];
-        /*
-         * in the case of degenerate elements, where a node can be
-         * entered into the connect table twice, need to check to
-         * make sure that this element is not already listed as
-         * surrounding this node
-         */
-        if (last_element[node] != ecnt + 1) {
-          last_element[node] = ecnt + 1;
-          surround_count[node]++;
-          sur_elem_total_size++;
-        }
-      }
-    }
-
-    vec_free(last_element);
-
-    // Attempt to reserve an array with this size...
-    sur_elem.resize(numNodes);
-    for (size_t ncnt = 0; ncnt < numNodes; ncnt++) {
-      if (surround_count[ncnt] == 0) {
-        fmt::print(stderr, "WARNING: Node = {} has no elements\n", ncnt + 1);
-      }
-      else {
-        sur_elem[ncnt].reserve(surround_count[ncnt]);
-        max_nsur = std::max(surround_count[ncnt], max_nsur);
-      }
-    }
-
-    /* Find the surrounding elements for each node in the mesh */
-    for (size_t ecnt = 0; ecnt < numElems; ecnt++) {
-      IossElementData elem = m_mesh->get_local_element(ecnt);
-
-      int nnodes = elem.topology->number_nodes();
-      for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-        auto node = elem.localConnectivity[ncnt];
-
-        /*
-         * in the case of degenerate elements, where a node can be
-         * entered into the connect table twice, need to check to
-         * make sure that this element is not already listed as
-         * surrounding this node
-         */
-        if (sur_elem[node].empty() || ecnt != (size_t)sur_elem[node].back()) {
-          /* Add the element to the list */
-          sur_elem[node].push_back(ecnt);
-        }
-      }
-    }
-
-#ifndef NDEBUG
-    for (size_t ncnt = 0; ncnt < numNodes; ncnt++) {
-      assert(sur_elem[ncnt].size() == (size_t)surround_count[ncnt]);
-    }
-#endif
-  }
-
-  template <typename INT>
-  int ElementPartition<INT>::get_element_processor(size_t localId)
+  int ElementPartition<INT>::get_processor(size_t localId) const
   {
     IossElementData elem = m_mesh->get_local_element(localId);
     EXPECT_TRUE(elem.is_valid());
 
-    auto lowerBound = std::lower_bound(m_elemPartition.begin(), m_elemPartition.end(), elem.id, EntityProcLess());
-    EXPECT_FALSE(lowerBound == m_elemPartition.end() || lowerBound->id != elem.id) << "element " << elem.id << " was not assigned a processor";
+    auto lowerBound = std::lower_bound(m_entityPartition.begin(), m_entityPartition.end(), elem.id, EntityProcLess());
+    EXPECT_FALSE(lowerBound == m_entityPartition.end() || lowerBound->id != elem.id) << "element " << elem.id << " was not assigned a processor";
 
     return lowerBound->proc;
   }
@@ -180,7 +84,7 @@ namespace utest_util {
       int  nsides = elemData.topology->number_boundaries();
       assert(nsides == 2);
 
-      int  proce = get_element_processor(ecnt);
+      int  proce = get_processor(ecnt);
       /* check each side of this element */
       for (int nscnt = 0; nscnt < nsides; nscnt++) {
 
@@ -199,7 +103,7 @@ namespace utest_util {
             if (elem == ecnt) {
               continue;
             }
-            int proc2 = get_element_processor(elem);
+            int proc2 = get_processor(elem);
             if (proce == proc2) {
               continue;
             }
@@ -226,8 +130,7 @@ namespace utest_util {
   }
 
   template <typename INT>
-  void ElementPartition<INT>::categorize_elements(const std::vector<std::vector<INT>> &sur_elem,
-                                                  const int max_nsur)
+  void ElementPartition<INT>::categorize_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
   {
     int mesh_dim = m_mesh->get_spatial_dimension();
 
@@ -249,7 +152,7 @@ namespace utest_util {
 
       IossElementData elemData = m_mesh->get_local_element(ecnt);
       int  nsides = elemData.topology->number_boundaries();
-      int  proc = get_element_processor(ecnt);
+      int  proc = get_processor(ecnt);
       assert(proc < m_numProcs);
 
       bool        internal = true;
@@ -475,7 +378,7 @@ namespace utest_util {
           for (int ncnt = 0; ncnt < nelem; ncnt++) {
 
             INT elem  = hold_elem[ncnt];
-            int proc2 = get_element_processor(elem);
+            int proc2 = get_processor(elem);
             assert(proc2 < m_numProcs);
 
             if (proc != proc2) {
@@ -616,11 +519,11 @@ namespace utest_util {
 
       if (!sur_elem[ncnt].empty()) {
         size_t elem = sur_elem[ncnt][0];
-        proc = get_element_processor(elem);
+        proc = get_processor(elem);
         assert(proc < m_numProcs);
         int flag = 0;
         for (size_t ecnt = 1; ecnt < sur_elem[ncnt].size(); ecnt++) {
-          int proc2 = get_element_processor(sur_elem[ncnt][ecnt]);
+          int proc2 = get_processor(sur_elem[ncnt][ecnt]);
           assert(proc2 < m_numProcs);
           /* check if the processor for any two surrounding elems differ */
           if (proc != proc2) {
@@ -675,7 +578,7 @@ namespace utest_util {
 
         for (size_t ecnt = 0; ecnt < sur_elem[node].size(); ecnt++) {
           size_t elem = sur_elem[node][ecnt];
-          int proc = get_element_processor(elem);
+          int proc = get_processor(elem);
           assert(proc < m_numProcs);
           if (proc != pcnt) {
             if (in_list(proc, born_procs[pcnt][ncnt]) < 0) {
@@ -831,7 +734,7 @@ namespace utest_util {
     int                           max_nsur{0};
     std::vector<std::vector<INT>> sur_elem;
 
-    fill_node_element_connectivity(sur_elem, max_nsur);
+    fill_node_element_connectivity(m_mesh, sur_elem, max_nsur);
 
     categorize_elements(sur_elem, max_nsur);
 

@@ -12,6 +12,7 @@
 #include "FileUtils.h"
 #include "MeshFixture.h"
 #include "ElementPartition.h"
+#include "NodePartition.h"
 
 #include "scopeguard.h"
 #include <copy_string_cpp.h>
@@ -196,8 +197,7 @@ namespace {
       }
     }
 
-    template <typename INT>
-    void create_nemesis_file(const utest_util::ElementPartition<INT>& partition)
+    void create_nemesis_file(const utest_util::Partition& partition)
     {
       int         exoid;
       std::string method1{}, method2{};
@@ -219,7 +219,7 @@ namespace {
 
       if(m_force64Bit) mode4 |= EX_ALL_INT64_DB;
 
-      if (sizeof(INT) == 8) {
+      if (partition.api_size() == 8) {
         mode4 |= EX_ALL_INT64_API;
       }
 
@@ -246,7 +246,7 @@ namespace {
       ex_set_option(exoid, EX_OPT_COMPRESSION_SHUFFLE, 1);
 
       /* Create the title */
-      method1 = "elemental";
+      method1 = partition.type();
 
       title = fmt::format("nem_slice {} load balance file", method1);
 
@@ -306,8 +306,6 @@ namespace {
       free(lqa_record);
 
       partition.write_nemesis_data(exoid);
-
-      ASSERT_FALSE (ex_close(exoid) < 0) << "fatal: unable to close nemesis file: " << m_nemesisFile;
     }
 
     void create_pex_file()
@@ -339,7 +337,7 @@ namespace {
       os << "Parallel file location = root=" << rootdir << ", subdir=." << std::endl;
     }
 
-    std::vector<utest_util::EntityProc> get_linear_partition()
+    std::vector<utest_util::EntityProc> get_linear_element_partition()
     {
       std::vector<utest_util::EntityProc> procAssign;
       std::vector<unsigned> procs;
@@ -358,7 +356,7 @@ namespace {
       return procAssign;
     }
 
-    std::vector<utest_util::EntityProc> get_round_robin_partition()
+    std::vector<utest_util::EntityProc> get_round_robin_element_partition()
     {
       std::vector<utest_util::EntityProc> procAssign;
 
@@ -366,6 +364,41 @@ namespace {
       for(size_t i=0; i<numElems; i++) {
         utest_util::IossElementData elemData = get_mesh().get_local_element(i);
         utest_util::EntityProc eProc(elemData.id, i%m_numProcs);
+
+        procAssign.push_back(eProc);
+      }
+
+      std::sort(procAssign.begin(), procAssign.end(), utest_util::EntityProcLess());
+      return procAssign;
+    }
+
+    std::vector<utest_util::EntityProc> get_linear_node_partition()
+    {
+      std::vector<utest_util::EntityProc> procAssign;
+      std::vector<unsigned> procs;
+
+      size_t numNodes = get_mesh().get_num_local_nodes();
+      fill_linear_proc_distribution(numNodes, m_numProcs, procs);
+
+      for(size_t i=0; i<numNodes; i++) {
+        utest_util::IossNodeData nodeData = get_mesh().get_local_node(i);
+        utest_util::EntityProc eProc(nodeData.id, procs[i]);
+
+        procAssign.push_back(eProc);
+      }
+
+      std::sort(procAssign.begin(), procAssign.end(), utest_util::EntityProcLess());
+      return procAssign;
+    }
+
+    std::vector<utest_util::EntityProc> get_round_robin_node_partition()
+    {
+      std::vector<utest_util::EntityProc> procAssign;
+
+      size_t numNodes = get_mesh().get_num_local_nodes();
+      for(size_t i=0; i<numNodes; i++) {
+        utest_util::IossNodeData nodeData = get_mesh().get_local_node(i);
+        utest_util::EntityProc eProc(nodeData.id, i%m_numProcs);
 
         procAssign.push_back(eProc);
       }
@@ -425,16 +458,10 @@ namespace {
       test_property_from_file(m_outputFile, m_propertyName, m_propertyValue);
     }
 
-    void setup_input_files(const std::string &meshDesc)
+    void create_element_partitioning()
     {
-      // Create mesh file
-      create_and_verify_input_mesh_file(meshDesc);
-
-      // Create pex file
-      create_pex_file();
-
       // Create partitioning
-      std::vector<utest_util::EntityProc> procAssign = get_linear_partition();
+      std::vector<utest_util::EntityProc> procAssign = get_linear_element_partition();
 
       if(m_force64Bit) {
         utest_util::ElementPartition<int64_t> partition(&get_mesh(), procAssign, m_numProcs);
@@ -443,6 +470,44 @@ namespace {
         utest_util::ElementPartition<int> partition(&get_mesh(), procAssign, m_numProcs);
         create_nemesis_file(partition);
       }
+    }
+
+    void create_node_partitioning()
+    {
+      // Create partitioning
+      std::vector<utest_util::EntityProc> procAssign = get_linear_node_partition();
+
+      if(m_force64Bit) {
+        utest_util::NodePartition<int64_t> partition(&get_mesh(), procAssign, m_numProcs);
+        create_nemesis_file(partition);
+      } else {
+        utest_util::NodePartition<int> partition(&get_mesh(), procAssign, m_numProcs);
+        create_nemesis_file(partition);
+      }
+    }
+
+    void setup_input_files_for_element_decompsition(const std::string &meshDesc)
+    {
+      // Create mesh file
+      create_and_verify_input_mesh_file(meshDesc);
+
+      // Create pex file
+      create_pex_file();
+
+      // Create partitioning
+      create_element_partitioning();
+    }
+
+    void setup_input_files_for_node_decompsition(const std::string &meshDesc)
+    {
+      // Create mesh file
+      create_and_verify_input_mesh_file(meshDesc);
+
+      // Create pex file
+      create_pex_file();
+
+      // Create partitioning
+      create_node_partitioning();
     }
 
     void run_nem_spread()
@@ -594,7 +659,7 @@ namespace {
 
     unsigned numElems = 2;
     std::string meshDesc = "textmesh:" + get_stacked_hex_element_textmesh_desc_with_coordinates(numElems, 1, true);
-    setup_input_files(meshDesc);
+    setup_input_files_for_element_decompsition(meshDesc);
 
     run_nem_spread();
 
@@ -613,8 +678,7 @@ namespace {
 
     unsigned numElems = 2;
     std::string meshDesc = "textmesh:" + get_stacked_beam_element_textmesh_desc_with_coordinates(numElems, 1, true);
-
-    setup_input_files(meshDesc);
+    setup_input_files_for_element_decompsition(meshDesc);
 
     run_nem_spread();
 
@@ -623,5 +687,8 @@ namespace {
     cleanup();
   }
 
+  // We can't do nodal decomp testing yet
+  //  [1] Nodal decomp of a mesh with elements doesn't work because Ioex_DatabaseIO fails on load: io_info exhibits this
+  //  [2] Can't use textmesh to generate a pure node mesh
 
 } // namespace

@@ -105,7 +105,7 @@ namespace utest_util {
 
     Ioss_MPI_Comm get_comm() const { return m_communicator; }
 
-    void fill_linear_proc_distribution(unsigned numElements, unsigned numProc, std::vector<unsigned>& procs);
+    void fill_linear_proc_distribution(unsigned numEntities, unsigned numProc, std::vector<unsigned>& procs);
 
     std::string get_stacked_hex_element_textmesh_desc(unsigned numElements, unsigned numProcs, bool singleBlock);
 

@@ -40,6 +40,41 @@ namespace utest_util {
 
   using EntityId = int64_t;
 
+  struct IossNodeData
+  {
+    EntityId                     id{0};
+
+    // Local index into vector held by IossMesh
+    size_t                       localId{std::numeric_limits<size_t>::max()};
+
+    operator EntityId() const { return id; }
+
+    bool is_valid() const
+    {
+      return (id > 0) && (localId != std::numeric_limits<size_t>::max());
+    }
+  };
+
+  struct IossNodeDataLess
+  {
+    bool operator()(const IossNodeData &lhs, const IossNodeData &rhs)
+    {
+      return lhs.id < rhs.id;
+    };
+
+    bool operator()(const IossNodeData &lhs, const EntityId rhs)
+    {
+      return lhs.id < rhs;
+    };
+
+    bool operator()(const EntityId lhs, const IossNodeData &rhs)
+    {
+      return lhs < rhs.id;
+    };
+
+    bool operator()(const EntityId lhs, const EntityId rhs) { return lhs < rhs; };
+  };
+
   struct IossElementData
   {
     EntityId                     id{0};
