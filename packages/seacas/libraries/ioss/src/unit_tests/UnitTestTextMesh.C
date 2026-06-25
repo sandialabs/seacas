@@ -1929,13 +1929,16 @@ namespace {
     verify_single_sideset("my_ss", 1, SideVector{{1, 1}});
   }
 
-  TEST_F(TestTextMesh1d, oneDimensionNotSupported)
+  TEST_F(TestTextMesh1d, oneDimensionSingleLine)
   {
     if (get_parallel_size() != 1)
       return;
 
     std::string meshDesc = "0,1,LINE_2_1D,1,2";
-    EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+    setup_text_mesh(meshDesc);
+
+    verify_num_elements(1);
+    verify_single_element(1u, "LINE_2_1D", EntityIdVector{1, 2});
   }
 
   TEST_F(TestTextMeshGraph, singleHex)

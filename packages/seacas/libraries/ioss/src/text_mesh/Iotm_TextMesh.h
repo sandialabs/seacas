@@ -347,5 +347,7 @@ namespace Iotm {
     std::unordered_map<EntityId, BlockPartition> m_blockPartition;
 
     std::unordered_map<EntityId, std::vector<EntityId>> m_elementConnectivity;
+
+    double m_constantDistributionFactor{1.0};
   };
 } // namespace Iotm

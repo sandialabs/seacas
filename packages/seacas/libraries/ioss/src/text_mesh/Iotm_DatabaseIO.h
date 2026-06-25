@@ -166,5 +166,6 @@ namespace Iotm {
     int assemblyCount{0};
 
     bool m_useVariableDf{true};
+    double m_constantDistributionFactor{1.0};
   };
 } // namespace Iotm
