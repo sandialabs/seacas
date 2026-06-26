@@ -17,6 +17,7 @@
 
 namespace utest_util {
 
+  std::string unique_basename(const std::string &base);
   std::string unique_filename(const std::string &base, const std::string &extension);
 
-}
+} // namespace utest_util

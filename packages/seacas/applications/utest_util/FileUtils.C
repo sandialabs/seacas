@@ -45,14 +45,20 @@ namespace {
 
 namespace utest_util {
 
-  std::string unique_filename(const std::string &base, const std::string &extension)
+  std::string unique_basename(const std::string &base)
   {
-    std::string                filename  = base;
+    std::string                basename  = base;
     const ::testing::TestInfo *test_info = ::testing::UnitTest::GetInstance()->current_test_info();
     if (test_info) {
       auto test_suffix = std::string(test_info->test_case_name()) + "." + test_info->name();
-      filename += "." + sanitize_filename(test_suffix);
+      basename += "." + sanitize_filename(test_suffix);
     }
+    return basename;
+  }
+
+  std::string unique_filename(const std::string &base, const std::string &extension)
+  {
+    std::string filename = unique_basename(base);
     filename += "." + extension;
     return filename;
   }

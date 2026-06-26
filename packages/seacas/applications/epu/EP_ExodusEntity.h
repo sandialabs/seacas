@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "exodus_property.h"
+
 namespace Excn {
   using IntVector   = std::vector<int>;
   using Int64Vector = std::vector<int64_t>;
@@ -96,6 +98,11 @@ namespace Excn {
     int                      attributeCount{0};
     int64_t                  offset_{0};
     int                      position_{0};
+
+    size_t                property_count() const { return blockProperties.count(); }
+    ExodusPropertyManager blockProperties; /* User defined properties for each *
+                                            * element block. These are single  *
+                                            * key-value per element block      */
 
     Block &operator=(const Block &other)
     {

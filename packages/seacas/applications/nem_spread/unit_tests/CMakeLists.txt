@@ -8,13 +8,13 @@ list(APPEND SOURCES
 )
 
 TRIBITS_ADD_EXECUTABLE(
- Utst_ejoin
+ Utst_nem_spread
  SOURCES ${SOURCES}
 )
 
 TRIBITS_ADD_TEST(
-        Utst_ejoin
-        NAME Utst_ejoin
+        Utst_nem_spread
+        NAME Utst_nem_spread
         NUM_MPI_PROCS 1
 )
 

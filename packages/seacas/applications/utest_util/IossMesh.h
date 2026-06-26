@@ -21,6 +21,7 @@
 #else
 #include <strings.h>
 #endif
+#include <limits>
 #include <vector>
 
 #include "Ioss_CodeTypes.h"
@@ -32,6 +33,8 @@
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_StandardElementTypes.h"
+
+#include "IossMeshTypes.h"
 
 namespace utest_util {
 
@@ -56,11 +59,36 @@ namespace utest_util {
 
     Ioss::Region *get_region() { return m_region; }
 
+    int64_t get_num_global_nodes() const { return m_numGlobalNodes; }
+    int64_t get_num_global_elements() const { return m_numGlobalElements; }
+    int64_t get_num_global_element_blocks() const { return m_numGlobalElementBlocks; }
+
+    size_t get_num_local_elements() const { return m_elementData.size(); }
+    size_t get_num_local_nodes() const { return m_nodeData.size(); };
+
+    IossElementData get_local_element(size_t index) const;
+    IossElementData get_global_element(EntityId id) const;
+
+    IossNodeData get_local_node(size_t index) const;
+    IossNodeData get_global_node(EntityId id) const;
+
+    unsigned get_spatial_dimension() const { return m_spatialDimension; }
+
   protected:
     Ioss_MPI_Comm         m_communicator;
     Ioss::PropertyManager m_propertyManager;
     Ioss::DatabaseIO     *m_database = nullptr;
     Ioss::Region         *m_region   = nullptr;
+
+    int64_t m_numGlobalNodes{0};
+    int64_t m_numGlobalElements{0};
+    int64_t m_numGlobalElementBlocks{0};
+
+    unsigned m_spatialDimension{0};
+
+    std::vector<IossNodeData>         m_nodeData;
+    std::vector<IossElementData>      m_elementData;
+    std::vector<IossElementBlockData> m_elementBlockData;
 
   protected:
     void filename_substitution(std::string &filename);
@@ -71,6 +99,10 @@ namespace utest_util {
 
     void create_database(const std::string &fileName, const std::string &meshType,
                          Ioss::DatabaseUsage db_usage = Ioss::READ_MODEL);
+
+    void fill_element_data();
+
+    void fill_node_data();
   };
 
 } // namespace utest_util

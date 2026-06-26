@@ -68,31 +68,6 @@ namespace {
     ~EJoinTester() {}
 
   protected:
-    void test_property_from_file(const std::string &inputFile, const std::string &propertyName,
-                                 const std::string &propertyValue)
-    {
-      Ioss::DatabaseIO *testDB = Ioss::IOFactory::create("exodusII", inputFile, Ioss::READ_RESTART,
-                                                         Ioss::ParallelUtils::comm_world());
-      ASSERT_FALSE(testDB == nullptr || !testDB->ok(true));
-
-      Ioss::Region testRegion(testDB, "test_region");
-
-      Ioss::ElementBlock *testBlock = testRegion.get_element_block("block_1");
-      EXPECT_TRUE(testBlock != nullptr);
-
-      bool exists = testBlock->property_exists(propertyName);
-      EXPECT_TRUE(exists) << "The exodus property: " << propertyName
-                          << " with value: " << propertyValue
-                          << " does not exist in the output file";
-
-      if (exists) {
-        auto prop = testBlock->get_property(propertyName);
-        EXPECT_EQ(propertyValue, prop.get_string())
-            << "The exodus property: " << propertyName << " with value: " << prop.get_string()
-            << " does not match expected value: " << propertyValue;
-      }
-    }
-
     void create_input_region(const std::string &meshDesc, RegionVector &inputRegions)
     {
       // Use the internal region from the fixture
@@ -100,24 +75,11 @@ namespace {
       inputRegions.push_back(get_mesh().get_region());
       inputRegions[0]->property_add(Ioss::Property("block_omission_count", 0));
     }
-
-    void add_material_property_to_element_block(Ioss::Region *region, const std::string &blockName,
-                                                const std::string &propertyName,
-                                                const std::string &propertyValue)
-    {
-      Ioss::ElementBlock *elemBlock = region->get_element_block(blockName);
-      EXPECT_TRUE(elemBlock != nullptr) << "Could not find element block named: " << blockName
-                                        << " in input region named: " << region->name();
-
-      EXPECT_FALSE(elemBlock->property_exists(propertyName));
-      elemBlock->property_add(
-          Ioss::Property(propertyName, propertyValue, Ioss::Property::Origin::ATTRIBUTE));
-    }
   };
 
   TEST_F(EJoinTester, emptyTest) {}
 
-  TEST_F(EJoinTester, joinSingleHexMesh)
+  TEST_F(EJoinTester, joinSingleHexMeshWithMaterialProperties)
   {
     std::string inputFile  = "dummy.g";
     std::string outputFile = utest_util::unique_filename("singleHexJoin", "g");

@@ -28,6 +28,9 @@
 #include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_IOFactory.h" // for IOFactory
+#include "Ioss_MeshCopyOptions.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h" // for IOFactory
 
 #include "IossMesh.h"
 
@@ -101,6 +104,55 @@ namespace utest_util {
     int get_parallel_rank() { return Ioss::ParallelUtils(get_comm()).parallel_rank(); }
 
     Ioss_MPI_Comm get_comm() const { return m_communicator; }
+
+    void fill_linear_proc_distribution(unsigned numEntities, unsigned numProc,
+                                       std::vector<unsigned> &procs);
+
+    std::string get_stacked_hex_element_textmesh_desc(unsigned numElements, unsigned numProcs,
+                                                      bool singleBlock);
+
+    std::string get_stacked_hex_element_textmesh_desc_with_coordinates(unsigned numElements,
+                                                                       unsigned numProcs,
+                                                                       bool     singleBlock);
+
+    std::string get_stacked_beam_element_textmesh_desc(unsigned numElements, unsigned numProcs,
+                                                       bool singleBlock);
+
+    std::string get_stacked_beam_element_textmesh_desc_with_coordinates(unsigned numElements,
+                                                                        unsigned numProcs,
+                                                                        bool     singleBlock);
+
+    template <size_t size> void clear_args(int &argc, const char *(&argv)[size])
+    {
+      argc = 0;
+
+      for (unsigned i = 0; i < size; i++) {
+        argv[i] = nullptr;
+      }
+    }
+
+    template <size_t size> void add_arg(int &argc, const char *(&argv)[size], const char *arg)
+    {
+      ThrowRequireWithMsg(argc < size, "Argument limit of " << size << " has been reached");
+
+      argv[argc++] = arg;
+    }
+
+  protected:
+    void add_material_property_to_element_block(Ioss::Region *region, const std::string &blockName,
+                                                const std::string &propertyName,
+                                                const std::string &propertyValue);
+
+    void test_property_from_file(const std::string &inputFile, const std::string &propertyName,
+                                 const std::string &propertyValue);
+    void test_property_from_file(Ioss_MPI_Comm comm, const std::string &inputFile,
+                                 const std::string &propertyName, const std::string &propertyValue);
+
+    void write_region_to_file(Ioss::Region *inputRegion, Ioss::PropertyManager &properties,
+                              Ioss::MeshCopyOptions &options, const std::string &outputFile);
+    void write_region_to_file(Ioss::Region *inputRegion, Ioss::PropertyManager &properties,
+                              const std::string &outputFile);
+    void write_region_to_file(Ioss::Region *inputRegion, const std::string &outputFile);
 
   protected:
     Ioss_MPI_Comm             m_communicator;
