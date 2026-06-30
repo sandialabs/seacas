@@ -602,6 +602,7 @@ namespace Iotm {
         };
         set_error_handler(errorHandler);
         m_topologyMapping.initialize_topology_map();
+        m_nodeTopology = m_topologyMapping.topology("NODE");
       }
 
       void initialize_connectivity_parse(const std::string &meshDescription)
@@ -621,12 +622,10 @@ namespace Iotm {
 
       void parse_description()
       {
-        Topology nodeTopology = m_topologyMapping.topology("NODE");
-
         while (m_lexer.has_token()) {
           ElementData<EntityId, Topology> elemData = parse_element();
 
-          if(nodeTopology == elemData.topology) {
+          if(m_nodeTopology == elemData.topology) {
             for(EntityId node : elemData.nodeIds) {
               if(node != elemData.identifier) {
                 std::ostringstream errmsg;
@@ -637,8 +636,8 @@ namespace Iotm {
               }
             }
 
-            DisconnectedNodeData<EntityId> nodeData{elemData.proc, elemData.identifier, elemData.partName};
-            m_data.add_disconnected_node(nodeData);
+            NodeData<EntityId> nodeData{elemData.proc, elemData.identifier, elemData.partName};
+            m_data.add_node(nodeData);
           } else {
             m_data.add_element(elemData);
           }
@@ -649,8 +648,8 @@ namespace Iotm {
 
         std::sort(m_data.elementDataVec.begin(), m_data.elementDataVec.end(),
                   ElementDataLess<EntityId, Topology>());
-        std::sort(m_data.disconnectedNodeDataVec.begin(), m_data.disconnectedNodeDataVec.end(),
-                  DisconnectedNodeDataLess<EntityId>());
+        std::sort(m_data.nodeDataVec.begin(), m_data.nodeDataVec.end(),
+                  NodeDataLess<EntityId>());
       }
 
       ElementData<EntityId, Topology> parse_element()
@@ -775,6 +774,17 @@ namespace Iotm {
 
       void validate_node_count(const Topology &topology, size_t numNodes)
       {
+        if(topology == m_nodeTopology) {
+          if ((numNodes != 0) && (numNodes != 1)) {
+            std::ostringstream errmsg;
+            errmsg << "Error!  The input line appears to contain " << numNodes
+                   << " nodes, but the topology " << topology << " needs 0 or 1 listed"
+                   << " nodes on line " << m_lineNumber << ".";
+            m_errorHandler(errmsg);
+          }
+          return;
+        }
+
         size_t numTopologyNodes = topology.num_nodes();
         if (numNodes != numTopologyNodes) {
           std::ostringstream errmsg;
@@ -789,6 +799,7 @@ namespace Iotm {
       TextMeshData<EntityId, Topology> m_data;
       TextMeshLexer                    m_lexer;
       TopologyMapping                  m_topologyMapping;
+      Topology                         m_nodeTopology;
 
       ErrorHandler m_errorHandler;
 

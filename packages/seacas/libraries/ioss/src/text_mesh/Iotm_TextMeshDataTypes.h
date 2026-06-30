@@ -304,7 +304,7 @@ namespace Iotm {
       bool operator()(const EntityId lhs, const EntityId rhs) { return lhs < rhs; };
     };
 
-    template <typename EntityId> struct DisconnectedNodeData
+    template <typename EntityId> struct NodeData
     {
       int                   proc;
       EntityId              identifier;
@@ -313,20 +313,20 @@ namespace Iotm {
       operator EntityId() const { return identifier; }
     };
 
-    template <typename EntityId> struct DisconnectedNodeDataLess
+    template <typename EntityId> struct NodeDataLess
     {
-      bool operator()(const DisconnectedNodeData<EntityId> &lhs,
-                      const DisconnectedNodeData<EntityId> &rhs)
+      bool operator()(const NodeData<EntityId> &lhs,
+                      const NodeData<EntityId> &rhs)
       {
         return lhs.identifier < rhs.identifier;
       };
 
-      bool operator()(const DisconnectedNodeData<EntityId> &lhs, const EntityId rhs)
+      bool operator()(const NodeData<EntityId> &lhs, const EntityId rhs)
       {
         return lhs.identifier < rhs;
       };
 
-      bool operator()(const EntityId lhs, const DisconnectedNodeData<EntityId> &rhs)
+      bool operator()(const EntityId lhs, const NodeData<EntityId> &rhs)
       {
         return lhs < rhs.identifier;
       };
@@ -344,7 +344,7 @@ namespace Iotm {
     {
       unsigned                                     spatialDim{0};
       std::vector<ElementData<EntityId, Topology>> elementDataVec{};
-      std::vector<DisconnectedNodeData<EntityId>>  disconnectedNodeDataVec{};
+      std::vector<NodeData<EntityId>>              nodeDataVec{};
       PartIdMapping                                partIds;
       std::set<EntityId>                           nodeIds{};
       Coordinates<EntityId>                        coords;
@@ -363,9 +363,9 @@ namespace Iotm {
         }
       }
 
-      void add_disconnected_node(const DisconnectedNodeData<EntityId> &node)
+      void add_node(const NodeData<EntityId> &node)
       {
-        disconnectedNodeDataVec.push_back(node);
+        nodeDataVec.push_back(node);
 
         nodeIds.insert(node.identifier);
         associate_node_with_proc(node.identifier, node.proc);

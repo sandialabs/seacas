@@ -785,7 +785,7 @@ namespace Iotm {
     }
 
     Topology nodeTopology = m_topologyMapping.topology("NODE");
-    for (const auto &nodeData : m_data.disconnectedNodeDataVec) {
+    for (const auto &nodeData : m_data.nodeDataVec) {
       auto iter = m_partToTopology.find(nodeData.partName);
       if (iter == m_partToTopology.end()) {
         m_partToTopology[nodeData.partName] = nodeTopology;

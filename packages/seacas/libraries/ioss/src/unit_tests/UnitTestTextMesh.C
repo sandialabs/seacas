@@ -772,6 +772,25 @@ namespace {
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
+  TEST_F(TestTextMesh, nodeWithNoReference)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE,";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
+
+  TEST_F(TestTextMesh, nodeWithNoReferenceVersion2)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
   TEST_F(TestTextMesh, nodeWithInvalidReference)
   {
     if (get_parallel_size() != 1)
@@ -779,6 +798,66 @@ namespace {
 
     std::string         meshDesc        = "0,1,NODE,2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+  }
+
+  TEST_F(TestTextMesh, twoNodesWithNoReference)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE,\n"
+                                          "0,5,NODE,";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
+  TEST_F(TestTextMesh, twoNodesWithNoReferenceVersion2)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE\n"
+                                          "0,5,NODE,";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
+  TEST_F(TestTextMesh, twoNodesWithNoReferenceVersion3)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE,\n"
+                                          "0,5,NODE";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
+  TEST_F(TestTextMesh, twoNodesWithNoReferenceVersion4)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE\n"
+                                          "0,5,NODE";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
+  TEST_F(TestTextMesh, twoNodesWithOneReference)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE,1\n"
+                                          "0,5,NODE";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
+  }
+
+  TEST_F(TestTextMesh, twoNodesWithOneReferenceVersion2)
+  {
+    if (get_parallel_size() != 1)
+      return;
+
+    std::string         meshDesc        = "0,1,NODE\n"
+                                          "0,5,NODE,5";
+    EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
   TEST_F(TestTextMesh, threeNodes)
