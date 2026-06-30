@@ -621,9 +621,27 @@ namespace Iotm {
 
       void parse_description()
       {
+        Topology nodeTopology = m_topologyMapping.topology("NODE");
+
         while (m_lexer.has_token()) {
           ElementData<EntityId, Topology> elemData = parse_element();
-          m_data.add_element(elemData);
+
+          if(nodeTopology == elemData.topology) {
+            for(EntityId node : elemData.nodeIds) {
+              if(node != elemData.identifier) {
+                std::ostringstream errmsg;
+                errmsg
+                    << "Reference node id:  " << node << " does not match NODE entity id: "
+                    << elemData.identifier << ".  Error on line " << m_lineNumber << ".";
+                m_errorHandler(errmsg);
+              }
+            }
+
+            DisconnectedNodeData<EntityId> nodeData{elemData.proc, elemData.identifier, elemData.partName};
+            m_data.add_disconnected_node(nodeData);
+          } else {
+            m_data.add_element(elemData);
+          }
 
           validate_no_extra_fields();
           parse_newline();
@@ -631,6 +649,8 @@ namespace Iotm {
 
         std::sort(m_data.elementDataVec.begin(), m_data.elementDataVec.end(),
                   ElementDataLess<EntityId, Topology>());
+        std::sort(m_data.disconnectedNodeDataVec.begin(), m_data.disconnectedNodeDataVec.end(),
+                  DisconnectedNodeDataLess<EntityId>());
       }
 
       ElementData<EntityId, Topology> parse_element()

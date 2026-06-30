@@ -342,6 +342,8 @@ namespace Iotm {
 
     ErrorHandler m_errorHandler;
 
+    IossTopologyMapping m_topologyMapping;
+
     std::unordered_map<std::string, Topology> m_partToTopology;
 
     std::unordered_map<EntityId, BlockPartition> m_blockPartition;

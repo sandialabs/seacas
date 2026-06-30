@@ -259,6 +259,12 @@ namespace Iotm {
         }
       }
 
+      void verify_num_nodes(size_t goldCount)
+      {
+        size_t count = get_node_count();
+        EXPECT_EQ(goldCount, count);
+      }
+
       void verify_num_elements(size_t goldCount)
       {
         size_t count = get_element_count();
@@ -623,9 +629,7 @@ namespace Iotm {
         size_t                             count      = 0;
 
         for (const Ioss::ElementBlock *block : elemBlocks) {
-          std::vector<INT> elemIds;
-          block->get_field_data("ids", elemIds);
-          count += elemIds.size();
+          count += block->entity_count();
         }
 
         return count;
@@ -638,6 +642,32 @@ namespace Iotm {
         }
         else {
           return get_element_count_impl<int64_t>();
+        }
+      }
+
+      template <typename INT> size_t get_node_count_impl() const
+      {
+        ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
+
+        const Ioss::NodeBlockContainer &nodeBlocks = m_region->get_node_blocks();
+        assert(nodeBlocks.size() == 1);
+
+        size_t                             count   = 0;
+
+        for (const Ioss::NodeBlock *block : nodeBlocks) {
+          count += block->entity_count();
+        }
+
+        return count;
+      }
+
+      size_t get_node_count() const
+      {
+        if (db_api_int_size() == 4) {
+          return get_node_count_impl<int>();
+        }
+        else {
+          return get_node_count_impl<int64_t>();
         }
       }
 
@@ -980,7 +1010,7 @@ namespace Iotm {
         std::unordered_map<EntityId, std::vector<double>> m_nodalCoords;
       };
 
-      unsigned              m_spatialDimension = 3;
+      unsigned              m_spatialDimension{3};
       Ioss::PropertyManager m_propertyManager;
       Ioss::DatabaseIO     *m_database = nullptr;
       Ioss::Region         *m_region   = nullptr;
