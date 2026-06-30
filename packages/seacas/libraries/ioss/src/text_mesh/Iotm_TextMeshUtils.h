@@ -625,20 +625,21 @@ namespace Iotm {
         while (m_lexer.has_token()) {
           ElementData<EntityId, Topology> elemData = parse_element();
 
-          if(m_nodeTopology == elemData.topology) {
-            for(EntityId node : elemData.nodeIds) {
-              if(node != elemData.identifier) {
+          if (m_nodeTopology == elemData.topology) {
+            for (EntityId node : elemData.nodeIds) {
+              if (node != elemData.identifier) {
                 std::ostringstream errmsg;
-                errmsg
-                    << "Reference node id:  " << node << " does not match NODE entity id: "
-                    << elemData.identifier << ".  Error on line " << m_lineNumber << ".";
+                errmsg << "Reference node id:  " << node
+                       << " does not match NODE entity id: " << elemData.identifier
+                       << ".  Error on line " << m_lineNumber << ".";
                 m_errorHandler(errmsg);
               }
             }
 
             NodeData<EntityId> nodeData{elemData.proc, elemData.identifier, elemData.partName};
             m_data.add_node(nodeData);
-          } else {
+          }
+          else {
             m_data.add_element(elemData);
           }
 
@@ -648,8 +649,7 @@ namespace Iotm {
 
         std::sort(m_data.elementDataVec.begin(), m_data.elementDataVec.end(),
                   ElementDataLess<EntityId, Topology>());
-        std::sort(m_data.nodeDataVec.begin(), m_data.nodeDataVec.end(),
-                  NodeDataLess<EntityId>());
+        std::sort(m_data.nodeDataVec.begin(), m_data.nodeDataVec.end(), NodeDataLess<EntityId>());
       }
 
       ElementData<EntityId, Topology> parse_element()
@@ -774,7 +774,7 @@ namespace Iotm {
 
       void validate_node_count(const Topology &topology, size_t numNodes)
       {
-        if(topology == m_nodeTopology) {
+        if (topology == m_nodeTopology) {
           if ((numNodes != 0) && (numNodes != 1)) {
             std::ostringstream errmsg;
             errmsg << "Error!  The input line appears to contain " << numNodes

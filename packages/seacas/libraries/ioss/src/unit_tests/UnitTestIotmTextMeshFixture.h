@@ -652,7 +652,7 @@ namespace Iotm {
         const Ioss::NodeBlockContainer &nodeBlocks = m_region->get_node_blocks();
         assert(nodeBlocks.size() == 1);
 
-        size_t                             count   = 0;
+        size_t count = 0;
 
         for (const Ioss::NodeBlock *block : nodeBlocks) {
           count += block->entity_count();

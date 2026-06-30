@@ -306,17 +306,16 @@ namespace Iotm {
 
     template <typename EntityId> struct NodeData
     {
-      int                   proc;
-      EntityId              identifier;
-      std::string           partName = "";
+      int         proc;
+      EntityId    identifier;
+      std::string partName = "";
 
       operator EntityId() const { return identifier; }
     };
 
     template <typename EntityId> struct NodeDataLess
     {
-      bool operator()(const NodeData<EntityId> &lhs,
-                      const NodeData<EntityId> &rhs)
+      bool operator()(const NodeData<EntityId> &lhs, const NodeData<EntityId> &rhs)
       {
         return lhs.identifier < rhs.identifier;
       };

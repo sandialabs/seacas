@@ -777,17 +777,16 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE,";
+    std::string meshDesc = "0,1,NODE,";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
-
 
   TEST_F(TestTextMesh, nodeWithNoReferenceVersion2)
   {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE";
+    std::string meshDesc = "0,1,NODE";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -796,7 +795,7 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE,2";
+    std::string meshDesc = "0,1,NODE,2";
     EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
   }
 
@@ -805,8 +804,8 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE,\n"
-                                          "0,5,NODE,";
+    std::string meshDesc = "0,1,NODE,\n"
+                           "0,5,NODE,";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -815,8 +814,8 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE\n"
-                                          "0,5,NODE,";
+    std::string meshDesc = "0,1,NODE\n"
+                           "0,5,NODE,";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -825,8 +824,8 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE,\n"
-                                          "0,5,NODE";
+    std::string meshDesc = "0,1,NODE,\n"
+                           "0,5,NODE";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -835,8 +834,8 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE\n"
-                                          "0,5,NODE";
+    std::string meshDesc = "0,1,NODE\n"
+                           "0,5,NODE";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -845,8 +844,8 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE,1\n"
-                                          "0,5,NODE";
+    std::string meshDesc = "0,1,NODE,1\n"
+                           "0,5,NODE";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -855,8 +854,8 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE\n"
-                                          "0,5,NODE,5";
+    std::string meshDesc = "0,1,NODE\n"
+                           "0,5,NODE,5";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
   }
 
@@ -865,9 +864,9 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string         meshDesc        = "0,1,NODE,1\n"
-                                          "0,2,NODE,2\n"
-                                          "0,3,NODE,3";
+    std::string meshDesc = "0,1,NODE,1\n"
+                           "0,2,NODE,2\n"
+                           "0,3,NODE,3";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
 
     verify_num_elements(0);
