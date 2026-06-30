@@ -38,6 +38,7 @@
 
 namespace {
   std::string input_filename = "ADeDA.e";
+  std::string two_polys_filename = "two_polys.e";
 
   void test_topology(const Ioss::ElementTopology *topology, const std::string &gold_top,
                      const int parameteric_dim, const int num_vertices, const int num_nodes,
@@ -75,12 +76,12 @@ namespace {
 
   TEST_CASE("Ioex::two_polys")
   {
-    Ioex::DatabaseIO *db_io = create_input_db_io("two_polys.e");
+    Ioex::DatabaseIO *db_io = create_input_db_io(two_polys_filename);
     db_io->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
 
     Ioss::Region region(db_io);
 
-    CHECK(db_io->ok());
+    REQUIRE(db_io->ok());
 
     const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
     const std::vector<Ioss::FaceBlock *>    &face_blocks    = region.get_face_blocks();
@@ -493,10 +494,13 @@ int main(IOSS_MAYBE_UNUSED int argc, char **argv)
 
   // Build a new parser on top of Catch2's
   using namespace Catch::Clara;
-  auto cli = session.cli()                     // Get Catch2's command line parser
-             | Opt(input_filename, "filename") // bind variable to a new option, with a hint string
-                   ["-f"]["--filename"]        // the option names it will respond to
-             ("Filename to read mesh from.");  // description string for the help output
+  auto cli = session.cli()
+             | Opt(input_filename, "filename")
+                   ["-f"]["--filename"]
+                   ("Filename to read mesh from.")
+             | Opt(two_polys_filename, "filename")
+                   ["--two-polys-filename"]
+                   ("Filename to read two_polys mesh from.");
 
   // Now pass the new composite back to Catch2 so it uses that
   session.cli(cli);
@@ -506,6 +510,7 @@ int main(IOSS_MAYBE_UNUSED int argc, char **argv)
   if (returnCode != 0) // Indicates a command line error
     return returnCode;
 
-  fmt::print("'{}'\n", input_filename);
+  fmt::print("input_filename: '{}'\n", input_filename);
+  fmt::print("two_polys_filename: '{}'\n", two_polys_filename);
   return session.run();
 }
