@@ -894,12 +894,13 @@ namespace {
       return;
 
     std::string meshDesc = "0,1,NODE,1\n"
-                           "0,2,HEX_8,2,3,4,5,6,7,8,9";
+                           "0,1,HEX_8,2,3,4,5,6,7,8,9";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
 
     verify_num_elements(1);
     verify_num_nodes(9);
-    verify_single_element(2u, "HEX_8", EntityIdVector{2, 3, 4, 5, 6, 7, 8, 9});
+    verify_single_node(1u);
+    verify_single_element(1u, "HEX_8", EntityIdVector{2, 3, 4, 5, 6, 7, 8, 9});
   }
 
   TEST_F(TestTextMesh, nodeOnHex)
@@ -907,12 +908,13 @@ namespace {
     if (get_parallel_size() != 1)
       return;
 
-    std::string meshDesc = "0,1,NODE,1\n"
+    std::string meshDesc = "0,1,NODE\n"
                            "0,2,HEX_8,1,2,3,4,5,6,7,8";
     EXPECT_NO_THROW(setup_text_mesh(meshDesc));
 
     verify_num_elements(1);
     verify_num_nodes(8);
+    verify_single_node(1u);
     verify_single_element(2u, "HEX_8", EntityIdVector{1, 2, 3, 4, 5, 6, 7, 8});
   }
 

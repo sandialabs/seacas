@@ -259,6 +259,36 @@ namespace Iotm {
         }
       }
 
+      template <typename INT> bool verify_single_node_impl(EntityId nodeId) const
+      {
+        std::vector<INT> nodeIds;
+
+        const Ioss::NodeBlockContainer &nodeBlocks = m_region->get_node_blocks();
+        assert(nodeBlocks.size() == 1);
+
+        nodeBlocks[0]->get_field_data("ids", nodeIds);
+
+        size_t nodeCount = nodeIds.size();
+
+        for (size_t i = 0; i < nodeCount; ++i) {
+          auto id = static_cast<EntityId>(nodeIds[i]);
+          if (id == nodeId)
+            return true;
+        }
+
+        return false;
+      }
+
+      void verify_single_node(EntityId nodeId)
+      {
+        if (db_api_int_size() == 4) {
+          EXPECT_TRUE(verify_single_node_impl<int>(nodeId));
+        }
+        else {
+          EXPECT_TRUE(verify_single_node_impl<int64_t>(nodeId));
+        }
+      }
+
       void verify_num_nodes(size_t goldCount)
       {
         size_t count = get_node_count();
