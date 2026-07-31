@@ -97,30 +97,32 @@ namespace {
     }
   }
 
-  void fill_3D_coordinates(Ioss::NodeBlock *nb, std::vector<double>& coord)
+  void fill_3D_coordinates(Ioss::NodeBlock *nb, std::vector<double> &coord)
   {
     nb->get_field_data("mesh_model_coordinates", coord);
 
-    auto db = nb->get_database();
+    auto db     = nb->get_database();
     auto region = db->get_region();
 
     int spatialDim = region->get_property("spatial_dimension").get_int();
-    if(spatialDim == 3) return;
+    if (spatialDim == 3)
+      return;
 
     int64_t numNodes = nb->entity_count();
-    coord.resize(3*numNodes, 0.0);
+    coord.resize(3 * numNodes, 0.0);
 
-    if(spatialDim == 2) {
-      for(int64_t i=numNodes-1; i>=0; i--) {
-        coord[3*i+2] = 0.0;
-        coord[3*i+1] = coord[2*i+1];
-        coord[3*i+0] = coord[2*i+0];
+    if (spatialDim == 2) {
+      for (int64_t i = numNodes - 1; i >= 0; i--) {
+        coord[3 * i + 2] = 0.0;
+        coord[3 * i + 1] = coord[2 * i + 1];
+        coord[3 * i + 0] = coord[2 * i + 0];
       }
-    } else if(spatialDim == 1) {
-      for(int64_t i=numNodes-1; i>=0; i--) {
-        coord[3*i+2] = 0.0;
-        coord[3*i+1] = 0.0;
-        coord[3*i+0] = coord[2*i+0];
+    }
+    else if (spatialDim == 1) {
+      for (int64_t i = numNodes - 1; i >= 0; i--) {
+        coord[3 * i + 2] = 0.0;
+        coord[3 * i + 1] = 0.0;
+        coord[3 * i + 0] = coord[2 * i + 0];
       }
     }
   }
@@ -138,7 +140,7 @@ namespace {
       std::vector<double> i_coord;
       Ioss::NodeBlock    *inb = part_mesh[ip]->get_node_blocks()[0];
       fill_3D_coordinates(inb, i_coord);
-//      inb->get_field_data("mesh_model_coordinates", i_coord);
+      //      inb->get_field_data("mesh_model_coordinates", i_coord);
       find_range(i_coord, i_min, i_max);
 
       size_t i_offset = part_mesh[ip]->get_property("node_offset").get_int();
@@ -149,7 +151,7 @@ namespace {
         std::vector<double> j_coord;
         Ioss::NodeBlock    *jnb = part_mesh[jp]->get_node_blocks()[0];
         fill_3D_coordinates(jnb, j_coord);
-//        jnb->get_field_data("mesh_model_coordinates", j_coord);
+        //        jnb->get_field_data("mesh_model_coordinates", j_coord);
         find_range(j_coord, j_min, j_max);
 
         size_t j_offset = part_mesh[jp]->get_property("node_offset").get_int();

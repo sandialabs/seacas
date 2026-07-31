@@ -9,9 +9,9 @@
 #endif
 #include "gtest/gtest.h"
 
+#include "ArgvBuilder.h"
 #include "FileUtils.h"
 #include "MeshFixture.h"
-#include "ArgvBuilder.h"
 
 #include <algorithm>
 #include <cctype>
@@ -69,18 +69,20 @@ namespace {
     ~EJoinTester() {}
 
   protected:
-    void create_input_textmesh_regions(const std::vector<std::string>& meshDescs, RegionVector &inputRegions)
+    void create_input_textmesh_regions(const std::vector<std::string> &meshDescs,
+                                       RegionVector                   &inputRegions)
     {
       Ioss::PropertyManager propertyManager;
 
       int regionCount = 0;
-      for(const std::string& meshDesc : meshDescs) {
-        Ioss::DatabaseIO *db = Ioss::IOFactory::create("textmesh", meshDesc, Ioss::READ_MODEL, get_comm(), propertyManager);
+      for (const std::string &meshDesc : meshDescs) {
+        Ioss::DatabaseIO *db = Ioss::IOFactory::create("textmesh", meshDesc, Ioss::READ_MODEL,
+                                                       get_comm(), propertyManager);
         EXPECT_TRUE(db != nullptr);
         EXPECT_TRUE(db->ok(true));
 
-        std::string regionName = "input_region" + std::to_string(regionCount);
-        Ioss::Region *region = new Ioss::Region(db, regionName);
+        std::string   regionName = "input_region" + std::to_string(regionCount);
+        Ioss::Region *region     = new Ioss::Region(db, regionName);
         EXPECT_TRUE(region != nullptr);
         region->property_add(Ioss::Property("block_omission_count", 0));
         inputRegions.push_back(region);
@@ -101,7 +103,8 @@ namespace {
 
   TEST_F(EJoinTester, joinSingleHexMeshWithMaterialProperties)
   {
-    if(get_parallel_size() > 1) GTEST_SKIP();
+    if (get_parallel_size() > 1)
+      GTEST_SKIP();
 
     std::string inputFile  = "dummy.g";
     std::string outputFile = utest_util::unique_filename("singleHexJoin", "g");
@@ -138,7 +141,8 @@ namespace {
 
   TEST_F(EJoinTester, join2DQuadMeshes)
   {
-    if(get_parallel_size() > 1) GTEST_SKIP();
+    if (get_parallel_size() > 1)
+      GTEST_SKIP();
 
     std::string outputFile = utest_util::unique_filename("twoQuadJoin", "g");
 
@@ -180,8 +184,9 @@ namespace {
       (void)ejoin(interFace, inputRegions, static_cast<int64_t>(0));
     }
 
-    for(size_t i=0; i<inputRegions.size(); i++) {
-      delete inputRegions[i];;
+    for (size_t i = 0; i < inputRegions.size(); i++) {
+      delete inputRegions[i];
+      ;
       inputRegions[i] = nullptr;
     }
 
