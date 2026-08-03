@@ -120,15 +120,15 @@ namespace {
     if (spatialDim == 2) {
       for (int64_t i = numNodes - 1; i >= 0; i--) {
         coord[3 * i + 2] = 0.0;
-        coord[3 * i + 1] = coord[2 * i + 1];
-        coord[3 * i + 0] = coord[2 * i + 0];
+        coord[3 * i + 1] = coord[spatialDim * i + 1];
+        coord[3 * i + 0] = coord[spatialDim * i + 0];
       }
     }
     else if (spatialDim == 1) {
       for (int64_t i = numNodes - 1; i >= 0; i--) {
         coord[3 * i + 2] = 0.0;
         coord[3 * i + 1] = 0.0;
-        coord[3 * i + 0] = coord[2 * i + 0];
+        coord[3 * i + 0] = coord[spatialDim * i + 0];
       }
     }
   }
@@ -189,12 +189,12 @@ namespace {
           continue;
         }
 
-        min -= epsilon;
-        max += epsilon;
-
         if (tolerance >= 0.0) {
           epsilon = tolerance;
         }
+
+        min -= epsilon;
+        max += epsilon;
 
         std::vector<INT> j_inrange;
         std::vector<INT> i_inrange;
