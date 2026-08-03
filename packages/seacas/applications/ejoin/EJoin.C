@@ -937,7 +937,7 @@ namespace {
       for (size_t i = 0; i < node_count; i++) {
         auto glob_pos = local_node_map[i + offset];
         if (glob_pos >= 0) {
-          for(int j=0; j<spatial_dimension; j++) {
+          for (int j = 0; j < spatial_dimension; j++) {
             coord[glob_pos * spatial_dimension + j] = coordinates[i * spatial_dimension + j];
           }
         }
