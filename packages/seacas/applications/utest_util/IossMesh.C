@@ -147,8 +147,7 @@ namespace utest_util {
 
     m_numGlobalNodes         = get_region()->get_optional_property("global_node_count", 1);
     m_numGlobalElements      = get_region()->get_optional_property("global_element_count", 1);
-    m_numGlobalElementBlocks = get_region()->get_optional_property(
-        "global_element_block_count", get_region()->get_element_blocks().size());
+    m_numGlobalElementBlocks = get_region()->get_element_blocks().size();
 
     Ioss::NodeBlock *nb = m_region->get_node_block("nodeblock_1");
     EXPECT_TRUE(nb != nullptr);
