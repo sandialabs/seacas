@@ -180,8 +180,6 @@ namespace Ioex {
       isParallel = false;
     }
 
-    timeLastFlush = time(nullptr);
-
     dbState = Ioss::STATE_UNKNOWN;
 
     // Set exodusII warning level.
@@ -307,10 +305,14 @@ namespace Ioex {
       }
     }
 
+    flushHandler.setIsParallel(isParallel);
     if (!is_input()) {
       if (properties.exists("FLUSH_INTERVAL")) {
-        int interval  = properties.get("FLUSH_INTERVAL").get_int();
-        flushInterval = interval;
+        int interval = properties.get("FLUSH_INTERVAL").get_int();
+        flushHandler.setFlushInterval(interval);
+      }
+      if (properties.exists("FLUSH_ON_FIRST_OUTPUT")) {
+        flushHandler.setFlushOnFirstOutput(true);
       }
     }
 
@@ -1493,7 +1495,7 @@ namespace Ioex {
     a_time /= timeScaleFactor;
 
     if (!is_input()) {
-      timeBeginStep = time(nullptr);
+      flushHandler.resetTimeStepBegin();
       if (get_file_per_state()) {
         // Close current file; create new file and output transient metadata...
         open_state_file(state);
@@ -2532,69 +2534,7 @@ namespace Ioex {
     // Update the attribute.
     Ioex::update_last_time_attribute(get_file_pointer(), sim_time);
 
-    // Flush the files buffer to disk...
-    // If:
-    //  flushInterval == -1 (default) -- flush if there is more
-    // than 10 seconds since the last flush to avoid
-    // the flush eating up cpu time for small fast jobs...
-    //
-    //  flushInterval == 0 -- do not flush until file is closed.
-    //
-    //  flushInterval == 1 -- flush every step
-    //
-    //  flushInterval > 1 -- flush if step % flushInterval == 0
-    //
-    //  if time between begin_state and end_state is > 10 seconds,
-
-    bool do_flush = true;
-    if (flushInterval == 1) {
-      do_flush = true;
-    }
-    else if (flushInterval == 0) {
-      do_flush = false;
-    }
-    else if (flushInterval < 0) {
-      time_t cur_time = time(nullptr);
-      if (cur_time - timeLastFlush >= 10) {
-        timeLastFlush = cur_time;
-        do_flush      = true;
-      }
-      else {
-        do_flush = false;
-      }
-#ifdef SEACAS_HAVE_MPI
-      if (isParallel) {
-        int iflush = do_flush ? 1 : 0;
-        util().broadcast(iflush);
-        do_flush = iflush == 1;
-      }
-#endif
-    }
-    else if (flushInterval > 1) {
-      if (state % flushInterval == 0) {
-        do_flush = true;
-      }
-    }
-
-    if (flushInterval != 0 && !do_flush) {
-      // One last check -- if output took more than 10 seconds (arbitrary)
-      // then flush since the relative flush cost is outweighted by the time
-      // it took to do the output (Basically, we have a lot of data being output...)
-      time_t cur_time = time(nullptr);
-      if (cur_time - timeBeginStep >= 10) {
-        timeLastFlush = cur_time;
-        do_flush      = true;
-      }
-#ifdef SEACAS_HAVE_MPI
-      if (isParallel) {
-        int iflush = do_flush ? 1 : 0;
-        util().broadcast(iflush);
-        do_flush = iflush == 1;
-      }
-#endif
-    }
-
-    if (do_flush) {
+    if (flushHandler.doFlush(state)) {
       flush_database_nl();
     }
   }

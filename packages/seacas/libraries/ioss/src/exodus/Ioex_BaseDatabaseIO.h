@@ -10,6 +10,7 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_Field.h"
+#include "Ioss_FlushHandler.h"
 #include "Ioss_Map.h"
 #include "Ioss_Utils.h"
 #include <algorithm>
@@ -405,10 +406,9 @@ namespace Ioex {
     // empty, then some nodes on that nodeset are only connected to omitted elements.
     mutable std::map<std::string, Ioss::Int64Vector> activeNodeSetNodesIndex;
 
-    time_t timeLastFlush{0};
-    time_t timeBeginStep{0};
-    int    flushInterval{-1};
-    int    m_timestepCount{0};
+    int m_timestepCount{0};
+
+    Ioss::FlushHandler flushHandler;
 
     bool         timeFileOpenCloseFlush{false};
     mutable bool fileExists{false}; // False if file has never been opened/created
