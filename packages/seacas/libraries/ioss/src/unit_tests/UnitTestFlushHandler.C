@@ -22,8 +22,8 @@ class FlushTest : public ::testing::Test
 {
 protected:
   Ioss::FlushHandler fh;
-  int                                 rank;
-  int                                 size;
+  int                rank;
+  int                size;
 
   void verifyFlush(int state)
   {
