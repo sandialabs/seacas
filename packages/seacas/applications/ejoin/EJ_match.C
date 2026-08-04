@@ -189,12 +189,12 @@ namespace {
           continue;
         }
 
+        min -= epsilon;
+        max += epsilon;
+
         if (tolerance >= 0.0) {
           epsilon = tolerance;
         }
-
-        min -= epsilon;
-        max += epsilon;
 
         std::vector<INT> j_inrange;
         std::vector<INT> i_inrange;
