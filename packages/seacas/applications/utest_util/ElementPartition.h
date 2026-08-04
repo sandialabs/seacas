@@ -80,6 +80,8 @@ namespace utest_util {
     std::vector<std::vector<INT>>              e_cmap_neigh{};
 
   private:
+    int get_node_conn_index(size_t elem, INT node);
+
     void find_beam_internal_and_border_elements(const std::vector<std::vector<INT>> &sur_elem,
                                                 const int                            max_nsur);
     void categorize_elements(const std::vector<std::vector<INT>> &sur_elem, const int max_nsur);

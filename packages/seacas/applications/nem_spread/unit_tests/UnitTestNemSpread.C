@@ -30,6 +30,7 @@
 #include <cstdio>  // for stderr, etc
 #include <cstdlib> // for exit
 #include <cstring>
+#include <random>
 #include <unistd.h> // for getopt, optarg, optind
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
@@ -64,6 +65,18 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
 #include <fmt/ostream.h>
 
 namespace {
+  enum PartitionType { LINEAR, ROUND_ROBIN, RANDOM };
+
+  inline std::ostream &operator<<(std::ostream &os, PartitionType type)
+  {
+    switch (type) {
+    case LINEAR: os << "LINEAR"; break;
+    case ROUND_ROBIN: os << "ROUND_ROBIN"; break;
+    case RANDOM: os << "RANDOM"; break;
+    default: os << "UNKNOWN"; break;
+    }
+    return os;
+  }
 
   template <typename INT>
   void internal_fill_processor_id(const Ioss::ElementBlock                  *eb,
@@ -384,6 +397,31 @@ namespace {
       return procAssign;
     }
 
+    std::vector<utest_util::EntityProc> get_random_element_partition()
+    {
+      std::vector<utest_util::EntityProc> procAssign = get_linear_element_partition();
+
+      unsigned seed = 1234567;
+      std::shuffle(procAssign.begin(), procAssign.end(), std::default_random_engine(seed));
+
+      return procAssign;
+    }
+
+    std::vector<utest_util::EntityProc> get_element_partition(const PartitionType type)
+    {
+      switch (type) {
+      case LINEAR: return get_linear_element_partition(); break;
+      case ROUND_ROBIN: return get_round_robin_element_partition(); break;
+      case RANDOM: return get_random_element_partition(); break;
+      default:
+        std::ostringstream oss;
+        oss << "Partition type: " << type << " not supported";
+        throw std::runtime_error(oss.str());
+      }
+
+      return std::vector<utest_util::EntityProc>{};
+    }
+
     std::vector<utest_util::EntityProc> get_linear_node_partition()
     {
       std::vector<utest_util::EntityProc> procAssign;
@@ -417,6 +455,31 @@ namespace {
 
       std::sort(procAssign.begin(), procAssign.end(), utest_util::EntityProcLess());
       return procAssign;
+    }
+
+    std::vector<utest_util::EntityProc> get_random_node_partition()
+    {
+      std::vector<utest_util::EntityProc> procAssign = get_linear_node_partition();
+
+      unsigned seed = 1234567;
+      std::shuffle(procAssign.begin(), procAssign.end(), std::default_random_engine(seed));
+
+      return procAssign;
+    }
+
+    std::vector<utest_util::EntityProc> get_node_partition(const PartitionType type)
+    {
+      switch (type) {
+      case LINEAR: return get_linear_node_partition(); break;
+      case ROUND_ROBIN: return get_round_robin_node_partition(); break;
+      case RANDOM: return get_random_node_partition(); break;
+      default:
+        std::ostringstream oss;
+        oss << "Partition type: " << type << " not supported";
+        throw std::runtime_error(oss.str());
+      }
+
+      return std::vector<utest_util::EntityProc>{};
     }
 
     void initialize_options(const std::string &baseName, int numProcs, bool is64Bit = false)
@@ -467,10 +530,10 @@ namespace {
       test_property_from_file(m_outputFile, m_propertyName, m_propertyValue);
     }
 
-    void create_element_partitioning()
+    void create_element_partitioning(PartitionType type)
     {
       // Create partitioning
-      std::vector<utest_util::EntityProc> procAssign = get_linear_element_partition();
+      std::vector<utest_util::EntityProc> procAssign = get_element_partition(type);
 
       if (m_force64Bit) {
         utest_util::ElementPartition<int64_t> partition(&get_mesh(), procAssign, m_numProcs);
@@ -482,10 +545,10 @@ namespace {
       }
     }
 
-    void create_node_partitioning()
+    void create_node_partitioning(PartitionType type)
     {
       // Create partitioning
-      std::vector<utest_util::EntityProc> procAssign = get_linear_node_partition();
+      std::vector<utest_util::EntityProc> procAssign = get_node_partition(type);
 
       if (m_force64Bit) {
         utest_util::NodePartition<int64_t> partition(&get_mesh(), procAssign, m_numProcs);
@@ -497,7 +560,8 @@ namespace {
       }
     }
 
-    void setup_input_files_for_element_decompsition(const std::string &meshDesc)
+    void setup_input_files_for_element_decompsition(const std::string &meshDesc,
+                                                    PartitionType      type = LINEAR)
     {
       // Create mesh file
       create_and_verify_input_mesh_file(meshDesc);
@@ -506,10 +570,11 @@ namespace {
       create_pex_file();
 
       // Create partitioning
-      create_element_partitioning();
+      create_element_partitioning(type);
     }
 
-    void setup_input_files_for_node_decompsition(const std::string &meshDesc)
+    void setup_input_files_for_node_decompsition(const std::string &meshDesc,
+                                                 PartitionType      type = LINEAR)
     {
       // Create mesh file
       create_and_verify_input_mesh_file(meshDesc);
@@ -518,7 +583,7 @@ namespace {
       create_pex_file();
 
       // Create partitioning
-      create_node_partitioning();
+      create_node_partitioning(type);
     }
 
     void run_nem_spread()

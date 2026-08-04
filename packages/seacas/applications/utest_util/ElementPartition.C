@@ -74,6 +74,19 @@ namespace utest_util {
     return lowerBound->proc;
   }
 
+  template <typename INT> int ElementPartition<INT>::get_node_conn_index(size_t elem, INT node)
+  {
+    IossElementData elemData = m_mesh->get_local_element(elem);
+    int             nnodes   = elemData.topology->number_nodes();
+
+    for (int i = 0; i < nnodes; i++) {
+      if (elemData.localConnectivity[i] == node) {
+        return i + 1;
+      }
+    }
+    return -1;
+  }
+
   template <typename INT>
   void ElementPartition<INT>::find_beam_internal_and_border_elements(
       const std::vector<std::vector<INT>> &sur_elem, const int max_nsur)
@@ -117,8 +130,9 @@ namespace utest_util {
                 bor_elems[proce].push_back(ecnt);
                 categorized[ecnt] = 1;
               }
+              auto nodeConnIndex = get_node_conn_index(elem, side_nodes[0]);
               e_cmap_elems[proc2].push_back(elem);
-              e_cmap_sides[proc2].push_back(2 - ncnt); // FIX_ME
+              e_cmap_sides[proc2].push_back(nodeConnIndex);
               e_cmap_procs[proc2].push_back(proce);
               e_cmap_neigh[proc2].push_back(ecnt);
             }
