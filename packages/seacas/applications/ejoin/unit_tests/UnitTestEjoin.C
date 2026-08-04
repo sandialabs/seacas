@@ -242,7 +242,8 @@ namespace {
 
     const auto &mesh = get_mesh();
 
-    // Nodal coordinate matching isn't working as expected in 1D .... should expect 3 here instead of 4
+    // Nodal coordinate matching isn't working as expected in 1D .... should expect 3 here instead
+    // of 4
     EXPECT_EQ(4, mesh.get_num_global_nodes());
     EXPECT_EQ(2, mesh.get_num_global_elements());
     EXPECT_EQ(1, mesh.get_num_global_element_blocks());
@@ -299,7 +300,8 @@ namespace {
 
     const auto &mesh = get_mesh();
 
-    // Nodal coordinate matching isn't working as expected in 1D .... should expect 3 here instead of 4
+    // Nodal coordinate matching isn't working as expected in 1D .... should expect 3 here instead
+    // of 4
     EXPECT_EQ(4, mesh.get_num_global_nodes());
     EXPECT_EQ(0, mesh.get_num_global_elements());
     EXPECT_EQ(0, mesh.get_num_global_element_blocks());
