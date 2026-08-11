@@ -24,6 +24,11 @@ TRIBITS_ADD_EXECUTABLE(
  SOURCES unitMain.C UnitTestGeneratedMesh.C
 )
 
+TRIBITS_ADD_EXECUTABLE(
+ Utst_flushhandler
+ SOURCES unitMain.C UnitTestFlushHandler.C
+)
+
 TRIBITS_ADD_TEST(
         Utst_generatedmesh
         NAME Utst_generatedmesh
@@ -88,6 +93,18 @@ TRIBITS_ADD_TEST(
         Utst_iotm
         NAME Utst_iotm
         NUM_MPI_PROCS 2
+)
+
+TRIBITS_ADD_TEST(
+        Utst_flushhandler
+        NAME  Utst_flushhandler
+        NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_TEST(
+        Utst_flushhandler
+        NAME  Utst_flushhandler
+        NUM_MPI_PROCS 4
 )
 
 TRIBITS_INCLUDE_DIRECTORIES(
