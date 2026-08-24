@@ -21,9 +21,10 @@
 class FlushTest : public ::testing::Test
 {
 protected:
-  Ioss::FlushHandler fh;
-  int                rank;
-  int                size;
+  Ioss::ParallelUtils util_;
+  Ioss::FlushHandler  fh{util_};
+  int                 rank;
+  int                 size;
 
   void verifyFlush(int state)
   {
@@ -132,4 +133,24 @@ TEST_F(FlushTest, DefaultFlushHandlerMultipleRanks)
     std::this_thread::sleep_for(std::chrono::seconds(2));
   }
   verifyFlush(10);
+}
+
+TEST_F(FlushTest, FlushHandlerSplitMPICommunicator)
+{
+  if (size < 2) {
+    GTEST_SKIP() << "Skipping parallel test\n";
+  }
+
+  int color = rank % 2;
+  int key   = rank;
+
+  MPI_Comm sub_comm;
+  MPI_Comm_split(MPI_COMM_WORLD, color, key, &sub_comm);
+
+  Ioss::ParallelUtils util_(sub_comm);
+  fh = Ioss::FlushHandler(util_);
+
+  int cmp = MPI_UNEQUAL;
+  MPI_Comm_compare(fh.util().communicator(), sub_comm, &cmp);
+  EXPECT_TRUE(cmp == MPI_IDENT || cmp == MPI_CONGRUENT);
 }

@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_DataSize.h"
@@ -408,7 +409,7 @@ namespace Ioex {
 
     int m_timestepCount{0};
 
-    Ioss::FlushHandler flushHandler;
+    std::unique_ptr<Ioss::FlushHandler> flushHandler;
 
     bool         timeFileOpenCloseFlush{false};
     mutable bool fileExists{false}; // False if file has never been opened/created
