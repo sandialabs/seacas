@@ -18,11 +18,11 @@
 #include <ctime>
 #include <exodusII.h>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_DataSize.h"
