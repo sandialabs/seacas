@@ -8,9 +8,9 @@
 #include "mpi.h"
 #endif
 #include "gtest/gtest.h"
-#include <future>
 #include <chrono>
 #include <functional>
+#include <future>
 
 #include "Ionit_Initializer.h"
 #include "Ioss_CopyDatabase.h"
@@ -40,23 +40,30 @@
 
 namespace {
 
-  void test_timeout_threaded(int timeout_millisecs, const std::string& functionName, std::function<void()> function)
+  void test_timeout_threaded(int timeout_millisecs, const std::string &functionName,
+                             std::function<void()> function)
   {
     std::promise<bool> completed;
-    auto stmt_future = completed.get_future();
-    std::thread([&function](std::promise<bool>& completed) {
-      function();
-      completed.set_value(true);
-    }, std::ref(completed)).detach();
-    if(stmt_future.wait_for(std::chrono::milliseconds(timeout_millisecs)) == std::future_status::timeout) {
+    auto               stmt_future = completed.get_future();
+    std::thread(
+        [&function](std::promise<bool> &completed) {
+          function();
+          completed.set_value(true);
+        },
+        std::ref(completed))
+        .detach();
+    if (stmt_future.wait_for(std::chrono::milliseconds(timeout_millisecs)) ==
+        std::future_status::timeout) {
       std::ostringstream err;
-      err << "Function `" << functionName << "` hung and timed out (> " << timeout_millisecs << " milliseconds).";
-//      GTEST_FATAL_FAILURE_(err.str().c_str());
+      err << "Function `" << functionName << "` hung and timed out (> " << timeout_millisecs
+          << " milliseconds).";
+      //      GTEST_FATAL_FAILURE_(err.str().c_str());
       EXPECT_TRUE(false) << err.str();
     }
   }
 
-  void test_timeout_non_threaded(int timeout_millisecs, const std::string& functionName, std::function<void()> function)
+  void test_timeout_non_threaded(int timeout_millisecs, const std::string &functionName,
+                                 std::function<void()> function)
   {
     // Run the code asynchronously
     std::future<void> futureResult = std::async(std::launch::async, function);
@@ -66,7 +73,8 @@ namespace {
 
     // Assert that it did NOT time out
     std::ostringstream err;
-    err << "Function `" << functionName << "` hung and timed out (> " << timeout_millisecs << " milliseconds).";
+    err << "Function `" << functionName << "` hung and timed out (> " << timeout_millisecs
+        << " milliseconds).";
     EXPECT_NE(status, std::future_status::timeout) << err.str();
   }
 
@@ -80,7 +88,7 @@ namespace {
   std::vector<int64_t> get_element_ids_from_block_impl(const Ioss::ElementBlock *block)
   {
     std::vector<int64_t> elemIds;
-    std::vector<INT> ids;
+    std::vector<INT>     ids;
 
     block->get_field_data("ids", ids);
 
@@ -102,7 +110,8 @@ namespace {
   }
 
   template <typename INT>
-  bool get_element_conn_from_block_impl(int64_t elemId, const Ioss::ElementBlock *block, std::vector<int64_t> &elemConn)
+  bool get_element_conn_from_block_impl(int64_t elemId, const Ioss::ElementBlock *block,
+                                        std::vector<int64_t> &elemConn)
   {
     const Ioss::ElementTopology *topo = nullptr;
 
@@ -134,27 +143,28 @@ namespace {
   }
 
   template <typename INT>
-  std::vector<int64_t> get_element_conn_impl(Ioss::Region& region, int64_t elemId)
+  std::vector<int64_t> get_element_conn_impl(Ioss::Region &region, int64_t elemId)
   {
     std::vector<int64_t> elemConn;
 
     const Ioss::ElementBlockContainer &elemBlocks = region.get_element_blocks();
 
     for (const Ioss::ElementBlock *block : elemBlocks) {
-      if(get_element_conn_from_block_impl<INT>(elemId, block, elemConn)) {
+      if (get_element_conn_from_block_impl<INT>(elemId, block, elemConn)) {
         return elemConn;
       }
     }
     return std::vector<int64_t>{};
   }
 
-  std::vector<int64_t> get_element_conn(Ioss::Region& region, int64_t elemId)
+  std::vector<int64_t> get_element_conn(Ioss::Region &region, int64_t elemId)
   {
     std::vector<int64_t> elemConn;
 
     if (db_api_int_size(region.get_database()) == 4) {
       return get_element_conn_impl<int>(region, elemId);
-    } else {
+    }
+    else {
       return get_element_conn_impl<int64_t>(region, elemId);
     }
   }
@@ -185,7 +195,7 @@ namespace {
     for (Ioss::ElementBlock *o_eb : o_region.get_element_blocks()) {
       size_t num_elem = o_eb->entity_count();
 
-      std::vector<double> field_data(num_elem);
+      std::vector<double>  field_data(num_elem);
       std::vector<int64_t> elem_ids = get_element_ids_from_block(o_eb);
 
       for (size_t i = 0; i < elem_ids.size(); i++) {
@@ -199,7 +209,8 @@ namespace {
     o_region.end_mode(Ioss::STATE_TRANSIENT);
   }
 
-  Iotm::DatabaseIO *create_input_db_io(const std::string &meshDesc, Ioss_MPI_Comm comm = Ioss::ParallelUtils::comm_world())
+  Iotm::DatabaseIO *create_input_db_io(const std::string &meshDesc,
+                                       Ioss_MPI_Comm      comm = Ioss::ParallelUtils::comm_world())
   {
     Ioss::Init::Initializer init_db;
 
@@ -213,7 +224,8 @@ namespace {
     return db_io;
   }
 
-  Ioss::DatabaseIO *create_output_db_io(const std::string &outputFile, Ioss_MPI_Comm comm = Ioss::ParallelUtils::comm_world())
+  Ioss::DatabaseIO *create_output_db_io(const std::string &outputFile,
+                                        Ioss_MPI_Comm      comm = Ioss::ParallelUtils::comm_world())
   {
     Ioss::DatabaseUsage   db_usage = Ioss::WRITE_RESTART;
     Ioss::PropertyManager properties;
@@ -222,7 +234,8 @@ namespace {
     properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
 
-    Ioss::DatabaseIO *db_io = Ioss::IOFactory::create("exodusII", outputFile, db_usage, comm, properties);
+    Ioss::DatabaseIO *db_io =
+        Ioss::IOFactory::create("exodusII", outputFile, db_usage, comm, properties);
     return db_io;
   }
 
@@ -620,7 +633,7 @@ namespace {
     EXPECT_EQ(8u, node_blocks[0]->entity_count());
 
     std::vector<int64_t> elemConn = get_element_conn(region, 1);
-    std::vector<int64_t> goldNodeIds{1,2,3,4,5,6,7,8};
+    std::vector<int64_t> goldNodeIds{1, 2, 3, 4, 5, 6, 7, 8};
     EXPECT_EQ(goldNodeIds, elemConn);
   }
 
@@ -637,9 +650,9 @@ namespace {
     MPI_Comm_split(MPI_COMM_WORLD, color, key, &comm);
 #endif
 
-    std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1"
-                           "|coordinates:   0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, 0,1,1";
-    Iotm::DatabaseIO *db_i = create_input_db_io(meshDesc, comm);
+    std::string       meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1"
+                                 "|coordinates:   0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, 0,1,1";
+    Iotm::DatabaseIO *db_i     = create_input_db_io(meshDesc, comm);
     ASSERT_FALSE(db_i == nullptr || !db_i->ok(true));
 
     Ioss::Region region_i(db_i, "region_i");
@@ -670,7 +683,8 @@ namespace {
 
     const std::string elemFieldName = "elem_id_data";
     define_element_transient(region_o, elemFieldName);
-    write_element_transient(region_o, elemFieldName);   // Remove this line and enable the pre-processor macro below
+    write_element_transient(
+        region_o, elemFieldName); // Remove this line and enable the pre-processor macro below
 
 #if 0
     int timeout_millisecs = 500;
