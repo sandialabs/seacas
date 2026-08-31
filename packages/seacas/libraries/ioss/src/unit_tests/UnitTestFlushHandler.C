@@ -141,6 +141,7 @@ TEST_F(FlushTest, FlushHandlerSplitMPICommunicator)
     GTEST_SKIP() << "Skipping parallel test\n";
   }
 
+#ifdef SEACAS_HAVE_MPI
   int color = rank % 2;
   int key   = rank;
 
@@ -153,4 +154,5 @@ TEST_F(FlushTest, FlushHandlerSplitMPICommunicator)
   int cmp = MPI_UNEQUAL;
   MPI_Comm_compare(fh.util().communicator(), sub_comm, &cmp);
   EXPECT_TRUE(cmp == MPI_IDENT || cmp == MPI_CONGRUENT);
+#endif
 }
