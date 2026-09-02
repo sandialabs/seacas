@@ -94,6 +94,8 @@ namespace Ioex {
 
     IOSS_NODISCARD std::string get_internal_change_set_name() const override { return m_groupName; }
 
+    IOSS_NODISCARD const Ioss::FlushHandler &get_flush_handler() const { return *flushHandler; }
+
     /** \brief Checks if a database type supports groups
      *
      *  \returns True if successful.
