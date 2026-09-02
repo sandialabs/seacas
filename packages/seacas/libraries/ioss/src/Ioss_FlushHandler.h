@@ -10,6 +10,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "ioss_export.h"
 #include <ctime>
+#include <functional>
 
 namespace Ioss {
 
@@ -30,28 +31,27 @@ namespace Ioss {
   class IOSS_EXPORT FlushHandler
   {
   private:
-    int                 flushInterval;
-    bool                isParallel;
-    bool                isFirstOutput;
-    bool                flushOnFirstOutput;
-    unsigned int        timeLastFlushInterval;
-    unsigned int        timeStepBeginFlushInterval;
-    time_t              timeLastFlush;
-    time_t              timeStepBegin;
-    Ioss::ParallelUtils util;
+    int                                               flushInterval;
+    bool                                              isParallel;
+    bool                                              isFirstOutput;
+    bool                                              flushOnFirstOutput;
+    unsigned int                                      timeLastFlushInterval;
+    unsigned int                                      timeStepBeginFlushInterval;
+    time_t                                            timeLastFlush;
+    time_t                                            timeStepBegin;
+    std::reference_wrapper<const Ioss::ParallelUtils> util_;
 
   public:
-    FlushHandler()
+    FlushHandler() = delete;
+
+    explicit FlushHandler(const Ioss::ParallelUtils &util)
+        : flushInterval(-1), isParallel(true), isFirstOutput(true), flushOnFirstOutput(false),
+          timeLastFlushInterval(10), timeStepBeginFlushInterval(10), timeLastFlush(time(nullptr)),
+          timeStepBegin(time(nullptr)), util_(util)
     {
-      flushInterval              = -1;
-      timeLastFlush              = time(nullptr);
-      timeStepBegin              = time(nullptr);
-      isParallel                 = true;
-      isFirstOutput              = true;
-      flushOnFirstOutput         = false;
-      timeLastFlushInterval      = 10;
-      timeStepBeginFlushInterval = 10;
     }
+
+    const Ioss::ParallelUtils &util() const { return util_; }
 
     int getFlushInterval() { return flushInterval; }
 

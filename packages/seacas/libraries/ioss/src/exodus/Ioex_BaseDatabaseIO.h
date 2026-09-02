@@ -18,6 +18,7 @@
 #include <ctime>
 #include <exodusII.h>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
@@ -92,6 +93,8 @@ namespace Ioex {
     IOSS_NODISCARD unsigned entity_field_support() const override;
 
     IOSS_NODISCARD std::string get_internal_change_set_name() const override { return m_groupName; }
+
+    IOSS_NODISCARD const Ioss::FlushHandler &get_flush_handler() const { return *flushHandler; }
 
     /** \brief Checks if a database type supports groups
      *
@@ -408,7 +411,7 @@ namespace Ioex {
 
     int m_timestepCount{0};
 
-    Ioss::FlushHandler flushHandler;
+    std::unique_ptr<Ioss::FlushHandler> flushHandler;
 
     bool         timeFileOpenCloseFlush{false};
     mutable bool fileExists{false}; // False if file has never been opened/created

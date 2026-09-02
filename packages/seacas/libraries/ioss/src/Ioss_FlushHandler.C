@@ -57,10 +57,10 @@ namespace Ioss {
 #ifdef SEACAS_HAVE_MPI
     if (isParallel) {
       if (Ioss::SerializeIO::isEnabled()) {
-        util.broadcast(iflush);
+        util().broadcast(iflush);
       }
       else {
-        iflush = util.global_minmax(iflush, Ioss::ParallelUtils::DO_MAX);
+        iflush = util().global_minmax(iflush, Ioss::ParallelUtils::DO_MAX);
       }
     }
 #endif
