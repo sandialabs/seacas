@@ -19,3 +19,16 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
 TRIBITS_SUBPACKAGE_POSTPROCESS()
+
+if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
+TRIBITS_ADD_ADVANCED_TEST(algebra_add_nodal_val
+   TEST_0 EXEC algebra ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/cube_with_ns_ss.g cube_nvar.g
+       NOEXEPREFIX NOEXESUFFIX
+       STANDARD_INPUT "cube_nvar.inp"
+   TEST_1 EXEC exodiff ARGS -show_all_diffs -pedantic -match_by_name ${CMAKE_CURRENT_SOURCE_DIR}/test/cube_nvar.gold.g cube_nvar.g
+       DIRECTORY ../exodiff
+       NOEXEPREFIX NOEXESUFFIX
+  COMM serial
+  XHOSTTYPE Windows
+  )
+endif()
