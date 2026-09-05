@@ -30,5 +30,7 @@ TRIBITS_ADD_ADVANCED_TEST(algebra_add_nodal_val
        NOEXEPREFIX NOEXESUFFIX
   COMM serial
   XHOSTTYPE Windows
-  )
+)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test/cube_nvar.inp cube_nvar.inp COPYONLY)
 endif()
