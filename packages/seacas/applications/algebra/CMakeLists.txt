@@ -21,6 +21,7 @@ TRIBITS_ADD_EXECUTABLE(
 TRIBITS_SUBPACKAGE_POSTPROCESS()
 
 if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test/cube_nvar.inp cube_nvar.inp COPYONLY)
 TRIBITS_ADD_ADVANCED_TEST(algebra_add_nodal_val
    TEST_0 EXEC algebra ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/cube_with_ns_ss.g cube_nvar.g
        NOEXEPREFIX NOEXESUFFIX
@@ -32,5 +33,4 @@ TRIBITS_ADD_ADVANCED_TEST(algebra_add_nodal_val
   XHOSTTYPE Windows
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test/cube_nvar.inp cube_nvar.inp COPYONLY)
 endif()
