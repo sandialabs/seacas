@@ -24,6 +24,7 @@ if (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test/cube_nvar.inp cube_nvar.inp COPYONLY)
 TRIBITS_ADD_ADVANCED_TEST(algebra_add_nodal_val
   TEST_0
+    NOEXEPREFIX NOEXESUFFIX
     EXEC algebra
     ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/cube_with_ns_ss.g cube_nvar.g 
     STANDARD_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/test/cube_nvar.inp
