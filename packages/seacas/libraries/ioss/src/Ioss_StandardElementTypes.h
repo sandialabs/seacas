@@ -21,6 +21,8 @@
 #include "Ioss_Hex9.h"
 #include "Ioss_Initializer.h"
 #include "Ioss_Node.h"
+#include "Ioss_Polyhedral.h"
+#include "Ioss_Polygonal.h"
 #include "Ioss_Pyramid13.h"
 #include "Ioss_Pyramid14.h"
 #include "Ioss_Pyramid18.h"

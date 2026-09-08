@@ -88,6 +88,18 @@ namespace {
     }
   }
 
+  void get_polyhedra_entity_count_data(int exoid, ex_entity_type type, ex_entity_id id, void* data) 
+  {
+    int ierr = 0;
+    int* entity_counts; // ex_get_entity_count... only takes in an int* cant do the separate int64_t case
+    entity_counts = static_cast<int *>(data);
+    ierr = ex_get_entity_count_per_polyhedra(exoid, type, id, entity_counts);
+
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+  } 
+
   template <typename T>
   void compute_internal_border_maps(T *entities, T *internal, size_t count, size_t entity_count)
   {
@@ -1354,6 +1366,13 @@ namespace Ioex {
 
       // See which connectivity options were defined for this block.
       // X -> Node is always defined.
+
+      // X -> Polyhedral or Polygonal?
+      if(type.substr(0,6) == "nfaced" || type.substr(0,6) == "nsided") {
+        block->field_add(
+          Ioss::Field("entity_counts", block->field_int_type(), "Real[" + std::to_string(1) + "]", Ioss::Field::MESH));
+      }
+      
       // X -> Face?
       if (faces_per_X > 0 && rank_offset < 1) {
         std::string storage = "Real[" + std::to_string(faces_per_X) + "]";
@@ -2567,6 +2586,11 @@ namespace Ioex {
               }
             }
           }
+          else if (field.get_name() == "entity_counts") {
+            if (eb->topology()->name() == "nfaced") {
+              get_polyhedra_entity_count_data(get_file_pointer(), EX_ELEM_BLOCK, id, data);
+            }
+          }
         }
         else if (role == Ioss::Field::MAP) {
           int component_count = field.get_component_count(Ioss::Field::InOut::INPUT);
@@ -2676,7 +2700,11 @@ namespace Ioex {
             // The face_node index varies fastet
             if (my_face_count > 0) {
               int face_nodes = eb->topology()->number_nodes();
-              assert(field.get_component_count(Ioss::Field::InOut::INPUT) == face_nodes);
+
+              // skip for polygonal face since number of nodes is not set 
+              if(eb->topology()->name() != "nsided") {
+                assert(field.get_component_count(Ioss::Field::InOut::INPUT) == face_nodes);
+              }
 
               get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * face_nodes);
@@ -2706,6 +2734,11 @@ namespace Ioex {
             // Map the local ids in this face block
             // (eb_offset+1...eb_offset+1+my_face_count) to global face ids.
             get_map(EX_FACE_BLOCK).map_implicit_data(data, field, num_to_get, eb->get_offset());
+          }
+          else if (field.get_name() == "entity_counts") {
+            if (eb->topology()->name() == "nsided") {
+              get_polyhedra_entity_count_data(get_file_pointer(), EX_FACE_BLOCK, id, data);
+            }
           }
           else {
             num_to_get = Ioss::Utils::field_warning(eb, field, "input");
@@ -4396,6 +4429,14 @@ namespace Ioex {
           else if (field.get_name() == "implicit_ids") {
             // Do nothing, input only field.
           }
+          else if (field.get_name() == "entity_counts") {
+            if (eb->topology()->name() == "nfaced") {
+              int *entity_counts;
+              entity_counts = static_cast<int *>(data);
+              ex_put_entity_count_per_polyhedra(get_file_pointer(), EX_ELEM_BLOCK, id,
+                                                entity_counts);
+            }
+          }
         }
         else if (role == Ioss::Field::MAP) {
           int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
@@ -4497,6 +4538,28 @@ namespace Ioex {
           }
           else if (field.get_name() == "ids") {
             handle_face_ids(eb, data, num_to_get);
+          }
+          else if (field.get_name() == "entity_counts") {
+            if (eb->topology()->name() == "nsided") {
+              int *entity_counts;
+              entity_counts = static_cast<int *>(data);
+              ex_put_entity_count_per_polyhedra(get_file_pointer(), EX_FACE_BLOCK, id,
+                                                entity_counts);
+            }
+          }
+          // To get around using the preconstructed connectivity with predetermined size
+          // (entity_cnt * nodePerEntity)
+          else if (field.get_name() == "connectivity_alt") {
+            if (my_face_count > 0) {
+              // Map face connectivity from global node id to local node id.
+              // Do it in 'data' ...
+              int face_nodes = eb->topology()->number_nodes();
+              nodeMap.reverse_map_data(data, field, num_to_get * face_nodes);
+              ierr = ex_put_conn(get_file_pointer(), EX_FACE_BLOCK, id, data, nullptr, nullptr);
+              if (ierr < 0) {
+                Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+              }
+            }
           }
           else {
             num_to_get = Ioss::Utils::field_warning(eb, field, "mesh output");
