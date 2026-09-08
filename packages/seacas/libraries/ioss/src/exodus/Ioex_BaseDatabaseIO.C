@@ -15,6 +15,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <tokenize.h>
@@ -182,6 +183,8 @@ namespace Ioex {
 
     dbState = Ioss::STATE_UNKNOWN;
 
+    flushHandler = std::make_unique<Ioss::FlushHandler>(util());
+
     // Set exodusII warning level.
     if (util().get_environment("EX_DEBUG", isParallel)) {
       fmt::print(
@@ -305,14 +308,14 @@ namespace Ioex {
       }
     }
 
-    flushHandler.setIsParallel(isParallel);
+    flushHandler->setIsParallel(isParallel);
     if (!is_input()) {
       if (properties.exists("FLUSH_INTERVAL")) {
         int interval = properties.get("FLUSH_INTERVAL").get_int();
-        flushHandler.setFlushInterval(interval);
+        flushHandler->setFlushInterval(interval);
       }
       if (properties.exists("FLUSH_ON_FIRST_OUTPUT")) {
-        flushHandler.setFlushOnFirstOutput(true);
+        flushHandler->setFlushOnFirstOutput(true);
       }
     }
 
@@ -1495,7 +1498,7 @@ namespace Ioex {
     a_time /= timeScaleFactor;
 
     if (!is_input()) {
-      flushHandler.resetTimeStepBegin();
+      flushHandler->resetTimeStepBegin();
       if (get_file_per_state()) {
         // Close current file; create new file and output transient metadata...
         open_state_file(state);
@@ -2534,7 +2537,7 @@ namespace Ioex {
     // Update the attribute.
     Ioex::update_last_time_attribute(get_file_pointer(), sim_time);
 
-    if (flushHandler.doFlush(state)) {
+    if (flushHandler->doFlush(state)) {
       flush_database_nl();
     }
   }

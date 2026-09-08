@@ -13,7 +13,10 @@
 #include "mpi.h"
 #endif
 
+#include "Ionit_Initializer.h"
 #include "Ioss_FlushHandler.h"
+#include "Ioss_IOFactory.h"
+#include "exodus/Ioex_BaseDatabaseIO.h"
 #include <chrono>
 #include <gtest/gtest.h>
 #include <thread>
@@ -21,9 +24,10 @@
 class FlushTest : public ::testing::Test
 {
 protected:
-  Ioss::FlushHandler fh;
-  int                rank;
-  int                size;
+  Ioss::ParallelUtils util_;
+  Ioss::FlushHandler  fh{util_};
+  int                 rank;
+  int                 size;
 
   void verifyFlush(int state)
   {
@@ -36,6 +40,25 @@ protected:
     fh.resetTimeStepBegin();
     ASSERT_FALSE(fh.doFlush(state));
   }
+
+#ifdef SEACAS_HAVE_MPI
+  MPI_Comm get_split_comm()
+  {
+    int color = rank % 2;
+    int key   = rank;
+
+    MPI_Comm sub_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, color, key, &sub_comm);
+    return sub_comm;
+  }
+
+  void compare_mpi_comms(MPI_Comm comm1, MPI_Comm comm2)
+  {
+    int cmp = MPI_UNEQUAL;
+    MPI_Comm_compare(comm1, comm2, &cmp);
+    EXPECT_TRUE(cmp == MPI_IDENT || cmp == MPI_CONGRUENT);
+  }
+#endif
 
   void SetUp() override
   {
@@ -132,4 +155,40 @@ TEST_F(FlushTest, DefaultFlushHandlerMultipleRanks)
     std::this_thread::sleep_for(std::chrono::seconds(2));
   }
   verifyFlush(10);
+}
+
+TEST_F(FlushTest, FlushHandlerSplitMPICommunicator)
+{
+  if (size < 2) {
+    GTEST_SKIP() << "Skipping parallel test\n";
+  }
+
+#ifdef SEACAS_HAVE_MPI
+  MPI_Comm sub_comm = get_split_comm();
+
+  Ioss::ParallelUtils util_(sub_comm);
+  fh = Ioss::FlushHandler(util_);
+
+  compare_mpi_comms(fh.util().communicator(), sub_comm);
+#endif
+}
+
+TEST_F(FlushTest, FlushHandlerSplitMPICommunicatorDatabase)
+{
+  if (size < 2) {
+    GTEST_SKIP() << "Skipping parallel test\n";
+  }
+
+#ifdef SEACAS_HAVE_MPI
+  MPI_Comm sub_comm = get_split_comm();
+
+  Ioss::Init::Initializer init_db;
+  Ioss::PropertyManager   properties;
+  Ioex::BaseDatabaseIO   *dbi = dynamic_cast<Ioex::BaseDatabaseIO *>(
+      Ioss::IOFactory::create("exodus", "mesh.exo", Ioss::WRITE_RESTART, sub_comm, properties));
+  ASSERT_NE(dbi, nullptr);
+
+  compare_mpi_comms(dbi->get_flush_handler().util().communicator(), sub_comm);
+  delete dbi;
+#endif
 }
