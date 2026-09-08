@@ -40,44 +40,6 @@
 
 namespace {
 
-  void test_timeout_threaded(int timeout_millisecs, const std::string &functionName,
-                             std::function<void()> function)
-  {
-    std::promise<bool> completed;
-    auto               stmt_future = completed.get_future();
-    std::thread(
-        [&function](std::promise<bool> &completed) {
-          function();
-          completed.set_value(true);
-        },
-        std::ref(completed))
-        .detach();
-    if (stmt_future.wait_for(std::chrono::milliseconds(timeout_millisecs)) ==
-        std::future_status::timeout) {
-      std::ostringstream err;
-      err << "Function `" << functionName << "` hung and timed out (> " << timeout_millisecs
-          << " milliseconds).";
-      //      GTEST_FATAL_FAILURE_(err.str().c_str());
-      EXPECT_TRUE(false) << err.str();
-    }
-  }
-
-  void test_timeout_non_threaded(int timeout_millisecs, const std::string &functionName,
-                                 std::function<void()> function)
-  {
-    // Run the code asynchronously
-    std::future<void> futureResult = std::async(std::launch::async, function);
-
-    // Wait for a maximum of 500 milliseconds
-    auto status = futureResult.wait_for(std::chrono::milliseconds(timeout_millisecs));
-
-    // Assert that it did NOT time out
-    std::ostringstream err;
-    err << "Function `" << functionName << "` hung and timed out (> " << timeout_millisecs
-        << " milliseconds).";
-    EXPECT_NE(status, std::future_status::timeout) << err.str();
-  }
-
   int db_api_int_size(Ioss::DatabaseIO *db)
   {
     assert(db != nullptr);
@@ -637,7 +599,7 @@ namespace {
     EXPECT_EQ(goldNodeIds, elemConn);
   }
 
-  TEST(TextMesh, outputMeshCommSelf)
+  TEST(TextMesh, outputMeshCommSplit)
   {
     if (get_parallel_size() != 4) {
       GTEST_SKIP();
@@ -685,20 +647,6 @@ namespace {
     define_element_transient(region_o, elemFieldName);
     write_element_transient(
         region_o, elemFieldName); // Remove this line and enable the pre-processor macro below
-
-#if 0
-    int timeout_millisecs = 500;
-    auto function = [&region_o, &elemFieldName]() {
-      write_element_transient(region_o, elemFieldName);
-    };
-    const std::string& functionName = "write_element_transient()";
-
-#if 0
-    test_timeout_non_threaded(timeout_millisecs, functionName, function);
-#else
-    test_timeout_threaded(timeout_millisecs, functionName, function);
-#endif
-#endif
 
     unlink(db_o->decoded_filename().c_str());
   }
