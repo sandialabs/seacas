@@ -85,7 +85,7 @@ namespace Ioss {
 
     bool allReduce(bool do_flush);
 
-    bool isGreaterThanFlushInterval(time_t lastFlushTime, unsigned int flushInterval);
+    bool isGreaterThanFlushInterval(time_t lastFlushTime, unsigned int interval);
   };
 
 } // namespace Ioss

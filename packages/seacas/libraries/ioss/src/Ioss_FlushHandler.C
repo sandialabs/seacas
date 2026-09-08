@@ -39,12 +39,12 @@ namespace Ioss {
     return allReduce(do_flush);
   }
 
-  bool FlushHandler::isGreaterThanFlushInterval(time_t lastFlushTime, unsigned int flushInterval)
+  bool FlushHandler::isGreaterThanFlushInterval(time_t lastFlushTime, unsigned int interval)
   {
     time_t cur_time = time(nullptr);
     bool   do_flush = false;
 
-    if (std::difftime(cur_time, lastFlushTime) >= flushInterval) {
+    if (std::difftime(cur_time, lastFlushTime) >= interval) {
       timeLastFlush = cur_time;
       do_flush      = true;
     }
