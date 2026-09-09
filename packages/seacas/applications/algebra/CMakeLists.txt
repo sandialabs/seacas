@@ -26,7 +26,7 @@ TRIBITS_ADD_ADVANCED_TEST(algebra_add_nodal_val
   TEST_0
     EXEC run_algebra.py
     ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/cube_with_ns_ss.g cube_nvar.g cube_nvar.inp
-    DIRECTORY ../../../../scripts
+    DIRECTORY ../../scripts
     NOEXEPREFIX NOEXESUFFIX
   TEST_1
     EXEC exodiff
