@@ -34,11 +34,16 @@ def main():
     # Get the directory of the current script
     script_dir = Path(__file__).resolve().parent
 
+    exe_dir = script_dir / '../applications/algebra'
+
+    # Convert to string and add it
+    sys.path.insert(0, str(exe_dir))
+    
     try:
         with command_file.open("r") as stdin_file:
             result = subprocess.run(
                 [
-                    script_dir / "algebra",
+                    "algebra",
                     str(input_file),
                     str(output_file),
                 ],
