@@ -1476,6 +1476,7 @@ class ExodusModel(object):
             "hex": "hex8",
             "tet": "tet4",
             "tetra": "tet4",
+            "tetra4": "tet4",
             "tetra10": "tet10",
             "tri": "tri3",
             "triangle": "tri3",
