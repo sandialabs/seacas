@@ -37,7 +37,6 @@ def main():
     exe_dir = script_dir / '../applications/algebra'
 
     # Convert to string and add it
-    #sys.path.insert(0, str(exe_dir))
     sys.path.append(str(exe_dir))
 
     print(exe_dir)
