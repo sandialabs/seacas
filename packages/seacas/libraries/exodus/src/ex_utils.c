@@ -1893,6 +1893,31 @@ int exi_leavedef(int exoid, const char *call_func)
   return EX_NOERR;
 }
 
+/*!
+  \internal
+  \undoc
+  Flush the file before entering define mode on a parallel file.
+
+  Adding or resizing metadata grows the file header, and leaving define mode
+  makes the underlying parallel netCDF layer relocate the whole data section to
+  a higher offset. That relocation reads data back and rewrites it elsewhere, so
+  it must see everything written so far -- including writes issued by other MPI
+  ranks. MPI-IO does not guarantee that: a process sees another process's writes
+  only after a sync, and a bare MPI_Barrier is not sufficient. Filesystems whose
+  clients are cache-coherent (Lustre, via its lock manager) hide this; those
+  without (BeeGFS, and anything falling back to the generic ROMIO UFS driver) do
+  not, and metadata written before the growth comes back corrupted.
+
+  nc_sync() is collective and every rank reaches exi_redef() together, so this is
+  safe to call here. It is a no-op for serial files.
+*/
+static void exi_sync_before_redef(int exoid, const struct exi_file_item *file)
+{
+  if (file->is_parallel) {
+    nc_sync(exoid);
+  }
+}
+
 int exi_redef(int exoid, const char *call_func)
 {
   int status;
@@ -1908,6 +1933,7 @@ int exi_redef(int exoid, const char *call_func)
   }
 
   if (!file->in_define_mode) {
+    exi_sync_before_redef(exoid, file);
     if ((status = nc_redef(exoid)) != EX_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -1936,6 +1962,7 @@ int exi_persist_redef(int exoid, const char *call_func)
   }
 
   if ((++file->persist_define_mode == 1) && !file->in_define_mode) {
+    exi_sync_before_redef(exoid, file);
     if ((status = nc_redef(exoid)) != EX_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(
