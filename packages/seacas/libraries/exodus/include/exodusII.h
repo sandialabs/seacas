@@ -251,11 +251,11 @@ enum ex_option_type {
   EX_OPT_INTEGER_SIZE_API, /**<  4 or 8 indicating byte size of integers used in api functions. */
   EX_OPT_INTEGER_SIZE_DB,  /**<  Query only, returns 4 or 8 indicating byte size of integers stored
                              on  the database. */
-  EX_OPT_NONBLOCKING, /**< 1 to post parallel variable writes with PnetCDF's non-blocking
-                           interface and complete them at the next flush point, 0 for the
-                           ordinary blocking writes (the default).  Ignored unless the file is
-                           a PnetCDF-backed parallel output file, so it is always safe to set.
-                           Collective: every process on the file must make the same call. */
+  EX_OPT_NONBLOCKING,      /**< 1 to post parallel variable writes with PnetCDF's non-blocking
+                                interface and complete them at the next flush point, 0 for the
+                                ordinary blocking writes (the default).  Ignored unless the file is
+                                a PnetCDF-backed parallel output file, so it is always safe to set.
+                                Collective: every process on the file must make the same call. */
 };
 typedef enum ex_option_type ex_option_type;
 

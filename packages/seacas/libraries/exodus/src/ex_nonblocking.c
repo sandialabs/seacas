@@ -226,11 +226,11 @@ static void *exi_nb_stage(struct exi_file_item *file, const void *data, size_t n
       free(fresh);
       return NULL;
     }
-    fresh->capacity  = capacity;
-    fresh->used      = 0;
-    fresh->next      = chunk;
-    file->nb_chunks  = fresh;
-    chunk            = fresh;
+    fresh->capacity = capacity;
+    fresh->used     = 0;
+    fresh->next     = chunk;
+    file->nb_chunks = fresh;
+    chunk           = fresh;
   }
 
   dest = chunk->data + chunk->used;
@@ -243,8 +243,8 @@ static void *exi_nb_stage(struct exi_file_item *file, const void *data, size_t n
 static int exi_nb_track(struct exi_file_item *file, int req)
 {
   if (file->nb_nreqs == file->nb_maxreqs) {
-    int  grow  = file->nb_maxreqs ? file->nb_maxreqs * 2 : EXI_NB_REQ_GROW;
-    int *reqs  = (int *)realloc(file->nb_reqs, (size_t)grow * sizeof(int));
+    int  grow = file->nb_maxreqs ? file->nb_maxreqs * 2 : EXI_NB_REQ_GROW;
+    int *reqs = (int *)realloc(file->nb_reqs, (size_t)grow * sizeof(int));
     if (reqs == NULL) {
       return EX_FATAL;
     }
@@ -318,12 +318,12 @@ int exi_nb_put_vara(int exoid, int varid, const size_t *start, const size_t *cou
   mcount[1] = (MPI_Offset)count[1];
 
   if (is_float) {
-    status = ncmpi_iput_vara_float(file->nb_pncid, varid, mstart, mcount, (const float *)buffer,
-                                   &req);
+    status =
+        ncmpi_iput_vara_float(file->nb_pncid, varid, mstart, mcount, (const float *)buffer, &req);
   }
   else {
-    status = ncmpi_iput_vara_double(file->nb_pncid, varid, mstart, mcount, (const double *)buffer,
-                                    &req);
+    status =
+        ncmpi_iput_vara_double(file->nb_pncid, varid, mstart, mcount, (const double *)buffer, &req);
   }
 
   if (status != NC_NOERR) {

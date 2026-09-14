@@ -717,26 +717,26 @@ struct exi_file_item
   unsigned int user_compute_wordsize : 1; /**< 0 for 4 byte or 1 for 8 byte reals */
   unsigned int
       file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
-  unsigned int          is_write : 1;       /**< for output or append */
-  unsigned int          is_parallel : 1;    /**< 1 true, 0 false */
-  unsigned int          is_hdf5 : 1;        /**< 1 true, 0 false */
-  unsigned int          is_pnetcdf : 1;     /**< 1 true, 0 false */
-  unsigned int          has_nodes : 1;      /**< for input only at this time */
-  unsigned int          has_edges : 1;      /**< for input only at this time */
-  unsigned int          has_faces : 1;      /**< for input only at this time */
-  unsigned int          has_elems : 1;      /**< for input only at this time */
-  unsigned int          in_define_mode : 1; /**< Is the file in nc define mode... */
+  unsigned int is_write : 1;        /**< for output or append */
+  unsigned int is_parallel : 1;     /**< 1 true, 0 false */
+  unsigned int is_hdf5 : 1;         /**< 1 true, 0 false */
+  unsigned int is_pnetcdf : 1;      /**< 1 true, 0 false */
+  unsigned int has_nodes : 1;       /**< for input only at this time */
+  unsigned int has_edges : 1;       /**< for input only at this time */
+  unsigned int has_faces : 1;       /**< for input only at this time */
+  unsigned int has_elems : 1;       /**< for input only at this time */
+  unsigned int in_define_mode : 1;  /**< Is the file in nc define mode... */
   unsigned int use_nonblocking : 1; /**< Post variable writes with PnetCDF's non-blocking
                                        interface and complete them at the next flush.  Only ever
                                        set for a PnetCDF-backed parallel output file; see
                                        ex_nonblocking.c */
   /* Non-blocking output state.  Present unconditionally so that the struct
      layout does not depend on whether netCDF was built with PnetCDF. */
-  int    nb_pncid;   /**< PnetCDF file id behind this exodus id, -1 if unresolved */
-  int   *nb_reqs;    /**< outstanding PnetCDF request ids */
-  int    nb_nreqs;   /**< number of entries used in nb_reqs */
-  int    nb_maxreqs; /**< number of entries allocated in nb_reqs */
-  void  *nb_chunks;  /**< staging arena holding copies of the caller's values */
+  int                   nb_pncid;   /**< PnetCDF file id behind this exodus id, -1 if unresolved */
+  int                  *nb_reqs;    /**< outstanding PnetCDF request ids */
+  int                   nb_nreqs;   /**< number of entries used in nb_reqs */
+  int                   nb_maxreqs; /**< number of entries allocated in nb_reqs */
+  void                 *nb_chunks;  /**< staging arena holding copies of the caller's values */
   struct exi_file_item *next;
 };
 
@@ -891,14 +891,14 @@ EXODUS_EXPORT int  exi_nb_put_vara(int exoid, int varid, const size_t *start, co
 EXODUS_EXPORT int  exi_nb_flush(int exoid);
 EXODUS_EXPORT void exi_nb_free(struct exi_file_item *file);
 
-EXODUS_EXPORT int  exi_redef(int exoid, const char *call_func);
-EXODUS_EXPORT int  exi_persist_redef(int exoid, const char *call_func);
-EXODUS_EXPORT int  exi_leavedef(int         exoid,    /* NemesisI file ID         */
-                                const char *call_rout /* Name of calling function */
- );
-EXODUS_EXPORT int  exi_persist_leavedef(int         exoid,    /* NemesisI file ID         */
-                                        const char *call_rout /* Name of calling function */
- );
+EXODUS_EXPORT int exi_redef(int exoid, const char *call_func);
+EXODUS_EXPORT int exi_persist_redef(int exoid, const char *call_func);
+EXODUS_EXPORT int exi_leavedef(int         exoid,    /* NemesisI file ID         */
+                               const char *call_rout /* Name of calling function */
+);
+EXODUS_EXPORT int exi_persist_leavedef(int         exoid,    /* NemesisI file ID         */
+                                       const char *call_rout /* Name of calling function */
+);
 
 EXODUS_EXPORT int exi_check_version(int run_version);
 EXODUS_EXPORT int exi_handle_mode(unsigned int my_mode, int is_parallel, int run_version);
