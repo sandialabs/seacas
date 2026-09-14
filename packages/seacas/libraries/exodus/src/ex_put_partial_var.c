@@ -296,7 +296,14 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     start[1] = 0;
   }
 
-  if (exi_comp_ws(exoid) == 4) {
+  if (exi_nb_enabled(exoid)) {
+    status = exi_nb_put_vara(exoid, varid, start, count, exi_comp_ws(exoid) == 4, var_vals);
+    if (status != EX_NOERR) {
+      EX_FUNC_LEAVE(EX_FATAL); /* exi_nb_put_vara has already reported */
+    }
+    status = EX_NOERR;
+  }
+  else if (exi_comp_ws(exoid) == 4) {
     status = nc_put_vara_float(exoid, varid, start, count, var_vals);
   }
   else {
