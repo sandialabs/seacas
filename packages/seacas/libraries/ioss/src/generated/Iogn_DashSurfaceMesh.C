@@ -143,12 +143,8 @@ namespace Iogn {
     Ioss::NameList touchingBlocks;
 
     switch (setId) {
-    case 1:
-      touchingBlocks.push_back("block_2");
-      break;
-    case 2:
-      touchingBlocks.push_back("block_1");
-      break;
+    case 1: touchingBlocks.push_back("block_2"); break;
+    case 2: touchingBlocks.push_back("block_1"); break;
     default: throw std::exception(); break;
     }
 
