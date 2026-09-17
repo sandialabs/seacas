@@ -251,6 +251,11 @@ enum ex_option_type {
   EX_OPT_INTEGER_SIZE_API, /**<  4 or 8 indicating byte size of integers used in api functions. */
   EX_OPT_INTEGER_SIZE_DB,  /**<  Query only, returns 4 or 8 indicating byte size of integers stored
                              on  the database. */
+  EX_OPT_NONBLOCKING,      /**< 1 to post parallel variable writes with PnetCDF's non-blocking
+                                interface and complete them at the next flush point, 0 for the
+                                ordinary blocking writes (the default).  Ignored unless the file is
+                                a PnetCDF-backed parallel output file, so it is always safe to set.
+                                Collective: every process on the file must make the same call. */
 };
 typedef enum ex_option_type ex_option_type;
 
@@ -648,6 +653,7 @@ EXODUS_EXPORT const char *ex_config(void);
 EXODUS_EXPORT int ex_set_max_name_length(int exoid, int length);
 
 EXODUS_EXPORT int ex_set_option(int exoid, ex_option_type option, int option_value);
+EXODUS_EXPORT int ex_flush(int exoid);
 
 EXODUS_EXPORT int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set,
                                         void_int *num_nodes_per_set, void_int *side_sets_elem_index,

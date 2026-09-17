@@ -1908,6 +1908,12 @@ int exi_redef(int exoid, const char *call_func)
   }
 
   if (!file->in_define_mode) {
+    /* Any non-blocking write still in flight refers to the current header
+       (PnetCDF keeps a raw NC_var pointer and a file offset), and leaving
+       define mode may move both.  Complete them before touching it. */
+    if (exi_nb_flush(exoid) != EX_NOERR) {
+      return EX_FATAL;
+    }
     if ((status = nc_redef(exoid)) != EX_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -1936,6 +1942,12 @@ int exi_persist_redef(int exoid, const char *call_func)
   }
 
   if ((++file->persist_define_mode == 1) && !file->in_define_mode) {
+    /* Any non-blocking write still in flight refers to the current header
+       (PnetCDF keeps a raw NC_var pointer and a file offset), and leaving
+       define mode may move both.  Complete them before touching it. */
+    if (exi_nb_flush(exoid) != EX_NOERR) {
+      return EX_FATAL;
+    }
     if ((status = nc_redef(exoid)) != EX_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(
