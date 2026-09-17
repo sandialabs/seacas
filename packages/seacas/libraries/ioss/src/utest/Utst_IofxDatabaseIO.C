@@ -8,9 +8,11 @@
 #include "Ioss_DBUsage.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementTopology.h"
+#include "Ioss_FaceBlock.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
+#include "Ioss_Polyhedral.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_ScopeGuard.h"
@@ -36,6 +38,7 @@
 
 namespace {
   std::string input_filename = "ADeDA.e";
+  std::string two_polys_filename = "two_polys.e";
 
   void test_topology(const Ioss::ElementTopology *topology, const std::string &gold_top,
                      const int parameteric_dim, const int num_vertices, const int num_nodes,
@@ -69,6 +72,82 @@ namespace {
     auto *db_io = new Ioex::DatabaseIO(nullptr, filename, db_usage,
                                        Ioss::ParallelUtils::comm_world(), properties);
     return db_io;
+  }
+
+  TEST_CASE("Ioex::two_polys")
+  {
+    Ioex::DatabaseIO *db_io = create_input_db_io(two_polys_filename);
+    db_io->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+
+    Ioss::Region region(db_io);
+
+    REQUIRE(db_io->ok());
+
+    const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
+    const std::vector<Ioss::FaceBlock *>    &face_blocks    = region.get_face_blocks();
+    CHECK(2u == element_blocks.size());
+    CHECK(2u == face_blocks.size());
+
+    std::vector<std::string>      gold_strings{"block_2", "block_1"};
+    std::vector<std::string>      gold_top_names{Ioss::Polyhedral::name, Ioss::Polyhedral::name};
+    std::vector<int>              parametric_dim{3, 3};
+    std::vector<int>              num_vertices{0, 0};
+    std::vector<int>              number_nodes{0, 0};
+    std::vector<int>              num_edges{0, 0};
+    std::vector<int>              num_faces{0, 0};
+    std::vector<int>              num_boundaries{0, 0};
+    std::vector<size_t>           gold_element_face_conn_size{6, 6};
+    std::vector<std::vector<int>> gold_element_face_connectivity{{1, 2, 3, 4, 5, 6},
+                                                                 {1, 2, 3, 4, 5, 6}};
+    std::vector<size_t>           gold_face_node_conn_size{24, 24};
+    std::vector<std::vector<int>> gold_face_node_connectivity{
+        {1, 2, 5, 4, 7, 8, 11, 10, 1, 2, 8, 7, 2, 5, 11, 8, 5, 4, 10, 11, 4, 1, 7, 10},
+        {2, 3, 6, 5, 8, 9, 12, 11, 2, 3, 9, 8, 3, 6, 12, 9, 6, 5, 11, 12, 5, 2, 8, 11}};
+
+    std::vector<size_t>               gold_num_elements_per_block{1, 1};
+    std::vector<std::vector<int64_t>> gold_ids{{1}, {2}};
+
+    std::vector<bool>   attributes_exist{false, false};
+    std::vector<size_t> num_attributes{0, 0};
+
+    for (size_t i = 0; i < element_blocks.size(); ++i) {
+
+      const Ioss::ElementTopology *topology = element_blocks[i]->topology();
+      test_topology(topology, gold_top_names[i], parametric_dim[i], num_vertices[i],
+                    number_nodes[i], num_edges[i], num_faces[i], num_boundaries[i]);
+
+      std::vector<int64_t> element_face_connectivity;
+      element_blocks[i]->get_field_data("connectivity_face", element_face_connectivity);
+
+      CHECK(gold_element_face_conn_size[i] == element_face_connectivity.size());
+      for (size_t j = 0; j < gold_element_face_conn_size[i]; ++j) {
+        CHECK(gold_element_face_connectivity[i][j] == element_face_connectivity[j]);
+      }
+
+      std::vector<int64_t> face_node_connectivity;
+      face_blocks[i]->get_field_data("connectivity", face_node_connectivity);
+
+      for (size_t j = 0; j < gold_face_node_conn_size[i]; ++j) {
+        CHECK(gold_face_node_connectivity[i][j] == face_node_connectivity[j]);
+      }
+
+      std::vector<int64_t> ids;
+      element_blocks[i]->get_field_data("ids", ids);
+
+      CHECK(gold_num_elements_per_block[i] == ids.size());
+      for (size_t j = 0; j < ids.size(); ++j) {
+        CHECK(gold_ids[i][j] == ids[j]);
+      }
+
+      std::vector<double> attributeValues;
+      CHECK(attributes_exist[i] == element_blocks[i]->field_exists("attribute"));
+      if (attributes_exist[i]) {
+        int num_attr = element_blocks[i]->get_property("attribute_count").get_int();
+        CHECK(1 == num_attr);
+        element_blocks[i]->get_field_data("attribute", attributeValues);
+        CHECK(num_attributes[i] == attributeValues.size());
+      }
+    }
   }
 
   TEST_CASE("Ioex::constructor")
@@ -415,10 +494,13 @@ int main(IOSS_MAYBE_UNUSED int argc, char **argv)
 
   // Build a new parser on top of Catch2's
   using namespace Catch::Clara;
-  auto cli = session.cli()                     // Get Catch2's command line parser
-             | Opt(input_filename, "filename") // bind variable to a new option, with a hint string
-                   ["-f"]["--filename"]        // the option names it will respond to
-             ("Filename to read mesh from.");  // description string for the help output
+  auto cli = session.cli()
+             | Opt(input_filename, "filename")
+                   ["-f"]["--filename"]
+                   ("Filename to read mesh from.")
+             | Opt(two_polys_filename, "filename")
+                   ["--two-polys-filename"]
+                   ("Filename to read two_polys mesh from.");
 
   // Now pass the new composite back to Catch2 so it uses that
   session.cli(cli);
@@ -428,6 +510,7 @@ int main(IOSS_MAYBE_UNUSED int argc, char **argv)
   if (returnCode != 0) // Indicates a command line error
     return returnCode;
 
-  fmt::print("'{}'\n", input_filename);
+  fmt::print("input_filename: '{}'\n", input_filename);
+  fmt::print("two_polys_filename: '{}'\n", two_polys_filename);
   return session.run();
 }

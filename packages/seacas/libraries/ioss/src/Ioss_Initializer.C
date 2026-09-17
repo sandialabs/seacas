@@ -51,6 +51,9 @@ Ioss::Initializer::Initializer()
 
   Ioss::Node::factory();
 
+  Ioss::Polyhedral::factory();
+  Ioss::Polygonal::factory();
+
   Ioss::Pyramid5::factory();
   Ioss::Pyramid13::factory();
   Ioss::Pyramid14::factory();
