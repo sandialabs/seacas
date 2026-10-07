@@ -253,6 +253,12 @@ int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->in_define_mode        = 0;
   new_file->persist_define_mode   = 0;
   new_file->is_write              = is_write;
+  new_file->use_nonblocking       = 0;
+  new_file->nb_pncid              = -1;
+  new_file->nb_reqs               = NULL;
+  new_file->nb_nreqs              = 0;
+  new_file->nb_maxreqs            = 0;
+  new_file->nb_chunks             = NULL;
 
   new_file->next = file_list;
   file_list      = new_file;
@@ -311,6 +317,7 @@ void exi_conv_exit(int exoid)
     file_list = file->next;
   }
 
+  exi_nb_free(file);
   free(file);
   EX_FUNC_VOID();
 }
@@ -523,6 +530,13 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     ex_set_int64_status(exoid, option_value);
     break;
   case EX_OPT_INTEGER_SIZE_DB: /* (query only) */ break;
+  case EX_OPT_NONBLOCKING: /* 0 (blocking, default); 1 (non-blocking PnetCDF writes) */
+    /* Quietly stays blocking if the file is not a PnetCDF-backed parallel
+       output file, so callers need not know which backend they got. */
+    if (exi_nb_set_enabled(exoid, option_value != 0) != EX_NOERR) {
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+    break;
   default: {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().", (int)option);

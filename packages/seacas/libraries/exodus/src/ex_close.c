@@ -72,6 +72,12 @@ int ex_close(int exoid)
    * Get exoid of root group
    */
 
+  /* PnetCDF cancels rather than completes outstanding non-blocking writes at
+     close, so they must be flushed here or the data is silently lost. */
+  if (exi_nb_flush(exoid) != EX_NOERR) {
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   if ((status1 = nc_sync(exoid)) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to update file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, status1);
