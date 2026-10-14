@@ -63,6 +63,13 @@ endif()
 
 # ===============================================
 
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-side-set-tri4
+  SOURCES test-side-set-tri4.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
 IF ( NETCDF_NCDUMP_BINARY )
   SET(NETCDF_NCDUMP ${NETCDF_NCDUMP_BINARY})
   SET( cbind_OLDTESTS
