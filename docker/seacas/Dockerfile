@@ -38,7 +38,7 @@ WORKDIR /seacas/build
 RUN ../cmake-config && \
     make && \
     make install
-ENV PATH "${PATH}:/seacas/bin/"
-ENV PYTHONPATH "${PYTHONPATH}:/seacas/lib/"
-ENV LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/seacas/lib/"
+ENV PATH="${PATH}:/seacas/bin/"
+ENV PYTHONPATH="${PYTHONPATH:""}:/seacas/lib/"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH:""}:/seacas/lib/"
 CMD ["/bin/bash"]
