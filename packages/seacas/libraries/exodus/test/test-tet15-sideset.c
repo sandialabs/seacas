@@ -26,8 +26,10 @@
 
 /* Side node table of a 14- or 15-node tetrahedron: vertices, mid-edge nodes,
  * mid-face node, for sides 1 to 4 (1-based node numbers). */
-static const int tet_side_nodes[4][7] = {
-    {1, 2, 4, 5, 9, 8, 14}, {2, 3, 4, 6, 10, 9, 12}, {1, 4, 3, 8, 10, 7, 13}, {1, 3, 2, 7, 6, 5, 11}};
+static const int tet_side_nodes[4][7] = {{1, 2, 4, 5, 9, 8, 14},
+                                         {2, 3, 4, 6, 10, 9, 12},
+                                         {1, 4, 3, 8, 10, 7, 13},
+                                         {1, 3, 2, 7, 6, 5, 11}};
 
 static int test_tet(const char *filename, const char *elem_type, int num_nodes_per_elem)
 {
@@ -37,13 +39,13 @@ static int test_tet(const char *filename, const char *elem_type, int num_nodes_p
   int exoid = ex_create(filename, EX_CLOBBER, &CPU_word_size, &IO_word_size);
   assert(exoid >= 0);
 
-  ex_init_params par = {.title             = "tetra side sets",
-                        .num_dim           = 3,
-                        .num_nodes         = num_nodes_per_elem,
-                        .num_elem          = 1,
-                        .num_elem_blk      = 1,
-                        .num_node_sets     = 0,
-                        .num_side_sets     = 1};
+  ex_init_params par = {.title         = "tetra side sets",
+                        .num_dim       = 3,
+                        .num_nodes     = num_nodes_per_elem,
+                        .num_elem      = 1,
+                        .num_elem_blk  = 1,
+                        .num_node_sets = 0,
+                        .num_side_sets = 1};
   assert(ex_put_init_ext(exoid, &par) == EX_NOERR);
 
   double x[15], y[15], z[15];
