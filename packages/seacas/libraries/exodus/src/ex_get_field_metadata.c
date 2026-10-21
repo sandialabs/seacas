@@ -326,6 +326,20 @@ int ex_get_basis(int exoid, ex_basis **pbasis, int *num_basis)
       const char *basis_name = exi_get_attribute_metadata_name(attr_name, 6);
       strcpy(basis[count].name, basis_name);
 
+      /* The cardinality attribute length is file data; require exactly one
+       * integer before reading it into the single int below. */
+      nc_type att_type = NC_NAT;
+      size_t  att_len  = 0;
+      if ((status = nc_inq_att(exoid, varid, attr_name, &att_type, &att_len)) != EX_NOERR ||
+          att_type != NC_INT || att_len != 1) {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Invalid %s attribute: cardinality must be a single integer value.",
+                 attr_name);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
+
       int cardinality          = 0;
       status                   = nc_get_att_int(exoid, varid, attr_name, &cardinality);
       basis[count].cardinality = cardinality;
@@ -487,6 +501,20 @@ int ex_get_quadrature(int exoid, ex_quadrature **pquad, int *num_quad)
       /* Get the quadrature name.  We know that the `name` is of the form "Quad@{name}@{item}" */
       const char *quadrature_name = exi_get_attribute_metadata_name(attr_name, 5);
       strcpy(quad[count].name, quadrature_name);
+
+      /* The cardinality attribute length is file data; require exactly one
+       * integer before reading it into the single int below. */
+      nc_type att_type = NC_NAT;
+      size_t  att_len  = 0;
+      if ((status = nc_inq_att(exoid, varid, attr_name, &att_type, &att_len)) != EX_NOERR ||
+          att_type != NC_INT || att_len != 1) {
+        char errmsg[MAX_ERR_LENGTH];
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Invalid %s attribute: cardinality must be a single integer value.",
+                 attr_name);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
 
       int cardinality         = 0;
       status                  = nc_get_att_int(exoid, varid, attr_name, &cardinality);
