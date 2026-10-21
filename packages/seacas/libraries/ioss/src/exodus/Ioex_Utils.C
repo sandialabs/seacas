@@ -113,7 +113,20 @@ namespace Ioex {
   {
     double tmp    = 0.0;
     int    rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
-    int    status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
+
+    // Verify the attribute's type and length before reading it;
+    // nc_get_att_double writes the attribute's full stored length (with
+    // conversion from any numeric type), so an unchecked read of a
+    // malformed attribute of length > 1 would overflow `tmp`.
+    nc_type att_type = NC_NAT;
+    size_t  att_len  = 0;
+    int     status   = nc_inq_att(rootid, NC_GLOBAL, "last_written_time", &att_type, &att_len);
+    if (status == EX_NOERR && att_type == NC_DOUBLE && att_len == 1) {
+      status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
+    }
+    else {
+      status = NC_ENOTATT;
+    }
 
     if (status == EX_NOERR && value > tmp) {
       status = nc_put_att_double(rootid, NC_GLOBAL, "last_written_time", NC_DOUBLE, 1, &value);
