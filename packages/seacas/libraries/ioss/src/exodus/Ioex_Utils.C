@@ -444,9 +444,12 @@ namespace Ioex {
     nc_type att_type = NC_NAT;
     size_t  att_len  = 0;
     int     status   = nc_inq_att(exodusFilePtr, NC_GLOBAL, "processor_info", &att_type, &att_len);
-    if (status == EX_NOERR && att_type == NC_INT) {
+    if (status == EX_NOERR && att_type == NC_INT && att_len == 2) {
       // Attribute exists on this database, read it and check that the information
       // matches the current processor count and processor id.
+      // Note that `att_len` must be checked: nc_get_att_int writes the
+      // attribute's full stored length, so a longer file-supplied
+      // attribute would overflow `proc_info`.
       int proc_info[2];
       status = nc_get_att_int(exodusFilePtr, NC_GLOBAL, "processor_info", proc_info);
       if (status == EX_NOERR) {
