@@ -131,6 +131,28 @@ int ex_get_field_metadata(int exoid, ex_field *field)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  /* The caller sizes `field` by ex_get_field_metadata_count(), which counts
+   * only the `Field@{name}@type` attributes.  Compute the same bound here so
+   * the loop below cannot populate entries past the caller's allocation when
+   * other `Field@{name}@{item}` attributes reference additional names. */
+  int field_count = 0;
+  for (int i = 0; i < att_count; i++) {
+    char attr_name[EX_MAX_NAME + 1];
+    int  status;
+    if ((status = nc_inq_attname(exoid, varid, i, attr_name)) != EX_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to get attribute named %s on %s with id %" PRId64, attr_name,
+               ex_name_of_object(field[0].entity_type), field[0].entity_id);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+    const char *fld_type = exi_get_metadata_attribute(attr_name, "Field@", 6);
+    if (fld_type != NULL && strcmp("type", fld_type) == 0) {
+      field_count++;
+    }
+  }
+
   /* Iterate through each Field metadata field and populate `field` */
   int count = 0;
   for (int i = 0; i < att_count; i++) {
@@ -163,6 +185,16 @@ int ex_get_field_metadata(int exoid, ex_field *field)
       }
 
       if (found == -1) {
+        if (count >= field_count) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: field metadata attribute %s references more field names than the %d "
+                   "counted via the `type` attributes on %s with id %" PRId64,
+                   attr_name, field_count, ex_name_of_object(field[0].entity_type),
+                   field[0].entity_id);
+          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
         which = count;
         strcpy(field[count].name, fld_name);
         /* Set default separator type... */

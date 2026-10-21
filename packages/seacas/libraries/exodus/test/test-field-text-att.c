@@ -163,6 +163,11 @@ int main(void)
     return 1;
   }
 
+  if (create_file() != 0 || overwrite_text_attribute("Field@extra_field@separator", 2) != 0 ||
+      expect_field_status(EX_FATAL) != 0) {
+    return 1;
+  }
+
   if (create_file() != 0 ||
       overwrite_text_attribute("Field@text_field@separator", EX_MAX_FIELD_NESTING + 1) != 0 ||
       expect_field_status(EX_FATAL) != 0) {
