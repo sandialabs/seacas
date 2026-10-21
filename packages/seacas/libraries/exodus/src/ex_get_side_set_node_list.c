@@ -512,7 +512,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
                   connect_offset + tri_table[side_num][0] - 1);
         get_nodes(exoid, side_set_node_list, node_pos + 1, connect,
                   connect_offset + tri_table[side_num][1] - 1);
-        if (num_nodes_per_elem > 3) /* 6-node TRI  */
+        if (num_nodes_per_elem >= 6) /* 6- or 7-node TRI  */
         {
           get_nodes(exoid, side_set_node_list, node_pos + 2, connect,
                     connect_offset + tri_table[side_num][2] - 1);
