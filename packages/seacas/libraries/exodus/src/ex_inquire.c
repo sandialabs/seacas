@@ -293,15 +293,49 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     else {
       /* returns the title of the database */
       /* Title is stored at root level... */
-      char tmp_title[2048];
-      if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, tmp_title)) != EX_NOERR) {
+      /* Query the stored attribute length first; nc_get_att_text copies the
+       * full stored length, so an unchecked read into a fixed-size buffer can
+       * overflow it for a file with an over-long title attribute. */
+      char    tmp_title[2048];
+      size_t  title_len  = 0;
+      nc_type title_type = 0;
+      if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type, &title_len)) !=
+              EX_NOERR ||
+          title_type != NC_CHAR) {
         *ret_char = '\0';
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
                  exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         return EX_FATAL;
       }
-      ex_copy_string(ret_char, tmp_title, MAX_LINE_LENGTH + 1);
+      if (title_len >= sizeof(tmp_title)) {
+        /* Title is longer than the stack buffer; read via a heap buffer of the
+         * stored length (result is truncated to MAX_LINE_LENGTH below). */
+        char *title = malloc(title_len + 1);
+        if (title == NULL ||
+            (status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, title)) != EX_NOERR) {
+          free(title);
+          *ret_char = '\0';
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
+                   exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          return EX_FATAL;
+        }
+        title[title_len] = '\0';
+        ex_copy_string(ret_char, title, MAX_LINE_LENGTH + 1);
+        free(title);
+      }
+      else {
+        if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, tmp_title)) != EX_NOERR) {
+          *ret_char = '\0';
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
+                   exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          return EX_FATAL;
+        }
+        tmp_title[title_len] = '\0';
+        ex_copy_string(ret_char, tmp_title, MAX_LINE_LENGTH + 1);
+      }
     }
     break;
 
