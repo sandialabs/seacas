@@ -298,6 +298,8 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
               ex_err_fn(exoid, __func__, errmsg, status);
               goto error_ret; /* exit define mode and return */
             }
+          }
+          else {
             exi_compress_variable(exoid, varid, 2);
           }
         }
