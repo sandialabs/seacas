@@ -171,9 +171,9 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
     size_t itotal_nodes = globals.Num_Internal_Nodes[iproc] + globals.Num_Border_Nodes[iproc] +
                           globals.Num_External_Nodes[iproc];
     globals.GNodes[iproc].resize(itotal_nodes);
-    if (ex_get_processor_node_maps(
-            lb_exoid, &globals.GNodes[iproc][0], &globals.GNodes[iproc][Int_Node_Num[iproc]],
-            &globals.GNodes[iproc][Int_Node_Num[iproc] + Bor_Node_Num[iproc]], iproc) < 0) {
+    INT *gnodes = Data(globals.GNodes[iproc]);
+    if (ex_get_processor_node_maps(lb_exoid, gnodes, gnodes + Int_Node_Num[iproc],
+                                   gnodes + Int_Node_Num[iproc] + Bor_Node_Num[iproc], iproc) < 0) {
       fmt::print(stderr, "[{}] ERROR, failed to get node map for Proc {}!\n", __func__, iproc);
       exit(1);
     }
@@ -183,8 +183,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
     globals.GElems[iproc].resize(itotal_elems);
     globals.Elem_Map[iproc].resize(itotal_elems);
 
-    if (ex_get_processor_elem_maps(lb_exoid, &globals.GElems[iproc][0],
-                                   &globals.GElems[iproc][Int_Elem_Num[iproc]], iproc) < 0) {
+    if (ex_get_processor_elem_maps(lb_exoid, Data(globals.GElems[iproc]),
+                                   Data(globals.GElems[iproc]) + Int_Elem_Num[iproc], iproc) < 0) {
       fmt::print(stderr, "[{}] ERROR, failed to get element map for Proc {}!\n", __func__, iproc);
       exit(1);
     }

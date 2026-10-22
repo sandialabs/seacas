@@ -618,10 +618,10 @@ namespace utest_util {
     /* Order the element communication maps by processor */
     for (int pcnt = 0; pcnt < m_numProcs; pcnt++) {
       /* Note that this sort is multi-key */
-      qsort4(&e_cmap_procs[pcnt][0],     /* 1st key */
-             &e_cmap_elems[pcnt][0],     /* 2nd key */
-             &e_cmap_neigh[pcnt][0],     /* 3rd key */
-             &e_cmap_sides[pcnt][0],     /* 4th key */
+      qsort4(Data(e_cmap_procs[pcnt]),   /* 1st key */
+             Data(e_cmap_elems[pcnt]),   /* 2nd key */
+             Data(e_cmap_neigh[pcnt]),   /* 3rd key */
+             Data(e_cmap_sides[pcnt]),   /* 4th key */
              e_cmap_procs[pcnt].size()); /* Size */
     }
     /*
