@@ -40,6 +40,11 @@ int ex_update(int exoid)
   assert(!file->in_define_mode && file->persist_define_mode == 0);
 #endif
 
+  /* nc_sync() does not complete outstanding non-blocking writes. */
+  if (exi_nb_flush(exoid) != EX_NOERR) {
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   int status;
   if ((status = nc_sync(exoid)) != EX_NOERR) {
     char errmsg[MAX_ERR_LENGTH];

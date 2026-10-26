@@ -75,7 +75,14 @@ int exi_put_partial_nodal_var(int exoid, int time_step, int nodal_var_index, int
     start[1] = 0;
   }
 
-  if (exi_comp_ws(exoid) == 4) {
+  if (exi_nb_enabled(exoid)) {
+    status = exi_nb_put_vara(exoid, varid, start, count, exi_comp_ws(exoid) == 4, nodal_var_vals);
+    if (status != EX_NOERR) {
+      EX_FUNC_LEAVE(EX_FATAL); /* exi_nb_put_vara has already reported */
+    }
+    status = EX_NOERR;
+  }
+  else if (exi_comp_ws(exoid) == 4) {
     status = nc_put_vara_float(exoid, varid, start, count, nodal_var_vals);
   }
   else {
