@@ -75,8 +75,8 @@ namespace {
                           std::string *opened = nullptr)
   {
     Ioss::Init::Initializer init_db;
-    Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", base, Ioss::READ_RESTART, self_comm(),
-                                                   props);
+    Ioss::DatabaseIO       *db =
+        Ioss::IOFactory::create("exodus", base, Ioss::READ_RESTART, self_comm(), props);
     if (db == nullptr || !db->ok(false)) {
       delete db;
       return -1;
@@ -168,8 +168,8 @@ namespace {
   TEST_F(SerialParallelFilename, OutputSingleRankIsUnsuffixed)
   {
     Ioss::Init::Initializer init_db;
-    Ioss::DatabaseIO       *db = Ioss::IOFactory::create("exodus", base, Ioss::WRITE_RESTART,
-                                                         self_comm(), serial_parallel_props(1, 0));
+    Ioss::DatabaseIO *db = Ioss::IOFactory::create("exodus", base, Ioss::WRITE_RESTART, self_comm(),
+                                                   serial_parallel_props(1, 0));
     ASSERT_NE(db, nullptr);
     created.push_back(base);
     created.push_back(base + ".1.0");
