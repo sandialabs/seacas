@@ -29,6 +29,11 @@ TRIBITS_ADD_EXECUTABLE(
  SOURCES unitMain.C UnitTestFlushHandler.C
 )
 
+TRIBITS_ADD_EXECUTABLE(
+ Utst_serialparallelfilename
+ SOURCES unitMain.C UnitTestSerialParallelFilename.C
+)
+
 TRIBITS_ADD_TEST(
         Utst_generatedmesh
         NAME Utst_generatedmesh
@@ -105,6 +110,12 @@ TRIBITS_ADD_TEST(
         Utst_flushhandler
         NAME  Utst_flushhandler
         NUM_MPI_PROCS 4
+)
+
+TRIBITS_ADD_TEST(
+        Utst_serialparallelfilename
+        NAME Utst_serialparallelfilename
+        NUM_MPI_PROCS 1
 )
 
 TRIBITS_INCLUDE_DIRECTORIES(
