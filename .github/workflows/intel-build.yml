@@ -61,7 +61,7 @@ jobs:
 
         # 3. Complete installation
         sudo apt-get update
-        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp intel-oneapi-mpi-devel
+        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran intel-oneapi-mpi-devel
  
     - name: Install System dependencies
       shell: bash -l {0}
@@ -132,7 +132,7 @@ jobs:
 
           # 3. Complete installation
           sudo apt-get update
-          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp intel-oneapi-mpi-devel
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran intel-oneapi-mpi-devel
           
       - name: Install System dependencies
         shell: bash -l {0}
@@ -168,6 +168,8 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           echo "------------"
           icx --version
+          echo "------------"
+          ifx --version
           echo "------------"
           ls /opt/intel/oneapi/
           echo "------------"
