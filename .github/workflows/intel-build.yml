@@ -56,14 +56,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y wget gnupg
 
-        # Download key and configure repo
-        wget -O- https://intel.com \
-          | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+        # 1. Download the key with a custom User-Agent to avoid the 403 Forbidden error
+        wget -U "Mozilla/5.0" -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+        | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 
+        # 2. Use the correct full repository URL (NOT just intel.com)
         echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://intel.com all main" \
-          | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        | sudo tee /etc/apt/sources.list.d/oneAPI.list
 
-        # Install oneMPI
+        # 3. Update and install
         sudo apt-get update
         sudo apt-get install -y intel-oneapi-mpi
  
@@ -138,17 +139,15 @@ jobs:
           #sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           #sudo apt-get update
           
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-
-          # Download key and configure repo
-          wget -O- https://intel.com \
+          # 1. Download the key with a custom User-Agent to avoid the 403 Forbidden error
+          wget -U "Mozilla/5.0" -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
           | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 
+          # 2. Use the correct full repository URL (NOT just intel.com)
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://intel.com all main" \
           | sudo tee /etc/apt/sources.list.d/oneAPI.list
 
-          # Install oneMPI
+          # 3. Update and install
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-mpi
           
