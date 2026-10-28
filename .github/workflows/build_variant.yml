@@ -39,7 +39,7 @@ jobs:
 
       - name: Install System dependencies
         shell: bash -l {0}
-        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev
+        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev libxml2-dev
 
       - name: Setup CMake 4
         uses: jwlawson/actions-setup-cmake@v2
@@ -397,7 +397,7 @@ jobs:
 
       - name: Install System dependencies
         shell: bash -l {0}
-        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev
+        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev libxml2-dev
 
       - name: Fetch TPL Cache
         id: cache-TPL
