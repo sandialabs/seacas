@@ -167,15 +167,15 @@ jobs:
           cd build
           source /opt/intel/oneapi/setvars.sh
           echo "------------"
-          mpicc --version
+          icx --version
           echo "------------"
           ls /opt/intel/oneapi/
           echo "------------"
-          ls /opt/intel/oneapi/mpi/latest
+          ls /opt/intel/oneapi/compiler/latest
           echo "------------"
-          ls /opt/intel/oneapi/mpi/latest/bin/
+          ls /opt/intel/oneapi/compiler/latest/bin/
           echo "------------"
-          export PATH=/opt/intel/oneapi/mpi/latest/bin/:$PATH
+          export PATH=/opt/intel/oneapi/compiler/latest/bin/:$PATH
           export LD_LIBRARY_PATH=/opt/intel/oneapi/mpi/latest/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
