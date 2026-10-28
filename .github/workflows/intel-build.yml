@@ -175,8 +175,12 @@ jobs:
           echo "------------"
           ls /opt/intel/oneapi/compiler/latest/bin/
           echo "------------"
-          export PATH=/opt/intel/oneapi/compiler/latest/bin/:$PATH
-          export LD_LIBRARY_PATH=/opt/intel/oneapi/mpi/latest/lib/:$LD_LIBRARY_PATH
+          ls /opt/intel/oneapi/mpi/latest
+          echo "------------"
+          ls /opt/intel/oneapi/mpi/latest/bin/
+          echo "------------"
+          export PATH=/opt/intel/oneapi/compiler/latest/bin/:/opt/intel/oneapi/mpi/latest/bin/:$PATH
+          export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/latest/lib/:/opt/intel/oneapi/mpi/latest/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
