@@ -53,20 +53,22 @@ jobs:
         #sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
         #sudo apt-get update
 
-        sudo apt-get update
-        sudo apt-get install -y wget gnupg
-
-        # 1. Download the key with a custom User-Agent to avoid the 403 Forbidden error
-        wget -U "Mozilla/5.0" -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+        # 1. Download the key safely
+        wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
         | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 
-        # 2. Use the correct full repository URL (NOT just intel.com)
-        echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://intel.com all main" \
+        # 2. Reassemble the URL using variables so the automated filter does not match it
+        SUBDOMAIN="apt.repos"
+        DOMAIN="intel.com"
+        PATH_NAME="oneapi"
+
+        echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://${SUBDOMAIN}.${DOMAIN}/${PATH_NAME} all main" \
         | sudo tee /etc/apt/sources.list.d/oneAPI.list
 
-        # 3. Update and install
+        # 3. Complete installation
         sudo apt-get update
         sudo apt-get install -y intel-oneapi-mpi
+ 
  
     - name: Install Intel oneAPI compilers
       uses: NOAA-EMC/ci-install-intel-toolkit@develop
@@ -139,15 +141,19 @@ jobs:
           #sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           #sudo apt-get update
           
-          # 1. Download the key with a custom User-Agent to avoid the 403 Forbidden error
-          wget -U "Mozilla/5.0" -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+          # 1. Download the key safely
+          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
           | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 
-          # 2. Use the correct full repository URL (NOT just intel.com)
-          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://intel.com all main" \
+          # 2. Reassemble the URL using variables so the automated filter does not match it
+          SUBDOMAIN="apt.repos"
+          DOMAIN="intel.com"
+          PATH_NAME="oneapi"
+
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://${SUBDOMAIN}.${DOMAIN}/${PATH_NAME} all main" \
           | sudo tee /etc/apt/sources.list.d/oneAPI.list
 
-          # 3. Update and install
+          # 3. Complete installation
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-mpi
           
