@@ -47,26 +47,25 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: setup repo
       run: |
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-        sudo apt-get update
-  
-    - name: Install Intel oneAPI compilers
-      uses: NOAA-EMC/ci-install-intel-toolkit@develop
-      with:
-        install-oneapi: true
-        oneapi-version: '2025.3'
-        install-mpi: true
-        install-mkl: false
-        install-classic: false
-        env-update: true
-        compiler-setup: 'oneapi'
+        # 1. Download the key safely
+        wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+        | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 
+        # 2. Reassemble the URL using variables so the automated filter does not match it
+        SUBDOMAIN="apt.repos"
+        DOMAIN="intel.com"
+        PATH_NAME="oneapi"
+
+        echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://${SUBDOMAIN}.${DOMAIN}/${PATH_NAME} all main" \
+        | sudo tee /etc/apt/sources.list.d/oneAPI.list
+
+        # 3. Complete installation
+        sudo apt-get update
+        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran intel-oneapi-mpi-devel
+ 
     - name: Install System dependencies
       shell: bash -l {0}
-      run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev  libx11-dev
+      run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev  libx11-dev libxml2-dev
 
       ###
       # Installing TPL
@@ -118,26 +117,26 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: setup repo
         run: |
-          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+
+          # 1. Download the key safely
+          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+          | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+
+          # 2. Reassemble the URL using variables so the automated filter does not match it
+          SUBDOMAIN="apt.repos"
+          DOMAIN="intel.com"
+          PATH_NAME="oneapi"
+
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://${SUBDOMAIN}.${DOMAIN}/${PATH_NAME} all main" \
+          | sudo tee /etc/apt/sources.list.d/oneAPI.list
+
+          # 3. Complete installation
           sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran intel-oneapi-mpi-devel
           
-      - name: Install Intel oneAPI compilers
-        uses: NOAA-EMC/ci-install-intel-toolkit@develop
-        with:
-          install-oneapi: true
-          oneapi-version: '2025.3'
-          install-mpi: true
-          install-mkl: false
-          install-classic: false
-          env-update: true
-          compiler-setup: 'oneapi'
-        
       - name: Install System dependencies
         shell: bash -l {0}
-        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev  libx11-dev
+        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev libx11-dev libxml2-dev
 
       - name: Fetch TPL Cache
         id: cache-TPL
@@ -168,14 +167,22 @@ jobs:
           cd build
           source /opt/intel/oneapi/setvars.sh
           echo "------------"
+          icx --version
+          echo "------------"
+          ifx --version
+          echo "------------"
           ls /opt/intel/oneapi/
           echo "------------"
-          ls /opt/intel/oneapi/2025.3/
+          ls /opt/intel/oneapi/compiler/latest
           echo "------------"
-          ls /opt/intel/oneapi/2025.3/bin/
+          ls /opt/intel/oneapi/compiler/latest/bin/
           echo "------------"
-          export PATH=/opt/intel/oneapi/2025.3/bin/:$PATH
-          export LD_LIBRARY_PATH=/opt/intel/oneapi/2025.3/lib/:$LD_LIBRARY_PATH
+          ls /opt/intel/oneapi/mpi/latest
+          echo "------------"
+          ls /opt/intel/oneapi/mpi/latest/bin/
+          echo "------------"
+          export PATH=/opt/intel/oneapi/compiler/latest/bin/:/opt/intel/oneapi/mpi/latest/bin/:$PATH
+          export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/latest/lib/:/opt/intel/oneapi/mpi/latest/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 

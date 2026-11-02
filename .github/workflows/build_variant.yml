@@ -39,7 +39,7 @@ jobs:
 
       - name: Install System dependencies
         shell: bash -l {0}
-        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev
+        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev libxml2-dev
 
       - name: Setup CMake 4
         uses: jwlawson/actions-setup-cmake@v2
@@ -397,7 +397,7 @@ jobs:
 
       - name: Install System dependencies
         shell: bash -l {0}
-        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev
+        run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison libzip-dev openmpi-bin libopenmpi-dev libx11-dev libboost-all-dev libxml2-dev
 
       - name: Fetch TPL Cache
         id: cache-TPL
@@ -460,6 +460,10 @@ jobs:
           cd build
           sudo sysctl vm.mmap_rnd_bits=28
           export PMIX_MCA_gds=hash
-          ctest -j 4 --output-on-failure --exclude-regex test_exo
+          echo "called_from_lib:libmpi.so" > tsan.supp
+          echo "called_from_lib:libpmix.so" >> tsan.supp
+          echo "called_from_lib:libprrte.so" >> tsan.supp
+          export TSAN_OPTIONS="suppressions=tsan.supp"
+          setarch $(uname -m) -R ctest -j 4 --output-on-failure --exclude-regex test_exo
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
 
