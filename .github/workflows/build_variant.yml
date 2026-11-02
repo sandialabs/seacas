@@ -460,6 +460,10 @@ jobs:
           cd build
           sudo sysctl vm.mmap_rnd_bits=28
           export PMIX_MCA_gds=hash
+          echo "called_from_lib:libmpi.so" > tsan.supp
+          echo "called_from_lib:libpmix.so" >> tsan.supp
+          echo "called_from_lib:libprrte.so" >> tsan.supp
+          export TSAN_OPTIONS="suppressions=tsan.supp"
           setarch $(uname -m) -R ctest -j 4 --output-on-failure --exclude-regex test_exo
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
 
