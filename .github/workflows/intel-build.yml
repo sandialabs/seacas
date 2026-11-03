@@ -203,6 +203,11 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
+          # Single-node CI: keep Intel MPI/libfabric off the Azure MANA NIC,
+          # which PSM3 can't use (no UD QP support).
+          export I_MPI_FABRICS=shm
+          export FI_PROVIDER=shm
+          export I_MPI_DEBUG=5        # temporary: confirms which provider is chosen
           ctest -j 4 --output-on-failure
         if: ${{ success() }}
 
