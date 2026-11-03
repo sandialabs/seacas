@@ -16,7 +16,7 @@ concurrency:
 jobs:
   build-deps:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
 
     strategy:
       matrix:
@@ -91,7 +91,7 @@ jobs:
   seacas-build:
 
     needs: build-deps
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
 
     strategy:
       matrix:

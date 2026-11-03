@@ -20,7 +20,7 @@ jobs:
 
   build-deps:
 
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
 
     strategy:
       matrix:
