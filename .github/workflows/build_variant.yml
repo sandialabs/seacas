@@ -20,7 +20,7 @@ permissions:
 jobs:
   build-deps:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
 
     strategy:
       matrix:
@@ -31,7 +31,7 @@ jobs:
     steps:
 
       - name: Harden Runner
-        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -72,7 +72,7 @@ jobs:
 
     # The type of runner that the job will run on
     name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
       matrix:
@@ -82,7 +82,6 @@ jobs:
         config:
         - {
             name: "Debug serial build",
-            os: ubuntu-latest,
             compiler: "gnu",
             debug: "YES",
             threadsafe: "NO",
@@ -99,7 +98,6 @@ jobs:
           }
         - {
             name: "Debug parallel build",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "YES",
             threadsafe: "NO",
@@ -116,7 +114,6 @@ jobs:
           }
         - {
             name: "Threadsafe ON, No Fortran",
-            os: ubuntu-latest,
             compiler: "gnu",
             debug: "YES",
             threadsafe: "YES",
@@ -133,7 +130,6 @@ jobs:
           }
         - {
             name: "Threadsafe ON, Parallel, No Fortran",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "YES",
             threadsafe: "YES",
@@ -150,7 +146,6 @@ jobs:
           }
         - {
             name: "Sanitize address, no fortran",
-            os: ubuntu-latest,
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
@@ -167,7 +162,6 @@ jobs:
           }
         - {
             name: "Sanitize undefined",
-            os: ubuntu-latest,
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
@@ -184,7 +178,6 @@ jobs:
           }
         - {
             name: "Sanitize integer",
-            os: ubuntu-latest,
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
@@ -201,7 +194,6 @@ jobs:
           }
         - {
             name: "GTest Enabled",
-            os: ubuntu-latest,
             compiler: "gnu",
             debug: "YES",
             threadsafe: "NO",
@@ -218,7 +210,6 @@ jobs:
           }
         - {
             name: "No applications, legacy, or fortran",
-            os: ubuntu-latest,
             compiler: "clang",
             debug: "NO",
             threadsafe: "NO",
@@ -235,7 +226,6 @@ jobs:
           }
         - {
             name: "CATALYST2, parallel",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -252,7 +242,6 @@ jobs:
           }
         - {
             name: "KOKKOS, parallel",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -269,7 +258,6 @@ jobs:
           }
         - {
             name: "No deprecated exodus functions",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -286,7 +274,6 @@ jobs:
           }
         - {
             name: "Use modern CMake configure of netCDF and HDF5 packages with GTest",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -303,7 +290,6 @@ jobs:
           }
         - {
             name: "ADIOS2 enabled",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -320,7 +306,6 @@ jobs:
           }
         - {
             name: "FAODEL and METIS enabled",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -337,7 +322,6 @@ jobs:
           }
         - {
             name: "C++20 build serial clang",
-            os: ubuntu-latest,
             compiler: "clang",
             debug: "NO",
             threadsafe: "NO",
@@ -354,7 +338,6 @@ jobs:
           }
         - {
             name: "C++20 build serial gnu",
-            os: ubuntu-latest,
             compiler: "gnu",
             debug: "NO",
             threadsafe: "NO",
@@ -371,7 +354,6 @@ jobs:
           }
         - {
             name: "C++20 build parallel",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
@@ -389,7 +371,7 @@ jobs:
     steps:
 
       - name: Harden Runner
-        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 

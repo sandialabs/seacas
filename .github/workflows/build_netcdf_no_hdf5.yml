@@ -21,7 +21,7 @@ jobs:
 
   build-deps:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
 
     strategy:
       matrix:
@@ -30,7 +30,7 @@ jobs:
     steps:
 
       - name: Harden Runner
-        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -63,7 +63,7 @@ jobs:
 
     # The type of runner that the job will run on
     name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
       matrix:
@@ -71,21 +71,18 @@ jobs:
         config:
         - {
             name: "Debug serial build",
-            os: ubuntu-latest,
             compiler: "gnu",
             debug: "YES",
             extra: "",
           }
         - {
             name: "Debug parallel build",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "YES",
             extra: "",
           }
         - {
             name: "Use modern CMake configure of netCDF package",
-            os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
             extra: "MODERN=YES",
@@ -93,7 +90,7 @@ jobs:
     steps:
 
       - name: Harden Runner
-        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 

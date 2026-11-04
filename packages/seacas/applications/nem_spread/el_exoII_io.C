@@ -1856,7 +1856,7 @@ void NemSpread<T, INT>::find_elem_block(std::vector<INT> &proc_elem_blk, int ipr
    */
 
   /* Internal Elements */
-  if (check_monot(&globals.GElems[iproc][0], globals.Num_Internal_Elems[iproc])) {
+  if (check_monot(Data(globals.GElems[iproc]), globals.Num_Internal_Elems[iproc])) {
     size_t tmp_cnt = globals.Num_Internal_Elems[iproc];
     int    j       = 0;
     size_t i       = 0;
@@ -1892,7 +1892,7 @@ void NemSpread<T, INT>::find_elem_block(std::vector<INT> &proc_elem_blk, int ipr
   }
 
   /* Border Elements */
-  if (check_monot(&globals.GElems[iproc][globals.Num_Internal_Elems[iproc]],
+  if (check_monot(Data(globals.GElems[iproc]) + globals.Num_Internal_Elems[iproc],
                   globals.Num_Border_Elems[iproc])) {
     INT tmp_cnt = globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc];
     int j       = 0;

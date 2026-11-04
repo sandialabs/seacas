@@ -1649,7 +1649,7 @@ namespace Iogn {
   Ioss::NameList GeneratedMesh::sideset_touching_blocks(int64_t set_id) const
   {
     if (set_id <= 0 || (size_t)set_id > sidesets.size()) {
-      IOSS_ERROR(fmt::format("set_id out of range in sideset_touching_blocks: ", set_id));
+      IOSS_ERROR(fmt::format("set_id out of range in sideset_touching_blocks: {}", set_id));
     }
 
     Ioss::NameList result;
