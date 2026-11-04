@@ -13,7 +13,7 @@ jobs:
     permissions:
       issues: write  # for actions/stale to close stale issues
       pull-requests: write  # for actions/stale to close stale PRs
-    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.UBUNTU_RUNNER }}
 
     steps:
     - name: Harden Runner

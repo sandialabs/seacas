@@ -19,7 +19,7 @@ jobs:
 
   build-deps:
 
-    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.UBUNTU_RUNNER }}
 
     strategy:
       matrix:
@@ -65,7 +65,7 @@ jobs:
   seacas-build:
 
     needs: build-deps
-    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.UBUNTU_RUNNER }}
 
     strategy:
       matrix:

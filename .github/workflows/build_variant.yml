@@ -20,7 +20,7 @@ permissions:
 jobs:
   build-deps:
 
-    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.UBUNTU_RUNNER }}
 
     strategy:
       matrix:
@@ -72,7 +72,7 @@ jobs:
 
     # The type of runner that the job will run on
     name: ${{ matrix.config.name }}
-    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.UBUNTU_RUNNER }}
     strategy:
       fail-fast: false
       matrix:
