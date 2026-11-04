@@ -1,10 +1,10 @@
 #include "exodusII.h"
 #include <stdio.h>
 
-#define EXCHECK(funcall)                                                                            \
+#define EXCHECK(funcall)                                                                           \
   do {                                                                                             \
-    if ((funcall) != EX_NOERR) {                                                                    \
-      fprintf(stderr, "%s failed\n", #funcall);                                                     \
+    if ((funcall) != EX_NOERR) {                                                                   \
+      fprintf(stderr, "%s failed\n", #funcall);                                                    \
       return 1;                                                                                    \
     }                                                                                              \
   } while (0)
