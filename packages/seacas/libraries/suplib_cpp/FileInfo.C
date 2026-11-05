@@ -6,6 +6,7 @@
 
 #include <FileInfo.h>
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 
