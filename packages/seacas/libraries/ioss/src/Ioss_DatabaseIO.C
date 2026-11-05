@@ -589,6 +589,15 @@ namespace Ioss {
         int proc_count  = properties.get("processor_count").get_int();
         int my_proc     = properties.get("my_processor").get_int();
         decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
+
+        // Most codes omit the ".N.r" suffix for a single rank, but some (e.g. Sculpt) write
+        // "<name>.1.0".  For input, use that file if the unsuffixed one does not exist.
+        if (is_input() && proc_count == 1 && !Ioss::FileInfo(decodedFilename).exists()) {
+          auto suffixed = fmt::format("{}.1.{}", get_filename(), my_proc);
+          if (Ioss::FileInfo(suffixed).exists()) {
+            decodedFilename = suffixed;
+          }
+        }
       }
       else {
         decodedFilename = get_filename();
