@@ -24,7 +24,7 @@ permissions:
 jobs:
   formatting-check:
     name: Commit clang-format changes
-    runs-on: ${{ vars.UBUNTU_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
 
     permissions:
         contents: write # In order to allow EndBug/add-and-commit to commit changes

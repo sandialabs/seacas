@@ -20,7 +20,7 @@ permissions: read-all
 jobs:
   analysis:
     name: Scorecard analysis
-    runs-on: ubuntu-24.04  # literal label required by OpenSSF Scorecard result publishing
+    runs-on: ubuntu-24.04
     permissions:
       # Needed to upload the results to code-scanning dashboard.
       security-events: write
