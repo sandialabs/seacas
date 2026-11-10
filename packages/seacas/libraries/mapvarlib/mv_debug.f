@@ -4,7 +4,7 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C
 C    See packages/seacas/LICENSE for details
 
-      subroutine debug(routine)
+      subroutine mv_debug(routine)
       character*(*) routine
 
       include 'tapes.blk'
