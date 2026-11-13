@@ -168,7 +168,7 @@ namespace Ioss {
     return false;
   }
 
-  std::string_view FileInfo::filesystem_type() const
+  std::string FileInfo::filesystem_type() const
   {
 #if !defined(__IOSS_WINDOWS__)
     auto tmp_path = pathname();
