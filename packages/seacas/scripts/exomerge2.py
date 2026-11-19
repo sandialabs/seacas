@@ -1956,22 +1956,36 @@ class ExodusModel(object):
 
     @staticmethod
     def _transform_eval_expression(expression, variable_names):
-        """Transform a string expression into one usable by eval."""
-        eval_expression = ' %s ' % expression
-        for name in variable_names:
-            eval_expression = re.sub('([^a-zA-Z0-9_])%s([^a-zA-Z0-9_])' % name,
-                                     r"\1var['%s']\2" % name,
-                                     eval_expression)
-        # add "math." to supported mathematical functions
+        """
+        Transform a string expression into one usable by eval.
+
+        Variable names come from the input file and must be treated as
+        untrusted data.  All rewriting is done in a single regex pass so
+        that text inserted for one name is never rescanned: each name is
+        matched literally (re.escape) and emitted only as a Python string
+        literal (repr), so a name can never contribute code to the
+        expression.
+        """
         # Note: abs is a built-in function, it is not math.abs
-        for name in ['atan', 'sinh', 'cosh', 'tanh', 'exp',
-                     'sqrt', 'sin', 'cos', 'tan']:
-            eval_expression = re.sub('([^a-zA-Z0-9_])%s([^a-zA-Z0-9_])' % name,
-                                     r'\1math.%s\2' % name,
-                                     eval_expression)
-        # convert powers to from "^" to "**" format
-        eval_expression = re.sub(r'\^', '**', eval_expression)
-        return eval_expression.strip()
+        math_functions = ['atan', 'sinh', 'cosh', 'tanh', 'exp',
+                          'sqrt', 'sin', 'cos', 'tan']
+        names = set(name for name in variable_names if name)
+        # longest first so a name is never shadowed by one of its prefixes
+        tokens = sorted(names | set(math_functions), key=len, reverse=True)
+        pattern = re.compile(
+            r'(?<![a-zA-Z0-9_])(%s)(?![a-zA-Z0-9_])|\^'
+            % '|'.join(re.escape(token) for token in tokens))
+
+        def replace(match):
+            token = match.group(1)
+            if token is None:
+                # convert powers from "^" to "**" format
+                return '**'
+            if token in names:
+                return 'var[%r]' % token
+            return 'math.' + token
+
+        return pattern.sub(replace, expression).strip()
 
     def get_element_block_dimension(self, element_block_id):
         """
