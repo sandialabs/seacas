@@ -44,6 +44,7 @@ import os
 import sys
 import re
 import math
+import ast
 
 # import the exomerge module
 ACCESS = os.getenv("ACCESS", "@ACCESSDIR@")
@@ -2055,6 +2056,42 @@ class ExomergeUnitTester:
             sorted_ip_ip_names, self.model._sort_field_names(unsorted_ip_names)
         )
 
+    def _test_transform_eval_expression(self):
+        """
+        Unittest for ExodusModel._transform_eval_expression.
+
+        Variable names are read from the input file, so they must only ever
+        appear in the transformed expression as string keys of var[...],
+        whatever characters they contain.
+        """
+        transform = exomerge.ExodusModel._transform_eval_expression
+        # ordinary use: every occurrence is replaced, math functions are
+        # qualified and "^" becomes "**"
+        assert transform("a+a", ["a"]) == "var['a']+var['a']"
+        assert transform(" sqrt(x)^2 ", ["x"]) == "math.sqrt(var['x'])**2"
+        assert transform("ab + a", ["a", "ab"]) == "var['ab'] + var['a']"
+        # awkward names taken verbatim from a file: quotes, regex
+        # metacharacters, and names containing other names
+        names = ["x", "a'b", 'c"d', "e.f", "g|x", "h ] + [ x", "sin", "p^q"]
+        values = dict((name, float(i + 1)) for i, name in enumerate(names))
+        expression = " + ".join(names)
+        transformed = transform(expression, names)
+        tree = ast.parse(transformed, mode="eval")
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Name):
+                assert node.id == "var", transformed
+            elif isinstance(node, ast.Subscript):
+                key = node.slice
+                assert isinstance(key, ast.Constant), transformed
+                assert key.value in names, transformed
+            else:
+                assert isinstance(
+                    node,
+                    (ast.Expression, ast.BinOp, ast.Add, ast.Load, ast.Constant),
+                ), "unexpected %s in %s" % (type(node).__name__, transformed)
+        result = eval("lambda var: " + transformed)(values)
+        assert result == sum(values.values()), transformed
+
     def _test_shell_topology(self):
         """
         Unittest for newly added shell topology definitions.
@@ -2159,3 +2196,5 @@ if __name__ == "__main__":
     tester._test_shell_inversion()
     print("[6]_test_shell_external_faces")
     tester._test_shell_external_faces()
+    print("[7]_test_transform_eval_expression")
+    tester._test_transform_eval_expression()
