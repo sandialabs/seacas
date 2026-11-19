@@ -73,16 +73,18 @@ int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)
     EX_FUNC_LEAVE(EX_NOERR);
   }
 
+  /* The caller's buffer holds num_entries values (the length of the
+   * entity-count dimension); never read more than that. */
+  size_t num_entries;
+  if ((status = nc_inq_dimlen(exoid, dimid, &num_entries)) != EX_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss in file id %d", tname,
+             exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   int mapid;
   if (nc_inq_varid(exoid, vmap, &mapid) != EX_NOERR) {
-    size_t num_entries;
-    if ((status = nc_inq_dimlen(exoid, dimid, &num_entries)) != EX_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss in file id %d", tname,
-               exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-
     /* generate default map of 1..n, where n is num_entries */
     if (ex_int64_status(exoid) & EX_MAPS_INT64_API) {
       int64_t *lmap = (int64_t *)map;
@@ -100,12 +102,25 @@ int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)
     EX_FUNC_LEAVE(EX_NOERR);
   }
 
+  /* The map variable's own shape comes from the file and may not match
+   * the entity count; read exactly num_entries values from a 1-D variable
+   * (netCDF reports an error if the variable is shorter). */
+  int ndims;
+  if ((status = nc_inq_varndims(exoid, mapid, &ndims)) != EX_NOERR || ndims != 1) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: %s id map in file id %d is not a one-dimensional variable", tname, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status != EX_NOERR ? status : EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   /* read in the id map  */
+  size_t start[] = {0};
+  size_t count[] = {num_entries};
   if (ex_int64_status(exoid) & EX_MAPS_INT64_API) {
-    status = nc_get_var_longlong(exoid, mapid, map);
+    status = nc_get_vara_longlong(exoid, mapid, start, count, map);
   }
   else {
-    status = nc_get_var_int(exoid, mapid, map);
+    status = nc_get_vara_int(exoid, mapid, start, count, map);
   }
 
   if (status != EX_NOERR) {
