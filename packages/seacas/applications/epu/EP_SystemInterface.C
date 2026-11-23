@@ -503,7 +503,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
       FileInfo file(basename_);
       auto     path = file.pathname();
       if (path.empty()) {
-        path = ".";
+        path = '.';
       }
 #if defined(__SUP_WINDOWS__)
       rootDirectory_ = _fullpath(nullptr, path.c_str(), _MAX_PATH);
