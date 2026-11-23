@@ -85,6 +85,13 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-inquire-ss-node-len-int64
+  SOURCES test-inquire-ss-node-len-int64.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
   testcp-coord-type
   SOURCES testcp-coord-type.c
   COMM mpi serial

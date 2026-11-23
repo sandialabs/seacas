@@ -571,8 +571,17 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         }
 
         if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
+          id = ((int64_t *)ids)[i];
+        }
+        else {
+          id = ((int *)ids)[i];
+        }
+
+        /* ex_get_side_set_node_list_len sizes its void_int output by
+         * EX_BULK_INT64_API (a count, not an id), so tmp_len's width must be
+         * selected by that same flag. */
+        if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
           int64_t tmp_len = 0;
-          id              = ((int64_t *)ids)[i];
           status          = ex_get_side_set_node_list_len(exoid, id, &tmp_len);
           if (status != EX_FATAL) {
             *ret_int += tmp_len;
@@ -580,7 +589,6 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         }
         else {
           int tmp_len = 0;
-          id          = ((int *)ids)[i];
           status      = ex_get_side_set_node_list_len(exoid, id, &tmp_len);
           if (status != EX_FATAL) {
             *ret_int += tmp_len;
