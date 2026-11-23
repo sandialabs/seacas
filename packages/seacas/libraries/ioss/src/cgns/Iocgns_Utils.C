@@ -2364,6 +2364,19 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
 
   // Read the timestep time values.
   CGCHECK(cg_goto(cgns_file_ptr, base, "BaseIterativeData_t", 1, "end"));
+  char                 array_name[CGNS_MAX_NAME_LENGTH + 1];
+  CGNS_ENUMT(DataType_t) data_type;
+  int                  data_dimension = 0;
+  cgsize_t             dimension_vector[12];
+  CGCHECK(cg_array_info(1, array_name, &data_type, &data_dimension, dimension_vector));
+  if (data_dimension != 1 || dimension_vector[0] != num_timesteps) {
+    IOSS_ERROR(fmt::format(
+        "ERROR: CGNS: TimeValues array has dimension {} with {} values, but BaseIterativeData "
+        "declares {} time steps. TimeValues must be a one-dimensional array matching the number "
+        "of steps.",
+        data_dimension, data_dimension > 0 ? dimension_vector[0] : 0, num_timesteps));
+  }
+
   std::vector<double> times(num_timesteps);
   CGCHECK(cg_array_read_as(1, CGNS_ENUMV(RealDouble), Data(times)));
 

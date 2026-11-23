@@ -10,6 +10,7 @@
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include "Ioss_CodeTypes.h"
 #include "Ionit_Initializer.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_ParallelUtils.h"
@@ -32,17 +33,23 @@ void cgns_check(int error)
   REQUIRE(error == CG_OK);
 }
 
-void create_structured_file(CGNS_ENUMT(PointSetType_t) point_set_type, cgsize_t point_count)
+int create_file_with_base()
 {
   int file = 0;
   cgns_check(cg_open(filename, CG_MODE_WRITE, &file));
 
   int base = 0;
   cgns_check(cg_base_write(file, "Base", 3, 3, &base));
+  return file;
+}
+
+void create_structured_file(CGNS_ENUMT(PointSetType_t) point_set_type, cgsize_t point_count)
+{
+  int file = create_file_with_base();
 
   cgsize_t size[9] = {3, 3, 3, 2, 2, 2, 0, 0, 0};
   int      zone    = 0;
-  cgns_check(cg_zone_write(file, base, "Zone1", size, CGNS_ENUMV(Structured), &zone));
+  cgns_check(cg_zone_write(file, 1, "Zone1", size, CGNS_ENUMV(Structured), &zone));
 
   std::vector<cgsize_t> point_set;
   if (point_set_type == CGNS_ENUMV(PointRange)) {
@@ -58,8 +65,19 @@ void create_structured_file(CGNS_ENUMT(PointSetType_t) point_set_type, cgsize_t 
   }
 
   int boco = 0;
-  cgns_check(cg_boco_write(file, base, zone, "wall", CGNS_ENUMV(BCWall), point_set_type,
+  cgns_check(cg_boco_write(file, 1, zone, "wall", CGNS_ENUMV(BCWall), point_set_type,
                            point_count, point_set.data(), &boco));
+  cgns_check(cg_close(file));
+}
+
+void create_transient_file(int declared_steps, const std::vector<double> &time_values)
+{
+  int file = create_file_with_base();
+  cgns_check(cg_biter_write(file, 1, "TimeIterValues", declared_steps));
+  cgns_check(cg_goto(file, 1, "BaseIterativeData_t", 1, "end"));
+  cgsize_t time_value_count = time_values.size();
+  cgns_check(cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, &time_value_count,
+                            time_values.data()));
   cgns_check(cg_close(file));
 }
 
@@ -71,6 +89,15 @@ std::unique_ptr<Ioss::Region> open_region()
   auto  region = std::make_unique<Ioss::Region>(db_io);
   REQUIRE(db_io->ok());
   return region;
+}
+
+std::vector<double> read_step_times()
+{
+  Ioss::PropertyManager properties;
+  auto *db_io = new Iocgns::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
+                                       Ioss::ParallelUtils::comm_world(), properties);
+  REQUIRE(db_io->ok());
+  return db_io->get_db_step_times();
 }
 } // namespace
 
@@ -90,7 +117,7 @@ int main(int argc, char *argv[])
   return return_code;
 }
 
-TEST_CASE("Iocgns validates structured boundary-condition point-set shape")
+TEST_CASE("Iocgns validates CGNS metadata before bounded reads")
 {
   Ioss::Init::Initializer init_db;
 
@@ -110,5 +137,21 @@ TEST_CASE("Iocgns validates structured boundary-condition point-set shape")
   {
     create_structured_file(CGNS_ENUMV(PointList), 1);
     CHECK_THROWS_AS(open_region(), std::runtime_error);
+  }
+
+  SECTION("TimeValues matching NumberOfSteps is accepted")
+  {
+    create_transient_file(2, {1.0, 2.0});
+    std::vector<double> times;
+    REQUIRE_NOTHROW(times = read_step_times());
+    REQUIRE(times.size() == 2);
+    CHECK(times[0] == 1.0);
+    CHECK(times[1] == 2.0);
+  }
+
+  SECTION("oversized TimeValues array is rejected before reading into the timestep buffer")
+  {
+    create_transient_file(1, {1.0, 2.0, 3.0});
+    CHECK_THROWS_AS(read_step_times(), std::runtime_error);
   }
 }
