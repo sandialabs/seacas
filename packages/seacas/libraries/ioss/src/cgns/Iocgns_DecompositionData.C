@@ -32,6 +32,24 @@
 namespace {
   int rank = 0;
 
+  template <typename INT>
+  void validate_element_connectivity_size(int filePtr, int base, int zone, int section,
+                                          cgsize_t expected_size,
+                                          const Iocgns::DecompositionData<INT> &decomposition)
+  {
+    cgsize_t stored_size = 0;
+    if (cg_ElementDataSize(filePtr, base, zone, section, &stored_size) != CG_OK) {
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                decomposition.m_decomposition.m_processor);
+    }
+    if (stored_size != expected_size) {
+      IOSS_ERROR(fmt::format(
+          "ERROR: CGNS: Zone {} section {} stores {} element connectivity entries, but IOSS "
+          "expects {} entries from the section range and topology.",
+          zone, section, stored_size, expected_size));
+    }
+  }
+
   // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -804,6 +822,8 @@ namespace Iocgns {
         CGNSIntVector parent(4 * sset.file_count());
 
         int base = 1; // Only single base supported so far.
+        validate_element_connectivity_size(filePtr, base, sset.zone(), sset.section(),
+                                           nodes_per_face * sset.file_count(), *this);
         CGCHECK2(cg_elements_read(filePtr, base, sset.zone(), sset.section(), Data(nodes),
                                   Data(parent)));
 
@@ -1063,6 +1083,8 @@ namespace Iocgns {
 
     CGNSIntVector parent(4 * sset.file_count());
 
+    validate_element_connectivity_size(filePtr, base, sset.zone(), sset.section(),
+                                       nodes_per_face * sset.file_count(), *this);
     CGCHECK2(
         cg_elements_read(filePtr, base, sset.zone(), sset.section(), Data(nodes), Data(parent)));
 

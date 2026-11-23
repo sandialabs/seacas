@@ -13,10 +13,13 @@
 #include "Ioss_CodeTypes.h"
 #include "Ionit_Initializer.h"
 #include "Ioss_DBUsage.h"
+#include "Ioss_ElementBlock.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_ScopeGuard.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
 #include "cgns/Iocgns_DatabaseIO.h"
 
 #include <cgnslib.h>
@@ -99,6 +102,99 @@ void create_unstructured_adjacency_file(cgsize_t point, cgsize_t donor)
   cgns_check(cg_close(file));
 }
 
+void create_unstructured_element_file(const std::vector<cgsize_t> &connectivity)
+{
+  int file = create_file_with_base();
+
+  cgsize_t size[3] = {8, 1, 0};
+  int      zone    = 0;
+  cgns_check(cg_zone_write(file, 1, "hex", size, CGNS_ENUMV(Unstructured), &zone));
+
+  int section = 0;
+  cgns_check(cg_section_write(file, 1, zone, "hexes", CGNS_ENUMV(HEXA_8), 1, 1, 0,
+                              connectivity.data(), &section));
+  cgns_check(cg_close(file));
+}
+
+void create_mixed_unstructured_element_file()
+{
+  int file = create_file_with_base();
+
+  cgsize_t size[3] = {8, 1, 0};
+  int      zone    = 0;
+  cgns_check(cg_zone_write(file, 1, "mixed", size, CGNS_ENUMV(Unstructured), &zone));
+
+  std::vector<cgsize_t> connectivity = {CGNS_ENUMV(HEXA_8), 1, 2, 3, 4, 5, 6, 7, 8};
+  int                  section      = 0;
+  cgns_check(cg_poly_section_write(file, 1, zone, "mixed", CGNS_ENUMV(MIXED), 1, 1, 0,
+                                   connectivity.data(), nullptr, &section));
+  cgns_check(cg_close(file));
+}
+
+void create_unstructured_side_file(const std::vector<cgsize_t> &face_connectivity,
+                                   const std::vector<cgsize_t> &parent_data)
+{
+  int file = create_file_with_base();
+
+  int family = 0;
+  cgns_check(cg_family_write(file, 1, "wall", &family));
+  int family_bc = 0;
+  cgns_check(cg_fambc_write(file, 1, family, "wall", CGNS_ENUMV(BCWall), &family_bc));
+
+  cgsize_t size[3] = {8, 1, 1};
+  int      zone    = 0;
+  cgns_check(cg_zone_write(file, 1, "hex", size, CGNS_ENUMV(Unstructured), &zone));
+
+  cgsize_t point_range[2] = {2, 2};
+  int      boco           = 0;
+  cgns_check(cg_boco_write(file, 1, zone, "wall", CGNS_ENUMV(BCWall), CGNS_ENUMV(PointRange), 2,
+                           point_range, &boco));
+  cgns_check(cg_goto(file, 1, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", boco, "end"));
+  cgns_check(cg_famname_write("wall"));
+
+  std::vector<cgsize_t> hex_connectivity = {1, 2, 3, 4, 5, 6, 7, 8};
+  int                  section          = 0;
+  cgns_check(cg_section_write(file, 1, zone, "hexes", CGNS_ENUMV(HEXA_8), 1, 1, 0,
+                              hex_connectivity.data(), &section));
+  cgns_check(cg_section_write(file, 1, zone, "faces", CGNS_ENUMV(QUAD_4), 2, 2, 1,
+                              face_connectivity.data(), &section));
+  cgns_check(cg_parent_data_write(file, 1, zone, section, parent_data.data()));
+  cgns_check(cg_close(file));
+}
+
+void create_mixed_unstructured_side_file()
+{
+  int file = create_file_with_base();
+
+  int family = 0;
+  cgns_check(cg_family_write(file, 1, "wall", &family));
+  int family_bc = 0;
+  cgns_check(cg_fambc_write(file, 1, family, "wall", CGNS_ENUMV(BCWall), &family_bc));
+
+  cgsize_t size[3] = {8, 1, 1};
+  int      zone    = 0;
+  cgns_check(cg_zone_write(file, 1, "hex", size, CGNS_ENUMV(Unstructured), &zone));
+
+  cgsize_t point_range[2] = {2, 2};
+  int      boco           = 0;
+  cgns_check(cg_boco_write(file, 1, zone, "wall", CGNS_ENUMV(BCWall), CGNS_ENUMV(PointRange), 2,
+                           point_range, &boco));
+  cgns_check(cg_goto(file, 1, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", boco, "end"));
+  cgns_check(cg_famname_write("wall"));
+
+  std::vector<cgsize_t> hex_connectivity = {1, 2, 3, 4, 5, 6, 7, 8};
+  int                  section          = 0;
+  cgns_check(cg_section_write(file, 1, zone, "hexes", CGNS_ENUMV(HEXA_8), 1, 1, 0,
+                              hex_connectivity.data(), &section));
+
+  std::vector<cgsize_t> face_connectivity = {CGNS_ENUMV(QUAD_4), 1, 2, 3, 4};
+  cgns_check(cg_poly_section_write(file, 1, zone, "faces", CGNS_ENUMV(MIXED), 2, 2, 1,
+                                   face_connectivity.data(), nullptr, &section));
+  cgsize_t parent_data[4] = {1, 0, 1, 0};
+  cgns_check(cg_parent_data_write(file, 1, zone, section, parent_data));
+  cgns_check(cg_close(file));
+}
+
 std::unique_ptr<Ioss::Region> open_region()
 {
   Ioss::PropertyManager properties;
@@ -116,6 +212,42 @@ std::vector<double> read_step_times()
                                        Ioss::ParallelUtils::comm_world(), properties);
   REQUIRE(db_io->ok());
   return db_io->get_db_step_times();
+}
+
+std::vector<int64_t> read_element_connectivity()
+{
+  auto region = open_region();
+  auto blocks = region->get_element_blocks();
+  REQUIRE(blocks.size() == 1);
+
+  std::vector<int64_t> connectivity;
+  blocks[0]->get_field_data("connectivity_raw", connectivity);
+  return connectivity;
+}
+
+std::vector<int64_t> read_side_element_side()
+{
+  auto region = open_region();
+  auto side_sets = region->get_sidesets();
+  REQUIRE(side_sets.size() == 1);
+  auto side_blocks = side_sets[0]->get_side_blocks();
+  REQUIRE(side_blocks.size() == 1);
+
+  std::vector<int64_t> element_side;
+  side_blocks[0]->get_field_data("element_side", element_side);
+  return element_side;
+}
+
+template <typename Callable>
+void check_throws_message_containing(Callable &&call, const std::string &substring)
+{
+  try {
+    call();
+    FAIL("Expected std::runtime_error");
+  }
+  catch (const std::runtime_error &error) {
+    CHECK(std::string(error.what()).find(substring) != std::string::npos);
+  }
 }
 } // namespace
 
@@ -189,5 +321,39 @@ TEST_CASE("Iocgns validates CGNS metadata before bounded reads")
   {
     create_unstructured_adjacency_file(1, 3);
     CHECK_THROWS_AS(open_region(), std::runtime_error);
+  }
+
+  SECTION("ElementConnectivity matching section topology is accepted")
+  {
+    create_unstructured_element_file({1, 2, 3, 4, 5, 6, 7, 8});
+    std::vector<int64_t> connectivity;
+    REQUIRE_NOTHROW(connectivity = read_element_connectivity());
+    REQUIRE(connectivity.size() == 8);
+    CHECK(connectivity[0] == 1);
+    CHECK(connectivity[7] == 8);
+  }
+
+  SECTION("unsupported mixed-section connectivity size is rejected before cg_elements_read")
+  {
+    create_mixed_unstructured_element_file();
+    check_throws_message_containing([]() { read_element_connectivity(); },
+                                    "element connectivity entries");
+  }
+
+  SECTION("sideblock connectivity and parent-data sizes matching the section are accepted")
+  {
+    create_unstructured_side_file({1, 2, 3, 4}, {1, 0, 1, 0});
+    std::vector<int64_t> element_side;
+    REQUIRE_NOTHROW(element_side = read_side_element_side());
+    REQUIRE(element_side.size() == 2);
+    CHECK(element_side[0] == 1);
+    CHECK(element_side[1] == 5);
+  }
+
+  SECTION("unsupported mixed-side connectivity size is rejected before cg_elements_read")
+  {
+    create_mixed_unstructured_side_file();
+    check_throws_message_containing([]() { read_side_element_side(); },
+                                    "element connectivity entries");
   }
 }
