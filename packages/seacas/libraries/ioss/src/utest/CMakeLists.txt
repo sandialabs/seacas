@@ -57,6 +57,16 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_bounding_box
+	NAME Utst_ioex_bounding_box
+	SOURCES Utst_ioex_bounding_box.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	Utst_database_io
 	NAME Utst_iofx
 	ARGS "--filename ${CMAKE_CURRENT_SOURCE_DIR}/ADeDA.e"

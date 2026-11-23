@@ -109,7 +109,12 @@ namespace {
   {
     std::vector<int> elem_block_nodes(node_count);
     for (const auto &node : connectivity) {
-      elem_block_nodes[node - 1] = 1;
+      if (node <= 0 || static_cast<size_t>(node) > node_count) {
+        IOSS_ERROR(fmt::format("ERROR: Invalid connectivity node id {} in element-block bounding-box "
+                               "calculation; valid range is 1..{}.",
+                               node, node_count));
+      }
+      elem_block_nodes[static_cast<size_t>(node) - 1] = 1;
     }
 
     xmin = DBL_MAX;
