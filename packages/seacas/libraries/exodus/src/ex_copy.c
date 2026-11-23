@@ -202,10 +202,10 @@ static int cpy_variable_data(int in_exoid, int out_exoid, int in_large, int mesh
 
     if (!is_filtered) {
       if (strncmp(var.name, VAR_COORD, 5) == 0) {
-        cpy_coord_val(in_exoid, out_exoid, var.name, in_large);
+        EXCHECKI(cpy_coord_val(in_exoid, out_exoid, var.name, in_large));
       }
       else {
-        cpy_var_val(in_exoid, out_exoid, var.name);
+        EXCHECKI(cpy_var_val(in_exoid, out_exoid, var.name));
       }
     }
   }
@@ -773,9 +773,33 @@ static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
   EXCHECKI(nc_inq_vartype(in_id, var_in_id, &var_type_in));
   EXCHECKI(nc_inq_vartype(out_id, var_out_id[0], &var_type_out));
 
+  if (var_type_in != NC_FLOAT && var_type_in != NC_DOUBLE) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: unsupported coordinate variable type %d in file id %d", var_type_in, in_id);
+    ex_err_fn(in_id, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
+  size_t type_size_in = var_type_in == NC_FLOAT ? sizeof(float) : sizeof(double);
+  if (num_nodes > SIZE_MAX / type_size_in) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: coordinate variable too large to copy from file id %d", in_id);
+    ex_err_fn(in_id, __func__, errmsg, EX_MEMFAIL);
+    return EX_FATAL;
+  }
+
   void *void_ptr = NULL;
   if (num_nodes > 0) {
-    void_ptr = malloc(num_nodes * type_size(var_type_in));
+    void_ptr = malloc(num_nodes * type_size_in);
+    if (void_ptr == NULL) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate memory for coordinate array in file id %d", in_id);
+      ex_err_fn(in_id, __func__, errmsg, EX_MEMFAIL);
+      return EX_FATAL;
+    }
   }
 
   /* Copy each component of the variable... */
@@ -786,19 +810,22 @@ static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
     count[0] = 1;
     count[1] = num_nodes;
     if (var_type_in == NC_FLOAT) {
-      EXCHECKI(nc_get_vara_float(in_id, var_in_id, start, count, void_ptr));
-      EXCHECKI(nc_put_var_float(out_id, var_out_id[i], void_ptr));
+      EXCHECKF(nc_get_vara_float(in_id, var_in_id, start, count, void_ptr));
+      EXCHECKF(nc_put_var_float(out_id, var_out_id[i], void_ptr));
     }
     else {
-      assert(var_type_in == NC_DOUBLE);
-      EXCHECKI(nc_get_vara_double(in_id, var_in_id, start, count, void_ptr));
-      EXCHECKI(nc_put_var_double(out_id, var_out_id[i], void_ptr));
+      EXCHECKF(nc_get_vara_double(in_id, var_in_id, start, count, void_ptr));
+      EXCHECKF(nc_put_var_double(out_id, var_out_id[i], void_ptr));
     }
   }
 
   /* Free the space that held the variable */
   free(void_ptr);
   return EX_NOERR;
+
+err_ret:
+  free(void_ptr);
+  return EX_FATAL;
 
 } /* end cpy_coord_val() */
 

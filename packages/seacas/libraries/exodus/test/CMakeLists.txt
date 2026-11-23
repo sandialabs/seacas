@@ -78,6 +78,13 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  testcp-coord-type
+  SOURCES testcp-coord-type.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
   test-att-text-len
   SOURCES test-att-text-len.c
   COMM mpi serial
