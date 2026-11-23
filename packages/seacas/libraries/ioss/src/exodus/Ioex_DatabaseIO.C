@@ -2896,6 +2896,13 @@ namespace Ioex {
                 rdata[i] = 1.0;
               }
             }
+            else if (set_param[0].num_distribution_factor != static_cast<int64_t>(num_to_get)) {
+              IOSS_ERROR(fmt::format(
+                  "ERROR: Distribution factor count mismatch for {} id {} in file id {}: file "
+                  "stores {} values but IOSS expects {}",
+                  ex_name_of_object(type), id, get_file_pointer(),
+                  set_param[0].num_distribution_factor, num_to_get));
+            }
             else {
               set_param[0].distribution_factor_list = static_cast<double *>(data);
               ierr                                  = ex_get_sets(get_file_pointer(), 1, set_param);
