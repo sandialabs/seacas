@@ -246,7 +246,15 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         return EX_FATAL;
       }
 
-      *ret_int = name_length - 1;
+      if (name_length == 0) {
+        /* Malformed/corrupt database with a zero-length name-string
+           dimension; treat the same as if the dimension did not exist
+           so callers never see a negative length. */
+        *ret_int = 32;
+      }
+      else {
+        *ret_int = name_length - 1;
+      }
     }
     break;
 

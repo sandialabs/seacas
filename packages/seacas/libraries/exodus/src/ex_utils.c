@@ -455,6 +455,23 @@ int exi_get_names(int exoid, int varid, size_t num_names, char **names, ex_entit
   /* Use the user-specified length; exi_get_name limits the read to the size on file. */
   int name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
 
+  if (name_size < 0) {
+    /* Corrupt/malicious database state; a negative size would make
+       exi_get_name read past the caller's buffer. */
+    char errmsg[MAX_ERR_LENGTH];
+    if (routine != NULL) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: invalid name string length %d in file id %d [Called from %s]", name_size,
+               exoid, routine);
+    }
+    else {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid name string length %d in file id %d",
+               name_size, exoid);
+    }
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
   for (size_t i = 0; i < num_names; i++) {
     int status = exi_get_name(exoid, varid, i, names[i], name_size, obj_type, routine);
     if (status != EX_NOERR) {
@@ -535,6 +552,25 @@ int exi_check_att_text(int exoid, int varid, const char *att_name, size_t bufsiz
 int exi_get_name(int exoid, int varid, size_t index, char *name, int name_size,
                  ex_entity_type obj_type, const char *routine)
 {
+  if (name_size < 0) {
+    /* Corrupt/malicious database state; direct callers can derive
+       name_size from file-controlled values (for example,
+       ATT_MAX_NAME_LENGTH via EX_INQ_DB_MAX_USED_NAME_LENGTH), and a
+       negative size would make the read below overrun the caller's buffer. */
+    char errmsg[MAX_ERR_LENGTH];
+    if (routine != NULL) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: invalid name string length %d in file id %d [Called from %s]", name_size,
+               exoid, routine);
+    }
+    else {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid name string length %d in file id %d",
+               name_size, exoid);
+    }
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
   /* Determine the length of the string dimension of the name variable */
   int    dimids[2];
   size_t str_len = 0;
