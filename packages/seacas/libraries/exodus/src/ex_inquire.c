@@ -59,9 +59,11 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
       return EX_FATAL;
     }
 
-    /* Allocate space for stat array */
+    /* Allocate space for stat array.  Use calloc so the allocation size
+       cannot truncate or wrap; `num_sets` is a file-supplied 64-bit
+       dimension length. */
     int *stat_vals = NULL;
-    if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
+    if (!(stat_vals = calloc(num_sets, sizeof(int)))) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for %s set status "
@@ -532,8 +534,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         return EX_FATAL;
       }
 
-      /* allocate space for stat array */
-      if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
+      /* allocate space for stat array; calloc so the allocation size
+         cannot truncate or wrap (num_sets is file-supplied) */
+      if (!(stat_vals = calloc(num_sets, sizeof(int)))) {
         free(ids);
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to allocate memory for side set status "
