@@ -205,21 +205,42 @@ namespace Iocgns {
       case Ioss::ElementShape::HEX: {
         static std::array<int, 7> hex_map = {0, 5, 1, 2, 3, 4, 6};
         for (size_t i = 0; i < num_to_get; i++) {
-          idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
+          INT face = idata[2 * i + 1];
+          if (face < static_cast<INT>(1) || static_cast<size_t>(face) >= hex_map.size()) {
+            IOSS_ERROR("ERROR: CGNS: ParentData face id " +
+                       std::to_string(static_cast<long long>(face)) + " for topology '" +
+                       parent_topo->name() + "' is outside valid range 1.." +
+                       std::to_string(hex_map.size() - 1) + ".");
+          }
+          idata[2 * i + 1] = hex_map[static_cast<size_t>(face)];
         }
       } break;
 
       case Ioss::ElementShape::TET: {
         static std::array<int, 5> tet_map = {0, 4, 1, 2, 3};
         for (size_t i = 0; i < num_to_get; i++) {
-          idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
+          INT face = idata[2 * i + 1];
+          if (face < static_cast<INT>(1) || static_cast<size_t>(face) >= tet_map.size()) {
+            IOSS_ERROR("ERROR: CGNS: ParentData face id " +
+                       std::to_string(static_cast<long long>(face)) + " for topology '" +
+                       parent_topo->name() + "' is outside valid range 1.." +
+                       std::to_string(tet_map.size() - 1) + ".");
+          }
+          idata[2 * i + 1] = tet_map[static_cast<size_t>(face)];
         }
       } break;
 
       case Ioss::ElementShape::PYRAMID: {
         static std::array<int, 6> pyr_map = {0, 5, 1, 2, 3, 4};
         for (size_t i = 0; i < num_to_get; i++) {
-          idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
+          INT face = idata[2 * i + 1];
+          if (face < static_cast<INT>(1) || static_cast<size_t>(face) >= pyr_map.size()) {
+            IOSS_ERROR("ERROR: CGNS: ParentData face id " +
+                       std::to_string(static_cast<long long>(face)) + " for topology '" +
+                       parent_topo->name() + "' is outside valid range 1.." +
+                       std::to_string(pyr_map.size() - 1) + ".");
+          }
+          idata[2 * i + 1] = pyr_map[static_cast<size_t>(face)];
         }
       } break;
 

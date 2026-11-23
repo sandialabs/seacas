@@ -350,6 +350,12 @@ TEST_CASE("Iocgns validates CGNS metadata before bounded reads")
     CHECK(element_side[1] == 5);
   }
 
+  SECTION("out-of-range ParentData face id is rejected before face-table lookup")
+  {
+    create_unstructured_side_file({1, 2, 3, 4}, {1, 0, 7, 0});
+    check_throws_message_containing([]() { read_side_element_side(); }, "ParentData face id");
+  }
+
   SECTION("unsupported mixed-side connectivity size is rejected before cg_elements_read")
   {
     create_mixed_unstructured_side_file();
