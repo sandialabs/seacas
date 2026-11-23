@@ -2357,8 +2357,13 @@ namespace Ioex {
                 size_t ep_data_size = ent_proc.size() * sizeof(int64_t);
                 get_field_internal(css, ep_field, Data(ent_proc), ep_data_size);
                 for (size_t i = 0; i < ent_proc.size(); i += 2) {
-                  int64_t node    = ent_proc[i + 0];
-                  int64_t proc    = ent_proc[i + 1];
+                  int64_t node = ent_proc[i + 0];
+                  int64_t proc = ent_proc[i + 1];
+                  if (node <= 0 || node > nodeCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map for "
+                                           "owning_processor calculation; valid range is 1..{}.",
+                                           node, nodeCount));
+                  }
                   idata[node - 1] = std::min(idata[node - 1], static_cast<int>(proc));
                 }
               }
@@ -2369,8 +2374,13 @@ namespace Ioex {
                 size_t           ep_data_size = ent_proc.size() * sizeof(int);
                 get_field_internal(css, ep_field, Data(ent_proc), ep_data_size);
                 for (size_t i = 0; i < ent_proc.size(); i += 2) {
-                  int node        = ent_proc[i + 0];
-                  int proc        = ent_proc[i + 1];
+                  int node = ent_proc[i + 0];
+                  int proc = ent_proc[i + 1];
+                  if (node <= 0 || static_cast<int64_t>(node) > nodeCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map for "
+                                           "owning_processor calculation; valid range is 1..{}.",
+                                           node, nodeCount));
+                  }
                   idata[node - 1] = std::min(idata[node - 1], proc);
                 }
               }
@@ -3105,7 +3115,12 @@ namespace Ioex {
                 const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map();
 
                 for (int64_t i = 0; i < entity_count; i++) {
-                  int local_id     = ents[i];
+                  int local_id = ents[i];
+                  if (local_id <= 0 || static_cast<int64_t>(local_id) > nodeCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map; "
+                                           "valid range is 1..{}.",
+                                           local_id, nodeCount));
+                  }
                   entity_proc[j++] = map[local_id];
                   entity_proc[j++] = pros[i];
                 }
@@ -3128,6 +3143,11 @@ namespace Ioex {
 
                 for (int64_t i = 0; i < entity_count; i++) {
                   int64_t local_id = ents[i];
+                  if (local_id <= 0 || local_id > nodeCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map; "
+                                           "valid range is 1..{}.",
+                                           local_id, nodeCount));
+                  }
                   entity_proc[j++] = map[local_id];
                   entity_proc[j++] = pros[i];
                 }
@@ -3164,7 +3184,13 @@ namespace Ioex {
                 const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
                 for (int64_t i = 0; i < entity_count; i++) {
-                  entity_proc[j++] = map[ents[i]];
+                  int elem_id = ents[i];
+                  if (elem_id <= 0 || static_cast<int64_t>(elem_id) > elementCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid element id {} in element communication map; "
+                                           "valid range is 1..{}.",
+                                           elem_id, elementCount));
+                  }
+                  entity_proc[j++] = map[elem_id];
                   entity_proc[j++] = sids[i];
                   entity_proc[j++] = pros[i];
                 }
@@ -3188,7 +3214,13 @@ namespace Ioex {
                 const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
                 for (int64_t i = 0; i < entity_count; i++) {
-                  entity_proc[j++] = map[ents[i]];
+                  int64_t elem_id = ents[i];
+                  if (elem_id <= 0 || elem_id > elementCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid element id {} in element communication map; "
+                                           "valid range is 1..{}.",
+                                           elem_id, elementCount));
+                  }
+                  entity_proc[j++] = map[elem_id];
                   entity_proc[j++] = sids[i];
                   entity_proc[j++] = pros[i];
                 }

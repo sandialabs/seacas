@@ -77,6 +77,16 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_owning_processor
+	NAME Utst_ioex_owning_processor
+	SOURCES Utst_ioex_owning_processor.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 2
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	Utst_database_io
 	NAME Utst_iofx
 	ARGS "--filename ${CMAKE_CURRENT_SOURCE_DIR}/ADeDA.e"
