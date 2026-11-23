@@ -301,6 +301,17 @@ namespace {
     }
   }
 
+  void validate_structured_boco_point_range(int zone, const std::string &boco_name,
+                                            CGNS_ENUMT(PointSetType_t) ptset_type, cgsize_t npnts)
+  {
+    if (ptset_type != CGNS_ENUMV(PointRange) || npnts != 2) {
+      IOSS_ERROR(fmt::format(
+          "ERROR: CGNS: Zone {} boundary condition '{}' has point-set type {} with {} points. "
+          "Structured boundary conditions require PointRange with 2 points.",
+          zone, boco_name, cg_PointSetTypeName(ptset_type), npnts));
+    }
+  }
+
   void sync_transient_variables_fpp(Ioss::Region *region)
   {
     // With an fpp read, certain blocks may only be on certain
@@ -2013,6 +2024,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
     // All we really want from this is 'boco_name'
     CGCHECKNP(cg_boco_info(cgns_file_ptr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
                            &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    validate_structured_boco_point_range(zone, boco_name, ptset_type, npnts);
 
     if (bocotype == CGNS_ENUMV(FamilySpecified)) {
       // Get family name associated with this boco_name
@@ -2099,6 +2111,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
     // All we really want from this is 'boco_name'
     CGCHECKNP(cg_boco_info(cgns_file_ptr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
                            &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    validate_structured_boco_point_range(zone, boco_name, ptset_type, npnts);
 
     if (bocotype == CGNS_ENUMV(FamilySpecified)) {
       // Get family name associated with this boco_name
@@ -2434,6 +2447,7 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
       // All we really want from this is 'boconame'
       CGCHECKNP(cg_boco_info(cgns_file_ptr, base, izone, ibc + 1, boconame, &bocotype, &ptset_type,
                              &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+      validate_structured_boco_point_range(izone, boconame, ptset_type, npnts);
 
       if (bocotype == CGNS_ENUMV(FamilySpecified)) {
         // Need to get boconame from cg_famname_read
