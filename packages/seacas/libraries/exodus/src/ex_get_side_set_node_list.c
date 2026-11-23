@@ -350,6 +350,17 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       err_stat = EX_FATAL;
       goto cleanup;
     }
+    /* `side` comes from file data; validate it against the block's side count
+     * before it is used to index the fixed-size num_nodes_per_side array. */
+    if (side < 1 || side > elem_blk_parms[j].num_sides) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Invalid side number %" PRId64 " for element number %" PRId64
+               " in side set %" PRId64 " in file %d",
+               side, elem, side_set_id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+      err_stat = EX_FATAL;
+      goto cleanup;
+    }
     ss_parm_ndx[i]      = j; /* assign parameter block index */
     ss_elem_node_ndx[i] = elem_blk_parms[j].num_nodes_per_side[side - 1];
 

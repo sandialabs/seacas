@@ -7,8 +7,10 @@
  */
 
 /*
- * ex_get_side_set_node_list must return EX_FATAL when a side set references a
- * side number that is outside the element topology's valid side range.
+ * Side-set node-list length and node-list reads must return EX_FATAL when a
+ * side set references a side number outside the element topology's valid side
+ * range.  The length walker must reject the side before indexing the fixed
+ * num_nodes_per_side array, and the node-list walker must preserve that error.
  */
 
 #include "exodusII.h"
@@ -47,13 +49,26 @@ static int create_file(const char *filename, int side)
   return 0;
 }
 
-static int check_status(const char *filename, int expected_status)
+static int check_status(const char *filename, int expected_status, int expected_len)
 {
   int   cpu_word_size = 8;
   int   io_word_size  = 0;
   float version;
   int   exoid = ex_open(filename, EX_READ, &cpu_word_size, &io_word_size, &version);
   if (exoid < 0) {
+    return 1;
+  }
+
+  int length     = 99;
+  int len_status = ex_get_side_set_node_list_len(exoid, 1, &length);
+  if (len_status != expected_status) {
+    fprintf(stderr, "node-list-len status %d, expected %d\n", len_status, expected_status);
+    ex_close(exoid);
+    return 1;
+  }
+  if (expected_status == EX_NOERR && length != expected_len) {
+    fprintf(stderr, "node-list length %d, expected %d\n", length, expected_len);
+    ex_close(exoid);
     return 1;
   }
 
@@ -74,12 +89,12 @@ int main(void)
   ex_opts(EX_VERBOSE);
 
   if (create_file("side-set-valid-side.exo", 4) != 0 ||
-      check_status("side-set-valid-side.exo", EX_NOERR) != 0) {
+      check_status("side-set-valid-side.exo", EX_NOERR, 2) != 0) {
     return 1;
   }
 
   if (create_file("side-set-invalid-side.exo", 5) != 0 ||
-      check_status("side-set-invalid-side.exo", EX_FATAL) != 0) {
+      check_status("side-set-invalid-side.exo", EX_FATAL, 0) != 0) {
     return 1;
   }
 
