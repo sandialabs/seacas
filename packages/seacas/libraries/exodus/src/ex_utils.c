@@ -466,6 +466,67 @@ int exi_get_names(int exoid, int varid, size_t num_names, char **names, ex_entit
 
 /*!
   \internal
+  Check that the text attribute `att_name` on `varid` exists, is NC_CHAR, and
+  fits in a caller-provided buffer of `bufsize` bytes.  The caller still owns
+  the subsequent read and any string termination.
+*/
+int exi_check_att_text(int exoid, int varid, const char *att_name, size_t bufsize,
+                       const char *routine)
+{
+  nc_type att_type;
+  size_t  att_len;
+  int     status = nc_inq_att(exoid, varid, att_name, &att_type, &att_len);
+  if (status != EX_NOERR) {
+    char errmsg[MAX_ERR_LENGTH];
+    if (routine != NULL) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to get text attribute '%s' metadata in file id %d [Called from %s]",
+               att_name, exoid, routine);
+    }
+    else {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to get text attribute '%s' metadata in file id %d", att_name, exoid);
+    }
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return EX_FATAL;
+  }
+
+  if (att_type != NC_CHAR) {
+    char errmsg[MAX_ERR_LENGTH];
+    if (routine != NULL) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: attribute '%s' is not a text attribute in file id %d [Called from %s]",
+               att_name, exoid, routine);
+    }
+    else {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: attribute '%s' is not a text attribute in file id %d", att_name, exoid);
+    }
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
+  if (att_len > bufsize) {
+    char errmsg[MAX_ERR_LENGTH];
+    if (routine != NULL) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: text attribute '%s' length %ld exceeds buffer size %ld in file id %d [Called from %s]",
+               att_name, (long)att_len, (long)bufsize, exoid, routine);
+    }
+    else {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: text attribute '%s' length %ld exceeds buffer size %ld in file id %d", att_name,
+               (long)att_len, (long)bufsize, exoid);
+    }
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
+  return EX_NOERR;
+}
+
+/*!
+  \internal
   Read the name at `index` of the name variable `varid` into `name`, which
   must hold at least `name_size + 1` characters.  At most `name_size`
   characters are returned.  A name that fills the string dimension of the
