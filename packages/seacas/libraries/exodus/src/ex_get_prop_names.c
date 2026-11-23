@@ -119,33 +119,20 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
 
     /*   for each property, read the "name" attribute of property array variable
      */
-    size_t  att_len;
-    nc_type att_type;
-    if ((status = nc_inq_att(exoid, propid, ATT_PROP_NAME, &att_type, &att_len)) != EX_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get property attributes (type, len) in file id %d", exoid);
+    size_t api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+    if ((status = exi_check_att_text(exoid, propid, ATT_PROP_NAME, api_name_size + 1,
+                                     __func__)) != EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to validate property name in file id %d", exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    size_t api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    if (att_len - 1 <= api_name_size) {
-      /* Client has large enough char string to hold text... */
-      if ((status = nc_get_att_text(exoid, propid, ATT_PROP_NAME, prop_names[i])) != EX_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property name in file id %d", exoid);
-        ex_err_fn(exoid, __func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-    }
-    else {
-      /* FIXME */
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: property name length exceeds space available to "
-               "store it in file id %d",
-               exoid);
-      ex_err_fn(exoid, __func__, errmsg, NC_ESTS);
+    if ((status = nc_get_att_text(exoid, propid, ATT_PROP_NAME, prop_names[i])) != EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property name in file id %d", exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
+    prop_names[i][api_name_size] = '\0';
   }
   EX_FUNC_LEAVE(EX_NOERR);
 }
