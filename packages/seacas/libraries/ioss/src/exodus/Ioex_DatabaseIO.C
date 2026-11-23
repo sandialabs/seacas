@@ -70,9 +70,37 @@ namespace {
   std::array<std::string, 2> complex_suffix{".re", ".im"};
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
-                             int position)
+                             int position, int expected_components)
   {
-    int ierr = 0;
+    ex_block block{};
+    block.id   = id;
+    block.type = type;
+    int ierr   = ex_get_block_param(exoid, &block);
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    int64_t file_components = 0;
+    if (position == 0) {
+      file_components = block.num_nodes_per_entry;
+    }
+    else if (position == 1) {
+      file_components = block.num_edges_per_entry;
+    }
+    else if (position == 2) {
+      file_components = block.num_faces_per_entry;
+    }
+    else {
+      IOSS_ERROR(fmt::format("ERROR: Invalid connectivity position {} for block id {}", position, id));
+    }
+
+    if (file_components != expected_components) {
+      IOSS_ERROR(fmt::format(
+          "ERROR: Connectivity component count mismatch for block id {} in file id {}: file stores "
+          "{} values per entry but IOSS topology expects {}",
+          id, exoid, file_components, expected_components));
+    }
+
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
       std::array<int64_t *, 3> conn{nullptr, nullptr, nullptr};
       conn[position] = static_cast<int64_t *>(data);
@@ -2503,7 +2531,7 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The element_node index varies fastet
             if (my_element_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0);
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0, element_nodes);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * element_nodes);
             }
           }
@@ -2512,7 +2540,7 @@ namespace Ioex {
             // The element_face index varies fastest
             if (my_element_count > 0) {
               int face_count = field.get_component_count(Ioss::Field::InOut::INPUT);
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 2);
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 2, face_count);
               get_map(EX_FACE_BLOCK).map_data(data, field, num_to_get * face_count);
             }
           }
@@ -2521,7 +2549,7 @@ namespace Ioex {
             // The element_edge index varies fastest
             if (my_element_count > 0) {
               int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 1);
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 1, edge_count);
               get_map(EX_EDGE_BLOCK).map_data(data, field, num_to_get * edge_count);
             }
           }
@@ -2533,7 +2561,8 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The element_node index varies fastest
             if (my_element_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0);
+              int element_nodes = eb->topology()->number_nodes();
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0, element_nodes);
             }
           }
           else if (field.get_name() == "ids") {
@@ -2678,7 +2707,7 @@ namespace Ioex {
               int face_nodes = eb->topology()->number_nodes();
               assert(field.get_component_count(Ioss::Field::InOut::INPUT) == face_nodes);
 
-              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
+              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0, face_nodes);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * face_nodes);
             }
           }
@@ -2687,7 +2716,7 @@ namespace Ioex {
             // The face_edge index varies fastest
             if (my_face_count > 0) {
               int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
-              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 1);
+              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 1, edge_count);
               get_map(EX_EDGE_BLOCK).map_data(data, field, num_to_get * edge_count);
             }
           }
@@ -2699,7 +2728,8 @@ namespace Ioex {
               assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
                      eb->topology()->number_nodes());
 
-              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
+              int face_nodes = eb->topology()->number_nodes();
+              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0, face_nodes);
             }
           }
           else if (field.get_name() == "ids") {
@@ -2757,7 +2787,7 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The edge_node index varies fastet
             if (my_edge_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0);
+              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0, edge_nodes);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * edge_nodes);
             }
           }
@@ -2769,7 +2799,8 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The edge_node index varies fastet
             if (my_edge_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0);
+              int edge_nodes = eb->topology()->number_nodes();
+              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0, edge_nodes);
             }
           }
           else if (field.get_name() == "ids") {
