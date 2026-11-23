@@ -101,6 +101,16 @@ extern cgns_io_ctx_t ctx_cgio; /* located in cgns_io.c */
 
 namespace {
 
+  void validate_zone_connectivity_index(int zone, const char *connectname, const char *point_list_name,
+                                        cgsize_t index, size_t max_index)
+  {
+    if (index <= 0 || static_cast<size_t>(index) > max_index) {
+      IOSS_ERROR(fmt::format("ERROR: CGNS: Zone {} connectivity '{}' has {} id {} outside "
+                             "valid range 1..{}.",
+                             zone, connectname, point_list_name, index, max_index));
+    }
+  }
+
   // There is a bug in the CGNS library (4.4.0 and before) where it
   // has a global symbol `ctx_cgio` which controls whether
   // file-per-rank access is being used, or parallel io (single file,
@@ -1461,8 +1471,11 @@ namespace Iocgns {
           const auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
           auto       &block_map = m_blockLocalNodeMap[zone];
           for (int j = 0; j < npnts; j++) {
-            cgsize_t point       = points[j];
-            cgsize_t donor       = donors[j];
+            cgsize_t point = points[j];
+            cgsize_t donor = donors[j];
+            validate_zone_connectivity_index(zone, connectname, "PointList", point, block_map.size());
+            validate_zone_connectivity_index(zone, connectname, "PointListDonor", donor,
+                                             donor_map.size());
             block_map[point - 1] = donor_map[donor - 1];
           }
         }

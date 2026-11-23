@@ -81,6 +81,24 @@ void create_transient_file(int declared_steps, const std::vector<double> &time_v
   cgns_check(cg_close(file));
 }
 
+void create_unstructured_adjacency_file(cgsize_t point, cgsize_t donor)
+{
+  int file = create_file_with_base();
+
+  cgsize_t size[3] = {2, 0, 0};
+  int      zone1   = 0;
+  int      zone2   = 0;
+  cgns_check(cg_zone_write(file, 1, "donor", size, CGNS_ENUMV(Unstructured), &zone1));
+  cgns_check(cg_zone_write(file, 1, "receiver", size, CGNS_ENUMV(Unstructured), &zone2));
+
+  int conn = 0;
+  cgns_check(cg_conn_write(file, 1, zone2, "receiver_to_donor", CGNS_ENUMV(Vertex),
+                           CGNS_ENUMV(Abutting1to1), CGNS_ENUMV(PointList), 1, &point, "donor",
+                           CGNS_ENUMV(Unstructured), CGNS_ENUMV(PointListDonor),
+                           CGNS_ENUMV(DataTypeNull), 1, &donor, &conn));
+  cgns_check(cg_close(file));
+}
+
 std::unique_ptr<Ioss::Region> open_region()
 {
   Ioss::PropertyManager properties;
@@ -153,5 +171,23 @@ TEST_CASE("Iocgns validates CGNS metadata before bounded reads")
   {
     create_transient_file(1, {1.0, 2.0, 3.0});
     CHECK_THROWS_AS(read_step_times(), std::runtime_error);
+  }
+
+  SECTION("valid unstructured PointList adjacency is accepted")
+  {
+    create_unstructured_adjacency_file(1, 2);
+    CHECK_NOTHROW(open_region());
+  }
+
+  SECTION("out-of-range PointList entry is rejected before mapping block nodes")
+  {
+    create_unstructured_adjacency_file(3, 1);
+    CHECK_THROWS_AS(open_region(), std::runtime_error);
+  }
+
+  SECTION("out-of-range PointListDonor entry is rejected before reading the donor map")
+  {
+    create_unstructured_adjacency_file(1, 3);
+    CHECK_THROWS_AS(open_region(), std::runtime_error);
   }
 }
