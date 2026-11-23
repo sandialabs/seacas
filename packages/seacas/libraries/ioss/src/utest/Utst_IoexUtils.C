@@ -153,21 +153,33 @@ TEST_CASE("Ioex last_written_time validates attribute length")
     REQUIRE(ex_close(exoid) == EX_NOERR);
   }
 
-  SECTION("long last_written_time attribute is not read before update")
+  SECTION("long last_written_time attribute is treated as absent")
   {
     create_file();
     write_last_time_double(3);
-    int exoid = open_file(EX_WRITE);
+    int    exoid = open_file();
+    double value = -1.0;
+    CHECK_FALSE(Ioex::read_last_time_attribute(exoid, &value));
+    CHECK(value == -1.0);
+    REQUIRE(ex_close(exoid) == EX_NOERR);
+
+    exoid = open_file(EX_WRITE);
     Ioex::update_last_time_attribute(exoid, 4.0);
     REQUIRE(ex_close(exoid) == EX_NOERR);
     check_last_time_attribute_type_and_len(NC_DOUBLE, 3);
   }
 
-  SECTION("wrong-typed last_written_time attribute is not read before update")
+  SECTION("wrong-typed last_written_time attribute is treated as absent")
   {
     create_file();
     write_last_time_int();
-    int exoid = open_file(EX_WRITE);
+    int    exoid = open_file();
+    double value = -1.0;
+    CHECK_FALSE(Ioex::read_last_time_attribute(exoid, &value));
+    CHECK(value == -1.0);
+    REQUIRE(ex_close(exoid) == EX_NOERR);
+
+    exoid = open_file(EX_WRITE);
     Ioex::update_last_time_attribute(exoid, 4.0);
     REQUIRE(ex_close(exoid) == EX_NOERR);
     check_last_time_attribute_type_and_len(NC_INT, 1);
