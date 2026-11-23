@@ -130,6 +130,31 @@ static int overwrite_int_attribute(const char *attname)
   return 0;
 }
 
+static int overwrite_int_array_attribute(const char *attname, size_t len)
+{
+  int ncid;
+  NCCHECK(nc_open(filename, NC_WRITE, &ncid));
+  NCCHECK(nc_redef(ncid));
+  int values[EX_MAX_FIELD_NESTING + 1] = {EX_FIELD_TYPE_USER_DEFINED, EX_FIELD_TYPE_USER_DEFINED,
+                                          EX_FIELD_TYPE_USER_DEFINED};
+  NCCHECK(nc_put_att_int(ncid, NC_GLOBAL, attname, NC_INT, len, values));
+  NCCHECK(nc_enddef(ncid));
+  NCCHECK(nc_close(ncid));
+  return 0;
+}
+
+static int overwrite_double_attribute(const char *attname)
+{
+  int ncid;
+  NCCHECK(nc_open(filename, NC_WRITE, &ncid));
+  NCCHECK(nc_redef(ncid));
+  double value = 1.0;
+  NCCHECK(nc_put_att_double(ncid, NC_GLOBAL, attname, NC_DOUBLE, 1, &value));
+  NCCHECK(nc_enddef(ncid));
+  NCCHECK(nc_close(ncid));
+  return 0;
+}
+
 int main(void)
 {
   ex_opts(EX_VERBOSE);
@@ -157,6 +182,28 @@ int main(void)
   }
 
   if (create_file() != 0 || overwrite_int_attribute("Field@text_field@type_name") != 0 ||
+      expect_field_status(EX_FATAL) != 0) {
+    return 1;
+  }
+
+  if (create_file() != 0 ||
+      overwrite_int_array_attribute("Field@text_field@type", EX_MAX_FIELD_NESTING + 1) != 0 ||
+      expect_field_status(EX_FATAL) != 0) {
+    return 1;
+  }
+
+  if (create_file() != 0 || overwrite_double_attribute("Field@text_field@type") != 0 ||
+      expect_field_status(EX_FATAL) != 0) {
+    return 1;
+  }
+
+  if (create_file() != 0 ||
+      overwrite_int_array_attribute("Field@text_field@cardinality", EX_MAX_FIELD_NESTING + 1) != 0 ||
+      expect_field_status(EX_FATAL) != 0) {
+    return 1;
+  }
+
+  if (create_file() != 0 || overwrite_double_attribute("Field@text_field@cardinality") != 0 ||
       expect_field_status(EX_FATAL) != 0) {
     return 1;
   }

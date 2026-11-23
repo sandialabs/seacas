@@ -184,9 +184,14 @@ int ex_get_field_metadata(int exoid, ex_field *field)
       }
 
       if (strcmp(fld_type, "type") == 0) {
-        status = nc_get_att_int(exoid, varid, attr_name, (int *)field[which].type);
-        if (field[which].nesting == 0) {
-          field[which].nesting = val_count;
+        if (type != NC_INT || val_count == 0 || val_count > EX_MAX_FIELD_NESTING) {
+          status = EX_FATAL;
+        }
+        else {
+          status = nc_get_att_int(exoid, varid, attr_name, (int *)field[which].type);
+          if (field[which].nesting == 0) {
+            field[which].nesting = val_count;
+          }
         }
       }
       else if (strcmp(fld_type, "separator") == 0) {
@@ -197,9 +202,14 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         }
       }
       else if (strcmp(fld_type, "cardinality") == 0) {
-        status = nc_get_att_int(exoid, varid, attr_name, field[which].cardinality);
-        if (field[which].nesting == 0) {
-          field[which].nesting = val_count;
+        if (type != NC_INT || val_count == 0 || val_count > EX_MAX_FIELD_NESTING) {
+          status = EX_FATAL;
+        }
+        else {
+          status = nc_get_att_int(exoid, varid, attr_name, field[which].cardinality);
+          if (field[which].nesting == 0) {
+            field[which].nesting = val_count;
+          }
         }
       }
       else if (strcmp(fld_type, "type_name") == 0) {
