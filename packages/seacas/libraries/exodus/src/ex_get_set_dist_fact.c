@@ -109,12 +109,79 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  /* read in the distribution factors array */
-  if (exi_comp_ws(exoid) == 4) {
-    status = nc_get_var_float(exoid, dist_id, set_dist_fact);
+  int64_t num_dist_fact = 0;
+  if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+    int64_t num_entry = 0;
+    status = ex_get_set_param(exoid, set_type, set_id, &num_entry, &num_dist_fact);
   }
   else {
-    status = nc_get_var_double(exoid, dist_id, set_dist_fact);
+    int num_entry = 0;
+    int num_dist  = 0;
+    status        = ex_get_set_param(exoid, set_type, set_id, &num_entry, &num_dist);
+    num_dist_fact = num_dist;
+  }
+  if (status != EX_NOERR) {
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+  if (num_dist_fact <= 0) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: no dist factors expected for %s set %" PRId64 " in file id %d",
+             ex_name_of_object(set_type), set_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  int dist_ndims = 0;
+  if ((status = nc_inq_varndims(exoid, dist_id, &dist_ndims)) != EX_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to get dist factors dimension count for %s set %" PRId64
+             " in file id %d",
+             ex_name_of_object(set_type), set_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+  if (dist_ndims != 1) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: dist factors list for %s set %" PRId64 " in file id %d has %d dimensions",
+             ex_name_of_object(set_type), set_id, exoid, dist_ndims);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  int dist_dimid = -1;
+  if ((status = nc_inq_vardimid(exoid, dist_id, &dist_dimid)) != EX_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to get dist factors dimension for %s set %" PRId64 " in file id %d",
+             ex_name_of_object(set_type), set_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  size_t stored_dist_fact = 0;
+  if ((status = nc_inq_dimlen(exoid, dist_dimid, &stored_dist_fact)) != EX_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to get dist factors length for %s set %" PRId64 " in file id %d",
+             ex_name_of_object(set_type), set_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+  if (stored_dist_fact != (size_t)num_dist_fact) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: dist factors list for %s set %" PRId64 " in file id %d stores %zu values "
+             "but %" PRId64 " were expected",
+             ex_name_of_object(set_type), set_id, exoid, stored_dist_fact, num_dist_fact);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  /* read in the expected distribution factors array */
+  size_t start[1] = {0};
+  size_t count[1] = {(size_t)num_dist_fact};
+  if (exi_comp_ws(exoid) == 4) {
+    status = nc_get_vara_float(exoid, dist_id, start, count, set_dist_fact);
+  }
+  else {
+    status = nc_get_vara_double(exoid, dist_id, start, count, set_dist_fact);
   }
 
   if (status != EX_NOERR) {

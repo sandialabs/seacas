@@ -85,6 +85,13 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-set-dist-factor-len
+  SOURCES test-set-dist-factor-len.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
   test-att-text-len
   SOURCES test-att-text-len.c
   COMM mpi serial
