@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <fmt/ostream.h>
 #include <iosfwd>
+#include <limits>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -1692,30 +1693,32 @@ namespace {
     int  width = Ioss::Utils::number_width(count - 1);
     bool first = true;
     for (size_t i = 0; i < count * component_count; i++) {
-      if (data1[i] != data2[i]) {
-        double abs_data1 = std::abs(data1[i]);
-        double abs_data2 = std::abs(data2[i]);
-        if (abs_data1 > tol_floor || abs_data2 > tol_floor) {
-          auto idx      = i / component_count;
-          auto cmp      = i % component_count;
-          auto abs_diff = std::abs(data1[i] - data2[i]);
-          auto max      = std::max(abs_data1, abs_data2);
-          auto rel_diff = max != 0.0 ? std::abs(data1[i] - data2[i]) / max : 0.0;
-          if (abs_diff >= abs_tolerance && rel_diff >= rel_tolerance) {
-            if (first) {
-              fmt::print(buf,
-                         "\n\tFIELD ({}) on {} -- mismatch at [index.component]:\n\t\t[{:{}}.{}]: "
-                         "{:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-                         field_name, entity_name, idx + 1, width, cmp, data1[i], data2[i], abs_diff,
-                         rel_diff);
-              first = false;
-            }
-            else {
-              fmt::print(
-                  buf, "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-                  idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
-            }
-          }
+      if (real_values_differ(data1[i], data2[i])) {
+        auto   idx      = i / component_count;
+        auto   cmp      = i % component_count;
+        double abs_diff = std::numeric_limits<double>::infinity();
+        double rel_diff = std::numeric_limits<double>::infinity();
+
+        if (std::isfinite(data1[i]) && std::isfinite(data2[i])) {
+          double abs_data1 = std::abs(data1[i]);
+          double abs_data2 = std::abs(data2[i]);
+          abs_diff         = std::abs(data1[i] - data2[i]);
+          double max       = std::max(abs_data1, abs_data2);
+          rel_diff         = max != 0.0 ? abs_diff / max : 0.0;
+        }
+
+        if (first) {
+          fmt::print(buf,
+                     "\n\tFIELD ({}) on {} -- mismatch at [index.component]:\n\t\t[{:{}}.{}]: "
+                     "{:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
+                     field_name, entity_name, idx + 1, width, cmp, data1[i], data2[i], abs_diff,
+                     rel_diff);
+          first = false;
+        }
+        else {
+          fmt::print(
+              buf, "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
+              idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
         }
       }
     }
