@@ -533,17 +533,11 @@ namespace {
   bool Check_Nodeset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const std::vector<INT> &node_map,
                      bool /*unused*/)
   {
-    // Currently don't set diff flag for most of these since we
-    // can continue (somewhat) with these differences...
-    // As get more usage of nodeset/sideset variables, may revisit
-    // what is a diff.
     bool is_same = true;
     if (file1.Num_Node_Sets() != file2.Num_Node_Sets()) {
       if (interFace.map_flag != MapType::PARTIAL) {
         Warning(".. Number of nodesets doesn't agree...\n");
-        if (interFace.pedantic) {
-          is_same = false;
-        }
+        is_same = false;
       }
     }
     // Check that the files both contain the same nodesets...
@@ -560,33 +554,25 @@ namespace {
       if (set2 == nullptr) {
         Warning(
             fmt::format(".. Nodeset id {} exists in first file but not the second.\n", set1->Id()));
-        if (interFace.pedantic) {
-          is_same = false;
-        }
+        is_same = false;
       }
       else {
         if (set1->Size() != set2->Size()) {
           Warning(fmt::format(
               ".. The node count for nodeset id {} is not the same in the two files ({} != {}).\n",
               set1->Id(), set1->Size(), set2->Size()));
-          if (interFace.pedantic) {
-            is_same = false;
-          }
+          is_same = false;
         }
         if (interFace.by_name && set1->Id() != set2->Id()) {
           Warning(fmt::format(".. Nodeset '{}' ids don't agree ({} != {}).\n", set1->Name(),
                               set1->Id(), set2->Id()));
-          if (interFace.pedantic) {
-            is_same = false;
-          }
+          is_same = false;
         }
         if (!interFace.by_name && set1->Name() != set2->Name()) {
           if (!set1->generatedName_ && !set2->generatedName_) {
             Warning(fmt::format(".. Nodeset {} names don't agree ({} != {}).\n", set1->Id(),
                                 set1->Name(), set2->Name()));
-            if (interFace.pedantic) {
-              is_same = false;
-            }
+            is_same = false;
           }
         }
       }
@@ -599,16 +585,14 @@ namespace {
       if (set2 == nullptr) {
         Warning(
             fmt::format(".. Could not access the Nodeset with index {} in the second file.\n", b));
-        if (interFace.pedantic) {
-          is_same = false;
-        }
+        is_same = false;
       }
     }
 
-    // Do the following check(s) only if there are nodeset variables...
     // For each nodeset, check that the order of the nodeset nodes is the same.
     // Eventually need to be able to map the order...
-    if (!interFace.ns_var_names.empty() || interFace.pedantic) {
+    if (interFace.map_flag != MapType::PARTIAL || !interFace.ns_var_names.empty() ||
+        interFace.pedantic || !interFace.ignore_nodeset_df) {
       for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
         Node_Set<INT> *set1 = file1.Get_Node_Set_by_Index(b);
         Node_Set<INT> *set2 = nullptr;
@@ -627,7 +611,7 @@ namespace {
           set1->apply_map(node_map);
         }
 
-        if ((interFace.pedantic || set1->var_count() > 0) && (set1->Size() == set2->Size())) {
+        if (set1->Size() == set2->Size()) {
           size_t  node_count = set1->Size();
           int64_t diff       = -1;
           for (size_t i = 0; i < node_count; i++) {
@@ -659,17 +643,11 @@ namespace {
   bool Check_Sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const std::vector<INT> &elmt_map,
                      bool /*unused*/)
   {
-    // Currently don't set diff flag for most of these since we
-    // can continue (somewhat) with these differences...
-    // As get more usage of nodeset/sideset variables, may revisit
-    // what is a diff.
     bool is_same = true;
     if (file1.Num_Side_Sets() != file2.Num_Side_Sets()) {
       if (interFace.map_flag != MapType::PARTIAL) {
         Warning(".. Number of sidesets doesn't agree...\n");
-        if (interFace.pedantic) {
-          is_same = false;
-        }
+        is_same = false;
       }
     }
     // Check that the files both contain the same sidesets...
@@ -686,33 +664,25 @@ namespace {
       if (set2 == nullptr) {
         Warning(
             fmt::format(".. Sideset id {} exists in first file but not the second.\n", set1->Id()));
-        if (interFace.pedantic) {
-          is_same = false;
-        }
+        is_same = false;
       }
       else {
         if (set1->Size() != set2->Size()) {
           Warning(fmt::format(
               ".. The side count for sideset id {} is not the same in the two files ({} != {}).\n",
               set1->Id(), set1->Size(), set2->Size()));
-          if (interFace.pedantic) {
-            is_same = false;
-          }
+          is_same = false;
         }
         if (interFace.by_name && set1->Id() != set2->Id()) {
           Warning(fmt::format(".. Sideset '{}' ids don't agree ({} != {}).\n", set1->Name(),
                               set1->Id(), set2->Id()));
-          if (interFace.pedantic) {
-            is_same = false;
-          }
+          is_same = false;
         }
         if (!interFace.by_name && set1->Name() != set2->Name()) {
           if (!set1->generatedName_ && !set2->generatedName_) {
             Warning(fmt::format(".. Sideset {} names don't agree ({} != {}).\n", set1->Id(),
                                 set1->Name(), set2->Name()));
-            if (interFace.pedantic) {
-              is_same = false;
-            }
+            is_same = false;
           }
         }
       }
@@ -723,16 +693,14 @@ namespace {
       if (set2 == nullptr) {
         Warning(
             fmt::format(".. Could not access the Sideset with index {} in the second file.\n", b));
-        if (interFace.pedantic) {
-          is_same = false;
-        }
+        is_same = false;
       }
     }
 
-    // Do the following check(s) only if there are sideset variables... (or -pedantic)
     // For each sideset, check that the order of the sideset sides is the same.
     // Eventually need to be able to map the order...
-    if (!interFace.ss_var_names.empty() || interFace.pedantic || !interFace.ignore_sideset_df) {
+    if (interFace.map_flag != MapType::PARTIAL || !interFace.ss_var_names.empty() ||
+        interFace.pedantic || !interFace.ignore_sideset_df) {
       for (size_t b = 0; b < file1.Num_Side_Sets(); ++b) {
         Side_Set<INT> *set1 = file1.Get_Side_Set_by_Index(b);
         Side_Set<INT> *set2 = nullptr;
@@ -751,9 +719,8 @@ namespace {
           set1->apply_map(elmt_map);
         }
 
-        // Don't care if sidesets don't match if there are no variables...
-        // If different sizes and pedantic, difference caught above.
-        if ((interFace.pedantic || set1->var_count() > 0) && (set1->Size() == set2->Size())) {
+        // Size differences are reported above; compare ordered side lists when sizes match.
+        if (set1->Size() == set2->Size()) {
           size_t  side_count = set1->Size();
           int64_t diff       = -1;
           for (size_t i = 0; i < side_count; i++) {

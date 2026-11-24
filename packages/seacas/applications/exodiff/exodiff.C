@@ -1399,6 +1399,9 @@ const double *get_validated_variable(Exo_Entity *entity, int step, int vidx,
     return nullptr;
   }
   if (!entity->is_valid_var(vidx)) {
+    Warning(fmt::format("Could not find variable '{}' in {} {}, file 1.\n", name,
+                        entity->short_label(), entity->Id()));
+    *diff_flag = true;
     return nullptr;
   }
 
@@ -1423,12 +1426,17 @@ const double *get_validated_variable(Exo_Entity *entity, const TimeInterp &t2, i
                                      const std::string &name, bool *diff_flag)
 {
   if (entity == nullptr) {
+    Warning(fmt::format("Could not find entity for variable '{}' in file 2.\n", name));
+    *diff_flag = true;
     return nullptr;
   }
   if (entity->Size() == 0) {
     return nullptr;
   }
   if (!entity->is_valid_var(vidx)) {
+    Warning(fmt::format("Could not find variable '{}' in {} {}, file 2.\n", name,
+                        entity->short_label(), entity->Id()));
+    *diff_flag = true;
     return nullptr;
   }
 

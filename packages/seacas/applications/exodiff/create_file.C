@@ -485,26 +485,30 @@ namespace {
             if (set2->is_valid_var(idx2)) {
               truth_tab[b * num_vars + out_idx] = 1;
             }
-            else if (!quiet_flag) {
-              std::ostringstream diff;
-              fmt::print(diff,
-                         "exodiff: INFO {0} variable \"{1}\" is not saved for {0}"
-                         " id {2} in the second file but is in the first (by virtue of the truth "
-                         "tables).  "
-                         "This variable won't be considered for this {0}.\n",
-                         label, name, set1->Id());
-              DIFF_OUT(diff, fmt::color::yellow);
+            else {
+              *diff_found = true;
+              if (!quiet_flag) {
+                std::ostringstream diff;
+                fmt::print(diff,
+                           "exodiff: DIFFERENCE {0} variable \"{1}\" is not saved for {0}"
+                           " id {2} in the second file but is in the first (by virtue of the truth "
+                           "tables).\n",
+                           label, name, set1->Id());
+                DIFF_OUT(diff);
+              }
             }
           }
-          else if (set2->is_valid_var(idx2) && !quiet_flag) {
-            std::ostringstream diff;
-            fmt::print(
-                diff,
-                "exodiff: INFO {0} variable \"{1}\" is not saved for {0}"
-                " id {2} in the first file but is in the second (by virtue of the truth tables).  "
-                "This variable won't be considered for this {0}.\n",
-                label, name, set1->Id());
-            DIFF_OUT(diff, fmt::color::yellow);
+          else if (set2->is_valid_var(idx2)) {
+            *diff_found = true;
+            if (!quiet_flag) {
+              std::ostringstream diff;
+              fmt::print(diff,
+                         "exodiff: DIFFERENCE {0} variable \"{1}\" is not saved for {0}"
+                         " id {2} in the first file but is in the second (by virtue of the truth "
+                         "tables).\n",
+                         label, name, set1->Id());
+              DIFF_OUT(diff);
+            }
           }
         }
       }

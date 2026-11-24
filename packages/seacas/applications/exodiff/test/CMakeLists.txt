@@ -39,6 +39,14 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
 TRIBITS_ADD_EXECUTABLE(
+  test_generate_set_mismatch
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test_generate_set_mismatch.c
+  COMM serial mpi
+  )
+
+TRIBITS_ADD_EXECUTABLE(
   test_nodeset_read_error
   NOEXEPREFIX
   NOEXESUFFIX
@@ -76,6 +84,19 @@ TRIBITS_ADD_ADVANCED_TEST(
              ${CMAKE_CURRENT_BINARY_DIR}/nodeset-df-b.exo
             OUTPUT_FILE exodiff-nodeset-df-ignore.stdout
             PASS_REGULAR_EXPRESSION "exodiff: Files are the same"
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ exodiff_test_set_mismatch_verdicts
+ TEST_0 EXEC ${CMAKE_CURRENT_BINARY_DIR}/test_generate_set_mismatch
+        NOEXEPREFIX NOEXESUFFIX
+ TEST_1 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff ${CMAKE_CURRENT_BINARY_DIR}/nodeset-missing-a.exo ${CMAKE_CURRENT_BINARY_DIR}/nodeset-missing-b.exo > exodiff-nodeset-missing.stdout 2>&1 && grep -q 'Nodeset id 100 exists in first file but not the second' exodiff-nodeset-missing.stdout && grep -q 'Differences found in node set metadata' exodiff-nodeset-missing.stdout"
+ TEST_2 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff ${CMAKE_CURRENT_BINARY_DIR}/sideset-missing-a.exo ${CMAKE_CURRENT_BINARY_DIR}/sideset-missing-b.exo > exodiff-sideset-missing.stdout 2>&1 && grep -q 'Sideset id 200 exists in first file but not the second' exodiff-sideset-missing.stdout && grep -q 'Differences found in side set metadata' exodiff-sideset-missing.stdout"
+ TEST_3 CMND /bin/sh ARGS -c "printf 'ELEMENT VARIABLES\\n\\tev\\n' > entity-var.exodiff && ! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff -f entity-var.exodiff ${CMAKE_CURRENT_BINARY_DIR}/entity-var-a.exo ${CMAKE_CURRENT_BINARY_DIR}/entity-var-b.exo > exodiff-entity-var.stdout 2>&1 && grep -q 'DIFFERENCE Element Block variable' exodiff-entity-var.stdout && grep -q 'id 2 in the second file' exodiff-entity-var.stdout && grep -q 'Files are different' exodiff-entity-var.stdout"
  COMM mpi serial
  OVERALL_NUM_MPI_PROCS 1
  FINAL_PASS_REGULAR_EXPRESSION
