@@ -457,6 +457,8 @@ void SystemInterface::enroll_options()
   options_.enroll("ignore_nans", GetLongOption::NoValue, "Don't check data for NaNs", nullptr);
   options_.enroll("ignore_attributes", GetLongOption::NoValue,
                   "Don't compare element attribute values.", nullptr);
+  options_.enroll("ignore_nodeset_df", GetLongOption::NoValue,
+                  "Don't compare nodeset distribution factors.", nullptr, nullptr, true);
   options_.enroll("ignore_sideset_df", GetLongOption::NoValue,
                   "Don't compare sideset distribution factors.", nullptr, nullptr, true);
 
@@ -809,6 +811,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("ignore_attributes") != nullptr) {
     ignore_attributes = true;
   }
+  if (options_.retrieve("ignore_nodeset_df") != nullptr) {
+    ignore_nodeset_df = true;
+  }
   if (options_.retrieve("ignore_sideset_df") != nullptr) {
     ignore_sideset_df = true;
   }
@@ -1082,6 +1087,13 @@ void SystemInterface::Parse_Command_File()
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "attributes", 3)) {
         ignore_attributes = true;
+      }
+      else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "nodeset", 3)) {
+        tok3 = extract_token(xline, " \t");
+        to_lower(tok3);
+        if (abbreviation(tok3, "distribution", 3)) {
+          ignore_nodeset_df = true;
+        }
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "sideset", 3)) {
         tok3 = extract_token(xline, " \t");
@@ -1746,6 +1758,8 @@ namespace {
         "[default].\n"
         "         - IGNORE MAPS: \"-ignore_maps\", use local implicit instead of global ids.\n"
         "         - IGNORE NANS: \"-ignore_nans\", do not check data for NaNs\n"
+        "         - IGNORE NODESET DISTRIBUTION: \"-ignore_nodeset_df\", do not compare "
+        "nodeset distribution factors.\n"
         "         - IGNORE DUPLICATES: \"-ignore_dups\", ignore two elements/nodes in same "
         "position...\n"
         "         - STEP OFFSET <val>: \"-TimeStepOffset\", timestep 'val+offset' in file1 matches "

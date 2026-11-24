@@ -31,6 +31,14 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
 TRIBITS_ADD_EXECUTABLE(
+  test_generate_nodeset_df
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test_generate_nodeset_df.c
+  COMM serial mpi
+  )
+
+TRIBITS_ADD_EXECUTABLE(
   test_nodeset_read_error
   NOEXEPREFIX
   NOEXESUFFIX
@@ -52,6 +60,22 @@ IF (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodus)
 TRIBITS_ADD_ADVANCED_TEST(
  exodiff_test_nodeset_read_error
  TEST_0 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/test_nodeset_read_error > exodiff-nodeset-read-error.stdout 2>&1 && grep -q 'Failed to read node set' exodiff-nodeset-read-error.stdout"
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ exodiff_test_nodeset_distribution_factors
+ TEST_0 EXEC ${CMAKE_CURRENT_BINARY_DIR}/test_generate_nodeset_df
+        NOEXEPREFIX NOEXESUFFIX
+ TEST_1 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff ${CMAKE_CURRENT_BINARY_DIR}/nodeset-df-a.exo ${CMAKE_CURRENT_BINARY_DIR}/nodeset-df-b.exo > exodiff-nodeset-df.stdout 2>&1 && grep -q 'Nodeset Distribution Factors' exodiff-nodeset-df.stdout && grep -q 'diff:' exodiff-nodeset-df.stdout"
+ TEST_2 CMND ${CMAKE_CURRENT_BINARY_DIR}/../exodiff
+        ARGS -ignore_nodeset_df ${CMAKE_CURRENT_BINARY_DIR}/nodeset-df-a.exo
+             ${CMAKE_CURRENT_BINARY_DIR}/nodeset-df-b.exo
+            OUTPUT_FILE exodiff-nodeset-df-ignore.stdout
+            PASS_REGULAR_EXPRESSION "exodiff: Files are the same"
  COMM mpi serial
  OVERALL_NUM_MPI_PROCS 1
  FINAL_PASS_REGULAR_EXPRESSION

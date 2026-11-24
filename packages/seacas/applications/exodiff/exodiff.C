@@ -180,6 +180,9 @@ bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
                   int out_file_id, int output_step, const INT *id_map, std::vector<double> &vals);
 
 template <typename INT>
+bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map);
+
+template <typename INT>
 bool diff_sideset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map);
 
 template <typename INT>
@@ -826,6 +829,13 @@ namespace {
     // Diff attributes...
     if (!interFace.ignore_attributes && elmt_map.empty() && !interFace.summary_flag) {
       if (diff_element_attributes(file1, file2, elmt_map, elem_id_map, blocks2)) {
+        diff_flag = true;
+      }
+    }
+
+    // Diff nodeset distribution factors...
+    if (!interFace.ignore_nodeset_df && !interFace.summary_flag) {
+      if (diff_nodeset_df(file1, file2, node_id_map)) {
         diff_flag = true;
       }
     }
@@ -2322,6 +2332,133 @@ bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
     }
 
   } // End of sideset variable loop.
+  return diff_flag;
+}
+
+template <typename INT>
+bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map)
+{
+  bool diff_flag = false;
+
+  std::string name        = "Nodeset Distribution Factors";
+  int         length_name = name.length();
+
+  if (!interFace.quiet_flag && file1.Num_Node_Sets() > 0) {
+    fmt::print("Nodeset Distribution Factors:\n");
+  }
+
+  DiffData max_diff;
+  for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
+    Node_Set<INT> *nset1 = file1.Get_Node_Set_by_Index(b);
+    SMART_ASSERT(nset1 != nullptr);
+
+    Node_Set<INT> *nset2 = nullptr;
+    if (interFace.by_name) {
+      nset2 = file2.Get_Node_Set_by_Name(nset1->Name());
+    }
+    else {
+      nset2 = file2.Get_Node_Set_by_Id(nset1->Id());
+    }
+    if (nset2 == nullptr) {
+      continue;
+    }
+
+    size_t df_count1 = nset1->Distribution_Factor_Count();
+    size_t df_count2 = nset2->Distribution_Factor_Count();
+    if (df_count1 == 0 && df_count2 == 0) {
+      continue;
+    }
+
+    if (df_count1 != df_count2 || df_count1 != nset1->Size() || df_count2 != nset2->Size()) {
+      std::string buf = fmt::format(
+          "   {:<{}}     diff: nodeset distribution factor counts differ for nodeset {}", name,
+          length_name, nset1->Id());
+      DIFF_OUT(buf);
+      diff_flag = true;
+      continue;
+    }
+
+    const double *vals1 = nset1->Distribution_Factors();
+    if (vals1 == nullptr) {
+      Warning(
+          fmt::format("Could not read distribution factors in nodeset {}, file 1.\n", nset1->Id()));
+      diff_flag = true;
+      continue;
+    }
+
+    if (Invalid_Values(vals1, df_count1)) {
+      Warning(fmt::format("NaN found for distribution factors in nodeset {}, file 1.\n",
+                          nset1->Id()));
+      diff_flag = true;
+    }
+
+    const double *vals2 = nset2->Distribution_Factors();
+    if (vals2 == nullptr) {
+      Warning(
+          fmt::format("Could not read distribution factors in nodeset {}, file 2.\n", nset2->Id()));
+      diff_flag = true;
+      continue;
+    }
+
+    if (Invalid_Values(vals2, df_count2)) {
+      Warning(fmt::format("NaN found for distribution factors in nodeset {}, file 2.\n",
+                          nset2->Id()));
+      diff_flag = true;
+    }
+
+    double value1 = 0.0;
+    double value2 = 0.0;
+    if (Equal_Values(vals1, df_count1, &value1) && Equal_Values(vals2, df_count2, &value2) &&
+        value1 == value2) {
+      nset1->Free_Distribution_Factors();
+      nset2->Free_Distribution_Factors();
+      continue;
+    }
+
+    size_t ncount = nset1->Size();
+    for (size_t e = 0; e < ncount; ++e) {
+      size_t idx1 = nset1->Node_Index(e);
+      size_t idx2 = nset2->Node_Index(e);
+      double v1   = vals1[idx1];
+      double v2   = vals2[idx2];
+
+      if (interFace.show_all_diffs) {
+        double d = interFace.ss_df_tol.Delta(v1, v2);
+        if (d > interFace.ss_df_tol.value) {
+          diff_flag       = true;
+          std::string buf = fmt::format(
+              "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
+              length_name, interFace.ss_df_tol.abrstr(), v1, v2, d, nset1->Id(),
+              id_map[nset1->Node_Id(e) - 1]);
+          DIFF_OUT(buf);
+        }
+      }
+      else {
+        double d = interFace.ss_df_tol.Delta(v1, v2);
+        max_diff.set_max(d, v1, v2, e, nset1->Id());
+      }
+    }
+
+    nset1->Free_Distribution_Factors();
+    nset2->Free_Distribution_Factors();
+  } // End of nodeset loop.
+
+  if (max_diff.diff > interFace.ss_df_tol.value) {
+    diff_flag = true;
+
+    if (!interFace.quiet_flag) {
+      Node_Set<INT> *nset = file1.Get_Node_Set_by_Id(max_diff.blk);
+      std::string    buf  = fmt::format(
+          "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
+          length_name, interFace.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2, max_diff.diff,
+          max_diff.blk, id_map[nset->Node_Id(max_diff.id) - 1]);
+      DIFF_OUT(buf);
+    }
+    else {
+      Die_TS(-1);
+    }
+  }
+
   return diff_flag;
 }
 

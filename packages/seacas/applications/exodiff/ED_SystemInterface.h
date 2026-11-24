@@ -112,6 +112,7 @@ public:
                            // case, just return first match instead of aborting.
   bool ignore_steps{false};
   bool ignore_attributes{false}; // Don't compare attributes...
+  bool ignore_nodeset_df{false}; // Don't compare nodeset df
   bool ignore_sideset_df{false}; // Don't compare sideset df
 
   bool ints_64_bits{false};
