@@ -509,6 +509,16 @@ void SystemInterface::enroll_options()
 
 bool SystemInterface::parse_options(int argc, char **argv)
 {
+  default_floor_specified_ = false;
+  for (int i = 1; i < argc; ++i) {
+    if (std::strcmp(argv[i], "-Floor") == 0 || std::strcmp(argv[i], "--Floor") == 0 ||
+        std::strncmp(argv[i], "-Floor=", 7) == 0 ||
+        std::strncmp(argv[i], "--Floor=", 8) == 0) {
+      default_floor_specified_ = true;
+      break;
+    }
+  }
+
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
@@ -867,8 +877,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    // Reset default tolerances in case the -t flag was given.
-    time_tol         = default_tol;
+    // Reset default tolerances in case the -t flag was given.  The documented
+    // default time floor is tighter than the variable floor and should only be
+    // replaced when the user explicitly changes the default floor.
+    double time_floor = time_tol.floor;
+    time_tol          = default_tol;
+    if (!default_floor_specified_) {
+      time_tol.floor = time_floor;
+    }
     glob_var_default = default_tol;
     node_var_default = default_tol;
     elmt_var_default = default_tol;
@@ -916,7 +932,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
 void SystemInterface::Parse_Command_File()
 {
-  int default_tol_specified = 0;
+  int  default_tol_specified   = 0;
+  bool default_floor_specified = default_floor_specified_;
 
   std::ifstream cmd_file(command_file, std::ios::in);
   SMART_ASSERT(cmd_file.good());
@@ -981,7 +998,9 @@ void SystemInterface::Parse_Command_File()
           if (tok.empty()) {
             Parse_Die(line);
           }
-          default_tol.floor = To_Double(tok);
+          default_tol.floor          = To_Double(tok);
+          default_floor_specified    = true;
+          default_floor_specified_   = true;
         }
         default_tol_specified = 1;
       }
@@ -1170,7 +1189,11 @@ void SystemInterface::Parse_Command_File()
         }
       }
       else if (tok1 == "time" && abbreviation(tok2, "steps", 4)) {
-        time_tol = default_tol;
+        double time_floor = time_tol.floor;
+        time_tol          = default_tol;
+        if (!default_floor_specified) {
+          time_tol.floor = time_floor;
+        }
 
         std::string tok = extract_token(xline, " \n\t=");
         to_lower(tok);

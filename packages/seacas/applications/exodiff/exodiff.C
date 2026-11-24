@@ -2858,7 +2858,7 @@ void output_summary(Exo_Read<INT> &file1, MinMaxData &mm_time, std::vector<MinMa
   }
 
   if (file1.Num_Times() > 0) {
-    fmt::print("\nTIME STEPS relative 1.e-6 floor 0.0     # min: ");
+    fmt::print("\nTIME STEPS relative 1.e-6 floor 1.e-15   # min: ");
     fmt::print("{:15.8g} @ t{} max: {:15.8g} @ t{}\n", mm_time.min_val, mm_time.min_step,
                mm_time.max_val, mm_time.max_step);
   }

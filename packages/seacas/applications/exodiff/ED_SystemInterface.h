@@ -145,6 +145,7 @@ public:
 private:
   void                      enroll_options();
   suplib_cpp::GetLongOption options_{}; //!< Options parsing
+  bool                      default_floor_specified_{false};
 };
 
 extern SystemInterface interFace;

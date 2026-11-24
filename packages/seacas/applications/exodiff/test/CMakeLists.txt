@@ -14,6 +14,14 @@ TRIBITS_ADD_EXECUTABLE(
   COMM serial mpi
   )
 
+TRIBITS_ADD_EXECUTABLE(
+  test_generate_time_floor
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test_generate_time_floor.c
+  COMM serial mpi
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(
   exodiff_test_tolerance_nonfinite
   TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/test_tolerance_nonfinite
@@ -24,6 +32,25 @@ TRIBITS_ADD_ADVANCED_TEST(
   )
 
 IF (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodus)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ exodiff_test_time_floor_default
+ TEST_0 EXEC ${CMAKE_CURRENT_BINARY_DIR}/test_generate_time_floor
+        NOEXEPREFIX NOEXESUFFIX
+ TEST_1 CMND ${CMAKE_CURRENT_BINARY_DIR}/../exodiff
+        ARGS ${CMAKE_CURRENT_BINARY_DIR}/time-floor-a.exo
+             ${CMAKE_CURRENT_BINARY_DIR}/time-floor-b.exo
+            OUTPUT_FILE exodiff-time-floor.stdout
+            PASS_REGULAR_EXPRESSION "exodiff: Files are the same"
+ TEST_2 CMND ${CMAKE_CURRENT_BINARY_DIR}/../exodiff
+        ARGS -summary ${CMAKE_CURRENT_BINARY_DIR}/time-floor-a.exo
+             OUTPUT_FILE exodiff-time-floor-summary.stdout
+             PASS_REGULAR_EXPRESSION "TIME STEPS relative 1.e-6 floor 1.e-15"
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
 
 TRIBITS_ADD_ADVANCED_TEST(
  exodiff_test_len_name_32
