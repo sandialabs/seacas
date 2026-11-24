@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <assert.h>
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <fmt/ostream.h>
@@ -128,6 +129,32 @@ namespace {
       }
     }
     return success;
+  }
+
+  bool real_values_differ(double value_1, double value_2)
+  {
+    if (value_1 == value_2) {
+      return false;
+    }
+
+    if (std::isnan(value_1) || std::isnan(value_2)) {
+      return true;
+    }
+
+    if (!std::isfinite(value_1) || !std::isfinite(value_2)) {
+      return true;
+    }
+
+    double abs_value_1 = std::abs(value_1);
+    double abs_value_2 = std::abs(value_2);
+    if (abs_value_1 <= tol_floor && abs_value_2 <= tol_floor) {
+      return false;
+    }
+
+    double abs_diff = std::abs(value_1 - value_2);
+    double max      = std::max(abs_value_1, abs_value_2);
+    double rel_diff = max != 0.0 ? abs_diff / max : 0.0;
+    return abs_diff >= abs_tolerance && rel_diff >= rel_tolerance;
   }
 
   bool compare_database_internal(Ioss::Region &input_region_1, Ioss::Region &input_region_2,
@@ -828,6 +855,13 @@ namespace {
 
         if (istep > in_step_count_2) {
           break;
+        }
+
+        double in_time_2 = input_region_2.get_state_time(istep);
+        if (real_values_differ(in_time_1, in_time_2)) {
+          fmt::print(Ioss::OUTPUT(), "\nTIME STEP value mismatch (step {}): {:20.13e} vs. {:20.13e}\n",
+                     istep, in_time_1, in_time_2);
+          overall_result = false;
         }
 
         input_region_1.begin_state(istep);
