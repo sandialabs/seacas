@@ -182,6 +182,21 @@ TRIBITS_ADD_ADVANCED_TEST(
 )
 
 TRIBITS_ADD_ADVANCED_TEST(
+ aprepro_lib_principal_stress_test
+ TEST_0 EXEC aprepro_lib_test
+		ARGS --legacy_output_format -o test-principal-stress.out ${CMAKE_CURRENT_SOURCE_DIR}/test-principal-stress.i
+  NOEXEPREFIX NOEXESUFFIX
+  PASS_ANY
+ TEST_1 CMND diff ARGS -w
+			       ${CMAKE_CURRENT_SOURCE_DIR}/test-principal-stress.gold
+			       ${CMAKE_CURRENT_BINARY_DIR}/test-principal-stress.out
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
  aprepro_lib_unit_test_strings
  TEST_0 EXEC aprepro_strings_test
  OUTPUT_FILE test-strings.output

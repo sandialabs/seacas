@@ -1118,7 +1118,15 @@ namespace SEAMS {
     double fi2 = (i2 == 0.0) ? 1.0 : i2;
 
     double cos3al = sqrt3 * 1.5 * i3 / fi2 / sqrt(fi2);
-    //    cos3al = sign( min( 1.0, abs(cos3al) ),cos3al );
+    // Clamp to the domain of acos: rounding can push |cos3al| slightly above
+    // 1.0 for repeated principal values (e.g. axisymmetric stress states),
+    // which would make acos return NaN.
+    if (cos3al > 1.0) {
+      cos3al = 1.0;
+    }
+    else if (cos3al < -1.0) {
+      cos3al = -1.0;
+    }
 
     double calpha = cos(acos(cos3al) / 3.0);
     double salpha = sqrt(1.0 - calpha * calpha);
