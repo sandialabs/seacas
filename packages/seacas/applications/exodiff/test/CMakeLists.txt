@@ -55,6 +55,14 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
 TRIBITS_ADD_EXECUTABLE(
+  test_generate_invalid_coord_time
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test_generate_invalid_coord_time.c
+  COMM serial mpi
+  )
+
+TRIBITS_ADD_EXECUTABLE(
   test_nodeset_read_error
   NOEXEPREFIX
   NOEXESUFFIX
@@ -118,6 +126,18 @@ TRIBITS_ADD_ADVANCED_TEST(
  TEST_1 CMND /bin/sh ARGS -c "printf 'ELEMENT ATTRIBUTES\\n\\tthick\\n' > element-attr.exodiff && ! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff -f element-attr.exodiff ${CMAKE_CURRENT_BINARY_DIR}/element-attr-a.exo ${CMAKE_CURRENT_BINARY_DIR}/element-attr-b.exo > exodiff-element-attr.stdout 2>&1 && grep -q 'Element attributes' exodiff-element-attr.stdout && grep -q 'thick' exodiff-element-attr.stdout && grep -q 'Files are different' exodiff-element-attr.stdout"
  TEST_2 CMND /bin/sh ARGS -c "printf 'ELEMENT ATTRIBUTES\\n\\tthick\\n' > element-attr.exodiff && ! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff -f element-attr.exodiff ${CMAKE_CURRENT_BINARY_DIR}/element-attr-missing-a.exo ${CMAKE_CURRENT_BINARY_DIR}/element-attr-missing-b.exo > exodiff-element-attr-missing.stdout 2>&1 && grep -q 'element attribute variable' exodiff-element-attr-missing.stdout && grep -q 'first file, but not the second file' exodiff-element-attr-missing.stdout && grep -q 'Files are different' exodiff-element-attr-missing.stdout"
  TEST_3 CMND /bin/sh ARGS -c "printf 'ELEMENT ATTRIBUTES\\n\\tthick\\n' > element-attr.exodiff && ! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff -map -f element-attr.exodiff ${CMAKE_CURRENT_BINARY_DIR}/element-attr-map-a.exo ${CMAKE_CURRENT_BINARY_DIR}/element-attr-map-b.exo > exodiff-element-attr-map.stdout 2>&1 && grep -q 'Element attributes' exodiff-element-attr-map.stdout && grep -q 'thick' exodiff-element-attr-map.stdout && grep -q 'Files are different' exodiff-element-attr-map.stdout"
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ exodiff_test_invalid_coord_time
+ TEST_0 EXEC ${CMAKE_CURRENT_BINARY_DIR}/test_generate_invalid_coord_time
+        NOEXEPREFIX NOEXESUFFIX
+ TEST_1 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff ${CMAKE_CURRENT_BINARY_DIR}/coord-invalid-a.exo ${CMAKE_CURRENT_BINARY_DIR}/coord-invalid-b.exo > exodiff-invalid-coord.stdout 2>&1 && grep -q 'x coord' exodiff-invalid-coord.stdout && grep -q 'Differences found in mesh nodal coordinates' exodiff-invalid-coord.stdout && ! grep -qi 'nan' exodiff-invalid-coord.stdout"
+ TEST_2 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff ${CMAKE_CURRENT_BINARY_DIR}/time-invalid-a.exo ${CMAKE_CURRENT_BINARY_DIR}/time-invalid-b.exo > exodiff-invalid-time.stdout 2>&1 && grep -q 'FAILED' exodiff-invalid-time.stdout && ! grep -qi 'nan' exodiff-invalid-time.stdout"
  COMM mpi serial
  OVERALL_NUM_MPI_PROCS 1
  FINAL_PASS_REGULAR_EXPRESSION

@@ -88,6 +88,14 @@ int main()
   if (int rc = expect(relative.Diff(inf, 1.0), "ignore_nans must not hide infinity mismatches")) {
     return rc;
   }
+  if (int rc = expect(relative.Diff(inf, nan),
+                      "ignore_nans must not hide infinity mismatches against NaN")) {
+    return rc;
+  }
+  if (int rc = expect_delta_inf(relative, inf, nan,
+                                "infinity and NaN should report infinite delta with ignore_nans")) {
+    return rc;
+  }
 
   return EXIT_SUCCESS;
 }

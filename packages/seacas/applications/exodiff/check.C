@@ -5,8 +5,10 @@
 // See packages/seacas/LICENSE for details
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <limits>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 #include <smart_assert.h>
@@ -156,6 +158,18 @@ namespace {
       z2 = file2.Z_Coords();
     }
 
+    auto accumulate_norm = [](double &norm, double v1, double v2, double delta, double tolerance) {
+      if (!std::isfinite(v1) || !std::isfinite(v2)) {
+        if (delta > tolerance) {
+          norm = std::numeric_limits<double>::infinity();
+        }
+        return;
+      }
+
+      double diff = v1 - v2;
+      norm += diff * diff;
+    };
+
     double max = 0.0;
     double norm;
     for (size_t n = 0; n < file1.Num_Nodes() && (is_same || interFace.show_all_diffs); ++n) {
@@ -169,7 +183,8 @@ namespace {
                      static_cast<size_t>(id_map[n]));
           is_same = false;
         }
-        norm = (x1[n] - x2[n2]) * (x1[n] - x2[n2]);
+        norm = 0.0;
+        accumulate_norm(norm, x1[n], x2[n2], dx, interFace.coord_tol.value);
 
         if (file1.Dimension() > 1 && file2.Dimension() > 1) {
           double dy = interFace.coord_tol.Delta(y1[n], y2[n2]);
@@ -179,7 +194,7 @@ namespace {
                        static_cast<size_t>(id_map[n]));
             is_same = false;
           }
-          norm += (y1[n] - y2[n2]) * (y1[n] - y2[n2]);
+          accumulate_norm(norm, y1[n], y2[n2], dy, interFace.coord_tol.value);
         }
 
         if (file1.Dimension() > 2 && file2.Dimension() > 2) {
@@ -190,7 +205,7 @@ namespace {
                        static_cast<size_t>(id_map[n]));
             is_same = false;
           }
-          norm += (z1[n] - z2[n2]) * (z1[n] - z2[n2]);
+          accumulate_norm(norm, z1[n], z2[n2], dz, interFace.coord_tol.value);
         }
         max = max < norm ? norm : max;
       } // End of node iteration...

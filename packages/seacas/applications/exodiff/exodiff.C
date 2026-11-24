@@ -15,6 +15,7 @@
 #include <fmt/ranges.h>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <numeric>
 
 #include <SL_tokenize.h>
@@ -1192,6 +1193,35 @@ double FileDiff(double v1, double v2, ToleranceMode type)
   if (type == ToleranceMode::IGNORE_) { // ignore
     return 0.0;
   }
+
+  if (!std::isfinite(v1) || !std::isfinite(v2)) {
+    const bool has_nan     = std::isnan(v1) || std::isnan(v2);
+    const bool has_inf     = std::isinf(v1) || std::isinf(v2);
+    const bool ignored_nan = Tolerance::ignore_nans && has_nan && !has_inf;
+    if (ignored_nan) {
+      return 0.0;
+    }
+
+    const bool eigen = type == ToleranceMode::EIGEN_REL_ || type == ToleranceMode::EIGEN_ABS_ ||
+                       type == ToleranceMode::EIGEN_COM_;
+    const bool same = eigen ? (std::fabs(v1) == std::fabs(v2)) : (v1 == v2);
+    if (same) {
+      return 0.0;
+    }
+
+    const double inf = std::numeric_limits<double>::infinity();
+    if (has_nan || type == ToleranceMode::COMBINED_ || eigen) {
+      return inf;
+    }
+    if (std::isinf(v1)) {
+      return v1;
+    }
+    if (std::isinf(v2)) {
+      return -v2;
+    }
+    return inf;
+  }
+
   if (type == ToleranceMode::RELATIVE_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
