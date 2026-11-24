@@ -15,6 +15,7 @@
 #include <fmt/ranges.h>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <numeric>
 
 #include <SL_tokenize.h>
@@ -178,6 +179,9 @@ bool diff_nodeset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
 template <typename INT>
 bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const TimeInterp &t2,
                   int out_file_id, int output_step, const INT *id_map, std::vector<double> &vals);
+
+template <typename INT>
+bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map);
 
 template <typename INT>
 bool diff_sideset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map);
@@ -824,8 +828,15 @@ namespace {
     }
 
     // Diff attributes...
-    if (!interFace.ignore_attributes && elmt_map.empty() && !interFace.summary_flag) {
+    if (!interFace.ignore_attributes && !interFace.summary_flag) {
       if (diff_element_attributes(file1, file2, elmt_map, elem_id_map, blocks2)) {
+        diff_flag = true;
+      }
+    }
+
+    // Diff nodeset distribution factors...
+    if (!interFace.ignore_nodeset_df && !interFace.summary_flag) {
+      if (diff_nodeset_df(file1, file2, node_id_map)) {
         diff_flag = true;
       }
     }
@@ -1182,6 +1193,35 @@ double FileDiff(double v1, double v2, ToleranceMode type)
   if (type == ToleranceMode::IGNORE_) { // ignore
     return 0.0;
   }
+
+  if (!std::isfinite(v1) || !std::isfinite(v2)) {
+    const bool has_nan     = std::isnan(v1) || std::isnan(v2);
+    const bool has_inf     = std::isinf(v1) || std::isinf(v2);
+    const bool ignored_nan = Tolerance::ignore_nans && has_nan && !has_inf;
+    if (ignored_nan) {
+      return 0.0;
+    }
+
+    const bool eigen = type == ToleranceMode::EIGEN_REL_ || type == ToleranceMode::EIGEN_ABS_ ||
+                       type == ToleranceMode::EIGEN_COM_;
+    const bool same = eigen ? (std::fabs(v1) == std::fabs(v2)) : (v1 == v2);
+    if (same) {
+      return 0.0;
+    }
+
+    const double inf = std::numeric_limits<double>::infinity();
+    if (has_nan || type == ToleranceMode::COMBINED_ || eigen) {
+      return inf;
+    }
+    if (std::isinf(v1)) {
+      return v1;
+    }
+    if (std::isinf(v2)) {
+      return -v2;
+    }
+    return inf;
+  }
+
   if (type == ToleranceMode::RELATIVE_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
@@ -1389,6 +1429,8 @@ const double *get_validated_variable(Exo_Entity *entity, int step, int vidx,
     return nullptr;
   }
   if (!entity->is_valid_var(vidx)) {
+    Warning(fmt::format("Could not find variable '{}' in {} {}, file 1.\n", name,
+                        entity->short_label(), entity->Id()));
     return nullptr;
   }
 
@@ -1413,12 +1455,17 @@ const double *get_validated_variable(Exo_Entity *entity, const TimeInterp &t2, i
                                      const std::string &name, bool *diff_flag)
 {
   if (entity == nullptr) {
+    Warning(fmt::format("Could not find entity for variable '{}' in file 2.\n", name));
+    *diff_flag = true;
     return nullptr;
   }
   if (entity->Size() == 0) {
     return nullptr;
   }
   if (!entity->is_valid_var(vidx)) {
+    Warning(fmt::format("Could not find variable '{}' in {} {}, file 2.\n", name,
+                        entity->short_label(), entity->Id()));
+    *diff_flag = true;
     return nullptr;
   }
 
@@ -2326,6 +2373,133 @@ bool diff_sideset(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const T
 }
 
 template <typename INT>
+bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map)
+{
+  bool diff_flag = false;
+
+  std::string name        = "Nodeset Distribution Factors";
+  int         length_name = name.length();
+
+  if (!interFace.quiet_flag && file1.Num_Node_Sets() > 0) {
+    fmt::print("Nodeset Distribution Factors:\n");
+  }
+
+  DiffData max_diff;
+  for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
+    Node_Set<INT> *nset1 = file1.Get_Node_Set_by_Index(b);
+    SMART_ASSERT(nset1 != nullptr);
+
+    Node_Set<INT> *nset2 = nullptr;
+    if (interFace.by_name) {
+      nset2 = file2.Get_Node_Set_by_Name(nset1->Name());
+    }
+    else {
+      nset2 = file2.Get_Node_Set_by_Id(nset1->Id());
+    }
+    if (nset2 == nullptr) {
+      continue;
+    }
+
+    size_t df_count1 = nset1->Distribution_Factor_Count();
+    size_t df_count2 = nset2->Distribution_Factor_Count();
+    if (df_count1 == 0 && df_count2 == 0) {
+      continue;
+    }
+
+    if (df_count1 != df_count2 || df_count1 != nset1->Size() || df_count2 != nset2->Size()) {
+      std::string buf = fmt::format(
+          "   {:<{}}     diff: nodeset distribution factor counts differ for nodeset {}", name,
+          length_name, nset1->Id());
+      DIFF_OUT(buf);
+      diff_flag = true;
+      continue;
+    }
+
+    const double *vals1 = nset1->Distribution_Factors();
+    if (vals1 == nullptr) {
+      Warning(
+          fmt::format("Could not read distribution factors in nodeset {}, file 1.\n", nset1->Id()));
+      diff_flag = true;
+      continue;
+    }
+
+    if (Invalid_Values(vals1, df_count1)) {
+      Warning(
+          fmt::format("NaN found for distribution factors in nodeset {}, file 1.\n", nset1->Id()));
+      diff_flag = true;
+    }
+
+    const double *vals2 = nset2->Distribution_Factors();
+    if (vals2 == nullptr) {
+      Warning(
+          fmt::format("Could not read distribution factors in nodeset {}, file 2.\n", nset2->Id()));
+      diff_flag = true;
+      continue;
+    }
+
+    if (Invalid_Values(vals2, df_count2)) {
+      Warning(
+          fmt::format("NaN found for distribution factors in nodeset {}, file 2.\n", nset2->Id()));
+      diff_flag = true;
+    }
+
+    double value1 = 0.0;
+    double value2 = 0.0;
+    if (Equal_Values(vals1, df_count1, &value1) && Equal_Values(vals2, df_count2, &value2) &&
+        value1 == value2) {
+      nset1->Free_Distribution_Factors();
+      nset2->Free_Distribution_Factors();
+      continue;
+    }
+
+    size_t ncount = nset1->Size();
+    for (size_t e = 0; e < ncount; ++e) {
+      size_t idx1 = nset1->Node_Index(e);
+      size_t idx2 = nset2->Node_Index(e);
+      double v1   = vals1[idx1];
+      double v2   = vals2[idx2];
+
+      if (interFace.show_all_diffs) {
+        double d = interFace.ss_df_tol.Delta(v1, v2);
+        if (d > interFace.ss_df_tol.value) {
+          diff_flag = true;
+          std::string buf =
+              fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})",
+                          name, length_name, interFace.ss_df_tol.abrstr(), v1, v2, d, nset1->Id(),
+                          id_map[nset1->Node_Id(e) - 1]);
+          DIFF_OUT(buf);
+        }
+      }
+      else {
+        double d = interFace.ss_df_tol.Delta(v1, v2);
+        max_diff.set_max(d, v1, v2, e, nset1->Id());
+      }
+    }
+
+    nset1->Free_Distribution_Factors();
+    nset2->Free_Distribution_Factors();
+  } // End of nodeset loop.
+
+  if (max_diff.diff > interFace.ss_df_tol.value) {
+    diff_flag = true;
+
+    if (!interFace.quiet_flag) {
+      Node_Set<INT> *nset = file1.Get_Node_Set_by_Id(max_diff.blk);
+      std::string    buf =
+          fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
+                      length_name, interFace.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2,
+                      max_diff.diff, max_diff.blk, id_map[nset->Node_Id(max_diff.id) - 1]);
+      DIFF_OUT(buf);
+    }
+    else {
+      Die_TS(-1);
+    }
+  }
+
+  return diff_flag;
+}
+
+template <typename INT>
 bool diff_sideset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_map)
 {
   bool diff_flag = false;
@@ -2690,9 +2864,9 @@ bool diff_faceblock(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const
 }
 
 template <typename INT>
-bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &file2,
-                             const std::vector<INT> & /*elmt_map*/, const INT *id_map,
-                             Exo_Block<INT> ** /*blocks2*/)
+bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT> &file2,
+                             const std::vector<INT> &elmt_map, const INT *id_map,
+                             Exo_Block<INT> **blocks2)
 {
   if (interFace.summary_flag) {
     return false;
@@ -2733,12 +2907,6 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &f
       DiffData           max_diff;
       const std::string &name = eblock1->Get_Attribute_Name(idx1);
 
-      // Find same attribute in eblock2...
-      int idx2 = eblock2->Find_Attribute_Index(name);
-      if (idx2 < 0) {
-        continue;
-      }
-
       // Find name in interFace.elmt_att_names
       int tol_idx = -1;
       for (unsigned e_idx = 0; e_idx < interFace.elmt_att_names.size(); ++e_idx) {
@@ -2749,6 +2917,15 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &f
       }
 
       if (tol_idx == -1) {
+        continue;
+      }
+
+      // Find same requested attribute in eblock2...
+      int idx2 = eblock2->Find_Attribute_Index(name);
+      if (idx2 < 0) {
+        Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
+                            eblock2->Id()));
+        diff_flag = true;
         continue;
       }
 
@@ -2770,42 +2947,79 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &f
         diff_flag = true;
       }
 
-      // Without mapping, get result for this block.
-      eblock2->Load_Attributes(idx2);
-      const double *vals2 = eblock2->Get_Attributes(idx2);
+      const double *vals2 = nullptr;
+      if (elmt_map.empty()) {
+        // Without mapping, get attributes for the matching block.
+        eblock2->Load_Attributes(idx2);
+        vals2 = eblock2->Get_Attributes(idx2);
 
-      if (vals2 == nullptr) {
-        Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
-                            eblock2->Id()));
-        diff_flag = true;
-        continue;
-      }
+        if (vals2 == nullptr) {
+          Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
+                              eblock2->Id()));
+          diff_flag = true;
+          continue;
+        }
 
-      if (Invalid_Values(vals2, eblock2->Size())) {
-        Warning(fmt::format("NaN found for element attribute '{}' in block {}, file 2.\n", name,
-                            eblock2->Id()));
-        diff_flag = true;
+        if (Invalid_Values(vals2, eblock2->Size())) {
+          Warning(fmt::format("NaN found for element attribute '{}' in block {}, file 2.\n", name,
+                              eblock2->Id()));
+          diff_flag = true;
+        }
       }
 
       size_t ecount = eblock1->Size();
       for (size_t e = 0; e < ecount; ++e) {
+        double v2 = 0.0;
+        if (elmt_map.empty()) {
+          v2 = vals2[e];
+        }
+        else {
+          auto mapped = file2.Global_to_Block_Local(elmt_map[global_elmt_index] + 1);
+          SMART_ASSERT(blocks2[mapped.first] != nullptr);
+          Exo_Block<INT> *mapped_block = blocks2[mapped.first];
+          int             mapped_idx   = mapped_block->Find_Attribute_Index(name);
+          if (mapped_idx < 0) {
+            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n",
+                                name, mapped_block->Id()));
+            diff_flag = true;
+            ++global_elmt_index;
+            continue;
+          }
+
+          mapped_block->Load_Attributes(mapped_idx);
+          const double *mapped_vals = mapped_block->Get_Attributes(mapped_idx);
+          if (mapped_vals == nullptr) {
+            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n",
+                                name, mapped_block->Id()));
+            diff_flag = true;
+            ++global_elmt_index;
+            continue;
+          }
+
+          v2 = mapped_vals[mapped.second];
+          if (Invalid_Values(&v2, 1)) {
+            Warning(fmt::format("NaN found for element attribute '{}' in block {}, file 2.\n", name,
+                                mapped_block->Id()));
+            diff_flag = true;
+          }
+        }
 
         if (interFace.show_all_diffs) {
-          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], vals2[e]);
+          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], v2);
           if (d > interFace.elmt_att[tol_idx].value) {
             diff_flag = true;
             std::string buf =
                 fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
-                            name, name_length(), interFace.elmt_att[tol_idx].abrstr(), vals1[e],
-                            vals2[e], d, block_id, id_map[global_elmt_index]);
+                            name, name_length(), interFace.elmt_att[tol_idx].abrstr(), vals1[e], v2,
+                            d, block_id, id_map[global_elmt_index]);
             DIFF_OUT(buf);
           }
         }
         else {
-          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], vals2[e]);
-          max_diff.set_max(d, vals1[e], vals2[e], global_elmt_index, block_id);
+          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], v2);
+          max_diff.set_max(d, vals1[e], v2, global_elmt_index, block_id);
         }
-        norm.add_value(vals1[e], vals2[e]);
+        norm.add_value(vals1[e], v2);
         ++global_elmt_index;
       }
 
@@ -2858,7 +3072,7 @@ void output_summary(Exo_Read<INT> &file1, MinMaxData &mm_time, std::vector<MinMa
   }
 
   if (file1.Num_Times() > 0) {
-    fmt::print("\nTIME STEPS relative 1.e-6 floor 0.0     # min: ");
+    fmt::print("\nTIME STEPS relative 1.e-6 floor 1.e-15   # min: ");
     fmt::print("{:15.8g} @ t{} max: {:15.8g} @ t{}\n", mm_time.min_val, mm_time.min_step,
                mm_time.max_val, mm_time.max_step);
   }

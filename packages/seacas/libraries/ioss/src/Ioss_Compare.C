@@ -4,11 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <algorithm>
 #include <assert.h>
 #include <cmath>
 #include <cstdlib>
 #include <fmt/ostream.h>
 #include <iosfwd>
+#include <limits>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -128,6 +130,32 @@ namespace {
       }
     }
     return success;
+  }
+
+  bool real_values_differ(double value_1, double value_2)
+  {
+    if (value_1 == value_2) {
+      return false;
+    }
+
+    if (std::isnan(value_1) || std::isnan(value_2)) {
+      return true;
+    }
+
+    if (!std::isfinite(value_1) || !std::isfinite(value_2)) {
+      return true;
+    }
+
+    double abs_value_1 = std::abs(value_1);
+    double abs_value_2 = std::abs(value_2);
+    if (abs_value_1 <= tol_floor && abs_value_2 <= tol_floor) {
+      return false;
+    }
+
+    double abs_diff = std::abs(value_1 - value_2);
+    double max      = std::max(abs_value_1, abs_value_2);
+    double rel_diff = max != 0.0 ? abs_diff / max : 0.0;
+    return abs_diff >= abs_tolerance && rel_diff >= rel_tolerance;
   }
 
   bool compare_database_internal(Ioss::Region &input_region_1, Ioss::Region &input_region_2,
@@ -828,6 +856,14 @@ namespace {
 
         if (istep > in_step_count_2) {
           break;
+        }
+
+        double in_time_2 = input_region_2.get_state_time(istep);
+        if (real_values_differ(in_time_1, in_time_2)) {
+          fmt::print(Ioss::OUTPUT(),
+                     "\nTIME STEP value mismatch (step {}): {:20.13e} vs. {:20.13e}\n", istep,
+                     in_time_1, in_time_2);
+          overall_result = false;
         }
 
         input_region_1.begin_state(istep);
@@ -1658,30 +1694,32 @@ namespace {
     int  width = Ioss::Utils::number_width(count - 1);
     bool first = true;
     for (size_t i = 0; i < count * component_count; i++) {
-      if (data1[i] != data2[i]) {
-        double abs_data1 = std::abs(data1[i]);
-        double abs_data2 = std::abs(data2[i]);
-        if (abs_data1 > tol_floor || abs_data2 > tol_floor) {
-          auto idx      = i / component_count;
-          auto cmp      = i % component_count;
-          auto abs_diff = std::abs(data1[i] - data2[i]);
-          auto max      = std::max(abs_data1, abs_data2);
-          auto rel_diff = max != 0.0 ? std::abs(data1[i] - data2[i]) / max : 0.0;
-          if (abs_diff >= abs_tolerance && rel_diff >= rel_tolerance) {
-            if (first) {
-              fmt::print(buf,
-                         "\n\tFIELD ({}) on {} -- mismatch at [index.component]:\n\t\t[{:{}}.{}]: "
-                         "{:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-                         field_name, entity_name, idx + 1, width, cmp, data1[i], data2[i], abs_diff,
-                         rel_diff);
-              first = false;
-            }
-            else {
-              fmt::print(
-                  buf, "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-                  idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
-            }
-          }
+      if (real_values_differ(data1[i], data2[i])) {
+        auto   idx      = i / component_count;
+        auto   cmp      = i % component_count;
+        double abs_diff = std::numeric_limits<double>::infinity();
+        double rel_diff = std::numeric_limits<double>::infinity();
+
+        if (std::isfinite(data1[i]) && std::isfinite(data2[i])) {
+          double abs_data1 = std::abs(data1[i]);
+          double abs_data2 = std::abs(data2[i]);
+          abs_diff         = std::abs(data1[i] - data2[i]);
+          double max       = std::max(abs_data1, abs_data2);
+          rel_diff         = max != 0.0 ? abs_diff / max : 0.0;
+        }
+
+        if (first) {
+          fmt::print(buf,
+                     "\n\tFIELD ({}) on {} -- mismatch at [index.component]:\n\t\t[{:{}}.{}]: "
+                     "{:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
+                     field_name, entity_name, idx + 1, width, cmp, data1[i], data2[i], abs_diff,
+                     rel_diff);
+          first = false;
+        }
+        else {
+          fmt::print(buf,
+                     "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
+                     idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
         }
       }
     }

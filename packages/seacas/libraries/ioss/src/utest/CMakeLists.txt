@@ -27,6 +27,66 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_utils
+	NAME Utst_ioex_utils
+	SOURCES Utst_IoexUtils.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_connectivity
+	NAME Utst_ioex_connectivity
+	SOURCES Utst_ioex_connectivity.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_distribution_factors
+	NAME Utst_ioex_distribution_factors
+	SOURCES Utst_ioex_distribution_factors.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_bounding_box
+	NAME Utst_ioex_bounding_box
+	SOURCES Utst_ioex_bounding_box.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_block_adjacency
+	NAME Utst_ioex_block_adjacency
+	SOURCES Utst_ioex_block_adjacency.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_ioex_owning_processor
+	NAME Utst_ioex_owning_processor
+	SOURCES Utst_ioex_owning_processor.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 2
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	Utst_database_io
 	NAME Utst_iofx
 	ARGS "--filename ${CMAKE_CURRENT_SOURCE_DIR}/ADeDA.e"
@@ -96,6 +156,15 @@ IF (TPL_ENABLE_CGNS)
 SET_SOURCE_FILES_PROPERTIES(Utst_structured_decomp.C PROPERTIES COMPILE_FLAGS -O0)
 SET_SOURCE_FILES_PROPERTIES(Utst_structured_decomp_rocket.C PROPERTIES COMPILE_FLAGS -O0)
 SET_SOURCE_FILES_PROPERTIES(Utst_structured_decomp_herron.C PROPERTIES COMPILE_FLAGS -O0)
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_cgns_structured_bc
+	NAME Utst_cgns_structured_bc
+	SOURCES Utst_cgns_structured_bc.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+	NUM_MPI_PROCS 1
+)
 IF (NOT SEACASIoss_ENABLE_THREADSAFE)
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	Utst_structured_decomp
@@ -116,6 +185,16 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	NUM_MPI_PROCS 1
 	ARGS ${CMAKE_CURRENT_SOURCE_DIR}/cbr2.ncf
 	SOURCES Utst_superelement.C
+	NOEXEPREFIX
+	${ADD_SUFFIX}
+	INSTALLABLE
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+	Utst_superelement_extent
+	NAME Utst_superelement_extent
+	NUM_MPI_PROCS 1
+	SOURCES Utst_superelement_extent.C
 	NOEXEPREFIX
 	${ADD_SUFFIX}
 	INSTALLABLE

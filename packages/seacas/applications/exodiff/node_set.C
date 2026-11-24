@@ -95,7 +95,10 @@ template <typename INT> void Node_Set<INT>::load_nodes(const std::vector<INT> &n
     SMART_ASSERT(nodes != nullptr);
     nodeIndex = new INT[numEntity];
     SMART_ASSERT(nodeIndex != nullptr);
-    ex_get_set(fileId, EX_NODE_SET, id_, nodes, nullptr);
+    int err = ex_get_set(fileId, EX_NODE_SET, id_, nodes, nullptr);
+    if (err < 0) {
+      Error(fmt::format("{}: Failed to read node set {}!  Aborting...\n", __func__, id_));
+    }
 
     if (!node_map.empty()) {
       for (size_t i = 0; i < numEntity; i++) {
@@ -117,7 +120,12 @@ template <typename INT> const double *Node_Set<INT>::Distribution_Factors() cons
   if ((dist_factors == nullptr) && num_dist_factors > 0) {
     dist_factors = new double[num_dist_factors];
     SMART_ASSERT(dist_factors != nullptr);
-    ex_get_set_dist_fact(fileId, EX_NODE_SET, id_, dist_factors);
+    int err = ex_get_set_dist_fact(fileId, EX_NODE_SET, id_, dist_factors);
+    if (err < 0) {
+      Error(fmt::format(
+          "{}: Failed to read node set distribution factors for nodeset {}!  Aborting...\n",
+          __func__, id_));
+    }
   }
   return dist_factors;
 }

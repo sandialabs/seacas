@@ -350,6 +350,17 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       err_stat = EX_FATAL;
       goto cleanup;
     }
+    /* `side` comes from file data; validate it against the block's side count
+     * before it is used to index the fixed-size num_nodes_per_side array. */
+    if (side < 1 || side > elem_blk_parms[j].num_sides) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Invalid side number %" PRId64 " for element number %" PRId64
+               " in side set %" PRId64 " in file %d",
+               side, elem, side_set_id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+      err_stat = EX_FATAL;
+      goto cleanup;
+    }
     ss_parm_ndx[i]      = j; /* assign parameter block index */
     ss_elem_node_ndx[i] = elem_blk_parms[j].num_nodes_per_side[side - 1];
 
@@ -504,6 +515,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
         };
 
         if (check_valid_side(side_num, 3, "triangle", exoid) != EX_NOERR) {
+          err_stat = EX_FATAL;
           goto cleanup;
         }
 
@@ -511,7 +523,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
                   connect_offset + tri_table[side_num][0] - 1);
         get_nodes(exoid, side_set_node_list, node_pos + 1, connect,
                   connect_offset + tri_table[side_num][1] - 1);
-        if (num_nodes_per_elem > 3) /* 6-node TRI  */
+        if (num_nodes_per_elem >= 6) /* 6- or 7-node TRI  */
         {
           get_nodes(exoid, side_set_node_list, node_pos + 2, connect,
                     connect_offset + tri_table[side_num][2] - 1);
@@ -519,6 +531,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       }
       else if (ndim == 3) { /* 3d TRIs */
         if (check_valid_side(side_num, 5, "triangle", exoid) != EX_NOERR) {
+          err_stat = EX_FATAL;
           goto cleanup;
         }
 
@@ -594,6 +607,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
     }
     case EX_EL_QUAD: {
       if (check_valid_side(side_num, 4, "quad", exoid) != EX_NOERR) {
+        err_stat = EX_FATAL;
         goto cleanup;
       }
 
@@ -616,6 +630,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
     }
     case EX_EL_SHELL: {
       if (check_valid_side(side_num, 6, "shell", exoid) != EX_NOERR) {
+        err_stat = EX_FATAL;
         goto cleanup;
       }
 
@@ -678,6 +693,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
     }
     case EX_EL_TETRA: {
       if (check_valid_side(side_num, 4, "tetra", exoid) != EX_NOERR) {
+        err_stat = EX_FATAL;
         goto cleanup;
       }
 
@@ -715,6 +731,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
     case EX_EL_WEDGE: {
       int node_off = 0;
       if (check_valid_side(side_num, 5, "wedge", exoid) != EX_NOERR) {
+        err_stat = EX_FATAL;
         goto cleanup;
       }
 
@@ -924,6 +941,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
        */
 
       if (check_valid_side(side_num, 5, "pyramid", exoid) != EX_NOERR) {
+        err_stat = EX_FATAL;
         goto cleanup;
       }
 
@@ -982,6 +1000,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
     }
     case EX_EL_HEX: {
       if (check_valid_side(side_num, 6, "hex", exoid) != EX_NOERR) {
+        err_stat = EX_FATAL;
         goto cleanup;
       }
 

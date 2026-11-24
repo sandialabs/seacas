@@ -82,6 +82,16 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   /* Get the type of entities stored in the entity list... */
+  nc_type att_type = NC_NAT;
+  size_t  att_len  = 0;
+  if ((status = nc_inq_att(exoid, entlst_id, EX_ATTRIBUTE_TYPE, &att_type, &att_len)) != EX_NOERR ||
+      att_type != NC_INT || att_len != 1) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to validate assembly %" PRId64 " type in file id %d", assembly->id,
+             exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
   int type;
   if ((status = nc_get_att_int(exoid, entlst_id, EX_ATTRIBUTE_TYPE, &type)) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get assembly %" PRId64 " type in file id %d",
@@ -93,8 +103,16 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
 
   /* read the name */
   if (assembly->name != NULL) {
-    int  name_size             = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    char tmp_name[EX_MAX_NAME] = "";
+    int  name_size                 = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+    char tmp_name[EX_MAX_NAME + 1] = "";
+    if ((status = exi_check_att_text(exoid, entlst_id, EX_ATTRIBUTE_NAME, sizeof(tmp_name),
+                                     __func__)) != EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to validate assembly name for assembly %" PRId64 " in file id %d",
+               assembly->id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
     if ((status = nc_get_att_text(exoid, entlst_id, EX_ATTRIBUTE_NAME, tmp_name)) != EX_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read assembly name for assembly %" PRId64 " in file id %d",

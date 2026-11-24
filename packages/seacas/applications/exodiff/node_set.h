@@ -29,6 +29,8 @@ public:
   const double *Distribution_Factors() const;
   void          Free_Distribution_Factors() const;
 
+  size_t Distribution_Factor_Count() const { return num_dist_factors; }
+
 private:
   int  Check_State() const override;
   void entity_load_params() override;

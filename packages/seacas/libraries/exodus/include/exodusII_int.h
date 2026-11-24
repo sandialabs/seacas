@@ -866,6 +866,8 @@ EXODUS_EXPORT int  exi_get_name(int exoid, int varid, size_t index, char *name, 
                                 ex_entity_type obj_type, const char *routine);
 EXODUS_EXPORT int  exi_get_names(int exoid, int varid, size_t num_entity, char **names,
                                  ex_entity_type obj_type, const char *routine);
+EXODUS_EXPORT int  exi_check_att_text(int exoid, int varid, const char *att_name, size_t bufsize,
+                                      const char *routine);
 EXODUS_EXPORT int  exi_put_name(int exoid, int varid, size_t index, const char *name,
                                 ex_entity_type obj_type, const char *subtype, const char *routine);
 EXODUS_EXPORT int  exi_put_names(int exoid, int varid, size_t num_entity, char *const *names,

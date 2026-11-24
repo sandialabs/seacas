@@ -226,19 +226,13 @@ int ex_get_block_param(int exoid, ex_block *block)
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    if ((status = nc_inq_attlen(exoid, connid, ablknam, &len)) != EX_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s  %" PRId64 " type in file id %d",
+    if ((status = exi_check_att_text(exoid, connid, ablknam, sizeof(block->topology), __func__)) !=
+        EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to validate %s  %" PRId64 " type in file id %d",
                ex_name_of_object(block->type), block->id, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
-    }
-
-    if (len > (MAX_STR_LENGTH + 1)) {
-      len = MAX_STR_LENGTH;
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "Warning: %s  %" PRId64 " type will be truncated to %ld chars",
-               ex_name_of_object(block->type), block->id, (long)len);
-      ex_err_fn(exoid, __func__, errmsg, EX_MSG);
     }
 
     for (int i = 0; i < MAX_STR_LENGTH + 1; i++) {

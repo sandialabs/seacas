@@ -12,8 +12,13 @@
 #include "ArgvBuilder.h"
 #include "FileUtils.h"
 #include "MeshFixture.h"
+#include "elb_allo.h"
+#include "elb_exo.h"
 #include "elb_nem_slice.h"
+#include "exodusII.h"
 #include "unistd.h"
+
+#include <cstdlib>
 
 namespace {
 
@@ -46,6 +51,80 @@ namespace {
   };
 
   TEST_F(NemSliceTester, emptyTest) {}
+
+  void create_exodus_file(const char *filename, int node)
+  {
+    int cpu_word_size = 8;
+    int io_word_size  = 8;
+    int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
+    ASSERT_GE(exoid, 0);
+
+    ASSERT_EQ(ex_put_init(exoid, "nem_slice connectivity validation", 2, 4, 1, 1, 0, 0), EX_NOERR);
+    double x[4] = {0.0, 1.0, 1.0, 0.0};
+    double y[4] = {0.0, 0.0, 1.0, 1.0};
+    ASSERT_EQ(ex_put_coord(exoid, x, y, nullptr), EX_NOERR);
+    ASSERT_EQ(ex_put_block(exoid, EX_ELEM_BLOCK, 1, "QUAD4", 1, 4, 0, 0, 0), EX_NOERR);
+    int connect[4] = {1, 2, node, 4};
+    ASSERT_EQ(ex_put_conn(exoid, EX_ELEM_BLOCK, 1, connect, nullptr, nullptr), EX_NOERR);
+    ASSERT_EQ(ex_close(exoid), EX_NOERR);
+  }
+
+  template <typename INT> void release_mesh(Mesh_Description<INT> &mesh)
+  {
+    free(mesh.connect);
+    mesh.connect = nullptr;
+  }
+
+  TEST_F(NemSliceTester, rejectsOutOfRangeConnectivityNode)
+  {
+    std::string filename = utest_util::unique_filename("nem_slice_bad_connectivity", "g");
+    create_exodus_file(filename.c_str(), 5);
+
+    Problem_Description   problem;
+    Mesh_Description<int> mesh;
+    Sphere_Info           sphere;
+    Weight_Description    weight;
+
+    weight.type         = NO_WEIGHT;
+    problem.type        = DecompType::ELEMENTAL;
+    problem.read_coords = ELB_FALSE;
+    ASSERT_EQ(read_mesh_params(filename, &problem, &mesh, &sphere), 1);
+    ASSERT_EQ(init_weight_struct(&problem, &mesh, &weight), 1);
+
+    mesh.elem_type.resize(mesh.num_elems);
+    mesh.connect =
+        static_cast<int **>(array_alloc(2, mesh.num_elems, mesh.max_np_elem, sizeof(int)));
+    ASSERT_NE(mesh.connect, nullptr);
+
+    EXPECT_EQ(read_mesh(filename, &problem, &mesh, &weight), 0);
+    release_mesh(mesh);
+  }
+
+  TEST_F(NemSliceTester, acceptsValidConnectivityNode)
+  {
+    std::string filename = utest_util::unique_filename("nem_slice_good_connectivity", "g");
+    create_exodus_file(filename.c_str(), 3);
+
+    Problem_Description   problem;
+    Mesh_Description<int> mesh;
+    Sphere_Info           sphere;
+    Weight_Description    weight;
+
+    weight.type         = NO_WEIGHT;
+    problem.type        = DecompType::ELEMENTAL;
+    problem.read_coords = ELB_FALSE;
+    ASSERT_EQ(read_mesh_params(filename, &problem, &mesh, &sphere), 1);
+    ASSERT_EQ(init_weight_struct(&problem, &mesh, &weight), 1);
+
+    mesh.elem_type.resize(mesh.num_elems);
+    mesh.connect =
+        static_cast<int **>(array_alloc(2, mesh.num_elems, mesh.max_np_elem, sizeof(int)));
+    ASSERT_NE(mesh.connect, nullptr);
+
+    EXPECT_EQ(read_mesh(filename, &problem, &mesh, &weight), 1);
+    EXPECT_EQ(mesh.connect[0][2], 2);
+    release_mesh(mesh);
+  }
 
   TEST_F(NemSliceTester, beamOneDimSideIds)
   {

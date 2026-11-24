@@ -457,6 +457,8 @@ void SystemInterface::enroll_options()
   options_.enroll("ignore_nans", GetLongOption::NoValue, "Don't check data for NaNs", nullptr);
   options_.enroll("ignore_attributes", GetLongOption::NoValue,
                   "Don't compare element attribute values.", nullptr);
+  options_.enroll("ignore_nodeset_df", GetLongOption::NoValue,
+                  "Don't compare nodeset distribution factors.", nullptr, nullptr, true);
   options_.enroll("ignore_sideset_df", GetLongOption::NoValue,
                   "Don't compare sideset distribution factors.", nullptr, nullptr, true);
 
@@ -509,6 +511,15 @@ void SystemInterface::enroll_options()
 
 bool SystemInterface::parse_options(int argc, char **argv)
 {
+  default_floor_specified_ = false;
+  for (int i = 1; i < argc; ++i) {
+    if (std::strcmp(argv[i], "-Floor") == 0 || std::strcmp(argv[i], "--Floor") == 0 ||
+        std::strncmp(argv[i], "-Floor=", 7) == 0 || std::strncmp(argv[i], "--Floor=", 8) == 0) {
+      default_floor_specified_ = true;
+      break;
+    }
+  }
+
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
@@ -782,7 +793,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
     ignore_maps = true;
   }
   if (options_.retrieve("ignore_nans") != nullptr) {
-    ignore_nans = true;
+    ignore_nans            = true;
+    Tolerance::ignore_nans = true; // Don't flag NaNs in Diff/Delta.
   }
   if (options_.retrieve("ignore_dups") != nullptr) {
     ignore_dups = true;
@@ -797,6 +809,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
   if (options_.retrieve("ignore_attributes") != nullptr) {
     ignore_attributes = true;
+  }
+  if (options_.retrieve("ignore_nodeset_df") != nullptr) {
+    ignore_nodeset_df = true;
   }
   if (options_.retrieve("ignore_sideset_df") != nullptr) {
     ignore_sideset_df = true;
@@ -866,8 +881,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    // Reset default tolerances in case the -t flag was given.
-    time_tol         = default_tol;
+    // Reset default tolerances in case the -t flag was given.  The documented
+    // default time floor is tighter than the variable floor and should only be
+    // replaced when the user explicitly changes the default floor.
+    double time_floor = time_tol.floor;
+    time_tol          = default_tol;
+    if (!default_floor_specified_) {
+      time_tol.floor = time_floor;
+    }
     glob_var_default = default_tol;
     node_var_default = default_tol;
     elmt_var_default = default_tol;
@@ -915,7 +936,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
 void SystemInterface::Parse_Command_File()
 {
-  int default_tol_specified = 0;
+  int  default_tol_specified   = 0;
+  bool default_floor_specified = default_floor_specified_;
 
   std::ifstream cmd_file(command_file, std::ios::in);
   SMART_ASSERT(cmd_file.good());
@@ -980,7 +1002,9 @@ void SystemInterface::Parse_Command_File()
           if (tok.empty()) {
             Parse_Die(line);
           }
-          default_tol.floor = To_Double(tok);
+          default_tol.floor        = To_Double(tok);
+          default_floor_specified  = true;
+          default_floor_specified_ = true;
         }
         default_tol_specified = 1;
       }
@@ -1054,13 +1078,21 @@ void SystemInterface::Parse_Command_File()
         ignore_maps = true;
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "nans", 3)) {
-        ignore_nans = true;
+        ignore_nans            = true;
+        Tolerance::ignore_nans = true; // Don't flag NaNs in Diff/Delta.
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "dups", 3)) {
         ignore_dups = true;
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "attributes", 3)) {
         ignore_attributes = true;
+      }
+      else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "nodeset", 3)) {
+        tok3 = extract_token(xline, " \t");
+        to_lower(tok3);
+        if (abbreviation(tok3, "distribution", 3)) {
+          ignore_nodeset_df = true;
+        }
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "sideset", 3)) {
         tok3 = extract_token(xline, " \t");
@@ -1168,7 +1200,11 @@ void SystemInterface::Parse_Command_File()
         }
       }
       else if (tok1 == "time" && abbreviation(tok2, "steps", 4)) {
-        time_tol = default_tol;
+        double time_floor = time_tol.floor;
+        time_tol          = default_tol;
+        if (!default_floor_specified) {
+          time_tol.floor = time_floor;
+        }
 
         std::string tok = extract_token(xline, " \n\t=");
         to_lower(tok);
@@ -1721,6 +1757,8 @@ namespace {
         "[default].\n"
         "         - IGNORE MAPS: \"-ignore_maps\", use local implicit instead of global ids.\n"
         "         - IGNORE NANS: \"-ignore_nans\", do not check data for NaNs\n"
+        "         - IGNORE NODESET DISTRIBUTION: \"-ignore_nodeset_df\", do not compare "
+        "nodeset distribution factors.\n"
         "         - IGNORE DUPLICATES: \"-ignore_dups\", ignore two elements/nodes in same "
         "position...\n"
         "         - STEP OFFSET <val>: \"-TimeStepOffset\", timestep 'val+offset' in file1 matches "

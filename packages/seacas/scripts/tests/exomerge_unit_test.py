@@ -44,6 +44,8 @@ import os
 import sys
 import re
 import math
+import ast
+import textwrap
 
 # import the exomerge module
 ACCESS = os.getenv("ACCESS", "@ACCESSDIR@")
@@ -2055,6 +2057,75 @@ class ExomergeUnitTester:
             sorted_ip_ip_names, self.model._sort_field_names(unsorted_ip_names)
         )
 
+    @staticmethod
+    def _exomerge2_transform_eval_expression():
+        """
+        Return exomerge2's ExodusModel._transform_eval_expression.
+
+        exomerge2 is python-2 only and cannot be imported or even parsed
+        under python-3, so the method's source (valid in both) is cut out of
+        the module, which is installed alongside this test's parent
+        directory, and compiled on its own.
+        """
+        path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "exomerge2.py"
+        )
+        with open(path) as source:
+            lines = source.read().splitlines()
+        start = lines.index("    def _transform_eval_expression(expression, variable_names):")
+        end = start + 1
+        while end < len(lines) and not re.match(r"    \S", lines[end]):
+            end += 1
+        namespace = {"re": re}
+        exec(textwrap.dedent("\n".join(lines[start:end])), namespace)
+        return namespace["_transform_eval_expression"]
+
+    def _test_transform_eval_expression(self):
+        """
+        Unittest for ExodusModel._transform_eval_expression.
+
+        Variable names are read from the input file, so they must only ever
+        appear in the transformed expression as string keys of var[...],
+        whatever characters they contain.  The python-2 twin in exomerge2
+        is checked too.
+        """
+        self._check_transform_eval_expression(
+            exomerge.ExodusModel._transform_eval_expression
+        )
+        self._check_transform_eval_expression(
+            self._exomerge2_transform_eval_expression()
+        )
+
+    @staticmethod
+    def _check_transform_eval_expression(transform):
+        """Check one implementation of _transform_eval_expression."""
+        # ordinary use: every occurrence is replaced, math functions are
+        # qualified and "^" becomes "**"
+        assert transform("a+a", ["a"]) == "var['a']+var['a']"
+        assert transform(" sqrt(x)^2 ", ["x"]) == "math.sqrt(var['x'])**2"
+        assert transform("ab + a", ["a", "ab"]) == "var['ab'] + var['a']"
+        # awkward names taken verbatim from a file: quotes, regex
+        # metacharacters, and names containing other names
+        names = ["x", "a'b", 'c"d', "e.f", "g|x", "h ] + [ x", "sin", "p^q"]
+        values = dict((name, float(i + 1)) for i, name in enumerate(names))
+        expression = " + ".join(names)
+        transformed = transform(expression, names)
+        tree = ast.parse(transformed, mode="eval")
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Name):
+                assert node.id == "var", transformed
+            elif isinstance(node, ast.Subscript):
+                key = node.slice
+                assert isinstance(key, ast.Constant), transformed
+                assert key.value in names, transformed
+            else:
+                assert isinstance(
+                    node,
+                    (ast.Expression, ast.BinOp, ast.Add, ast.Load, ast.Constant),
+                ), "unexpected %s in %s" % (type(node).__name__, transformed)
+        result = eval("lambda var: " + transformed)(values)
+        assert result == sum(values.values()), transformed
+
     def _test_shell_topology(self):
         """
         Unittest for newly added shell topology definitions.
@@ -2159,3 +2230,5 @@ if __name__ == "__main__":
     tester._test_shell_inversion()
     print("[6]_test_shell_external_faces")
     tester._test_shell_external_faces()
+    print("[7]_test_transform_eval_expression")
+    tester._test_transform_eval_expression()

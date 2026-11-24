@@ -113,7 +113,20 @@ namespace Ioex {
   {
     double tmp    = 0.0;
     int    rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
-    int    status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
+
+    // Verify the attribute's type and length before reading it;
+    // nc_get_att_double writes the attribute's full stored length (with
+    // conversion from any numeric type), so an unchecked read of a
+    // malformed attribute of length > 1 would overflow `tmp`.
+    nc_type att_type = NC_NAT;
+    size_t  att_len  = 0;
+    int     status   = nc_inq_att(rootid, NC_GLOBAL, "last_written_time", &att_type, &att_len);
+    if (status == EX_NOERR && att_type == NC_DOUBLE && att_len == 1) {
+      status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
+    }
+    else {
+      status = NC_ENOTATT;
+    }
 
     if (status == EX_NOERR && value > tmp) {
       status = nc_put_att_double(rootid, NC_GLOBAL, "last_written_time", NC_DOUBLE, 1, &value);
@@ -408,8 +421,9 @@ namespace Ioex {
     nc_type att_type = NC_NAT;
     size_t  att_len  = 0;
     int     status   = nc_inq_att(rootid, NC_GLOBAL, "last_written_time", &att_type, &att_len);
-    if (status == EX_NOERR && att_type == NC_DOUBLE) {
-      // Attribute exists on this database, read it...
+    if (status == EX_NOERR && att_type == NC_DOUBLE && att_len == 1) {
+      // Attribute exists on this database, read it. The length check is required because
+      // nc_get_att_double writes the attribute's full stored length into the destination.
       double tmp = 0.0;
       status     = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
       if (status == EX_NOERR) {
@@ -444,9 +458,12 @@ namespace Ioex {
     nc_type att_type = NC_NAT;
     size_t  att_len  = 0;
     int     status   = nc_inq_att(exodusFilePtr, NC_GLOBAL, "processor_info", &att_type, &att_len);
-    if (status == EX_NOERR && att_type == NC_INT) {
+    if (status == EX_NOERR && att_type == NC_INT && att_len == 2) {
       // Attribute exists on this database, read it and check that the information
       // matches the current processor count and processor id.
+      // Note that `att_len` must be checked: nc_get_att_int writes the
+      // attribute's full stored length, so a longer file-supplied
+      // attribute would overflow `proc_info`.
       int proc_info[2];
       status = nc_get_att_int(exodusFilePtr, NC_GLOBAL, "processor_info", proc_info);
       if (status == EX_NOERR) {

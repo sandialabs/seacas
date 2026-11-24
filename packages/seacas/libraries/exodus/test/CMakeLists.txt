@@ -70,6 +70,111 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
   NUM_MPI_PROCS 1
 )
 
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-id-map-dim
+  SOURCES test-id-map-dim.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-side-set-invalid-side
+  SOURCES test-side-set-invalid-side.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-inquire-ss-node-len-int64
+  SOURCES test-inquire-ss-node-len-int64.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-inquire-set-count-overflow
+  SOURCES test-inquire-set-count-overflow.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-name-string-len
+  SOURCES test-name-string-len.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  testcp-coord-type
+  SOURCES testcp-coord-type.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-set-dist-factor-len
+  SOURCES test-set-dist-factor-len.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-inquire-concat-set-len
+  SOURCES test-inquire-concat-set-len.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-att-text-len
+  SOURCES test-att-text-len.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-inquire-title-att
+  SOURCES test-inquire-title-att.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-field-cardinality-att
+  SOURCES test-field-cardinality-att.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-field-text-att
+  SOURCES test-field-text-att.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-block-topology-att
+  SOURCES test-block-topology-att.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-assembly-att
+  SOURCES test-assembly-att.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  test-prop-name-att
+  SOURCES test-prop-name-att.c
+  COMM mpi serial
+  NUM_MPI_PROCS 1
+)
+
 IF ( NETCDF_NCDUMP_BINARY )
   SET(NETCDF_NCDUMP ${NETCDF_NCDUMP_BINARY})
   SET( cbind_OLDTESTS

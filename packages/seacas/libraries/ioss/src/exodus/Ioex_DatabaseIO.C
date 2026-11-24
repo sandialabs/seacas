@@ -70,9 +70,38 @@ namespace {
   std::array<std::string, 2> complex_suffix{".re", ".im"};
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
-                             int position)
+                             int position, int expected_components)
   {
-    int ierr = 0;
+    ex_block block{};
+    block.id   = id;
+    block.type = type;
+    int ierr   = ex_get_block_param(exoid, &block);
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    int64_t file_components = 0;
+    if (position == 0) {
+      file_components = block.num_nodes_per_entry;
+    }
+    else if (position == 1) {
+      file_components = block.num_edges_per_entry;
+    }
+    else if (position == 2) {
+      file_components = block.num_faces_per_entry;
+    }
+    else {
+      IOSS_ERROR(
+          fmt::format("ERROR: Invalid connectivity position {} for block id {}", position, id));
+    }
+
+    if (file_components != expected_components) {
+      IOSS_ERROR(fmt::format(
+          "ERROR: Connectivity component count mismatch for block id {} in file id {}: file stores "
+          "{} values per entry but IOSS topology expects {}",
+          id, exoid, file_components, expected_components));
+    }
+
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
       std::array<int64_t *, 3> conn{nullptr, nullptr, nullptr};
       conn[position] = static_cast<int64_t *>(data);
@@ -2329,8 +2358,14 @@ namespace Ioex {
                 size_t ep_data_size = ent_proc.size() * sizeof(int64_t);
                 get_field_internal(css, ep_field, Data(ent_proc), ep_data_size);
                 for (size_t i = 0; i < ent_proc.size(); i += 2) {
-                  int64_t node    = ent_proc[i + 0];
-                  int64_t proc    = ent_proc[i + 1];
+                  int64_t node = ent_proc[i + 0];
+                  int64_t proc = ent_proc[i + 1];
+                  if (node <= 0 || node > nodeCount) {
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid node id {} in node communication map for "
+                                    "owning_processor calculation; valid range is 1..{}.",
+                                    node, nodeCount));
+                  }
                   idata[node - 1] = std::min(idata[node - 1], static_cast<int>(proc));
                 }
               }
@@ -2341,8 +2376,14 @@ namespace Ioex {
                 size_t           ep_data_size = ent_proc.size() * sizeof(int);
                 get_field_internal(css, ep_field, Data(ent_proc), ep_data_size);
                 for (size_t i = 0; i < ent_proc.size(); i += 2) {
-                  int node        = ent_proc[i + 0];
-                  int proc        = ent_proc[i + 1];
+                  int node = ent_proc[i + 0];
+                  int proc = ent_proc[i + 1];
+                  if (node <= 0 || static_cast<int64_t>(node) > nodeCount) {
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid node id {} in node communication map for "
+                                    "owning_processor calculation; valid range is 1..{}.",
+                                    node, nodeCount));
+                  }
                   idata[node - 1] = std::min(idata[node - 1], proc);
                 }
               }
@@ -2503,7 +2544,7 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The element_node index varies fastet
             if (my_element_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0);
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0, element_nodes);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * element_nodes);
             }
           }
@@ -2512,7 +2553,7 @@ namespace Ioex {
             // The element_face index varies fastest
             if (my_element_count > 0) {
               int face_count = field.get_component_count(Ioss::Field::InOut::INPUT);
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 2);
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 2, face_count);
               get_map(EX_FACE_BLOCK).map_data(data, field, num_to_get * face_count);
             }
           }
@@ -2521,7 +2562,7 @@ namespace Ioex {
             // The element_edge index varies fastest
             if (my_element_count > 0) {
               int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 1);
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 1, edge_count);
               get_map(EX_EDGE_BLOCK).map_data(data, field, num_to_get * edge_count);
             }
           }
@@ -2533,7 +2574,8 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The element_node index varies fastest
             if (my_element_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0);
+              int element_nodes = eb->topology()->number_nodes();
+              get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 0, element_nodes);
             }
           }
           else if (field.get_name() == "ids") {
@@ -2678,7 +2720,7 @@ namespace Ioex {
               int face_nodes = eb->topology()->number_nodes();
               assert(field.get_component_count(Ioss::Field::InOut::INPUT) == face_nodes);
 
-              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
+              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0, face_nodes);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * face_nodes);
             }
           }
@@ -2687,7 +2729,7 @@ namespace Ioex {
             // The face_edge index varies fastest
             if (my_face_count > 0) {
               int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
-              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 1);
+              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 1, edge_count);
               get_map(EX_EDGE_BLOCK).map_data(data, field, num_to_get * edge_count);
             }
           }
@@ -2699,7 +2741,8 @@ namespace Ioex {
               assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
                      eb->topology()->number_nodes());
 
-              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
+              int face_nodes = eb->topology()->number_nodes();
+              get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0, face_nodes);
             }
           }
           else if (field.get_name() == "ids") {
@@ -2757,7 +2800,7 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The edge_node index varies fastet
             if (my_edge_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0);
+              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0, edge_nodes);
               get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * edge_nodes);
             }
           }
@@ -2769,7 +2812,8 @@ namespace Ioex {
             // The connectivity is stored in a 1D array.
             // The edge_node index varies fastet
             if (my_edge_count > 0) {
-              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0);
+              int edge_nodes = eb->topology()->number_nodes();
+              get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0, edge_nodes);
             }
           }
           else if (field.get_name() == "ids") {
@@ -2864,6 +2908,13 @@ namespace Ioex {
               for (size_t i = 0; i < num_to_get; i++) {
                 rdata[i] = 1.0;
               }
+            }
+            else if (set_param[0].num_distribution_factor != static_cast<int64_t>(num_to_get)) {
+              IOSS_ERROR(fmt::format(
+                  "ERROR: Distribution factor count mismatch for {} id {} in file id {}: file "
+                  "stores {} values but IOSS expects {}",
+                  ex_name_of_object(type), id, get_file_pointer(),
+                  set_param[0].num_distribution_factor, num_to_get));
             }
             else {
               set_param[0].distribution_factor_list = static_cast<double *>(data);
@@ -3067,7 +3118,12 @@ namespace Ioex {
                 const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map();
 
                 for (int64_t i = 0; i < entity_count; i++) {
-                  int local_id     = ents[i];
+                  int local_id = ents[i];
+                  if (local_id <= 0 || static_cast<int64_t>(local_id) > nodeCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map; "
+                                           "valid range is 1..{}.",
+                                           local_id, nodeCount));
+                  }
                   entity_proc[j++] = map[local_id];
                   entity_proc[j++] = pros[i];
                 }
@@ -3090,6 +3146,11 @@ namespace Ioex {
 
                 for (int64_t i = 0; i < entity_count; i++) {
                   int64_t local_id = ents[i];
+                  if (local_id <= 0 || local_id > nodeCount) {
+                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map; "
+                                           "valid range is 1..{}.",
+                                           local_id, nodeCount));
+                  }
                   entity_proc[j++] = map[local_id];
                   entity_proc[j++] = pros[i];
                 }
@@ -3126,7 +3187,14 @@ namespace Ioex {
                 const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
                 for (int64_t i = 0; i < entity_count; i++) {
-                  entity_proc[j++] = map[ents[i]];
+                  int elem_id = ents[i];
+                  if (elem_id <= 0 || static_cast<int64_t>(elem_id) > elementCount) {
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid element id {} in element communication map; "
+                                    "valid range is 1..{}.",
+                                    elem_id, elementCount));
+                  }
+                  entity_proc[j++] = map[elem_id];
                   entity_proc[j++] = sids[i];
                   entity_proc[j++] = pros[i];
                 }
@@ -3150,7 +3218,14 @@ namespace Ioex {
                 const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
                 for (int64_t i = 0; i < entity_count; i++) {
-                  entity_proc[j++] = map[ents[i]];
+                  int64_t elem_id = ents[i];
+                  if (elem_id <= 0 || elem_id > elementCount) {
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid element id {} in element communication map; "
+                                    "valid range is 1..{}.",
+                                    elem_id, elementCount));
+                  }
+                  entity_proc[j++] = map[elem_id];
                   entity_proc[j++] = sids[i];
                   entity_proc[j++] = pros[i];
                 }

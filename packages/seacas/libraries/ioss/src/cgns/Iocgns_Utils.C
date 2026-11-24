@@ -301,6 +301,17 @@ namespace {
     }
   }
 
+  void validate_structured_boco_point_range(int zone, const std::string &boco_name,
+                                            CGNS_ENUMT(PointSetType_t) ptset_type, cgsize_t npnts)
+  {
+    if (ptset_type != CGNS_ENUMV(PointRange) || npnts != 2) {
+      IOSS_ERROR(fmt::format(
+          "ERROR: CGNS: Zone {} boundary condition '{}' has point-set type {} with {} points. "
+          "Structured boundary conditions require PointRange with 2 points.",
+          zone, boco_name, cg_PointSetTypeName(ptset_type), npnts));
+    }
+  }
+
   void sync_transient_variables_fpp(Ioss::Region *region)
   {
     // With an fpp read, certain blocks may only be on certain
@@ -2013,6 +2024,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
     // All we really want from this is 'boco_name'
     CGCHECKNP(cg_boco_info(cgns_file_ptr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
                            &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    validate_structured_boco_point_range(zone, boco_name, ptset_type, npnts);
 
     if (bocotype == CGNS_ENUMV(FamilySpecified)) {
       // Get family name associated with this boco_name
@@ -2099,6 +2111,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
     // All we really want from this is 'boco_name'
     CGCHECKNP(cg_boco_info(cgns_file_ptr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
                            &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    validate_structured_boco_point_range(zone, boco_name, ptset_type, npnts);
 
     if (bocotype == CGNS_ENUMV(FamilySpecified)) {
       // Get family name associated with this boco_name
@@ -2351,6 +2364,19 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
 
   // Read the timestep time values.
   CGCHECK(cg_goto(cgns_file_ptr, base, "BaseIterativeData_t", 1, "end"));
+  char array_name[CGNS_MAX_NAME_LENGTH + 1];
+  CGNS_ENUMT(DataType_t) data_type;
+  int      data_dimension = 0;
+  cgsize_t dimension_vector[12];
+  CGCHECK(cg_array_info(1, array_name, &data_type, &data_dimension, dimension_vector));
+  if (data_dimension != 1 || dimension_vector[0] != num_timesteps) {
+    IOSS_ERROR(fmt::format(
+        "ERROR: CGNS: TimeValues array has dimension {} with {} values, but BaseIterativeData "
+        "declares {} time steps. TimeValues must be a one-dimensional array matching the number "
+        "of steps.",
+        data_dimension, data_dimension > 0 ? dimension_vector[0] : 0, num_timesteps));
+  }
+
   std::vector<double> times(num_timesteps);
   CGCHECK(cg_array_read_as(1, CGNS_ENUMV(RealDouble), Data(times)));
 
@@ -2434,6 +2460,7 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
       // All we really want from this is 'boconame'
       CGCHECKNP(cg_boco_info(cgns_file_ptr, base, izone, ibc + 1, boconame, &bocotype, &ptset_type,
                              &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+      validate_structured_boco_point_range(izone, boconame, ptset_type, npnts);
 
       if (bocotype == CGNS_ENUMV(FamilySpecified)) {
         // Need to get boconame from cg_famname_read

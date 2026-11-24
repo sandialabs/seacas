@@ -22,15 +22,55 @@
 #include "Ioss_CodeTypes.h"
 
 namespace {
-  int nc_get_array(int ncid, const char *name, double *data)
+  int nc_get_array(int ncid, const char *name, double *data, size_t count)
   {
-    // NOTE: size of data array is validated in
-    // calling code.  Just read and store here.
+    // `count` is the size of `data` as computed by the calling code
+    // from the sizing dimensions (NumDof, num_nodes, ...).
+    // nc_get_var_double reads the variable's ENTIRE extent as defined
+    // by the variable's own dimensions, so verify that extent matches
+    // `count` -- a corrupt/hostile file can dimension the variable
+    // independently of the dimensions used to size the buffer.
 
     int varid  = 0;
     int status = nc_inq_varid(ncid, name, &varid);
     if (status != EX_NOERR) {
       return status;
+    }
+
+    int ndims = 0;
+    status    = nc_inq_varndims(ncid, varid, &ndims);
+    if (status != EX_NOERR) {
+      return status;
+    }
+    if (ndims < 0 || ndims > NC_MAX_VAR_DIMS) {
+      return NC_EMAXDIMS;
+    }
+
+    int dimids[NC_MAX_VAR_DIMS];
+    status = nc_inq_vardimid(ncid, varid, dimids);
+    if (status != EX_NOERR) {
+      return status;
+    }
+
+    size_t var_size = 1;
+    for (int i = 0; i < ndims; i++) {
+      size_t dim_len = 0;
+      status         = nc_inq_dimlen(ncid, dimids[i], &dim_len);
+      if (status != EX_NOERR) {
+        return status;
+      }
+      size_t next = var_size * dim_len;
+      if (dim_len != 0 && next / dim_len != var_size) {
+        // Overflow computing the variable size; cannot be valid.
+        return NC_EEDGE;
+      }
+      var_size = next;
+    }
+
+    if (var_size != count) {
+      // Variable size does not match the buffer size computed from the
+      // sizing dimensions; reading would overflow (or underfill) `data`.
+      return NC_EEDGE;
     }
 
     status = nc_get_var_double(ncid, varid, data);
@@ -145,7 +185,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
 
   if (field.get_name() == "cbmap") {
     assert(num_to_get == 2 * num_nodes * num_dim);
-    int status = nc_get_array(filePtr, "cbmap", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "cbmap", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'cbmap' from file '{}'.",
                              fileName));
@@ -153,7 +193,8 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "node_num_map") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "node_num_map", reinterpret_cast<double *>(data));
+    int status =
+        nc_get_array(filePtr, "node_num_map", reinterpret_cast<double *>(data), num_to_get);
 
     if (status != 0) {
       IOSS_ERROR(fmt::format(
@@ -162,7 +203,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "coordx") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "coordx", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "coordx", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'coordx' from file '{}'.",
                              fileName));
@@ -170,7 +211,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "coordy") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "coordy", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "coordy", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'coordy' from file '{}'.",
                              fileName));
@@ -178,7 +219,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "coordz") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "coordz", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "coordz", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load coordinate data field 'coordz' from file '{}'.",
                              fileName));
@@ -186,7 +227,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "Kr") {
     assert(num_to_get == numDOF * numDOF);
-    int status = nc_get_array(filePtr, "Kr", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "Kr", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format("ERROR: Could not load stiffness matrix field 'Kr' from file '{}'.",
                              fileName));
@@ -194,7 +235,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "Mr") {
     assert(num_to_get == numDOF * numDOF);
-    int status = nc_get_array(filePtr, "Mr", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "Mr", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(
           fmt::format("ERROR: Could not load mass matrix field 'Mr' from file '{}'.", fileName));
@@ -202,7 +243,8 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "InertiaTensor") {
     assert(num_to_get == numDOF * numRBM);
-    int status = nc_get_array(filePtr, "InertiaTensor", reinterpret_cast<double *>(data));
+    int status =
+        nc_get_array(filePtr, "InertiaTensor", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format(
           "ERROR: Could not load inertia matrix field 'InertialTensor' from file '{}'.", fileName));
@@ -210,7 +252,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
   }
   else if (field.get_name() == "MassInertia") {
     assert(num_to_get == numDOF * numRBM);
-    int status = nc_get_array(filePtr, "MassInertia", reinterpret_cast<double *>(data));
+    int status = nc_get_array(filePtr, "MassInertia", reinterpret_cast<double *>(data), num_to_get);
     if (status != 0) {
       IOSS_ERROR(fmt::format(
           "ERROR: Could not mass inertia matrix field 'MassInertia' from file '{}'.", fileName));

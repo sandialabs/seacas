@@ -58,6 +58,22 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES io_shell.C shell_interface.C
   INSTALLABLE
   )
+
+TRIBITS_ADD_EXECUTABLE(
+  generate_step_time_mismatch
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test/generate_step_time_mismatch.c
+  LINKER_LANGUAGE CXX
+  )
+
+TRIBITS_ADD_EXECUTABLE(
+  generate_nonfinite_field_mismatch
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test/generate_nonfinite_field_mismatch.c
+  LINKER_LANGUAGE CXX
+  )
 TRIBITS_ADD_EXECUTABLE(
   shell_to_hex
   NOEXEPREFIX
@@ -412,6 +428,28 @@ TRIBITS_ADD_ADVANCED_TEST(pamgen_exodus_io_info
   )
 ENDIF()
 
+TRIBITS_ADD_ADVANCED_TEST(
+  io_shell_compare_step_time_mismatch
+  TEST_0 EXEC generate_step_time_mismatch
+    NOEXEPREFIX NOEXESUFFIX
+  TEST_1 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/io_shell --compare step-time-a.g step-time-b.g > io_shell-step-time-mismatch.out 2>&1 && grep -q 'TIME STEP value mismatch' io_shell-step-time-mismatch.out && grep -q 'DATABASES are NOT equal' io_shell-step-time-mismatch.out"
+  COMM mpi serial
+  OVERALL_NUM_MPI_PROCS 1
+  FINAL_PASS_REGULAR_EXPRESSION
+  XHOSTTYPE Windows
+  )
+
+TRIBITS_ADD_ADVANCED_TEST(
+  io_shell_compare_nonfinite_field_mismatch
+  TEST_0 EXEC generate_nonfinite_field_mismatch
+    NOEXEPREFIX NOEXESUFFIX
+  TEST_1 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/io_shell --compare nonfinite-field-a.g nonfinite-field-b.g > io_shell-nonfinite-field-mismatch.out 2>&1 && grep -q 'FIELD (bad)' io_shell-nonfinite-field-mismatch.out && grep -q 'DATABASES are NOT equal' io_shell-nonfinite-field-mismatch.out"
+  COMM mpi serial
+  OVERALL_NUM_MPI_PROCS 1
+  FINAL_PASS_REGULAR_EXPRESSION
+  XHOSTTYPE Windows
+  )
+
 IF (TPL_ENABLE_CGNS)
 
 if ( CGNS_CGNSDIFF_BINARY )
@@ -467,7 +505,7 @@ endif()
 
 IF (TPL_Netcdf_Enables_PNetcdf)
 TRIBITS_ADD_TEST(
-  io_shell 
+  io_shell
   ARGS "${DECOMP_ARG} --compare ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g"
   NAME io_shell_compare_same_database
   NOEXEPREFIX NOEXESUFFIX
@@ -477,7 +515,7 @@ TRIBITS_ADD_TEST(
 ENDIF()
 
 TRIBITS_ADD_TEST(
-  io_shell 
+  io_shell
   ARGS "${DECOMP_ARG} --compare ${CMAKE_CURRENT_SOURCE_DIR}/test/multiple_zones_fields.cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/multiple_zones_fields.cgns"
   NAME io_shell_compare_same_database_cgns
   NOEXEPREFIX NOEXESUFFIX

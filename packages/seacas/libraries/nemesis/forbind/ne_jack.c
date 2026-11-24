@@ -77,16 +77,18 @@ typedef int   entity_id;
 #endif
 
 /* blank fill C string to make FORTRAN string */
-static void ex_fcdcpy(char *fstring, size_t fslen, char *sstring)
+static void ex_fcdcpy(char *fstring, size_t fslen, const char *sstring)
 /* output string to be blank-filled */
 /* length of output string */
 /* input string, null-terminated */
 {
-  size_t i, len = strlen(sstring);
+  size_t i;
+  size_t len      = strlen(sstring);
+  size_t copy_len = len < fslen ? len : fslen;
 
-  for (i = 0; i < len; i++)
+  for (i = 0; i < copy_len; i++)
     *(fstring + i) = *(sstring + i);
-  for (i = len; i < fslen; i++)
+  for (i = copy_len; i < fslen; i++)
     *(fstring + i) = ' ';
 }
 
@@ -749,7 +751,14 @@ void F2C(negelt)(int *idne, entity_id *elem_blk_id, char *elem_type, int *ierr, 
     slen = elem_typelen;
   }
 
-  etype = (char *)malloc((slen + 1) * sizeof(char));
+  etype = (char *)calloc(MAX_STR_LENGTH + 1, sizeof(char));
+  if (etype == NULL) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "Error: failed to allocate element block type buffer");
+    ex_err(__func__, errmsg, EX_MSG);
+    *ierr = EX_FATAL;
+    return;
+  }
 
   if ((*ierr = ex_get_elem_type(*idne, *elem_blk_id, etype)) != 0) {
     char errmsg[MAX_ERR_LENGTH];

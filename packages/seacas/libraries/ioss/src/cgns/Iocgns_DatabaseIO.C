@@ -101,6 +101,32 @@ extern cgns_io_ctx_t ctx_cgio; /* located in cgns_io.c */
 
 namespace {
 
+  void validate_zone_connectivity_index(int zone, const char *connectname,
+                                        const char *point_list_name, cgsize_t index,
+                                        size_t max_index)
+  {
+    if (index <= 0 || static_cast<size_t>(index) > max_index) {
+      IOSS_ERROR(fmt::format("ERROR: CGNS: Zone {} connectivity '{}' has {} id {} outside "
+                             "valid range 1..{}.",
+                             zone, connectname, point_list_name, index, max_index));
+    }
+  }
+
+  void validate_element_connectivity_size(int cgns_file_ptr, int base, int zone, int section,
+                                          cgsize_t expected_size, int myProcessor)
+  {
+    cgsize_t stored_size = 0;
+    if (cg_ElementDataSize(cgns_file_ptr, base, zone, section, &stored_size) != CG_OK) {
+      Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);
+    }
+    if (stored_size != expected_size) {
+      IOSS_ERROR(fmt::format(
+          "ERROR: CGNS: Zone {} section {} stores {} element connectivity entries, but IOSS "
+          "expects {} entries from the section range and topology.",
+          zone, section, stored_size, expected_size));
+    }
+  }
+
   // There is a bug in the CGNS library (4.4.0 and before) where it
   // has a global symbol `ctx_cgio` which controls whether
   // file-per-rank access is being used, or parallel io (single file,
@@ -1461,8 +1487,12 @@ namespace Iocgns {
           const auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
           auto       &block_map = m_blockLocalNodeMap[zone];
           for (int j = 0; j < npnts; j++) {
-            cgsize_t point       = points[j];
-            cgsize_t donor       = donors[j];
+            cgsize_t point = points[j];
+            cgsize_t donor = donors[j];
+            validate_zone_connectivity_index(zone, connectname, "PointList", point,
+                                             block_map.size());
+            validate_zone_connectivity_index(zone, connectname, "PointListDonor", donor,
+                                             donor_map.size());
             block_map[point - 1] = donor_map[donor - 1];
           }
         }
@@ -2160,6 +2190,8 @@ namespace Iocgns {
           SMART_ASSERT(field.raw_storage()->component_count() == element_nodes);
 
           if (my_element_count > 0) {
+            validate_element_connectivity_size(get_file_pointer(), base, zone, sect,
+                                               element_nodes * num_to_get, myProcessor);
             int field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;
             if (field_byte_size == CG_SIZEOF_SIZE) {
               auto *idata = reinterpret_cast<cgsize_t *>(data);
@@ -2500,6 +2532,8 @@ namespace Iocgns {
         // *  `num_to_get` zeros (face on other parent element)
         CGNSIntVector parent(4 * num_to_get);
 
+        validate_element_connectivity_size(get_file_pointer(), base, zone, sect,
+                                           nodes_per_face * num_to_get, myProcessor);
         CGCHECKM(
             cg_elements_read(get_file_pointer(), base, zone, sect, Data(elements), Data(parent)));
 

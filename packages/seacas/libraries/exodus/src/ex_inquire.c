@@ -59,9 +59,11 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
       return EX_FATAL;
     }
 
-    /* Allocate space for stat array */
+    /* Allocate space for stat array.  Use calloc so the allocation size
+       cannot truncate or wrap; `num_sets` is a file-supplied 64-bit
+       dimension length. */
     int *stat_vals = NULL;
-    if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
+    if (!(stat_vals = calloc(num_sets, sizeof(int)))) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for %s set status "
@@ -97,20 +99,31 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
       }
 
       size_t idum;
-      if (nc_inq_dimid(exoid, exi_catstr(set_size_root, i + 1), &dimid) != EX_NOERR) {
+      status = nc_inq_dimid(exoid, exi_catstr(set_size_root, i + 1), &dimid);
+      if (status != EX_NOERR) {
         if (missing_ok) {
           idum = 0;
         }
         else {
           *set_length = 0;
           free(stat_vals);
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: failed to retrieve %s set length dimension %s%zu for file id %d",
+                   set_name, set_size_root, i + 1, exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
           return EX_FATAL;
         }
       }
       else {
-        if (nc_inq_dimlen(exoid, dimid, &idum) != EX_NOERR) {
+        if ((status = nc_inq_dimlen(exoid, dimid, &idum)) != EX_NOERR) {
           *set_length = 0;
           free(stat_vals);
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: failed to retrieve %s set length dimension %s%zu value for file id %d",
+                   set_name, set_size_root, i + 1, exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
           return EX_FATAL;
         }
       }
@@ -233,7 +246,15 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         return EX_FATAL;
       }
 
-      *ret_int = name_length - 1;
+      if (name_length == 0) {
+        /* Malformed/corrupt database with a zero-length name-string
+           dimension; treat the same as if the dimension did not exist
+           so callers never see a negative length. */
+        *ret_int = 32;
+      }
+      else {
+        *ret_int = name_length - 1;
+      }
     }
     break;
 
@@ -293,15 +314,49 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     else {
       /* returns the title of the database */
       /* Title is stored at root level... */
-      char tmp_title[2048];
-      if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, tmp_title)) != EX_NOERR) {
+      /* Query the stored attribute length first; nc_get_att_text copies the
+       * full stored length, so an unchecked read into a fixed-size buffer can
+       * overflow it for a file with an over-long title attribute. */
+      char    tmp_title[2048];
+      size_t  title_len  = 0;
+      nc_type title_type = 0;
+      if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type, &title_len)) !=
+              EX_NOERR ||
+          title_type != NC_CHAR) {
         *ret_char = '\0';
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
                  exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         return EX_FATAL;
       }
-      ex_copy_string(ret_char, tmp_title, MAX_LINE_LENGTH + 1);
+      if (title_len >= sizeof(tmp_title)) {
+        /* Title is longer than the stack buffer; read via a heap buffer of the
+         * stored length (result is truncated to MAX_LINE_LENGTH below). */
+        char *title = malloc(title_len + 1);
+        if (title == NULL ||
+            (status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, title)) != EX_NOERR) {
+          free(title);
+          *ret_char = '\0';
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
+                   exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          return EX_FATAL;
+        }
+        title[title_len] = '\0';
+        ex_copy_string(ret_char, title, MAX_LINE_LENGTH + 1);
+        free(title);
+      }
+      else {
+        if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, tmp_title)) != EX_NOERR) {
+          *ret_char = '\0';
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
+                   exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          return EX_FATAL;
+        }
+        tmp_title[title_len] = '\0';
+        ex_copy_string(ret_char, tmp_title, MAX_LINE_LENGTH + 1);
+      }
     }
     break;
 
@@ -379,7 +434,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_NS_NODE_LEN:
     /* returns the length of the concatenated node sets node list */
-    ex_get_concat_set_len(exoid, ret_int, "node", DIM_NUM_NS, VAR_NS_STAT, "num_nod_ns", 0);
+    if (ex_get_concat_set_len(exoid, ret_int, "node", DIM_NUM_NS, VAR_NS_STAT, "num_nod_ns", 0) !=
+        EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_NS_DF_LEN:
@@ -484,8 +542,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         return EX_FATAL;
       }
 
-      /* allocate space for stat array */
-      if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
+      /* allocate space for stat array; calloc so the allocation size
+         cannot truncate or wrap (num_sets is file-supplied) */
+      if (!(stat_vals = calloc(num_sets, sizeof(int)))) {
         free(ids);
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to allocate memory for side set status "
@@ -523,8 +582,17 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         }
 
         if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
+          id = ((int64_t *)ids)[i];
+        }
+        else {
+          id = ((int *)ids)[i];
+        }
+
+        /* ex_get_side_set_node_list_len sizes its void_int output by
+         * EX_BULK_INT64_API (a count, not an id), so tmp_len's width must be
+         * selected by that same flag. */
+        if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
           int64_t tmp_len = 0;
-          id              = ((int64_t *)ids)[i];
           status          = ex_get_side_set_node_list_len(exoid, id, &tmp_len);
           if (status != EX_FATAL) {
             *ret_int += tmp_len;
@@ -532,7 +600,6 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         }
         else {
           int tmp_len = 0;
-          id          = ((int *)ids)[i];
           status      = ex_get_side_set_node_list_len(exoid, id, &tmp_len);
           if (status != EX_FATAL) {
             *ret_int += tmp_len;
@@ -558,7 +625,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_SS_ELEM_LEN:
     /*     returns the length of the concatenated side sets element list */
-    ex_get_concat_set_len(exoid, ret_int, "side", DIM_NUM_SS, VAR_SS_STAT, "num_side_ss", 0);
+    if (ex_get_concat_set_len(exoid, ret_int, "side", DIM_NUM_SS, VAR_SS_STAT, "num_side_ss", 0) !=
+        EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_SS_DF_LEN:
@@ -713,13 +783,19 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_ES_LEN:
     /* returns the length of the concatenated edge set edge list. */
-    ex_get_concat_set_len(exoid, ret_int, "edge", DIM_NUM_ES, VAR_ES_STAT, "num_edge_es", 0);
+    if (ex_get_concat_set_len(exoid, ret_int, "edge", DIM_NUM_ES, VAR_ES_STAT, "num_edge_es", 0) !=
+        EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_ES_DF_LEN:
     /* returns the length of the concatenated edge set distribution factor list.
      */
-    ex_get_concat_set_len(exoid, ret_int, "edge", DIM_NUM_ES, VAR_ES_STAT, "num_df_es", 1);
+    if (ex_get_concat_set_len(exoid, ret_int, "edge", DIM_NUM_ES, VAR_ES_STAT, "num_df_es", 1) !=
+        EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_EDGE_PROP:
@@ -757,13 +833,19 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_FS_LEN:
     /* returns the length of the concatenated edge set edge list. */
-    ex_get_concat_set_len(exoid, ret_int, "face", DIM_NUM_FS, VAR_FS_STAT, "num_face_fs", 0);
+    if (ex_get_concat_set_len(exoid, ret_int, "face", DIM_NUM_FS, VAR_FS_STAT, "num_face_fs", 0) !=
+        EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_FS_DF_LEN:
     /* returns the length of the concatenated edge set distribution factor list.
      */
-    ex_get_concat_set_len(exoid, ret_int, "face", DIM_NUM_FS, VAR_FS_STAT, "num_df_fs", 1);
+    if (ex_get_concat_set_len(exoid, ret_int, "face", DIM_NUM_FS, VAR_FS_STAT, "num_df_fs", 1) !=
+        EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_FACE_PROP:
@@ -787,13 +869,19 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_ELS_LEN:
     /* returns the length of the concatenated element set element list. */
-    ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_ele_els", 0);
+    if (ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_ele_els",
+                              0) != EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_ELS_DF_LEN:
     /* returns the length of the concatenated element set distribution factor
      * list. */
-    ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_df_els", 1);
+    if (ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_df_els",
+                              1) != EX_NOERR) {
+      return EX_FATAL;
+    }
     break;
 
   case EX_INQ_ELS_PROP:
