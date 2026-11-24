@@ -16,16 +16,23 @@
 
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <fmt/ostream.h>
+#include <set>
 #include <stdio.h>
 #include <string>
 #include <vector>
 
 // ========================================================================
 namespace {
+  using HexRow = std::array<Ioss::Ordinal, 8>;
+
   void test_aliases(const Ioss::NameList &elements);
   void test_element(const std::string &type);
+  HexRow row_for(const Ioss::ElementPermutation &perm, Ioss::Permutation index);
+  int    hex_orientation(const HexRow &row);
 } // namespace
 // ========================================================================
 
@@ -76,6 +83,40 @@ TEST_CASE("test_all_elements")
   }
 }
 
+TEST_CASE("hex positive permutations are proper rotations")
+{
+  const auto *perm = Ioss::ElementPermutation::factory("hex");
+  REQUIRE(perm != nullptr);
+  REQUIRE(perm->num_permutation_nodes() == 8);
+  REQUIRE(perm->num_permutations() == 24);
+  REQUIRE(perm->num_positive_permutations() == 24);
+
+  const HexRow canonical{0, 1, 2, 3, 4, 5, 6, 7};
+
+  std::set<HexRow> rows;
+  for (Ioss::Permutation i = 0; i < perm->num_positive_permutations(); ++i) {
+    HexRow row = row_for(*perm, i);
+    CHECK(std::is_permutation(row.begin(), row.end(), canonical.begin()));
+    CHECK(hex_orientation(row) > 0);
+    rows.insert(row);
+  }
+
+  CHECK(rows.size() == 24);
+  CHECK(rows.count(HexRow{0, 1, 2, 3, 4, 5, 6, 7}) == 1);
+  CHECK(rows.count(HexRow{0, 1, 5, 4, 3, 2, 6, 7}) == 0);
+  CHECK(rows.count(HexRow{0, 4, 7, 3, 1, 5, 6, 2}) == 0);
+
+  for (const auto &lhs : rows) {
+    for (const auto &rhs : rows) {
+      HexRow composed{};
+      for (size_t i = 0; i < composed.size(); ++i) {
+        composed[i] = lhs[rhs[i]];
+      }
+      CHECK(rows.count(composed) == 1);
+    }
+  }
+}
+
 TEST_CASE("test aliases")
 {
   Ioss::NameList elements = Ioss::ElementTopology::describe();
@@ -83,6 +124,41 @@ TEST_CASE("test aliases")
 }
 
 namespace {
+  HexRow row_for(const Ioss::ElementPermutation &perm, Ioss::Permutation index)
+  {
+    auto indices = perm.permutation_indices(index);
+    REQUIRE(indices.size() == 8);
+
+    HexRow row{};
+    std::copy(indices.begin(), indices.end(), row.begin());
+    return row;
+  }
+
+  int hex_orientation(const HexRow &row)
+  {
+    constexpr std::array<std::array<int, 3>, 8> coords{{{{-1, -1, -1}},
+                                                       {{1, -1, -1}},
+                                                       {{1, 1, -1}},
+                                                       {{-1, 1, -1}},
+                                                       {{-1, -1, 1}},
+                                                       {{1, -1, 1}},
+                                                       {{1, 1, 1}},
+                                                       {{-1, 1, 1}}}};
+
+    auto edge = [&](size_t from, size_t to) {
+      const auto &a = coords[static_cast<size_t>(row[from])];
+      const auto &b = coords[static_cast<size_t>(row[to])];
+      return std::array<int, 3>{{b[0] - a[0], b[1] - a[1], b[2] - a[2]}};
+    };
+
+    const auto x = edge(0, 1);
+    const auto y = edge(0, 3);
+    const auto z = edge(0, 4);
+
+    return x[0] * (y[1] * z[2] - y[2] * z[1]) - x[1] * (y[0] * z[2] - y[2] * z[0]) +
+           x[2] * (y[0] * z[1] - y[1] * z[0]);
+  }
+
   void test_element(const std::string &type)
   {
     // NOTE: For true test, should run with purify checking enabled to
