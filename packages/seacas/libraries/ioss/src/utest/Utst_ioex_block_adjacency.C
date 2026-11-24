@@ -20,58 +20,58 @@
 #include "Ioss_ScopeGuard.h"
 #include "exodus/Ioex_DatabaseIO.h"
 
-#include <exodusII.h>
 #include <algorithm>
+#include <exodusII.h>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace {
-const char *filename = "ioex-block-adjacency-connectivity.exo";
+  const char *filename = "ioex-block-adjacency-connectivity.exo";
 
-void create_two_block_file(const std::vector<int> &block1_connectivity,
-                           const std::vector<int> &block2_connectivity)
-{
-  int cpu_word_size = 8;
-  int io_word_size  = 8;
-  int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
-  REQUIRE(exoid >= 0);
+  void create_two_block_file(const std::vector<int> &block1_connectivity,
+                             const std::vector<int> &block2_connectivity)
+  {
+    int cpu_word_size = 8;
+    int io_word_size  = 8;
+    int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
+    REQUIRE(exoid >= 0);
 
-  REQUIRE(ex_put_init(exoid, "block adjacency connectivity", 2, 3, 2, 2, 0, 0) == EX_NOERR);
+    REQUIRE(ex_put_init(exoid, "block adjacency connectivity", 2, 3, 2, 2, 0, 0) == EX_NOERR);
 
-  double x[3] = {0.0, 1.0, 2.0};
-  double y[3] = {0.0, 0.0, 0.0};
-  REQUIRE(ex_put_coord(exoid, x, y, nullptr) == EX_NOERR);
+    double x[3] = {0.0, 1.0, 2.0};
+    double y[3] = {0.0, 0.0, 0.0};
+    REQUIRE(ex_put_coord(exoid, x, y, nullptr) == EX_NOERR);
 
-  REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, "BAR2", 1, 2, 0, 0, 0) == EX_NOERR);
-  REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, block1_connectivity.data(), nullptr, nullptr) ==
-          EX_NOERR);
+    REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, "BAR2", 1, 2, 0, 0, 0) == EX_NOERR);
+    REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, block1_connectivity.data(), nullptr, nullptr) ==
+            EX_NOERR);
 
-  REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 8, "BAR2", 1, 2, 0, 0, 0) == EX_NOERR);
-  REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 8, block2_connectivity.data(), nullptr, nullptr) ==
-          EX_NOERR);
+    REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 8, "BAR2", 1, 2, 0, 0, 0) == EX_NOERR);
+    REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 8, block2_connectivity.data(), nullptr, nullptr) ==
+            EX_NOERR);
 
-  REQUIRE(ex_close(exoid) == EX_NOERR);
-}
+    REQUIRE(ex_close(exoid) == EX_NOERR);
+  }
 
-std::unique_ptr<Ioss::Region> open_region()
-{
-  Ioss::PropertyManager properties;
-  properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-  properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
+  std::unique_ptr<Ioss::Region> open_region()
+  {
+    Ioss::PropertyManager properties;
+    properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
 
-  auto *db_io = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
-                                     Ioss::ParallelUtils::comm_world(), properties);
-  auto  region = std::make_unique<Ioss::Region>(db_io);
-  REQUIRE(db_io->ok());
-  return region;
-}
+    auto *db_io  = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
+                                        Ioss::ParallelUtils::comm_world(), properties);
+    auto  region = std::make_unique<Ioss::Region>(db_io);
+    REQUIRE(db_io->ok());
+    return region;
+  }
 
-bool contains_name(const Ioss::NameList &names, const std::string &name)
-{
-  return std::find(names.begin(), names.end(), name) != names.end();
-}
+  bool contains_name(const Ioss::NameList &names, const std::string &name)
+  {
+    return std::find(names.begin(), names.end(), name) != names.end();
+  }
 } // namespace
 
 int main(int argc, char *argv[])

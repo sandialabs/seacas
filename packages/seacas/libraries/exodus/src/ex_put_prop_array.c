@@ -130,7 +130,8 @@ int ex_put_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
     memset(tmpstr, 0, MAX_STR_LENGTH + 1);
     if ((status = exi_check_att_text(exoid, propid, ATT_PROP_NAME, sizeof(tmpstr), __func__)) !=
         EX_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to validate property name in file id %d", exoid);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to validate property name in file id %d",
+               exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }

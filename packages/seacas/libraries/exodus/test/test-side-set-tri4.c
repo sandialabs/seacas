@@ -37,7 +37,7 @@ static int check_3d_tri4_shell_faces(void)
 
   float version;
   io_word_size = 0;
-  exoid        = ex_open("side-set-tri4-shell.exo", EX_READ, &cpu_word_size, &io_word_size, &version);
+  exoid = ex_open("side-set-tri4-shell.exo", EX_READ, &cpu_word_size, &io_word_size, &version);
   if (exoid < 0) {
     return 1;
   }
@@ -49,9 +49,9 @@ static int check_3d_tri4_shell_faces(void)
   EXCHECK(ex_get_side_set_node_list(exoid, 1, counts, nodes));
   EXCHECK(ex_close(exoid));
 
-  printf("TRI4 shell faces: length=%d counts=[%d,%d] nodes=[%d,%d,%d,%d,%d,%d,%d,%d]\n",
-         length, counts[0], counts[1], nodes[0], nodes[1], nodes[2], nodes[3], nodes[4], nodes[5],
-         nodes[6], nodes[7]);
+  printf("TRI4 shell faces: length=%d counts=[%d,%d] nodes=[%d,%d,%d,%d,%d,%d,%d,%d]\n", length,
+         counts[0], counts[1], nodes[0], nodes[1], nodes[2], nodes[3], nodes[4], nodes[5], nodes[6],
+         nodes[7]);
   if (length != 8 || counts[0] != 4 || counts[1] != 4) {
     return 1;
   }

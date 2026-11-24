@@ -12,86 +12,86 @@
 #include "Ioex_Utils.h"
 
 namespace {
-const char *filename = "ioex-utils-attrs.exo";
+  const char *filename = "ioex-utils-attrs.exo";
 
-void require_nc(int status) { REQUIRE(status == NC_NOERR); }
+  void require_nc(int status) { REQUIRE(status == NC_NOERR); }
 
-int create_file()
-{
-  int cpu_word_size = 8;
-  int io_word_size  = 8;
-  int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
-  REQUIRE(exoid >= 0);
-  REQUIRE(ex_put_init(exoid, "ioex utils attributes", 2, 0, 0, 0, 0, 0) == EX_NOERR);
-  REQUIRE(ex_close(exoid) == EX_NOERR);
-  return 0;
-}
+  int create_file()
+  {
+    int cpu_word_size = 8;
+    int io_word_size  = 8;
+    int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
+    REQUIRE(exoid >= 0);
+    REQUIRE(ex_put_init(exoid, "ioex utils attributes", 2, 0, 0, 0, 0, 0) == EX_NOERR);
+    REQUIRE(ex_close(exoid) == EX_NOERR);
+    return 0;
+  }
 
-int open_file(int mode = EX_READ)
-{
-  int   cpu_word_size = 8;
-  int   io_word_size  = 0;
-  float version;
-  int   exoid = ex_open(filename, mode, &cpu_word_size, &io_word_size, &version);
-  REQUIRE(exoid >= 0);
-  return exoid;
-}
+  int open_file(int mode = EX_READ)
+  {
+    int   cpu_word_size = 8;
+    int   io_word_size  = 0;
+    float version;
+    int   exoid = ex_open(filename, mode, &cpu_word_size, &io_word_size, &version);
+    REQUIRE(exoid >= 0);
+    return exoid;
+  }
 
-void write_processor_info_int(size_t len)
-{
-  int ncid;
-  require_nc(nc_open(filename, NC_WRITE, &ncid));
-  require_nc(nc_redef(ncid));
-  int values[4] = {2, 1, 99, 100};
-  require_nc(nc_put_att_int(ncid, NC_GLOBAL, "processor_info", NC_INT, len, values));
-  require_nc(nc_enddef(ncid));
-  require_nc(nc_close(ncid));
-}
+  void write_processor_info_int(size_t len)
+  {
+    int ncid;
+    require_nc(nc_open(filename, NC_WRITE, &ncid));
+    require_nc(nc_redef(ncid));
+    int values[4] = {2, 1, 99, 100};
+    require_nc(nc_put_att_int(ncid, NC_GLOBAL, "processor_info", NC_INT, len, values));
+    require_nc(nc_enddef(ncid));
+    require_nc(nc_close(ncid));
+  }
 
-void write_processor_info_double()
-{
-  int ncid;
-  require_nc(nc_open(filename, NC_WRITE, &ncid));
-  require_nc(nc_redef(ncid));
-  double value = 2.0;
-  require_nc(nc_put_att_double(ncid, NC_GLOBAL, "processor_info", NC_DOUBLE, 1, &value));
-  require_nc(nc_enddef(ncid));
-  require_nc(nc_close(ncid));
-}
+  void write_processor_info_double()
+  {
+    int ncid;
+    require_nc(nc_open(filename, NC_WRITE, &ncid));
+    require_nc(nc_redef(ncid));
+    double value = 2.0;
+    require_nc(nc_put_att_double(ncid, NC_GLOBAL, "processor_info", NC_DOUBLE, 1, &value));
+    require_nc(nc_enddef(ncid));
+    require_nc(nc_close(ncid));
+  }
 
-void write_last_time_double(size_t len)
-{
-  int ncid;
-  require_nc(nc_open(filename, NC_WRITE, &ncid));
-  require_nc(nc_redef(ncid));
-  double values[3] = {1.0, 2.0, 3.0};
-  require_nc(nc_put_att_double(ncid, NC_GLOBAL, "last_written_time", NC_DOUBLE, len, values));
-  require_nc(nc_enddef(ncid));
-  require_nc(nc_close(ncid));
-}
+  void write_last_time_double(size_t len)
+  {
+    int ncid;
+    require_nc(nc_open(filename, NC_WRITE, &ncid));
+    require_nc(nc_redef(ncid));
+    double values[3] = {1.0, 2.0, 3.0};
+    require_nc(nc_put_att_double(ncid, NC_GLOBAL, "last_written_time", NC_DOUBLE, len, values));
+    require_nc(nc_enddef(ncid));
+    require_nc(nc_close(ncid));
+  }
 
-void write_last_time_int()
-{
-  int ncid;
-  require_nc(nc_open(filename, NC_WRITE, &ncid));
-  require_nc(nc_redef(ncid));
-  int value = 1;
-  require_nc(nc_put_att_int(ncid, NC_GLOBAL, "last_written_time", NC_INT, 1, &value));
-  require_nc(nc_enddef(ncid));
-  require_nc(nc_close(ncid));
-}
+  void write_last_time_int()
+  {
+    int ncid;
+    require_nc(nc_open(filename, NC_WRITE, &ncid));
+    require_nc(nc_redef(ncid));
+    int value = 1;
+    require_nc(nc_put_att_int(ncid, NC_GLOBAL, "last_written_time", NC_INT, 1, &value));
+    require_nc(nc_enddef(ncid));
+    require_nc(nc_close(ncid));
+  }
 
-void check_last_time_attribute_type_and_len(nc_type expected_type, size_t expected_len)
-{
-  int ncid;
-  require_nc(nc_open(filename, NC_NOWRITE, &ncid));
-  nc_type att_type = NC_NAT;
-  size_t  att_len  = 0;
-  require_nc(nc_inq_att(ncid, NC_GLOBAL, "last_written_time", &att_type, &att_len));
-  CHECK(att_type == expected_type);
-  CHECK(att_len == expected_len);
-  require_nc(nc_close(ncid));
-}
+  void check_last_time_attribute_type_and_len(nc_type expected_type, size_t expected_len)
+  {
+    int ncid;
+    require_nc(nc_open(filename, NC_NOWRITE, &ncid));
+    nc_type att_type = NC_NAT;
+    size_t  att_len  = 0;
+    require_nc(nc_inq_att(ncid, NC_GLOBAL, "last_written_time", &att_type, &att_len));
+    CHECK(att_type == expected_type);
+    CHECK(att_len == expected_len);
+    require_nc(nc_close(ncid));
+  }
 } // namespace
 
 TEST_CASE("Ioex processor_info validates attribute length")

@@ -227,8 +227,8 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         }
       }
       else if (strcmp(fld_type, "separator") == 0) {
-        status = exi_check_att_text(exoid, varid, attr_name, sizeof(field[which].component_separator),
-                                    __func__);
+        status = exi_check_att_text(exoid, varid, attr_name,
+                                    sizeof(field[which].component_separator), __func__);
         if (status == EX_NOERR) {
           status = nc_get_att_text(exoid, varid, attr_name, field[which].component_separator);
         }
@@ -245,15 +245,15 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         }
       }
       else if (strcmp(fld_type, "type_name") == 0) {
-        status = exi_check_att_text(exoid, varid, attr_name, sizeof(field[which].type_name),
-                                    __func__);
+        status =
+            exi_check_att_text(exoid, varid, attr_name, sizeof(field[which].type_name), __func__);
         if (status == EX_NOERR) {
           status = nc_get_att_text(exoid, varid, attr_name, field[which].type_name);
         }
       }
       else if (strcmp(fld_type, "suffices") == 0) {
-        status = exi_check_att_text(exoid, varid, attr_name, sizeof(field[which].suffices),
-                                    __func__);
+        status =
+            exi_check_att_text(exoid, varid, attr_name, sizeof(field[which].suffices), __func__);
         if (status == EX_NOERR) {
           status = nc_get_att_text(exoid, varid, attr_name, field[which].suffices);
         }

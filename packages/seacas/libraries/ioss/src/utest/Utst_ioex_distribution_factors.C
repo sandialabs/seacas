@@ -22,95 +22,96 @@
 #include "exodus/Ioex_DatabaseIO.h"
 
 #include <exodusII.h>
-#include <netcdf.h>
 #include <memory>
+#include <netcdf.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace {
-const char *filename = "ioex-distribution-factor-count.exo";
+  const char *filename = "ioex-distribution-factor-count.exo";
 
-void require_nc(int status) { REQUIRE(status == NC_NOERR); }
+  void require_nc(int status) { REQUIRE(status == NC_NOERR); }
 
-void create_element_set_file(int element_count, int distribution_factor_count)
-{
-  int cpu_word_size = 8;
-  int io_word_size  = 8;
-  int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
-  REQUIRE(exoid >= 0);
+  void create_element_set_file(int element_count, int distribution_factor_count)
+  {
+    int cpu_word_size = 8;
+    int io_word_size  = 8;
+    int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
+    REQUIRE(exoid >= 0);
 
-  ex_init_params init{};
-  ex_copy_string(init.title, "distribution factor count", MAX_LINE_LENGTH + 1);
-  init.num_dim       = 3;
-  init.num_nodes     = element_count * 2;
-  init.num_elem      = element_count;
-  init.num_elem_blk  = 1;
-  init.num_elem_sets = 1;
-  REQUIRE(ex_put_init_ext(exoid, &init) == EX_NOERR);
-  REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, "BAR2", element_count, 2, 0, 0, 0) == EX_NOERR);
+    ex_init_params init{};
+    ex_copy_string(init.title, "distribution factor count", MAX_LINE_LENGTH + 1);
+    init.num_dim       = 3;
+    init.num_nodes     = element_count * 2;
+    init.num_elem      = element_count;
+    init.num_elem_blk  = 1;
+    init.num_elem_sets = 1;
+    REQUIRE(ex_put_init_ext(exoid, &init) == EX_NOERR);
+    REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, "BAR2", element_count, 2, 0, 0, 0) == EX_NOERR);
 
-  std::vector<int> connectivity(element_count * 2);
-  for (int i = 0; i < element_count * 2; i++) {
-    connectivity[i] = i + 1;
-  }
-  REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, connectivity.data(), nullptr, nullptr) == EX_NOERR);
+    std::vector<int> connectivity(element_count * 2);
+    for (int i = 0; i < element_count * 2; i++) {
+      connectivity[i] = i + 1;
+    }
+    REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, connectivity.data(), nullptr, nullptr) ==
+            EX_NOERR);
 
-  REQUIRE(ex_put_set_param(exoid, EX_ELEM_SET, 11, element_count, element_count) == EX_NOERR);
+    REQUIRE(ex_put_set_param(exoid, EX_ELEM_SET, 11, element_count, element_count) == EX_NOERR);
 
-  std::vector<int> elements(element_count);
-  for (int i = 0; i < element_count; i++) {
-    elements[i] = i + 1;
-  }
-  REQUIRE(ex_put_set(exoid, EX_ELEM_SET, 11, elements.data(), nullptr) == EX_NOERR);
+    std::vector<int> elements(element_count);
+    for (int i = 0; i < element_count; i++) {
+      elements[i] = i + 1;
+    }
+    REQUIRE(ex_put_set(exoid, EX_ELEM_SET, 11, elements.data(), nullptr) == EX_NOERR);
 
-  std::vector<double> distribution_factors(element_count);
-  for (int i = 0; i < element_count; i++) {
-    distribution_factors[i] = 2.0 + i;
-  }
-  REQUIRE(ex_put_set_dist_fact(exoid, EX_ELEM_SET, 11, distribution_factors.data()) == EX_NOERR);
-  REQUIRE(ex_close(exoid) == EX_NOERR);
-
-  int ncid = -1;
-  require_nc(nc_open(filename, NC_WRITE, &ncid));
-  require_nc(nc_redef(ncid));
-
-  int old_varid = -1;
-  require_nc(nc_inq_varid(ncid, "dist_fact_els1", &old_varid));
-  require_nc(nc_rename_var(ncid, old_varid, "old_dist_fact_els1"));
-
-  if (distribution_factor_count > 0) {
-    int dimid = -1;
-    require_nc(nc_def_dim(ncid, "num_df_els1", distribution_factor_count, &dimid));
-    int varid = -1;
-    require_nc(nc_def_var(ncid, "dist_fact_els1", NC_DOUBLE, 1, &dimid, &varid));
-    require_nc(nc_enddef(ncid));
-
-    distribution_factors.resize(distribution_factor_count);
-    for (int i = 0; i < distribution_factor_count; i++) {
+    std::vector<double> distribution_factors(element_count);
+    for (int i = 0; i < element_count; i++) {
       distribution_factors[i] = 2.0 + i;
     }
-    require_nc(nc_put_var_double(ncid, varid, distribution_factors.data()));
+    REQUIRE(ex_put_set_dist_fact(exoid, EX_ELEM_SET, 11, distribution_factors.data()) == EX_NOERR);
+    REQUIRE(ex_close(exoid) == EX_NOERR);
+
+    int ncid = -1;
+    require_nc(nc_open(filename, NC_WRITE, &ncid));
+    require_nc(nc_redef(ncid));
+
+    int old_varid = -1;
+    require_nc(nc_inq_varid(ncid, "dist_fact_els1", &old_varid));
+    require_nc(nc_rename_var(ncid, old_varid, "old_dist_fact_els1"));
+
+    if (distribution_factor_count > 0) {
+      int dimid = -1;
+      require_nc(nc_def_dim(ncid, "num_df_els1", distribution_factor_count, &dimid));
+      int varid = -1;
+      require_nc(nc_def_var(ncid, "dist_fact_els1", NC_DOUBLE, 1, &dimid, &varid));
+      require_nc(nc_enddef(ncid));
+
+      distribution_factors.resize(distribution_factor_count);
+      for (int i = 0; i < distribution_factor_count; i++) {
+        distribution_factors[i] = 2.0 + i;
+      }
+      require_nc(nc_put_var_double(ncid, varid, distribution_factors.data()));
+      require_nc(nc_close(ncid));
+      return;
+    }
+
+    require_nc(nc_enddef(ncid));
     require_nc(nc_close(ncid));
-    return;
   }
 
-  require_nc(nc_enddef(ncid));
-  require_nc(nc_close(ncid));
-}
+  std::unique_ptr<Ioss::Region> open_region()
+  {
+    Ioss::PropertyManager properties;
+    properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
 
-std::unique_ptr<Ioss::Region> open_region()
-{
-  Ioss::PropertyManager properties;
-  properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-  properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
-
-  auto *db_io = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
-                                     Ioss::ParallelUtils::comm_world(), properties);
-  auto  region = std::make_unique<Ioss::Region>(db_io);
-  REQUIRE(db_io->ok());
-  return region;
-}
+    auto *db_io  = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
+                                        Ioss::ParallelUtils::comm_world(), properties);
+    auto  region = std::make_unique<Ioss::Region>(db_io);
+    REQUIRE(db_io->ok());
+    return region;
+  }
 } // namespace
 
 int main(int argc, char *argv[])
@@ -131,8 +132,8 @@ int main(int argc, char *argv[])
 
 TEST_CASE("Ioex validates set distribution-factor count against entity buffer size")
 {
-  Ioss::Init::Initializer     init_db;
-  Ioss::StorageInitializer    initialize_storage;
+  Ioss::Init::Initializer  init_db;
+  Ioss::StorageInitializer initialize_storage;
 
   SECTION("matching distribution-factor count reads successfully")
   {

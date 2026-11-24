@@ -75,8 +75,8 @@ static int create_metadata_file(int corrupt)
 {
   int cpu_word_size = 8;
   int io_word_size  = 8;
-  int exoid = ex_create(filename, EX_CLOBBER | EX_NETCDF4 | EX_NOCLASSIC, &cpu_word_size,
-                        &io_word_size);
+  int exoid =
+      ex_create(filename, EX_CLOBBER | EX_NETCDF4 | EX_NOCLASSIC, &cpu_word_size, &io_word_size);
   if (exoid < 0) {
     return 1;
   }
@@ -94,8 +94,8 @@ static int create_metadata_file(int corrupt)
   NCCHECK(nc_open(filename, NC_WRITE, &ncid));
   NCCHECK(nc_redef(ncid));
 
-  if (define_set_metadata(ncid, "num_node_sets", "ns_status", NC_INT, "num_nod_ns1", !corrupt,
-                          NULL, 0, &ns_status_varid) != 0) {
+  if (define_set_metadata(ncid, "num_node_sets", "ns_status", NC_INT, "num_nod_ns1", !corrupt, NULL,
+                          0, &ns_status_varid) != 0) {
     return 1;
   }
   if (define_set_metadata(ncid, "num_side_sets", "ss_status", NC_INT, "num_side_ss1", !corrupt,
@@ -104,20 +104,20 @@ static int create_metadata_file(int corrupt)
   }
 
   int edge_status_type = corrupt ? NC_STRING : NC_INT;
-  if (define_set_metadata(ncid, "num_edge_sets", "es_status", edge_status_type, "num_edge_es1",
-                          1, "num_df_es1", 1, &es_status_varid) != 0) {
+  if (define_set_metadata(ncid, "num_edge_sets", "es_status", edge_status_type, "num_edge_es1", 1,
+                          "num_df_es1", 1, &es_status_varid) != 0) {
     return 1;
   }
 
   int face_status_type = corrupt ? NC_STRING : NC_INT;
-  if (define_set_metadata(ncid, "num_face_sets", "fs_status", face_status_type, "num_face_fs1",
-                          1, "num_df_fs1", 1, &fs_status_varid) != 0) {
+  if (define_set_metadata(ncid, "num_face_sets", "fs_status", face_status_type, "num_face_fs1", 1,
+                          "num_df_fs1", 1, &fs_status_varid) != 0) {
     return 1;
   }
 
   int elem_status_type = corrupt ? NC_STRING : NC_INT;
-  if (define_set_metadata(ncid, "num_elem_sets", "els_status", elem_status_type, "num_ele_els1",
-                          1, "num_df_els1", 1, &els_status_varid) != 0) {
+  if (define_set_metadata(ncid, "num_elem_sets", "els_status", elem_status_type, "num_ele_els1", 1,
+                          "num_df_els1", 1, &els_status_varid) != 0) {
     return 1;
   }
 
@@ -135,27 +135,24 @@ static int create_metadata_file(int corrupt)
   return 0;
 }
 
-struct inquiry_check {
-  ex_inquiry query;
+struct inquiry_check
+{
+  ex_inquiry  query;
   const char *label;
-  int expected;
+  int         expected;
 };
 
 static const struct inquiry_check checks[] = {
-    {EX_INQ_NS_NODE_LEN, "EX_INQ_NS_NODE_LEN", 2},
-    {EX_INQ_SS_ELEM_LEN, "EX_INQ_SS_ELEM_LEN", 2},
-    {EX_INQ_ES_LEN, "EX_INQ_ES_LEN", 2},
-    {EX_INQ_ES_DF_LEN, "EX_INQ_ES_DF_LEN", 1},
-    {EX_INQ_FS_LEN, "EX_INQ_FS_LEN", 2},
-    {EX_INQ_FS_DF_LEN, "EX_INQ_FS_DF_LEN", 1},
-    {EX_INQ_ELS_LEN, "EX_INQ_ELS_LEN", 2},
-    {EX_INQ_ELS_DF_LEN, "EX_INQ_ELS_DF_LEN", 1},
+    {EX_INQ_NS_NODE_LEN, "EX_INQ_NS_NODE_LEN", 2}, {EX_INQ_SS_ELEM_LEN, "EX_INQ_SS_ELEM_LEN", 2},
+    {EX_INQ_ES_LEN, "EX_INQ_ES_LEN", 2},           {EX_INQ_ES_DF_LEN, "EX_INQ_ES_DF_LEN", 1},
+    {EX_INQ_FS_LEN, "EX_INQ_FS_LEN", 2},           {EX_INQ_FS_DF_LEN, "EX_INQ_FS_DF_LEN", 1},
+    {EX_INQ_ELS_LEN, "EX_INQ_ELS_LEN", 2},         {EX_INQ_ELS_DF_LEN, "EX_INQ_ELS_DF_LEN", 1},
 };
 
 static int open_file(void)
 {
-  int cpu_word_size = 8;
-  int io_word_size  = 0;
+  int   cpu_word_size = 8;
+  int   io_word_size  = 0;
   float version;
   return ex_open(filename, EX_READ, &cpu_word_size, &io_word_size, &version);
 }
@@ -167,10 +164,10 @@ static int check_good_inquiry(const struct inquiry_check *check)
     return 1;
   }
 
-  int ret_int = -1;
-  float ret_float = 0.0F;
-  char ret_char[1] = {'\0'};
-  int status = ex_inquire(exoid, check->query, &ret_int, &ret_float, ret_char);
+  int   ret_int     = -1;
+  float ret_float   = 0.0F;
+  char  ret_char[1] = {'\0'};
+  int   status      = ex_inquire(exoid, check->query, &ret_int, &ret_float, ret_char);
   EXCHECK(ex_close(exoid));
   if (status != EX_NOERR || ret_int != check->expected) {
     fprintf(stderr, "%s returned status %d and length %d for valid metadata\n", check->label,
@@ -200,10 +197,10 @@ static int check_bad_inquiry(const struct inquiry_check *check)
     return 1;
   }
 
-  int ret_int = -99;
-  float ret_float = 0.0F;
-  char ret_char[1] = {'\0'};
-  int status = ex_inquire(exoid, check->query, &ret_int, &ret_float, ret_char);
+  int   ret_int     = -99;
+  float ret_float   = 0.0F;
+  char  ret_char[1] = {'\0'};
+  int   status      = ex_inquire(exoid, check->query, &ret_int, &ret_float, ret_char);
   EXCHECK(ex_close(exoid));
   if (status != EX_FATAL) {
     fprintf(stderr, "%s returned status %d and length %d for invalid metadata\n", check->label,

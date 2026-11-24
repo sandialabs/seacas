@@ -28,39 +28,40 @@
 #include <vector>
 
 namespace {
-const char *filename = "ioex-bounding-box-connectivity.exo";
+  const char *filename = "ioex-bounding-box-connectivity.exo";
 
-void create_file_with_connectivity(const std::vector<int> &connectivity)
-{
-  int cpu_word_size = 8;
-  int io_word_size  = 8;
-  int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
-  REQUIRE(exoid >= 0);
+  void create_file_with_connectivity(const std::vector<int> &connectivity)
+  {
+    int cpu_word_size = 8;
+    int io_word_size  = 8;
+    int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
+    REQUIRE(exoid >= 0);
 
-  REQUIRE(ex_put_init(exoid, "bounding box connectivity", 3, 4, 1, 1, 0, 0) == EX_NOERR);
+    REQUIRE(ex_put_init(exoid, "bounding box connectivity", 3, 4, 1, 1, 0, 0) == EX_NOERR);
 
-  double x[4] = {0.0, 1.0, 1.0, 0.0};
-  double y[4] = {0.0, 0.0, 1.0, 1.0};
-  double z[4] = {0.0, 0.0, 0.0, 0.0};
-  REQUIRE(ex_put_coord(exoid, x, y, z) == EX_NOERR);
+    double x[4] = {0.0, 1.0, 1.0, 0.0};
+    double y[4] = {0.0, 0.0, 1.0, 1.0};
+    double z[4] = {0.0, 0.0, 0.0, 0.0};
+    REQUIRE(ex_put_coord(exoid, x, y, z) == EX_NOERR);
 
-  REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, "QUAD4", 1, 4, 0, 0, 0) == EX_NOERR);
-  REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, connectivity.data(), nullptr, nullptr) == EX_NOERR);
-  REQUIRE(ex_close(exoid) == EX_NOERR);
-}
+    REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, "QUAD4", 1, 4, 0, 0, 0) == EX_NOERR);
+    REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, connectivity.data(), nullptr, nullptr) ==
+            EX_NOERR);
+    REQUIRE(ex_close(exoid) == EX_NOERR);
+  }
 
-std::unique_ptr<Ioss::Region> open_region()
-{
-  Ioss::PropertyManager properties;
-  properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-  properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
+  std::unique_ptr<Ioss::Region> open_region()
+  {
+    Ioss::PropertyManager properties;
+    properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
 
-  auto *db_io = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
-                                     Ioss::ParallelUtils::comm_world(), properties);
-  auto  region = std::make_unique<Ioss::Region>(db_io);
-  REQUIRE(db_io->ok());
-  return region;
-}
+    auto *db_io  = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
+                                        Ioss::ParallelUtils::comm_world(), properties);
+    auto  region = std::make_unique<Ioss::Region>(db_io);
+    REQUIRE(db_io->ok());
+    return region;
+  }
 } // namespace
 
 int main(int argc, char *argv[])

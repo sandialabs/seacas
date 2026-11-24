@@ -396,11 +396,12 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
 
         for (int64_t cnt3 = 0; cnt3 < mesh->eb_npe[cnt]; cnt3++) {
           INT node_id = blk_connect[cnt3 + cnt2 * mesh->eb_npe[cnt]];
-          if (!validate_connectivity_node(node_id, mesh->num_nodes, mesh->eb_ids[cnt], cnt2, cnt3)) {
+          if (!validate_connectivity_node(node_id, mesh->num_nodes, mesh->eb_ids[cnt], cnt2,
+                                          cnt3)) {
             ex_close(exoid);
             return 0;
           }
-          INT node = node_id - 1;
+          INT node                       = node_id - 1;
           mesh->connect[gelem_cnt][cnt3] = node;
 
           /* deal with the weighting if necessary */
@@ -444,11 +445,12 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
 
         for (int64_t cnt3 = 0; cnt3 < mesh->eb_npe[cnt]; cnt3++) {
           INT node_id = blk_connect[cnt2 * mesh->eb_npe[cnt] + cnt3];
-          if (!validate_connectivity_node(node_id, mesh->num_nodes, mesh->eb_ids[cnt], cnt2, cnt3)) {
+          if (!validate_connectivity_node(node_id, mesh->num_nodes, mesh->eb_ids[cnt], cnt2,
+                                          cnt3)) {
             ex_close(exoid);
             return 0;
           }
-          INT node = node_id - 1;
+          INT node                       = node_id - 1;
           mesh->connect[gelem_cnt][cnt3] = node;
         }
         gelem_cnt++;

@@ -775,8 +775,8 @@ static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
 
   if (var_type_in != NC_FLOAT && var_type_in != NC_DOUBLE) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: unsupported coordinate variable type %d in file id %d", var_type_in, in_id);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported coordinate variable type %d in file id %d",
+             var_type_in, in_id);
     ex_err_fn(in_id, __func__, errmsg, EX_BADPARAM);
     return EX_FATAL;
   }
@@ -784,8 +784,8 @@ static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
   size_t type_size_in = var_type_in == NC_FLOAT ? sizeof(float) : sizeof(double);
   if (num_nodes > SIZE_MAX / type_size_in) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: coordinate variable too large to copy from file id %d", in_id);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: coordinate variable too large to copy from file id %d",
+             in_id);
     ex_err_fn(in_id, __func__, errmsg, EX_MEMFAIL);
     return EX_FATAL;
   }

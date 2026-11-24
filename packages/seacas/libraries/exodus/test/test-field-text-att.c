@@ -46,7 +46,7 @@ static int create_file(void)
 
   EXCHECK(ex_put_init(exoid, "field text metadata", 2, 0, 0, 0, 0, 0));
 
-  ex_field field = {0};
+  ex_field field    = {0};
   field.entity_type = EX_GLOBAL;
   field.entity_id   = 0;
   strcpy(field.name, "text_field");
@@ -80,7 +80,7 @@ static int expect_field_status(int expected)
     return 1;
   }
 
-  ex_field field[1] = {{0}};
+  ex_field field[1]    = {{0}};
   field[0].entity_type = EX_GLOBAL;
   field[0].entity_id   = 0;
   int status           = ex_get_field_metadata(exoid, field);
@@ -91,7 +91,8 @@ static int expect_field_status(int expected)
   }
 
   if (expected == EX_NOERR) {
-    if (strcmp(field[0].name, "text_field") != 0 || strcmp(field[0].type_name, "custom_type") != 0 ||
+    if (strcmp(field[0].name, "text_field") != 0 ||
+        strcmp(field[0].type_name, "custom_type") != 0 ||
         strcmp(field[0].component_separator, ":") != 0 || strcmp(field[0].suffices, "x,y") != 0 ||
         field[0].type[0] != EX_FIELD_TYPE_USER_DEFINED || field[0].cardinality[0] != 2) {
       fprintf(stderr, "valid field metadata was not read back as written\n");
@@ -203,7 +204,8 @@ int main(void)
   }
 
   if (create_file() != 0 ||
-      overwrite_int_array_attribute("Field@text_field@cardinality", EX_MAX_FIELD_NESTING + 1) != 0 ||
+      overwrite_int_array_attribute("Field@text_field@cardinality", EX_MAX_FIELD_NESTING + 1) !=
+          0 ||
       expect_field_status(EX_FATAL) != 0) {
     return 1;
   }

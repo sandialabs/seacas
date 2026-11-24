@@ -79,8 +79,8 @@ bool Tolerance::Diff(double v1, double v2) const
   // and `NaN > tol` are both false.  The NaN leg honors `-ignore_nans`:
   // when set, NaN-only operands fall through to the pre-screen arithmetic below
   // (Invalid_Values semantics); Inf mismatches are always diffs.
-  bool ignored_nan = ignore_nans && (std::isnan(v1) || std::isnan(v2)) &&
-                     !std::isinf(v1) && !std::isinf(v2);
+  bool ignored_nan =
+      ignore_nans && (std::isnan(v1) || std::isnan(v2)) && !std::isinf(v1) && !std::isinf(v2);
   if ((!std::isfinite(v1) || !std::isfinite(v2)) && !ignored_nan) {
     if (type == ToleranceMode::EIGEN_REL_ || type == ToleranceMode::EIGEN_ABS_ ||
         type == ToleranceMode::EIGEN_COM_) {

@@ -28,39 +28,39 @@
 #include <vector>
 
 namespace {
-const char *filename = "ioex-connectivity-count.exo";
+  const char *filename = "ioex-connectivity-count.exo";
 
-void create_element_block_file(const char *topology, int nodes_per_element)
-{
-  int cpu_word_size = 8;
-  int io_word_size  = 8;
-  int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
-  REQUIRE(exoid >= 0);
+  void create_element_block_file(const char *topology, int nodes_per_element)
+  {
+    int cpu_word_size = 8;
+    int io_word_size  = 8;
+    int exoid         = ex_create(filename, EX_CLOBBER, &cpu_word_size, &io_word_size);
+    REQUIRE(exoid >= 0);
 
-  REQUIRE(ex_put_init(exoid, "connectivity count", 3, nodes_per_element, 1, 1, 0, 0) == EX_NOERR);
-  REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, topology, 1, nodes_per_element, 0, 0, 0) ==
-          EX_NOERR);
+    REQUIRE(ex_put_init(exoid, "connectivity count", 3, nodes_per_element, 1, 1, 0, 0) == EX_NOERR);
+    REQUIRE(ex_put_block(exoid, EX_ELEM_BLOCK, 7, topology, 1, nodes_per_element, 0, 0, 0) ==
+            EX_NOERR);
 
-  std::vector<int> connect(nodes_per_element);
-  for (int i = 0; i < nodes_per_element; i++) {
-    connect[i] = i + 1;
+    std::vector<int> connect(nodes_per_element);
+    for (int i = 0; i < nodes_per_element; i++) {
+      connect[i] = i + 1;
+    }
+    REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, connect.data(), nullptr, nullptr) == EX_NOERR);
+    REQUIRE(ex_close(exoid) == EX_NOERR);
   }
-  REQUIRE(ex_put_conn(exoid, EX_ELEM_BLOCK, 7, connect.data(), nullptr, nullptr) == EX_NOERR);
-  REQUIRE(ex_close(exoid) == EX_NOERR);
-}
 
-std::unique_ptr<Ioss::Region> open_region()
-{
-  Ioss::PropertyManager properties;
-  properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-  properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
+  std::unique_ptr<Ioss::Region> open_region()
+  {
+    Ioss::PropertyManager properties;
+    properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    properties.add(Ioss::Property("INTEGER_SIZE_API", 4));
 
-  auto *db_io = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
-                                     Ioss::ParallelUtils::comm_world(), properties);
-  auto  region = std::make_unique<Ioss::Region>(db_io);
-  REQUIRE(db_io->ok());
-  return region;
-}
+    auto *db_io  = new Ioex::DatabaseIO(nullptr, filename, Ioss::READ_MODEL,
+                                        Ioss::ParallelUtils::comm_world(), properties);
+    auto  region = std::make_unique<Ioss::Region>(db_io);
+    REQUIRE(db_io->ok());
+    return region;
+  }
 } // namespace
 
 int main(int argc, char *argv[])
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
 
 TEST_CASE("Ioex validates element connectivity count against topology buffer size")
 {
-  Ioss::Init::Initializer     init_db;
-  Ioss::StorageInitializer    initialize_storage;
+  Ioss::Init::Initializer  init_db;
+  Ioss::StorageInitializer initialize_storage;
 
   SECTION("matching topology and connectivity counts read successfully")
   {
@@ -109,6 +109,7 @@ TEST_CASE("Ioex validates element connectivity count against topology buffer siz
     CHECK(blocks[0]->topology()->number_nodes() == 2);
 
     std::vector<int> connectivity;
-    CHECK_THROWS_AS(blocks[0]->get_field_data("connectivity_raw", connectivity), std::runtime_error);
+    CHECK_THROWS_AS(blocks[0]->get_field_data("connectivity_raw", connectivity),
+                    std::runtime_error);
   }
 }

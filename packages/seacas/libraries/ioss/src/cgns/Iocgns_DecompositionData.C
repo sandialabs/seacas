@@ -34,7 +34,7 @@ namespace {
 
   template <typename INT>
   void validate_element_connectivity_size(int filePtr, int base, int zone, int section,
-                                          cgsize_t expected_size,
+                                          cgsize_t                              expected_size,
                                           const Iocgns::DecompositionData<INT> &decomposition)
   {
     cgsize_t stored_size = 0;

@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <assert.h>
 #include <algorithm>
+#include <assert.h>
 #include <cmath>
 #include <cstdlib>
 #include <fmt/ostream.h>
@@ -860,8 +860,9 @@ namespace {
 
         double in_time_2 = input_region_2.get_state_time(istep);
         if (real_values_differ(in_time_1, in_time_2)) {
-          fmt::print(Ioss::OUTPUT(), "\nTIME STEP value mismatch (step {}): {:20.13e} vs. {:20.13e}\n",
-                     istep, in_time_1, in_time_2);
+          fmt::print(Ioss::OUTPUT(),
+                     "\nTIME STEP value mismatch (step {}): {:20.13e} vs. {:20.13e}\n", istep,
+                     in_time_1, in_time_2);
           overall_result = false;
         }
 
@@ -1716,9 +1717,9 @@ namespace {
           first = false;
         }
         else {
-          fmt::print(
-              buf, "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-              idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
+          fmt::print(buf,
+                     "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
+                     idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
         }
       }
     }

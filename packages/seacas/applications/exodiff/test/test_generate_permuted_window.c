@@ -38,8 +38,8 @@ int main(void)
 {
   ex_opts(EX_VERBOSE);
 
-  const double x1[] = {0.0, 1.0, 1.0, 0.0, 10.0, 11.0, 11.0, 10.0};
-  const double y1[] = {0.0, 0.0, 1.0, 1.0, 10.0, 10.0, 11.0, 11.0};
+  const double x1[]        = {0.0, 1.0, 1.0, 0.0, 10.0, 11.0, 11.0, 10.0};
+  const double y1[]        = {0.0, 0.0, 1.0, 1.0, 10.0, 10.0, 11.0, 11.0};
   const int    node_map1[] = {1, 2, 3, 4, 5, 6, 7, 8};
   const int    conn1[]     = {5, 1, 2, 3, 1, 2, 3, 4};
 
@@ -48,8 +48,8 @@ int main(void)
    * the mapped file1 connectivity is {2,3,4,5}.  That matches the old buggy
    * sliding window conn2[1..4], but not the actual element-2 window {5,6,7,8}.
    */
-  const double x2[] = {10.0, 0.0, 1.0, 1.0, 0.0, 11.0, 11.0, 10.0};
-  const double y2[] = {10.0, 0.0, 0.0, 1.0, 1.0, 10.0, 11.0, 11.0};
+  const double x2[]        = {10.0, 0.0, 1.0, 1.0, 0.0, 11.0, 11.0, 10.0};
+  const double y2[]        = {10.0, 0.0, 0.0, 1.0, 1.0, 10.0, 11.0, 11.0};
   const int    node_map2[] = {5, 1, 2, 3, 4, 6, 7, 8};
   const int    conn2[]     = {1, 2, 3, 4, 5, 6, 7, 8};
 

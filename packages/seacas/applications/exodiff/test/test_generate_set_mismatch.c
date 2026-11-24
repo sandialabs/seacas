@@ -116,8 +116,7 @@ static int create_entity_var_file(const char *filename, int second_block_has_var
   double time = 0.0;
   double val1 = 1.0;
   double val2 = 2.0;
-  if (ex_put_time(exoid, 1, &time) < 0 ||
-      ex_put_var(exoid, 1, EX_ELEM_BLOCK, 1, 1, 1, &val1) < 0) {
+  if (ex_put_time(exoid, 1, &time) < 0 || ex_put_var(exoid, 1, EX_ELEM_BLOCK, 1, 1, 1, &val1) < 0) {
     fprintf(stderr, "ERROR: could not write variable data to '%s'\n", filename);
     ex_close(exoid);
     return 1;

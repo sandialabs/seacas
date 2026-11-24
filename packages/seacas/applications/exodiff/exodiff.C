@@ -2424,8 +2424,8 @@ bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
     }
 
     if (Invalid_Values(vals1, df_count1)) {
-      Warning(fmt::format("NaN found for distribution factors in nodeset {}, file 1.\n",
-                          nset1->Id()));
+      Warning(
+          fmt::format("NaN found for distribution factors in nodeset {}, file 1.\n", nset1->Id()));
       diff_flag = true;
     }
 
@@ -2438,8 +2438,8 @@ bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
     }
 
     if (Invalid_Values(vals2, df_count2)) {
-      Warning(fmt::format("NaN found for distribution factors in nodeset {}, file 2.\n",
-                          nset2->Id()));
+      Warning(
+          fmt::format("NaN found for distribution factors in nodeset {}, file 2.\n", nset2->Id()));
       diff_flag = true;
     }
 
@@ -2462,11 +2462,11 @@ bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
       if (interFace.show_all_diffs) {
         double d = interFace.ss_df_tol.Delta(v1, v2);
         if (d > interFace.ss_df_tol.value) {
-          diff_flag       = true;
-          std::string buf = fmt::format(
-              "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
-              length_name, interFace.ss_df_tol.abrstr(), v1, v2, d, nset1->Id(),
-              id_map[nset1->Node_Id(e) - 1]);
+          diff_flag = true;
+          std::string buf =
+              fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})",
+                          name, length_name, interFace.ss_df_tol.abrstr(), v1, v2, d, nset1->Id(),
+                          id_map[nset1->Node_Id(e) - 1]);
           DIFF_OUT(buf);
         }
       }
@@ -2485,10 +2485,10 @@ bool diff_nodeset_df(Exo_Read<INT> &file1, Exo_Read<INT> &file2, const INT *id_m
 
     if (!interFace.quiet_flag) {
       Node_Set<INT> *nset = file1.Get_Node_Set_by_Id(max_diff.blk);
-      std::string    buf  = fmt::format(
-          "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
-          length_name, interFace.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2, max_diff.diff,
-          max_diff.blk, id_map[nset->Node_Id(max_diff.id) - 1]);
+      std::string    buf =
+          fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
+                      length_name, interFace.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2,
+                      max_diff.diff, max_diff.blk, id_map[nset->Node_Id(max_diff.id) - 1]);
       DIFF_OUT(buf);
     }
     else {
@@ -2979,8 +2979,8 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT> &file2,
           Exo_Block<INT> *mapped_block = blocks2[mapped.first];
           int             mapped_idx   = mapped_block->Find_Attribute_Index(name);
           if (mapped_idx < 0) {
-            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
-                                mapped_block->Id()));
+            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n",
+                                name, mapped_block->Id()));
             diff_flag = true;
             ++global_elmt_index;
             continue;
@@ -2989,8 +2989,8 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT> &file2,
           mapped_block->Load_Attributes(mapped_idx);
           const double *mapped_vals = mapped_block->Get_Attributes(mapped_idx);
           if (mapped_vals == nullptr) {
-            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
-                                mapped_block->Id()));
+            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n",
+                                name, mapped_block->Id()));
             diff_flag = true;
             ++global_elmt_index;
             continue;
@@ -3010,8 +3010,8 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT> &file2,
             diff_flag = true;
             std::string buf =
                 fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
-                            name, name_length(), interFace.elmt_att[tol_idx].abrstr(), vals1[e],
-                            v2, d, block_id, id_map[global_elmt_index]);
+                            name, name_length(), interFace.elmt_att[tol_idx].abrstr(), vals1[e], v2,
+                            d, block_id, id_map[global_elmt_index]);
             DIFF_OUT(buf);
           }
         }

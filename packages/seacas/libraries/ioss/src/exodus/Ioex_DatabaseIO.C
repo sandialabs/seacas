@@ -91,7 +91,8 @@ namespace {
       file_components = block.num_faces_per_entry;
     }
     else {
-      IOSS_ERROR(fmt::format("ERROR: Invalid connectivity position {} for block id {}", position, id));
+      IOSS_ERROR(
+          fmt::format("ERROR: Invalid connectivity position {} for block id {}", position, id));
     }
 
     if (file_components != expected_components) {
@@ -2360,9 +2361,10 @@ namespace Ioex {
                   int64_t node = ent_proc[i + 0];
                   int64_t proc = ent_proc[i + 1];
                   if (node <= 0 || node > nodeCount) {
-                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map for "
-                                           "owning_processor calculation; valid range is 1..{}.",
-                                           node, nodeCount));
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid node id {} in node communication map for "
+                                    "owning_processor calculation; valid range is 1..{}.",
+                                    node, nodeCount));
                   }
                   idata[node - 1] = std::min(idata[node - 1], static_cast<int>(proc));
                 }
@@ -2377,9 +2379,10 @@ namespace Ioex {
                   int node = ent_proc[i + 0];
                   int proc = ent_proc[i + 1];
                   if (node <= 0 || static_cast<int64_t>(node) > nodeCount) {
-                    IOSS_ERROR(fmt::format("ERROR: Invalid node id {} in node communication map for "
-                                           "owning_processor calculation; valid range is 1..{}.",
-                                           node, nodeCount));
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid node id {} in node communication map for "
+                                    "owning_processor calculation; valid range is 1..{}.",
+                                    node, nodeCount));
                   }
                   idata[node - 1] = std::min(idata[node - 1], proc);
                 }
@@ -3186,9 +3189,10 @@ namespace Ioex {
                 for (int64_t i = 0; i < entity_count; i++) {
                   int elem_id = ents[i];
                   if (elem_id <= 0 || static_cast<int64_t>(elem_id) > elementCount) {
-                    IOSS_ERROR(fmt::format("ERROR: Invalid element id {} in element communication map; "
-                                           "valid range is 1..{}.",
-                                           elem_id, elementCount));
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid element id {} in element communication map; "
+                                    "valid range is 1..{}.",
+                                    elem_id, elementCount));
                   }
                   entity_proc[j++] = map[elem_id];
                   entity_proc[j++] = sids[i];
@@ -3216,9 +3220,10 @@ namespace Ioex {
                 for (int64_t i = 0; i < entity_count; i++) {
                   int64_t elem_id = ents[i];
                   if (elem_id <= 0 || elem_id > elementCount) {
-                    IOSS_ERROR(fmt::format("ERROR: Invalid element id {} in element communication map; "
-                                           "valid range is 1..{}.",
-                                           elem_id, elementCount));
+                    IOSS_ERROR(
+                        fmt::format("ERROR: Invalid element id {} in element communication map; "
+                                    "valid range is 1..{}.",
+                                    elem_id, elementCount));
                   }
                   entity_proc[j++] = map[elem_id];
                   entity_proc[j++] = sids[i];

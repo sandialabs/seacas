@@ -226,9 +226,10 @@ int ex_get_block_param(int exoid, ex_block *block)
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    if ((status = exi_check_att_text(exoid, connid, ablknam, sizeof(block->topology),
-                                     __func__)) != EX_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to validate %s  %" PRId64 " type in file id %d",
+    if ((status = exi_check_att_text(exoid, connid, ablknam, sizeof(block->topology), __func__)) !=
+        EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to validate %s  %" PRId64 " type in file id %d",
                ex_name_of_object(block->type), block->id, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);

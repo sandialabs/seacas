@@ -41,8 +41,8 @@ static int write_legacy_coord_file(nc_type coord_type)
 {
   int cpu_word_size = 8;
   int io_word_size  = 8;
-  int exoid         = ex_create(input_filename, EX_CLOBBER | EX_NORMAL_MODEL, &cpu_word_size,
-                                &io_word_size);
+  int exoid =
+      ex_create(input_filename, EX_CLOBBER | EX_NORMAL_MODEL, &cpu_word_size, &io_word_size);
   if (exoid < 0) {
     return 1;
   }
@@ -106,10 +106,10 @@ static int copy_file(void)
     return 98;
   }
 
-  cpu_word_size   = 8;
-  io_word_size    = 8;
-  int out_exoid   = ex_create(output_filename, EX_CLOBBER | EX_LARGE_MODEL, &cpu_word_size,
-                              &io_word_size);
+  cpu_word_size = 8;
+  io_word_size  = 8;
+  int out_exoid =
+      ex_create(output_filename, EX_CLOBBER | EX_LARGE_MODEL, &cpu_word_size, &io_word_size);
   if (out_exoid < 0) {
     ex_close(in_exoid);
     return 97;

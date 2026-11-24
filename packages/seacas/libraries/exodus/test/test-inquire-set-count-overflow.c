@@ -64,8 +64,8 @@ static int create_file_with_huge_node_set_count(void)
 {
   int cpu_word_size = 8;
   int io_word_size  = 8;
-  int exoid = ex_create(filename, EX_CLOBBER | EX_NETCDF4 | EX_NOCLASSIC, &cpu_word_size,
-                        &io_word_size);
+  int exoid =
+      ex_create(filename, EX_CLOBBER | EX_NETCDF4 | EX_NOCLASSIC, &cpu_word_size, &io_word_size);
   if (exoid < 0) {
     return 1;
   }
@@ -98,11 +98,11 @@ static int check_ex_inquire(void)
     return 1;
   }
 
-  int   ret_int   = -99;
-  float ret_float = 0.0F;
-  char  ret_char[1] = {'\0'};
+  int   ret_int           = -99;
+  float ret_float         = 0.0F;
+  char  ret_char[1]       = {'\0'};
   fail_huge_status_calloc = 1;
-  int status = ex_inquire(exoid, EX_INQ_NS_NODE_LEN, &ret_int, &ret_float, ret_char);
+  int status              = ex_inquire(exoid, EX_INQ_NS_NODE_LEN, &ret_int, &ret_float, ret_char);
   fail_huge_status_calloc = 0;
   EXCHECK(ex_close(exoid));
 
@@ -122,7 +122,7 @@ static int check_ex_inquire_int(void)
   }
 
   fail_huge_status_calloc = 1;
-  int64_t ret_int64 = ex_inquire_int(exoid, EX_INQ_NS_NODE_LEN);
+  int64_t ret_int64       = ex_inquire_int(exoid, EX_INQ_NS_NODE_LEN);
   fail_huge_status_calloc = 0;
   EXCHECK(ex_close(exoid));
 

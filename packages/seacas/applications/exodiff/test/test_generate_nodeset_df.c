@@ -19,13 +19,12 @@ static int create_file(const char *filename, const double *dist_factors)
     return 1;
   }
 
-  double x[]      = {0.0, 1.0, 2.0};
-  double y[]      = {0.0, 0.0, 0.0};
+  double x[]        = {0.0, 1.0, 2.0};
+  double y[]        = {0.0, 0.0, 0.0};
   int    node_ids[] = {1, 2, 3};
 
   if (ex_put_init(exoid, "nodeset distribution factors", 2, 3, 0, 0, 1, 0) < 0 ||
-      ex_put_coord(exoid, x, y, NULL) < 0 ||
-      ex_put_set_param(exoid, EX_NODE_SET, 100, 3, 3) < 0 ||
+      ex_put_coord(exoid, x, y, NULL) < 0 || ex_put_set_param(exoid, EX_NODE_SET, 100, 3, 3) < 0 ||
       ex_put_set(exoid, EX_NODE_SET, 100, node_ids, NULL) < 0 ||
       ex_put_set_dist_fact(exoid, EX_NODE_SET, 100, dist_factors) < 0) {
     fprintf(stderr, "ERROR: could not write '%s'\n", filename);

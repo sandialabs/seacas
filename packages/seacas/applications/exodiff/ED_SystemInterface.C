@@ -514,8 +514,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   default_floor_specified_ = false;
   for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "-Floor") == 0 || std::strcmp(argv[i], "--Floor") == 0 ||
-        std::strncmp(argv[i], "-Floor=", 7) == 0 ||
-        std::strncmp(argv[i], "--Floor=", 8) == 0) {
+        std::strncmp(argv[i], "-Floor=", 7) == 0 || std::strncmp(argv[i], "--Floor=", 8) == 0) {
       default_floor_specified_ = true;
       break;
     }
@@ -1003,9 +1002,9 @@ void SystemInterface::Parse_Command_File()
           if (tok.empty()) {
             Parse_Die(line);
           }
-          default_tol.floor          = To_Double(tok);
-          default_floor_specified    = true;
-          default_floor_specified_   = true;
+          default_tol.floor        = To_Double(tok);
+          default_floor_specified  = true;
+          default_floor_specified_ = true;
         }
         default_tol_specified = 1;
       }

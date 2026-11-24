@@ -97,7 +97,7 @@ static int check_negative_name_size_rejected(void)
   NCCHECK(nc_inq_varid(ncid, "name_direct", &varid));
 
   char name[8] = "sentinel";
-  int  status = exi_get_name(ncid, varid, 0, name, -1, EX_ELEM_BLOCK, __func__);
+  int  status  = exi_get_name(ncid, varid, 0, name, -1, EX_ELEM_BLOCK, __func__);
   NCCHECK(nc_close(ncid));
 
   if (status != EX_FATAL) {

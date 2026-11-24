@@ -105,20 +105,20 @@ static int read_concat_sets(double *factors)
     return 98;
   }
 
-  int ids[1]             = {0};
-  int num_entries[1]     = {0};
-  int num_dist[1]        = {0};
-  int entry_index[1]     = {0};
-  int dist_index[1]      = {0};
-  int entry_list[2]      = {0, 0};
-  struct ex_set_specs sp = {0};
-  sp.sets_ids            = ids;
-  sp.num_entries_per_set = num_entries;
-  sp.num_dist_per_set    = num_dist;
-  sp.sets_entry_index    = entry_index;
-  sp.sets_dist_index     = dist_index;
-  sp.sets_entry_list     = entry_list;
-  sp.sets_dist_fact      = factors;
+  int                 ids[1]         = {0};
+  int                 num_entries[1] = {0};
+  int                 num_dist[1]    = {0};
+  int                 entry_index[1] = {0};
+  int                 dist_index[1]  = {0};
+  int                 entry_list[2]  = {0, 0};
+  struct ex_set_specs sp             = {0};
+  sp.sets_ids                        = ids;
+  sp.num_entries_per_set             = num_entries;
+  sp.num_dist_per_set                = num_dist;
+  sp.sets_entry_index                = entry_index;
+  sp.sets_dist_index                 = dist_index;
+  sp.sets_entry_list                 = entry_list;
+  sp.sets_dist_fact                  = factors;
 
   int status = ex_get_concat_sets(exoid, EX_NODE_SET, &sp);
   ex_close(exoid);

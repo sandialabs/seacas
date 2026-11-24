@@ -33,7 +33,7 @@ static int create_file(const char *filename, double first_value)
     return 1;
   }
 
-  char  var_name[] = "bad";
+  char  var_name[]  = "bad";
   char *var_names[] = {var_name};
   if (ex_put_variable_param(exoid, EX_NODAL, 1) < 0 ||
       ex_put_variable_names(exoid, EX_NODAL, 1, var_names) < 0) {
@@ -44,8 +44,7 @@ static int create_file(const char *filename, double first_value)
 
   double time     = 0.0;
   double values[] = {first_value, 2.0, 3.0, 4.0};
-  if (ex_put_time(exoid, 1, &time) < 0 ||
-      ex_put_var(exoid, 1, EX_NODAL, 1, 1, 4, values) < 0) {
+  if (ex_put_time(exoid, 1, &time) < 0 || ex_put_var(exoid, 1, EX_NODAL, 1, 1, 4, values) < 0) {
     fprintf(stderr, "ERROR: could not write transient data to '%s'\n", filename);
     ex_close(exoid);
     return 1;

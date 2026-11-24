@@ -80,10 +80,10 @@ namespace {
     std::string filename = utest_util::unique_filename("nem_slice_bad_connectivity", "g");
     create_exodus_file(filename.c_str(), 5);
 
-    Problem_Description  problem;
+    Problem_Description   problem;
     Mesh_Description<int> mesh;
-    Sphere_Info          sphere;
-    Weight_Description   weight;
+    Sphere_Info           sphere;
+    Weight_Description    weight;
 
     weight.type         = NO_WEIGHT;
     problem.type        = DecompType::ELEMENTAL;
@@ -92,7 +92,8 @@ namespace {
     ASSERT_EQ(init_weight_struct(&problem, &mesh, &weight), 1);
 
     mesh.elem_type.resize(mesh.num_elems);
-    mesh.connect = static_cast<int **>(array_alloc(2, mesh.num_elems, mesh.max_np_elem, sizeof(int)));
+    mesh.connect =
+        static_cast<int **>(array_alloc(2, mesh.num_elems, mesh.max_np_elem, sizeof(int)));
     ASSERT_NE(mesh.connect, nullptr);
 
     EXPECT_EQ(read_mesh(filename, &problem, &mesh, &weight), 0);
@@ -104,10 +105,10 @@ namespace {
     std::string filename = utest_util::unique_filename("nem_slice_good_connectivity", "g");
     create_exodus_file(filename.c_str(), 3);
 
-    Problem_Description  problem;
+    Problem_Description   problem;
     Mesh_Description<int> mesh;
-    Sphere_Info          sphere;
-    Weight_Description   weight;
+    Sphere_Info           sphere;
+    Weight_Description    weight;
 
     weight.type         = NO_WEIGHT;
     problem.type        = DecompType::ELEMENTAL;
@@ -116,7 +117,8 @@ namespace {
     ASSERT_EQ(init_weight_struct(&problem, &mesh, &weight), 1);
 
     mesh.elem_type.resize(mesh.num_elems);
-    mesh.connect = static_cast<int **>(array_alloc(2, mesh.num_elems, mesh.max_np_elem, sizeof(int)));
+    mesh.connect =
+        static_cast<int **>(array_alloc(2, mesh.num_elems, mesh.max_np_elem, sizeof(int)));
     ASSERT_NE(mesh.connect, nullptr);
 
     EXPECT_EQ(read_mesh(filename, &problem, &mesh, &weight), 1);

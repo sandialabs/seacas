@@ -101,8 +101,9 @@ extern cgns_io_ctx_t ctx_cgio; /* located in cgns_io.c */
 
 namespace {
 
-  void validate_zone_connectivity_index(int zone, const char *connectname, const char *point_list_name,
-                                        cgsize_t index, size_t max_index)
+  void validate_zone_connectivity_index(int zone, const char *connectname,
+                                        const char *point_list_name, cgsize_t index,
+                                        size_t max_index)
   {
     if (index <= 0 || static_cast<size_t>(index) > max_index) {
       IOSS_ERROR(fmt::format("ERROR: CGNS: Zone {} connectivity '{}' has {} id {} outside "
@@ -1488,7 +1489,8 @@ namespace Iocgns {
           for (int j = 0; j < npnts; j++) {
             cgsize_t point = points[j];
             cgsize_t donor = donors[j];
-            validate_zone_connectivity_index(zone, connectname, "PointList", point, block_map.size());
+            validate_zone_connectivity_index(zone, connectname, "PointList", point,
+                                             block_map.size());
             validate_zone_connectivity_index(zone, connectname, "PointListDonor", donor,
                                              donor_map.size());
             block_map[point - 1] = donor_map[donor - 1];

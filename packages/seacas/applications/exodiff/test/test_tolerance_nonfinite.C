@@ -25,7 +25,7 @@ namespace {
   {
     return expect(std::isinf(tol.Delta(lhs, rhs)), message);
   }
-}
+} // namespace
 
 int main()
 {
@@ -73,12 +73,14 @@ int main()
   if (int rc = expect(absolute.Diff(nan, nan), "NaNs should differ by default")) {
     return rc;
   }
-  if (int rc = expect_delta_inf(absolute, nan, nan, "NaNs should produce infinite delta by default")) {
+  if (int rc =
+          expect_delta_inf(absolute, nan, nan, "NaNs should produce infinite delta by default")) {
     return rc;
   }
 
   Tolerance::ignore_nans = true;
-  if (int rc = expect(!absolute.Diff(nan, nan), "ignore_nans should preserve legacy NaN equality")) {
+  if (int rc =
+          expect(!absolute.Diff(nan, nan), "ignore_nans should preserve legacy NaN equality")) {
     return rc;
   }
   if (int rc = expect(!std::isinf(absolute.Delta(nan, nan)),

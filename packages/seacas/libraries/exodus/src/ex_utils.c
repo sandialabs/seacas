@@ -527,13 +527,14 @@ int exi_check_att_text(int exoid, int varid, const char *att_name, size_t bufsiz
     char errmsg[MAX_ERR_LENGTH];
     if (routine != NULL) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: text attribute '%s' length %ld exceeds buffer size %ld in file id %d [Called from %s]",
+               "ERROR: text attribute '%s' length %ld exceeds buffer size %ld in file id %d "
+               "[Called from %s]",
                att_name, (long)att_len, (long)bufsize, exoid, routine);
     }
     else {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: text attribute '%s' length %ld exceeds buffer size %ld in file id %d", att_name,
-               (long)att_len, (long)bufsize, exoid);
+               "ERROR: text attribute '%s' length %ld exceeds buffer size %ld in file id %d",
+               att_name, (long)att_len, (long)bufsize, exoid);
     }
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     return EX_FATAL;

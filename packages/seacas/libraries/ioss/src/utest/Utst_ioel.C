@@ -14,10 +14,10 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-#include <catch2/catch_session.hpp>
-#include <catch2/catch_test_macros.hpp>
 #include <algorithm>
 #include <array>
+#include <catch2/catch_session.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <cstdlib>
 #include <fmt/ostream.h>
 #include <set>
@@ -29,8 +29,8 @@
 namespace {
   using HexRow = std::array<Ioss::Ordinal, 8>;
 
-  void test_aliases(const Ioss::NameList &elements);
-  void test_element(const std::string &type);
+  void   test_aliases(const Ioss::NameList &elements);
+  void   test_element(const std::string &type);
   HexRow row_for(const Ioss::ElementPermutation &perm, Ioss::Permutation index);
   int    hex_orientation(const HexRow &row);
 } // namespace
@@ -137,13 +137,13 @@ namespace {
   int hex_orientation(const HexRow &row)
   {
     constexpr std::array<std::array<int, 3>, 8> coords{{{{-1, -1, -1}},
-                                                       {{1, -1, -1}},
-                                                       {{1, 1, -1}},
-                                                       {{-1, 1, -1}},
-                                                       {{-1, -1, 1}},
-                                                       {{1, -1, 1}},
-                                                       {{1, 1, 1}},
-                                                       {{-1, 1, 1}}}};
+                                                        {{1, -1, -1}},
+                                                        {{1, 1, -1}},
+                                                        {{-1, 1, -1}},
+                                                        {{-1, -1, 1}},
+                                                        {{1, -1, 1}},
+                                                        {{1, 1, 1}},
+                                                        {{-1, 1, 1}}}};
 
     auto edge = [&](size_t from, size_t to) {
       const auto &a = coords[static_cast<size_t>(row[from])];

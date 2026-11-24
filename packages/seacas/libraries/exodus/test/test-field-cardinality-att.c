@@ -47,14 +47,14 @@ static int create_file(void)
 
   EXCHECK(ex_put_init(exoid, "field cardinality", 2, 0, 0, 0, 0, 0));
 
-  int    basis_dim[2]      = {1, 2};
-  int    basis_ord[2]      = {1, 2};
-  int    basis_dof_ord[2]  = {1, 2};
-  int    basis_num_dof[2]  = {1, 1};
-  double basis_xi[2]       = {0.0, 1.0};
-  double basis_eta[2]      = {0.0, 0.0};
-  double basis_zeta[2]     = {0.0, 0.0};
-  ex_basis basis           = {0};
+  int      basis_dim[2]     = {1, 2};
+  int      basis_ord[2]     = {1, 2};
+  int      basis_dof_ord[2] = {1, 2};
+  int      basis_num_dof[2] = {1, 1};
+  double   basis_xi[2]      = {0.0, 1.0};
+  double   basis_eta[2]     = {0.0, 0.0};
+  double   basis_zeta[2]    = {0.0, 0.0};
+  ex_basis basis            = {0};
   strcpy(basis.name, "good_basis");
   basis.cardinality      = 2;
   basis.subc_dim         = basis_dim;
@@ -66,11 +66,11 @@ static int create_file(void)
   basis.zeta             = basis_zeta;
   EXCHECK(ex_put_basis(exoid, basis));
 
-  double quad_xi[2]     = {0.25, 0.75};
-  double quad_eta[2]    = {0.0, 0.0};
-  double quad_zeta[2]   = {0.0, 0.0};
-  double quad_weight[2] = {1.0, 1.0};
-  ex_quadrature quad    = {0};
+  double        quad_xi[2]     = {0.25, 0.75};
+  double        quad_eta[2]    = {0.0, 0.0};
+  double        quad_zeta[2]   = {0.0, 0.0};
+  double        quad_weight[2] = {1.0, 1.0};
+  ex_quadrature quad           = {0};
   strcpy(quad.name, "good_quad");
   quad.cardinality = 2;
   quad.xi          = quad_xi;
@@ -216,8 +216,7 @@ int main(void)
     return 1;
   }
 
-  if (create_file() != 0 ||
-      overwrite_cardinality("Basis@good_basis@cardinality", NC_INT, 3) != 0 ||
+  if (create_file() != 0 || overwrite_cardinality("Basis@good_basis@cardinality", NC_INT, 3) != 0 ||
       expect_basis_status(EX_FATAL) != 0) {
     return 1;
   }

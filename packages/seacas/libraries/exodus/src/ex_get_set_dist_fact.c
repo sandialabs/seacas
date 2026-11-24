@@ -112,7 +112,7 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
   int64_t num_dist_fact = 0;
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
     int64_t num_entry = 0;
-    status = ex_get_set_param(exoid, set_type, set_id, &num_entry, &num_dist_fact);
+    status            = ex_get_set_param(exoid, set_type, set_id, &num_entry, &num_dist_fact);
   }
   else {
     int num_entry = 0;

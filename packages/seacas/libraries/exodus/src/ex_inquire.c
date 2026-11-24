@@ -869,8 +869,8 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_ELS_LEN:
     /* returns the length of the concatenated element set element list. */
-    if (ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT,
-                              "num_ele_els", 0) != EX_NOERR) {
+    if (ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_ele_els",
+                              0) != EX_NOERR) {
       return EX_FATAL;
     }
     break;
@@ -878,8 +878,8 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_ELS_DF_LEN:
     /* returns the length of the concatenated element set distribution factor
      * list. */
-    if (ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT,
-                              "num_df_els", 1) != EX_NOERR) {
+    if (ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_df_els",
+                              1) != EX_NOERR) {
       return EX_FATAL;
     }
     break;

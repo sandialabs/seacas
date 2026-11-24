@@ -101,7 +101,8 @@ static int check_ex_inquire_64(void)
   EXCHECK(ex_close(exoid));
 
   if (status != EX_NOERR || length != 2) {
-    fprintf(stderr, "ex_inquire returned status %d length %" PRId64 ", expected status 0 length 2\n",
+    fprintf(stderr,
+            "ex_inquire returned status %d length %" PRId64 ", expected status 0 length 2\n",
             status, length);
     return 1;
   }

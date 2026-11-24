@@ -21,37 +21,37 @@
 #include <vector>
 
 namespace {
-const char *filename = "superelement-extent.ncf";
+  const char *filename = "superelement-extent.ncf";
 
-void require_nc(int status) { REQUIRE(status == NC_NOERR); }
+  void require_nc(int status) { REQUIRE(status == NC_NOERR); }
 
-void create_superelement_file(size_t kr_extent)
-{
-  int ncid = -1;
-  require_nc(nc_create(filename, NC_CLOBBER, &ncid));
+  void create_superelement_file(size_t kr_extent)
+  {
+    int ncid = -1;
+    require_nc(nc_create(filename, NC_CLOBBER, &ncid));
 
-  int num_dof_dim = -1;
-  int num_eig_dim = -1;
-  int kr_dim      = -1;
-  require_nc(nc_def_dim(ncid, "NumDof", 1, &num_dof_dim));
-  require_nc(nc_def_dim(ncid, "NumEig", 1, &num_eig_dim));
-  require_nc(nc_def_dim(ncid, "KrExtent", kr_extent, &kr_dim));
+    int num_dof_dim = -1;
+    int num_eig_dim = -1;
+    int kr_dim      = -1;
+    require_nc(nc_def_dim(ncid, "NumDof", 1, &num_dof_dim));
+    require_nc(nc_def_dim(ncid, "NumEig", 1, &num_eig_dim));
+    require_nc(nc_def_dim(ncid, "KrExtent", kr_extent, &kr_dim));
 
-  int kr_var = -1;
-  int mr_var = -1;
-  require_nc(nc_def_var(ncid, "Kr", NC_DOUBLE, 1, &kr_dim, &kr_var));
-  require_nc(nc_def_var(ncid, "Mr", NC_DOUBLE, 1, &num_dof_dim, &mr_var));
-  require_nc(nc_enddef(ncid));
+    int kr_var = -1;
+    int mr_var = -1;
+    require_nc(nc_def_var(ncid, "Kr", NC_DOUBLE, 1, &kr_dim, &kr_var));
+    require_nc(nc_def_var(ncid, "Mr", NC_DOUBLE, 1, &num_dof_dim, &mr_var));
+    require_nc(nc_enddef(ncid));
 
-  std::vector<double> kr_values(kr_extent, 2.0);
-  if (kr_extent > 0) {
-    require_nc(nc_put_var_double(ncid, kr_var, kr_values.data()));
+    std::vector<double> kr_values(kr_extent, 2.0);
+    if (kr_extent > 0) {
+      require_nc(nc_put_var_double(ncid, kr_var, kr_values.data()));
+    }
+    double mr_value = 3.0;
+    require_nc(nc_put_var_double(ncid, mr_var, &mr_value));
+
+    require_nc(nc_close(ncid));
   }
-  double mr_value = 3.0;
-  require_nc(nc_put_var_double(ncid, mr_var, &mr_value));
-
-  require_nc(nc_close(ncid));
-}
 } // namespace
 
 TEST_CASE("SuperElement validates netCDF variable extent before whole-variable reads")

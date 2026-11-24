@@ -120,9 +120,10 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
     /*   for each property, read the "name" attribute of property array variable
      */
     size_t api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    if ((status = exi_check_att_text(exoid, propid, ATT_PROP_NAME, api_name_size + 1,
-                                     __func__)) != EX_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to validate property name in file id %d", exoid);
+    if ((status = exi_check_att_text(exoid, propid, ATT_PROP_NAME, api_name_size + 1, __func__)) !=
+        EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to validate property name in file id %d",
+               exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }

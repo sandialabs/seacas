@@ -53,8 +53,8 @@ static int create_file(void)
 
 static int open_file(void)
 {
-  int cpu_word_size = 8;
-  int io_word_size  = 0;
+  int   cpu_word_size = 8;
+  int   io_word_size  = 0;
   float version;
   return ex_open(filename, EX_READ, &cpu_word_size, &io_word_size, &version);
 }

@@ -19,9 +19,9 @@ static int create_file(const char *filename, int include_attribute, double attri
     return 1;
   }
 
-  double x[]    = {0.0, 1.0, 1.0, 0.0};
-  double y[]    = {0.0, 0.0, 1.0, 1.0};
-  int    conn[] = {1, 2, 3, 4};
+  double x[]        = {0.0, 1.0, 1.0, 0.0};
+  double y[]        = {0.0, 0.0, 1.0, 1.0};
+  int    conn[]     = {1, 2, 3, 4};
   int    attr_count = include_attribute ? 1 : 0;
   if (ex_put_init(exoid, "element attribute compare", 2, 4, 1, 1, 0, 0) < 0 ||
       ex_put_coord(exoid, x, y, NULL) < 0 ||
