@@ -22,6 +22,14 @@ TRIBITS_ADD_EXECUTABLE(
   COMM serial mpi
   )
 
+TRIBITS_ADD_EXECUTABLE(
+  test_generate_permuted_window
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test_generate_permuted_window.c
+  COMM serial mpi
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(
   exodiff_test_tolerance_nonfinite
   TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/test_tolerance_nonfinite
@@ -32,6 +40,17 @@ TRIBITS_ADD_ADVANCED_TEST(
   )
 
 IF (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodus)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ exodiff_test_permuted_connectivity_window
+ TEST_0 EXEC ${CMAKE_CURRENT_BINARY_DIR}/test_generate_permuted_window
+        NOEXEPREFIX NOEXESUFFIX
+ TEST_1 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/../exodiff -allow_permuted_connectivity ${CMAKE_CURRENT_BINARY_DIR}/permuted-window-a.exo ${CMAKE_CURRENT_BINARY_DIR}/permuted-window-b.exo > exodiff-permuted-window.stdout 2>&1 && grep -q 'Connectivities in block id' exodiff-permuted-window.stdout && grep -q 'Differences found in mesh' exodiff-permuted-window.stdout"
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
 
 TRIBITS_ADD_ADVANCED_TEST(
  exodiff_test_time_floor_default

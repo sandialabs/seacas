@@ -336,8 +336,8 @@ namespace {
                 for (size_t i = 0; i < nnpe; i++) {
                   e1_conn[i] = node_map[conn1[e * nnpe + i] - 1] + 1;
                 }
-                permuted = std::is_permutation(e1_conn.begin(), e1_conn.end(), &conn2[e],
-                                               &conn2[e + nnpe]);
+                permuted = std::is_permutation(e1_conn.begin(), e1_conn.end(), &conn2[e * nnpe],
+                                               &conn2[e * nnpe + nnpe]);
               }
               if (!permuted) {
                 const std::string permit_permute =
