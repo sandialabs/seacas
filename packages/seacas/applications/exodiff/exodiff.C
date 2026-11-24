@@ -827,7 +827,7 @@ namespace {
     }
 
     // Diff attributes...
-    if (!interFace.ignore_attributes && elmt_map.empty() && !interFace.summary_flag) {
+    if (!interFace.ignore_attributes && !interFace.summary_flag) {
       if (diff_element_attributes(file1, file2, elmt_map, elem_id_map, blocks2)) {
         diff_flag = true;
       }
@@ -2835,9 +2835,9 @@ bool diff_faceblock(Exo_Read<INT> &file1, Exo_Read<INT> &file2, int step1, const
 }
 
 template <typename INT>
-bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &file2,
-                             const std::vector<INT> & /*elmt_map*/, const INT *id_map,
-                             Exo_Block<INT> ** /*blocks2*/)
+bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT> &file2,
+                             const std::vector<INT> &elmt_map, const INT *id_map,
+                             Exo_Block<INT> **blocks2)
 {
   if (interFace.summary_flag) {
     return false;
@@ -2878,12 +2878,6 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &f
       DiffData           max_diff;
       const std::string &name = eblock1->Get_Attribute_Name(idx1);
 
-      // Find same attribute in eblock2...
-      int idx2 = eblock2->Find_Attribute_Index(name);
-      if (idx2 < 0) {
-        continue;
-      }
-
       // Find name in interFace.elmt_att_names
       int tol_idx = -1;
       for (unsigned e_idx = 0; e_idx < interFace.elmt_att_names.size(); ++e_idx) {
@@ -2894,6 +2888,15 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &f
       }
 
       if (tol_idx == -1) {
+        continue;
+      }
+
+      // Find same requested attribute in eblock2...
+      int idx2 = eblock2->Find_Attribute_Index(name);
+      if (idx2 < 0) {
+        Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
+                            eblock2->Id()));
+        diff_flag = true;
         continue;
       }
 
@@ -2915,42 +2918,79 @@ bool diff_element_attributes(Exo_Read<INT> &file1, Exo_Read<INT>              &f
         diff_flag = true;
       }
 
-      // Without mapping, get result for this block.
-      eblock2->Load_Attributes(idx2);
-      const double *vals2 = eblock2->Get_Attributes(idx2);
+      const double *vals2 = nullptr;
+      if (elmt_map.empty()) {
+        // Without mapping, get attributes for the matching block.
+        eblock2->Load_Attributes(idx2);
+        vals2 = eblock2->Get_Attributes(idx2);
 
-      if (vals2 == nullptr) {
-        Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
-                            eblock2->Id()));
-        diff_flag = true;
-        continue;
-      }
+        if (vals2 == nullptr) {
+          Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
+                              eblock2->Id()));
+          diff_flag = true;
+          continue;
+        }
 
-      if (Invalid_Values(vals2, eblock2->Size())) {
-        Warning(fmt::format("NaN found for element attribute '{}' in block {}, file 2.\n", name,
-                            eblock2->Id()));
-        diff_flag = true;
+        if (Invalid_Values(vals2, eblock2->Size())) {
+          Warning(fmt::format("NaN found for element attribute '{}' in block {}, file 2.\n", name,
+                              eblock2->Id()));
+          diff_flag = true;
+        }
       }
 
       size_t ecount = eblock1->Size();
       for (size_t e = 0; e < ecount; ++e) {
+        double v2 = 0.0;
+        if (elmt_map.empty()) {
+          v2 = vals2[e];
+        }
+        else {
+          auto mapped = file2.Global_to_Block_Local(elmt_map[global_elmt_index] + 1);
+          SMART_ASSERT(blocks2[mapped.first] != nullptr);
+          Exo_Block<INT> *mapped_block = blocks2[mapped.first];
+          int             mapped_idx   = mapped_block->Find_Attribute_Index(name);
+          if (mapped_idx < 0) {
+            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
+                                mapped_block->Id()));
+            diff_flag = true;
+            ++global_elmt_index;
+            continue;
+          }
+
+          mapped_block->Load_Attributes(mapped_idx);
+          const double *mapped_vals = mapped_block->Get_Attributes(mapped_idx);
+          if (mapped_vals == nullptr) {
+            Warning(fmt::format("Could not find element attribute '{}' in block {}, file 2.\n", name,
+                                mapped_block->Id()));
+            diff_flag = true;
+            ++global_elmt_index;
+            continue;
+          }
+
+          v2 = mapped_vals[mapped.second];
+          if (Invalid_Values(&v2, 1)) {
+            Warning(fmt::format("NaN found for element attribute '{}' in block {}, file 2.\n", name,
+                                mapped_block->Id()));
+            diff_flag = true;
+          }
+        }
 
         if (interFace.show_all_diffs) {
-          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], vals2[e]);
+          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], v2);
           if (d > interFace.elmt_att[tol_idx].value) {
             diff_flag = true;
             std::string buf =
                 fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
                             name, name_length(), interFace.elmt_att[tol_idx].abrstr(), vals1[e],
-                            vals2[e], d, block_id, id_map[global_elmt_index]);
+                            v2, d, block_id, id_map[global_elmt_index]);
             DIFF_OUT(buf);
           }
         }
         else {
-          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], vals2[e]);
-          max_diff.set_max(d, vals1[e], vals2[e], global_elmt_index, block_id);
+          double d = interFace.elmt_att[tol_idx].Delta(vals1[e], v2);
+          max_diff.set_max(d, vals1[e], v2, global_elmt_index, block_id);
         }
-        norm.add_value(vals1[e], vals2[e]);
+        norm.add_value(vals1[e], v2);
         ++global_elmt_index;
       }
 
