@@ -36,7 +36,7 @@ namespace SEAMS {
       double v22 = arr->data[irh * cols + ich];
       if (rows > 1 && cols > 1) {
         value = (v11 * (irh - row) + v21 * (row - irl)) * (ich - col) +
-                (v12 * (irh - row) * v22 * (row - irl)) * (col - icl);
+                (v12 * (irh - row) + v22 * (row - irl)) * (col - icl);
       }
       else if (rows > 1 && cols == 1) {
         value = v11 * (irh - row) + v21 * (row - irl);
