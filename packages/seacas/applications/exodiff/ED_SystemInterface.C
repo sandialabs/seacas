@@ -782,7 +782,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
     ignore_maps = true;
   }
   if (options_.retrieve("ignore_nans") != nullptr) {
-    ignore_nans = true;
+    ignore_nans            = true;
+    Tolerance::ignore_nans = true; // Don't flag NaNs in Diff/Delta.
   }
   if (options_.retrieve("ignore_dups") != nullptr) {
     ignore_dups = true;
@@ -1054,7 +1055,8 @@ void SystemInterface::Parse_Command_File()
         ignore_maps = true;
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "nans", 3)) {
-        ignore_nans = true;
+        ignore_nans            = true;
+        Tolerance::ignore_nans = true; // Don't flag NaNs in Diff/Delta.
       }
       else if (abbreviation(tok1, "ignore", 3) && abbreviation(tok2, "dups", 3)) {
         ignore_dups = true;

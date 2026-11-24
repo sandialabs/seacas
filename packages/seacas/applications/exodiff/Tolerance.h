@@ -7,6 +7,7 @@
 
 #include "map.h"
 #include <cmath>
+#include <limits>
 
 // See http://realtimecollisiondetection.net/blog/?p=89 for a
 // description of the COMBINED tolerance.  Basically:
@@ -57,6 +58,13 @@ public:
   // |a-b| < floor.  The new definition is |a| < floor && |b| < floor
   static bool use_old_floor;
 
+  // Mirrors `-ignore_nans` (set from ED_SystemInterface at startup, same
+  // pattern as `use_old_floor`).  When true, NaN-containing comparisons skip
+  // the non-finite screen and fall through to the original tolerance
+  // arithmetic, i.e. the documented Invalid_Values semantics (NaNs are not
+  // checked).  Inf mismatches are always reported regardless of this flag.
+  static bool ignore_nans;
+
 private:
   double UlpsDiffFloat(double A, double B) const;
   double UlpsDiffDouble(double A, double B) const;
@@ -66,6 +74,19 @@ inline double Tolerance::Delta(double v1, double v2) const
 {
   if (type == ToleranceMode::IGNORE_) {
     return 0.0;
+  }
+
+  // Non-finite screen (see Tolerance::Diff): report an infinite delta for
+  // any non-finite mismatch so it is always flagged as a difference.  The
+  // NaN leg honors `-ignore_nans`: when set, NaN operands fall through to
+  // the pre-screen arithmetic below (Invalid_Values semantics).
+  if ((!std::isfinite(v1) || !std::isfinite(v2)) &&
+      !(ignore_nans && (std::isnan(v1) || std::isnan(v2)))) {
+    bool same = (type == ToleranceMode::EIGEN_REL_ || type == ToleranceMode::EIGEN_ABS_ ||
+                 type == ToleranceMode::EIGEN_COM_)
+                    ? (std::fabs(v1) == std::fabs(v2))
+                    : (v1 == v2);
+    return same ? 0.0 : std::numeric_limits<double>::infinity();
   }
 
   double fabv1 = std::fabs(v1);

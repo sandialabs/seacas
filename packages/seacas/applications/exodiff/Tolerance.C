@@ -64,11 +64,28 @@ namespace {
 } // namespace
 
 bool Tolerance::use_old_floor = false;
+bool Tolerance::ignore_nans   = false;
 
 bool Tolerance::Diff(double v1, double v2) const
 {
   if (type == ToleranceMode::IGNORE_) {
     return false;
+  }
+
+  // Non-finite screen: NaN never compares equal, and an Inf compares equal
+  // only to an Inf of the same sign (same magnitude for the EIGEN_ modes,
+  // which diff absolute values).  Without this, the tolerance arithmetic
+  // below silently reports Inf equal to any finite value since `Inf > Inf`
+  // and `NaN > tol` are both false.  The NaN leg honors `-ignore_nans`:
+  // when set, NaN operands fall through to the pre-screen arithmetic below
+  // (Invalid_Values semantics); Inf mismatches are always diffs.
+  if ((!std::isfinite(v1) || !std::isfinite(v2)) &&
+      !(ignore_nans && (std::isnan(v1) || std::isnan(v2)))) {
+    if (type == ToleranceMode::EIGEN_REL_ || type == ToleranceMode::EIGEN_ABS_ ||
+        type == ToleranceMode::EIGEN_COM_) {
+      return !(fabs(v1) == fabs(v2));
+    }
+    return !(v1 == v2);
   }
 
   if (use_old_floor) {
