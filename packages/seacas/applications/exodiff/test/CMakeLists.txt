@@ -30,6 +30,14 @@ TRIBITS_ADD_EXECUTABLE(
   COMM serial mpi
   )
 
+TRIBITS_ADD_EXECUTABLE(
+  test_nodeset_read_error
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES test_nodeset_read_error.C ../node_set.C ../exo_entity.C ../util.C ../stringx.C ../ED_SystemInterface.C ../Tolerance.C
+  COMM serial mpi
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(
   exodiff_test_tolerance_nonfinite
   TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/test_tolerance_nonfinite
@@ -40,6 +48,15 @@ TRIBITS_ADD_ADVANCED_TEST(
   )
 
 IF (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodus)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ exodiff_test_nodeset_read_error
+ TEST_0 CMND /bin/sh ARGS -c "! ${CMAKE_CURRENT_BINARY_DIR}/test_nodeset_read_error > exodiff-nodeset-read-error.stdout 2>&1 && grep -q 'Failed to read node set' exodiff-nodeset-read-error.stdout"
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
 
 TRIBITS_ADD_ADVANCED_TEST(
  exodiff_test_permuted_connectivity_window
