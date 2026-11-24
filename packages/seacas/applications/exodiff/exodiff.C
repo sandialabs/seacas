@@ -1431,7 +1431,6 @@ const double *get_validated_variable(Exo_Entity *entity, int step, int vidx,
   if (!entity->is_valid_var(vidx)) {
     Warning(fmt::format("Could not find variable '{}' in {} {}, file 1.\n", name,
                         entity->short_label(), entity->Id()));
-    *diff_flag = true;
     return nullptr;
   }
 
