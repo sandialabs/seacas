@@ -196,7 +196,7 @@ namespace Ioss {
         step++;
 
       static std::string suffix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      std::string        tmp    = "-" + suffix.substr((step - 1) % m_fileCyclicCount, 1);
+      std::string        tmp    = '-' + suffix.substr((step - 1) % m_fileCyclicCount, 1);
       filename += tmp;
       m_properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_OVERWRITE));
     }
