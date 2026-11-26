@@ -101,7 +101,7 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
 
   num_props = ex_get_num_props(exoid, obj_type);
 
-  if (num_props > 1) { /* any properties other than the default 1? */
+  if (num_props > 0) { /* search all properties, including the default ID */
 
     for (i = 1; i <= num_props; i++) {
       switch (obj_type) {
